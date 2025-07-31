@@ -1,0 +1,109 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run security audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Check for vulnerabilities
+        run: |
+          if npm audit --audit-level=high --json | jq -e '.vulnerabilities | length > 0'; then
+            echo "High severity vulnerabilities found!"
+            npm audit --audit-level=high
+            exit 1
+          fi
+
+  lint-and-test:
+    runs-on: ubuntu-latest
+    name: Lint & Test
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint
+      
+      - name: Check TypeScript types
+        run: npm run type-check
+      
+      - name: Run tests
+        run: npm run test
+        env:
+          CI: true
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build & Deploy Check
+    needs: [security-scan, lint-and-test]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build project
+        run: npm run build
+      
+      - name: Check build size
+        run: |
+          BUILD_SIZE=$(du -sh dist | cut -f1)
+          echo "Build size: $BUILD_SIZE"
+          
+          # Warning if build is larger than 10MB
+          if [ $(du -s dist | cut -f1) -gt 10240 ]; then
+            echo "⚠️ Warning: Build size is larger than 10MB"
+          fi
+
+  security-headers:
+    runs-on: ubuntu-latest
+    name: Security Headers Check
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check security headers in Vite config
+        run: |
+          if ! grep -q "Content-Security-Policy" vite.config.ts; then
+            echo "⚠️ Warning: No CSP headers found in Vite config"
+          fi
