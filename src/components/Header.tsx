@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,14 +21,14 @@ const Header = () => {
   }, []);
 
   const navigationItems = [
-    { name: 'Beranda', href: '/beranda' },
-    { name: 'Agenda', href: '/agenda' },
-    { name: 'Tentang Kami', href: '/tentang-kami' },
-    { name: 'Media & Publikasi', href: '/media-publikasi' },
-    { name: 'Hubungi Kami', href: '/hubungi-kami' },
-    { name: 'Career', href: '/career' },
-    { name: 'PPID', href: '/ppid' },
-    { name: 'Admin', href: '/admin' },
+    { name: t('nav.beranda'), href: '/beranda' },
+    { name: t('nav.agenda'), href: '/agenda' },
+    { name: t('nav.tentangKami'), href: '/tentang-kami' },
+    { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+    { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
+    { name: t('nav.career'), href: '/career' },
+    { name: t('nav.ppid'), href: '/ppid' },
+    { name: t('nav.admin'), href: '/admin' },
   ];
 
   return (
@@ -70,6 +73,7 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              <LanguageSwitcher />
             </div>
 
             {/* Mobile menu button */}
@@ -105,6 +109,9 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              <div className="pt-4 border-t border-border">
+                <LanguageSwitcher />
+              </div>
             </nav>
           </div>
         </div>

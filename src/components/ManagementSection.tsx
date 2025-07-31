@@ -1,7 +1,9 @@
 import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const ManagementSection = () => {
+  const { t } = useTranslation();
   const managementCards = [
     {
       icon: Building2,
@@ -36,10 +38,10 @@ const ManagementSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Manajemen Museum & Cagar Budaya
+            {t('management.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Sistem terintegrasi untuk pengelolaan museum dan cagar budaya di seluruh Indonesia
+            {t('management.description')}
           </p>
         </div>
 

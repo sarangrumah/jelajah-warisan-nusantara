@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import heroBorobudur from '@/assets/hero-borobudur.jpg';
 import museumInterior from '@/assets/museum-interior.jpg';
@@ -8,6 +9,7 @@ import heritageSites from '@/assets/heritage-sites.jpg';
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const { t } = useTranslation();
 
   const slides = [
     {

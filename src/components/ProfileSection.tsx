@@ -1,11 +1,13 @@
 import { Users, Award, MapPin, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ProfileSection = () => {
+  const { t } = useTranslation();
   const stats = [
-    { icon: Users, value: '500+', label: 'Museum Terdaftar' },
-    { icon: Award, value: '1,200+', label: 'Cagar Budaya' },
-    { icon: MapPin, value: '34', label: 'Provinsi' },
-    { icon: Clock, value: '50+', label: 'Tahun Pengalaman' },
+    { icon: Users, value: '500+', label: t('profile.stats.museums') },
+    { icon: Award, value: '1,200+', label: t('profile.stats.heritage') },
+    { icon: MapPin, value: '34', label: t('profile.stats.provinces') },
+    { icon: Clock, value: '50+', label: t('profile.stats.experience') },
   ];
 
   return (
@@ -13,12 +15,10 @@ const ProfileSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Tentang Kami
+            {t('profile.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Direktorat Museum dan Cagar Budaya bertanggung jawab dalam pelestarian, 
-            pengelolaan, dan pengembangan warisan budaya Indonesia untuk kepentingan 
-            pendidikan, penelitian, dan pariwisata budaya.
+            {t('profile.description')}
           </p>
         </div>
 
@@ -30,20 +30,18 @@ const ProfileSection = () => {
             
             <div className="space-y-4">
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                <h4 className="text-xl font-semibold text-primary mb-3">Visi</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                 <p className="text-muted-foreground">
-                  Menjadi institusi terdepan dalam pelestarian dan pengelolaan warisan budaya 
-                  Indonesia yang berkualitas dunia dan berkelanjutan.
+                  {t('profile.visionText')}
                 </p>
               </div>
               
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                <h4 className="text-xl font-semibold text-primary mb-3">Misi</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                 <ul className="space-y-2 text-muted-foreground">
-                  <li>• Mengelola dan melestarikan koleksi museum nasional</li>
-                  <li>• Melindungi dan memelihara situs cagar budaya</li>
-                  <li>• Mengembangkan program edukasi dan penelitian</li>
-                  <li>• Mempromosikan pariwisata budaya berkelanjutan</li>
+                  {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -72,14 +70,13 @@ const ProfileSection = () => {
         <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              Mari Bersama Lestarikan Budaya Indonesia
+              {t('profile.callToAction')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Bergabunglah dengan kami dalam upaya melestarikan kekayaan budaya nusantara 
-              untuk generasi mendatang.
+              {t('profile.callToActionText')}
             </p>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              Pelajari Lebih Lanjut
+              {t('profile.learnMore')}
             </button>
           </div>
         </div>
