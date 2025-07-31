@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 
 const HubungiKami = () => {
+  // Updated with FAQ and enhanced contact form
   return (
     <div className="min-h-screen bg-background">
       <Header />

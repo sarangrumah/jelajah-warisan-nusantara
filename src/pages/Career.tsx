@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 
 const Career = () => {
+  // Updated with detailed internship positions
   return (
     <div className="min-h-screen bg-background">
       <Header />
