@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -162,10 +163,12 @@ const AgendaSection = () => {
                   </div>
                 </div>
 
-                <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
-                  Detail Event
-                  <ChevronRight size={16} className="ml-2" />
-                </Button>
+                <Link to={`/event/${event.id}`}>
+                  <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
+                    Detail Event
+                    <ChevronRight size={16} className="ml-2" />
+                  </Button>
+                </Link>
               </div>
             </div>
           ))}
@@ -181,12 +184,14 @@ const AgendaSection = () => {
               Daftarkan diri Anda untuk mendapatkan notifikasi event terbaru dan informasi menarik lainnya
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 hover:scale-105 transition-bounce heritage-glow"
-              >
-                Lihat Semua Agenda
-              </Button>
+              <Link to="/agenda">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 hover:scale-105 transition-bounce heritage-glow"
+                >
+                  Lihat Semua Agenda
+                </Button>
+              </Link>
               <Button 
                 variant="outline"
                 size="lg"

@@ -13,8 +13,11 @@ import Career from "./pages/Career";
 import PPID from "./pages/PPID";
 import Museum from "./pages/Museum";
 import Collection from "./pages/Collection";
+import Heritage from "./pages/Heritage";
 import MuseumDetail from "./pages/MuseumDetail";
 import CollectionDetail from "./pages/CollectionDetail";
+import HeritageDetail from "./pages/HeritageDetail";
+import EventDetail from "./pages/EventDetail";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -38,8 +41,11 @@ const App = () => (
           <Route path="/ppid" element={<PPID />} />
           <Route path="/museum" element={<Museum />} />
           <Route path="/museum/:id" element={<MuseumDetail />} />
+          <Route path="/heritage" element={<Heritage />} />
+          <Route path="/heritage/:id" element={<HeritageDetail />} />
           <Route path="/collection" element={<Collection />} />
           <Route path="/collection/:id" element={<CollectionDetail />} />
+          <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

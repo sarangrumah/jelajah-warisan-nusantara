@@ -1,5 +1,6 @@
 import { Users, Award, MapPin, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const ProfileSection = () => {
   const { t } = useTranslation();
@@ -75,9 +76,11 @@ const ProfileSection = () => {
             <p className="text-muted-foreground mb-6">
               {t('profile.callToActionText')}
             </p>
-            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              {t('profile.learnMore')}
-            </button>
+            <Link to="/tentang-kami">
+              <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
+                {t('profile.learnMore')}
+              </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
@@ -101,19 +102,23 @@ const ManagementSection = () => {
 
                 {/* Action buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    className="flex-1 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
-                  >
-                    <Users size={16} className="mr-2" />
-                    Kelola {card.title}
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-heritage"
-                  >
-                    <Calendar size={16} className="mr-2" />
-                    Lihat Agenda
-                  </Button>
+                  <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
+                    >
+                      <Users size={16} className="mr-2" />
+                      Kelola {card.title}
+                    </Button>
+                  </Link>
+                  <Link to="/agenda" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-heritage"
+                    >
+                      <Calendar size={16} className="mr-2" />
+                      Lihat Agenda
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
