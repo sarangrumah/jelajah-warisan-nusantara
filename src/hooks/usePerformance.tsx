@@ -40,18 +40,35 @@ export const usePerformanceMonitoring = () => {
   }, []);
 
   useEffect(() => {
-    // Observe Core Web Vitals
-    if ('web-vitals' in window) {
-      // Dynamic import to avoid bundle size increase
-      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(reportWebVitals);
-        getFID(reportWebVitals);
-        getFCP(reportWebVitals);
-        getLCP(reportWebVitals);
-        getTTFB(reportWebVitals);
-      }).catch(() => {
-        // Silently fail if web-vitals is not available
-      });
+    // Observe Core Web Vitals - simplified without web-vitals dependency
+    if ('performance' in window) {
+      // Use Performance Observer for basic metrics
+      try {
+        const observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            if (entry.entryType === 'navigation') {
+              reportWebVitals({
+                name: 'Navigation',
+                value: entry.duration,
+                id: 'navigation',
+              });
+            } else if (entry.entryType === 'paint') {
+              reportWebVitals({
+                name: entry.name,
+                value: entry.startTime,
+                id: entry.name.replace('-', '_'),
+              });
+            }
+          });
+        });
+
+        observer.observe({ entryTypes: ['navigation', 'paint'] });
+        
+        // Cleanup observer
+        return () => observer.disconnect();
+      } catch (error) {
+        console.warn('Performance Observer not supported:', error);
+      }
     }
 
     // Monitor page load performance
