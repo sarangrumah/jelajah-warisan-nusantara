@@ -86,6 +86,7 @@
     --muted: 25 10% 90%;
     --border: 25 20% 80%;
   }
+}
 
 @layer base {
   * {
