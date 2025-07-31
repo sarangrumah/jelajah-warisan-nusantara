@@ -23,6 +23,7 @@ const Header = () => {
     { name: 'Hubungi Kami', href: '#kontak' },
     { name: 'Career', href: '#career' },
     { name: 'PPID', href: '#ppid' },
+    { name: 'Admin', href: '/auth' },
   ];
 
   return (
