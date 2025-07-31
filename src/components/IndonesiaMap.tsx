@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface RegionData {
   name: string;
@@ -14,141 +12,121 @@ interface RegionData {
 
 const IndonesiaMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [isTokenSet, setIsTokenSet] = useState(false);
+  const map = useRef<L.Map | null>(null);
 
   const regions: RegionData[] = [
-    { name: 'Sumatera', museums: 45, heritage: 123, coordinates: [101.0, 0.5], color: '#3b82f6' },
-    { name: 'Jawa', museums: 187, heritage: 456, coordinates: [110.0, -7.5], color: '#10b981' },
-    { name: 'Kalimantan', museums: 23, heritage: 78, coordinates: [114.0, -2.0], color: '#f59e0b' },
-    { name: 'Sulawesi', museums: 34, heritage: 92, coordinates: [120.0, -2.5], color: '#8b5cf6' },
-    { name: 'Papua', museums: 12, heritage: 34, coordinates: [140.0, -4.0], color: '#ef4444' },
-    { name: 'Maluku & Nusa Tenggara', museums: 18, heritage: 56, coordinates: [125.0, -8.5], color: '#f97316' },
+    { name: 'Sumatera', museums: 45, heritage: 123, coordinates: [0.5, 101.0], color: '#3b82f6' },
+    { name: 'Jawa', museums: 187, heritage: 456, coordinates: [-7.5, 110.0], color: '#10b981' },
+    { name: 'Kalimantan', museums: 23, heritage: 78, coordinates: [-2.0, 114.0], color: '#f59e0b' },
+    { name: 'Sulawesi', museums: 34, heritage: 92, coordinates: [-2.5, 120.0], color: '#8b5cf6' },
+    { name: 'Papua', museums: 12, heritage: 34, coordinates: [-4.0, 140.0], color: '#ef4444' },
+    { name: 'Maluku & Nusa Tenggara', museums: 18, heritage: 56, coordinates: [-8.5, 125.0], color: '#f97316' },
   ];
 
-  const handleTokenSubmit = () => {
-    if (mapboxToken.trim()) {
-      setIsTokenSet(true);
-      initializeMap();
-    }
-  };
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
 
-  const initializeMap = () => {
-    if (!mapContainer.current || !mapboxToken) return;
-
-    mapboxgl.accessToken = mapboxToken;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [118.0, -2.6],
-      zoom: 4.5,
-      pitch: 0,
+    // Initialize map
+    map.current = L.map(mapContainer.current, {
+      center: [-2.6, 118.0],
+      zoom: 5,
+      zoomControl: true,
+      scrollWheelZoom: true,
+      doubleClickZoom: true,
+      boxZoom: true,
+      keyboard: true,
+      dragging: true,
+      touchZoom: true,
     });
 
-    map.current.addControl(
-      new mapboxgl.NavigationControl({
-        visualizePitch: true,
-      }),
-      'top-right'
-    );
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map.current);
 
-    map.current.on('load', () => {
-      // Add markers for each region
-      regions.forEach((region) => {
-        // Create custom marker element
-        const markerElement = document.createElement('div');
-        markerElement.className = 'custom-marker';
-        markerElement.style.cssText = `
-          width: 40px;
-          height: 40px;
-          background-color: ${region.color};
-          border-radius: 50%;
-          border: 3px solid white;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 12px;
-        `;
-        markerElement.textContent = region.museums.toString();
+    // Create custom icon function
+    const createCustomIcon = (region: RegionData) => {
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div style="
+            width: 40px;
+            height: 40px;
+            background-color: ${region.color};
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+          ">${region.museums}</div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+    };
 
-        // Create popup content
-        const popupContent = `
-          <div class="p-4">
-            <h3 class="font-bold text-lg mb-2">${region.name}</h3>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between">
-                <span>Museum:</span>
-                <span class="font-bold">${region.museums}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span>Cagar Budaya:</span>
-                <span class="font-bold">${region.heritage}</span>
-              </div>
+    // Add markers for each region
+    regions.forEach((region) => {
+      const marker = L.marker(region.coordinates, {
+        icon: createCustomIcon(region),
+      }).addTo(map.current!);
+
+      // Create popup content
+      const popupContent = `
+        <div style="padding: 12px; min-width: 200px;">
+          <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px; color: #1f2937;">${region.name}</h3>
+          <div style="space-y: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="color: #6b7280;">Museum:</span>
+              <span style="font-weight: bold; color: #1f2937;">${region.museums}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #6b7280;">Cagar Budaya:</span>
+              <span style="font-weight: bold; color: #1f2937;">${region.heritage}</span>
             </div>
           </div>
-        `;
+        </div>
+      `;
 
-        const popup = new mapboxgl.Popup({
-          offset: 25,
-          closeButton: true,
-          closeOnClick: false
-        }).setHTML(popupContent);
+      marker.bindPopup(popupContent, {
+        offset: [0, -20],
+        closeButton: true,
+        autoClose: false,
+        className: 'custom-popup'
+      });
 
-        new mapboxgl.Marker(markerElement)
-          .setLngLat(region.coordinates)
-          .setPopup(popup)
-          .addTo(map.current!);
+      // Add hover effects
+      marker.on('mouseover', function() {
+        this.getElement()?.style.setProperty('transform', 'scale(1.1)');
+      });
+
+      marker.on('mouseout', function() {
+        this.getElement()?.style.setProperty('transform', 'scale(1)');
       });
     });
-  };
 
-  useEffect(() => {
+    // Set bounds to Indonesia
+    const indonesiaBounds = L.latLngBounds(
+      [-11.0, 95.0], // Southwest coordinates
+      [6.0, 141.0]   // Northeast coordinates
+    );
+    map.current.setMaxBounds(indonesiaBounds);
+
+    // Cleanup function
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
   }, []);
-
-  if (!isTokenSet) {
-    return (
-      <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-        <h3 className="text-2xl font-bold text-foreground mb-4 text-center">
-          Peta Interaktif Indonesia
-        </h3>
-        <p className="text-muted-foreground mb-6 text-center">
-          Masukkan Mapbox token untuk menampilkan peta interaktif distribusi museum dan cagar budaya.
-        </p>
-        <div className="flex gap-4 max-w-md mx-auto">
-          <Input
-            type="text"
-            placeholder="Masukkan Mapbox Public Token"
-            value={mapboxToken}
-            onChange={(e) => setMapboxToken(e.target.value)}
-            className="flex-1"
-          />
-          <Button onClick={handleTokenSubmit}>
-            Tampilkan Peta
-          </Button>
-        </div>
-        <p className="text-sm text-muted-foreground mt-4 text-center">
-          Dapatkan token gratis di{' '}
-          <a 
-            href="https://mapbox.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            mapbox.com
-          </a>
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-6xl mx-auto">
@@ -161,6 +139,15 @@ const IndonesiaMap = () => {
       <p className="text-muted-foreground mt-4 text-center text-sm">
         Klik pada marker untuk melihat detail distribusi museum dan cagar budaya di setiap region
       </p>
+      <style>{`
+        .custom-popup .leaflet-popup-content-wrapper {
+          border-radius: 8px !important;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+        .custom-popup .leaflet-popup-tip {
+          background: white !important;
+        }
+      `}</style>
     </div>
   );
 };
