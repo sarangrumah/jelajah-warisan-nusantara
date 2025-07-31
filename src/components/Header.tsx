@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -35,22 +35,6 @@ const Header = () => {
         }`}
       >
         <div className="container mx-auto px-4">
-          {/* Top bar */}
-          <div className="hidden md:flex items-center justify-between py-2 text-sm border-b border-border/30">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Phone size={14} className="text-primary" />
-                <span>+62 21 1234 5678</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail size={14} className="text-primary" />
-                <span>info@museumbudaya.go.id</span>
-              </div>
-            </div>
-            <div className="text-muted-foreground">
-              Kementerian Pendidikan, Kebudayaan, Riset dan Teknologi
-            </div>
-          </div>
 
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">

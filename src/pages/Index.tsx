@@ -5,6 +5,7 @@ import ProfileSection from '@/components/ProfileSection';
 import ManagementSection from '@/components/ManagementSection';
 import AgendaSection from '@/components/AgendaSection';
 import FloatingButtons from '@/components/FloatingButtons';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   useEffect(() => {
@@ -35,6 +36,7 @@ const Index = () => {
       <ProfileSection />
       <ManagementSection />
       <AgendaSection />
+      <Footer />
       <FloatingButtons />
     </div>
   );
