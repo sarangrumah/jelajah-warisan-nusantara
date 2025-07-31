@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import FileUploadPDF from '@/components/FileUploadPDF';
 
 const registrationSchema = z.object({
   fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
@@ -21,9 +22,9 @@ const registrationSchema = z.object({
   gpa: z.string().min(1, 'IPK harus diisi'),
   internshipProgram: z.string().min(1, 'Program magang harus dipilih'),
   motivation: z.string().min(50, 'Motivasi minimal 50 karakter'),
-  cv: z.instanceof(File, { message: 'CV harus diupload' }),
-  transcript: z.instanceof(File, { message: 'Transkrip nilai harus diupload' }),
-  coverLetter: z.instanceof(File).optional(),
+  cv: z.string().url('URL CV tidak valid').min(1, 'CV harus diupload'),
+  transcript: z.string().url('URL transkrip tidak valid').min(1, 'Transkrip harus diupload'),
+  coverLetter: z.string().url().optional(),
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -44,6 +45,9 @@ const InternshipSection = () => {
       gpa: '',
       internshipProgram: '',
       motivation: '',
+      cv: '',
+      transcript: '',
+      coverLetter: '',
     }
   });
 
@@ -480,80 +484,61 @@ const InternshipSection = () => {
                         <div className="space-y-4">
                           <h4 className="font-semibold">Dokumen yang Diperlukan</h4>
                           
-                          <FormField
-                            control={form.control}
-                            name="cv"
-                            render={({ field: { onChange, value, ...field } }) => (
-                              <FormItem>
-                                <FormLabel>CV/Resume *</FormLabel>
-                                <FormControl>
-                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
-                                    <input
-                                      type="file"
-                                      accept=".pdf,.doc,.docx"
-                                      onChange={(e) => onChange(e.target.files?.[0])}
-                                      className="w-full"
-                                      {...field}
-                                    />
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                      Format: PDF, DOC, DOCX (Max 5MB)
-                                    </p>
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <div className="space-y-4">
+                            <FileUploadPDF
+                              bucket="cv-uploads"
+                              label="CV/Resume *"
+                              description="Upload CV dalam format PDF (maksimal 5MB)"
+                              required
+                              onUploadComplete={(url, fileName) => {
+                                form.setValue('cv', url);
+                              }}
+                              onUploadError={(error) => {
+                                toast({
+                                  title: 'Error',
+                                  description: `Gagal upload CV: ${error}`,
+                                  variant: 'destructive',
+                                });
+                              }}
+                            />
+                          </div>
 
-                          <FormField
-                            control={form.control}
-                            name="transcript"
-                            render={({ field: { onChange, value, ...field } }) => (
-                              <FormItem>
-                                <FormLabel>Transkrip Nilai *</FormLabel>
-                                <FormControl>
-                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
-                                    <input
-                                      type="file"
-                                      accept=".pdf,.jpg,.jpeg,.png"
-                                      onChange={(e) => onChange(e.target.files?.[0])}
-                                      className="w-full"
-                                      {...field}
-                                    />
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                      Format: PDF, JPG, PNG (Max 5MB)
-                                    </p>
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <div className="space-y-4">
+                            <FileUploadPDF
+                              bucket="transcripts"
+                              label="Transkrip Nilai *"
+                              description="Upload transkrip dalam format PDF (maksimal 5MB)"
+                              required
+                              onUploadComplete={(url, fileName) => {
+                                form.setValue('transcript', url);
+                              }}
+                              onUploadError={(error) => {
+                                toast({
+                                  title: 'Error',
+                                  description: `Gagal upload transkrip: ${error}`,
+                                  variant: 'destructive',
+                                });
+                              }}
+                            />
+                          </div>
 
-                          <FormField
-                            control={form.control}
-                            name="coverLetter"
-                            render={({ field: { onChange, value, ...field } }) => (
-                              <FormItem>
-                                <FormLabel>Surat Pengantar (Opsional)</FormLabel>
-                                <FormControl>
-                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
-                                    <input
-                                      type="file"
-                                      accept=".pdf,.doc,.docx"
-                                      onChange={(e) => onChange(e.target.files?.[0])}
-                                      className="w-full"
-                                      {...field}
-                                    />
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                      Format: PDF, DOC, DOCX (Max 5MB)
-                                    </p>
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <div className="space-y-4">
+                            <FileUploadPDF
+                              bucket="cover-letters"
+                              label="Surat Pengantar (Opsional)"
+                              description="Upload surat pengantar dalam format PDF (maksimal 5MB)"
+                              onUploadComplete={(url, fileName) => {
+                                form.setValue('coverLetter', url);
+                              }}
+                              onUploadError={(error) => {
+                                toast({
+                                  title: 'Error',
+                                  description: `Gagal upload surat pengantar: ${error}`,
+                                  variant: 'destructive',
+                                });
+                              }}
+                            />
+                          </div>
                         </div>
 
                         <div className="flex gap-4 pt-4">
