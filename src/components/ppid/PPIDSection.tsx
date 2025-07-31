@@ -1,8 +1,10 @@
 import { Info, FileText, Clock, Download, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const PPIDSection = () => {
+  const { t } = useTranslation();
   const informationTypes = [
     {
       title: 'Informasi Berkala',

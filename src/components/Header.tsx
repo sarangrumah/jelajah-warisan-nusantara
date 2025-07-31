@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
@@ -23,10 +29,15 @@ const Header = () => {
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
     { name: t('nav.agenda'), href: '/agenda' },
-    { name: t('nav.tentangKami'), href: '/tentang-kami' },
-    { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
-    { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
-    { name: t('nav.career'), href: '/career' },
+    { 
+      name: t('nav.tentangKami'), 
+      href: '/tentang-kami',
+      subItems: [
+        { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+        { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
+        { name: t('nav.career'), href: '/career' },
+      ]
+    },
     { name: t('nav.ppid'), href: '/ppid' },
     { name: t('nav.admin'), href: '/admin' },
   ];
@@ -61,17 +72,44 @@ const Header = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
               {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`transition-heritage font-medium ${
-                    location.pathname === item.href 
-                      ? 'text-primary border-b-2 border-primary' 
-                      : 'text-foreground hover:text-primary'
-                  }`}
-                >
-                  {item.name}
-                </Link>
+                item.subItems ? (
+                  <DropdownMenu key={item.name}>
+                    <DropdownMenuTrigger className={`flex items-center gap-1 transition-heritage font-medium ${
+                      location.pathname === item.href || item.subItems?.some(subItem => location.pathname === subItem.href)
+                        ? 'text-primary border-b-2 border-primary' 
+                        : 'text-foreground hover:text-primary'
+                    }`}>
+                      {item.name}
+                      <ChevronDown size={16} />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link to={item.href} className="w-full">
+                          {item.name}
+                        </Link>
+                      </DropdownMenuItem>
+                      {item.subItems.map((subItem) => (
+                        <DropdownMenuItem key={subItem.name} asChild>
+                          <Link to={subItem.href} className="w-full">
+                            {subItem.name}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`transition-heritage font-medium ${
+                      location.pathname === item.href 
+                        ? 'text-primary border-b-2 border-primary' 
+                        : 'text-foreground hover:text-primary'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                )
               ))}
               <LanguageSwitcher />
             </div>
@@ -96,18 +134,37 @@ const Header = () => {
           <div className="fixed right-0 top-0 h-full w-64 bg-card border-l border-border p-6 mt-20">
             <nav className="space-y-4">
               {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`block transition-heritage font-medium py-2 ${
-                    location.pathname === item.href 
-                      ? 'text-primary bg-primary/10' 
-                      : 'text-foreground hover:text-primary'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
+                <div key={item.name}>
+                  <Link
+                    to={item.href}
+                    className={`block transition-heritage font-medium py-2 ${
+                      location.pathname === item.href 
+                        ? 'text-primary bg-primary/10' 
+                        : 'text-foreground hover:text-primary'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                  {item.subItems && (
+                    <div className="ml-4 mt-2 space-y-2">
+                      {item.subItems.map((subItem) => (
+                        <Link
+                          key={subItem.name}
+                          to={subItem.href}
+                          className={`block transition-heritage font-medium py-1 text-sm ${
+                            location.pathname === subItem.href 
+                              ? 'text-primary bg-primary/10' 
+                              : 'text-muted-foreground hover:text-primary'
+                          }`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="pt-4 border-t border-border">
                 <LanguageSwitcher />

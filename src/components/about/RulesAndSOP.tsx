@@ -1,78 +1,40 @@
 import { FileText, Scale, CheckCircle, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const RulesAndSOP = () => {
-  const regulations = [
-    {
-      title: 'UU No. 11 Tahun 2010',
-      description: 'Undang-Undang tentang Cagar Budaya',
-      type: 'Undang-Undang',
-      status: 'Aktif'
-    },
-    {
-      title: 'PP No. 66 Tahun 2015',
-      description: 'Peraturan Pemerintah tentang Museum',
-      type: 'Peraturan Pemerintah',
-      status: 'Aktif'
-    },
-    {
-      title: 'Permendikbud No. 52 Tahun 2021',
-      description: 'Pelestarian dan Pemanfaatan Cagar Budaya',
-      type: 'Peraturan Menteri',
-      status: 'Aktif'
-    },
-    {
-      title: 'Permendikbud No. 19 Tahun 2017',
-      description: 'Pengelolaan Museum Pemerintah',
-      type: 'Peraturan Menteri',
-      status: 'Aktif'
-    }
-  ];
+  const { t } = useTranslation();
+  
+  const regulationsData = t('about.rules.regulations', { returnObjects: true }) as any[];
+  const proceduresData = t('about.rules.procedures', { returnObjects: true }) as any[];
+  
+  const regulations = regulationsData.map(reg => ({
+    ...reg,
+    status: 'Aktif'
+  }));
 
-  const procedures = [
-    {
-      title: 'SOP Registrasi Cagar Budaya',
-      description: 'Prosedur pendaftaran dan penetapan status cagar budaya',
-      steps: 5,
-      duration: '30-60 hari'
-    },
-    {
-      title: 'SOP Izin Penelitian',
-      description: 'Tata cara permohonan izin penelitian di museum dan situs',
-      steps: 4,
-      duration: '14-21 hari'
-    },
-    {
-      title: 'SOP Konservasi Koleksi',
-      description: 'Standar prosedur konservasi dan perawatan koleksi museum',
-      steps: 8,
-      duration: 'Berkelanjutan'
-    },
-    {
-      title: 'SOP Pameran Temporer',
-      description: 'Prosedur penyelenggaraan pameran sementara',
-      steps: 6,
-      duration: '45-90 hari'
-    }
-  ];
+  const procedures = proceduresData.map((proc, index) => ({
+    ...proc,
+    steps: [5, 4, 8, 6][index],
+    duration: ['30-60 hari', '14-21 hari', 'Berkelanjutan', '45-90 hari'][index]
+  }));
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Regulasi & Standar Operasional
+            {t('about.rules.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Dasar hukum dan prosedur standar yang mengatur pengelolaan museum 
-            dan pelestarian cagar budaya di Indonesia.
+            {t('about.rules.subtitle')}
           </p>
         </div>
 
         <div className="mb-16">
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
-            Regulasi & Peraturan
+            {t('about.rules.regulationsTitle')}
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
             {regulations.map((regulation, index) => (
@@ -95,7 +57,7 @@ const RulesAndSOP = () => {
                   <p className="text-muted-foreground mb-4">{regulation.description}</p>
                   <Button variant="outline" size="sm" className="w-full">
                     <Download size={16} className="mr-2" />
-                    Unduh Dokumen
+                    {t('buttons.downloadDocument')}
                   </Button>
                 </CardContent>
               </Card>
@@ -105,7 +67,7 @@ const RulesAndSOP = () => {
 
         <div>
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
-            Standar Operasional Prosedur (SOP)
+            {t('about.rules.sopTitle')}
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
             {procedures.map((procedure, index) => (
@@ -130,7 +92,7 @@ const RulesAndSOP = () => {
                   </div>
                   <Button variant="outline" size="sm" className="w-full">
                     <CheckCircle size={16} className="mr-2" />
-                    Lihat Detail SOP
+                    {t('buttons.viewDetails')}
                   </Button>
                 </CardContent>
               </Card>
@@ -141,14 +103,13 @@ const RulesAndSOP = () => {
         <div className="mt-16 text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              Perlu Bantuan dengan Regulasi?
+              {t('about.rules.needHelpTitle')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Tim legal kami siap membantu Anda memahami dan menerapkan 
-              regulasi yang berlaku dalam pengelolaan warisan budaya.
+              {t('about.rules.needHelpText')}
             </p>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              Konsultasi Legal
+              {t('about.rules.needHelpButton')}
             </button>
           </div>
         </div>

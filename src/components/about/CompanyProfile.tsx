@@ -1,27 +1,30 @@
 import { Building, Users, Target, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 const CompanyProfile = () => {
+  const { t } = useTranslation();
+  
   const highlights = [
     {
       icon: Building,
-      title: 'Institusi Terpercaya',
-      description: 'Lembaga resmi pemerintah yang mengelola warisan budaya Indonesia'
+      title: t('about.companyProfile.highlights.institution.title'),
+      description: t('about.companyProfile.highlights.institution.description')
     },
     {
       icon: Users,
-      title: 'Tim Profesional',
-      description: 'Didukung oleh para ahli konservasi, kurator, dan peneliti berpengalaman'
+      title: t('about.companyProfile.highlights.team.title'),
+      description: t('about.companyProfile.highlights.team.description')
     },
     {
       icon: Target,
-      title: 'Misi Pelestarian',
-      description: 'Berkomitmen melestarikan warisan budaya untuk generasi mendatang'
+      title: t('about.companyProfile.highlights.mission.title'),
+      description: t('about.companyProfile.highlights.mission.description')
     },
     {
       icon: Award,
-      title: 'Pengakuan Internasional',
-      description: 'Berbagai penghargaan dalam bidang pelestarian budaya'
+      title: t('about.companyProfile.highlights.recognition.title'),
+      description: t('about.companyProfile.highlights.recognition.description')
     }
   ];
 
@@ -30,12 +33,10 @@ const CompanyProfile = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Profil Institusi
+            {t('about.companyProfile.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Direktorat Museum dan Cagar Budaya merupakan unit eselon II di bawah 
-            Direktorat Jenderal Kebudayaan, Kementerian Pendidikan, Kebudayaan, 
-            Riset, dan Teknologi Republik Indonesia.
+            {t('about.companyProfile.subtitle')}
           </p>
         </div>
 
@@ -50,25 +51,19 @@ const CompanyProfile = () => {
           
           <div className="space-y-6 scroll-reveal">
             <h3 className="text-3xl font-bold text-foreground">
-              Sejarah & Perkembangan
+              {t('about.companyProfile.historyTitle')}
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              Didirikan dengan tujuan untuk mengelola, melestarikan, dan mengembangkan 
-              museum serta situs cagar budaya di seluruh Indonesia. Sejak berdiri, 
-              kami telah berperan aktif dalam pelestarian warisan budaya bangsa.
+              {t('about.companyProfile.historyText1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Dengan pengalaman lebih dari 50 tahun, kami terus berinovasi dalam 
-              menghadapi tantangan modern sambil mempertahankan nilai-nilai 
-              tradisional dalam pelestarian budaya.
+              {t('about.companyProfile.historyText2')}
             </p>
             
             <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-              <h4 className="text-xl font-semibold text-primary mb-3">Komitmen Kami</h4>
+              <h4 className="text-xl font-semibold text-primary mb-3">{t('about.companyProfile.commitmentTitle')}</h4>
               <p className="text-muted-foreground">
-                Menjaga dan melestarikan kekayaan budaya Indonesia melalui pengelolaan 
-                museum yang profesional, pelestarian situs bersejarah, dan pengembangan 
-                program edukasi yang berkelanjutan.
+                {t('about.companyProfile.commitmentText')}
               </p>
             </div>
           </div>
