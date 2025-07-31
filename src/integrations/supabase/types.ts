@@ -56,6 +56,161 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          start_date: string | null
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          start_date?: string | null
+          subtitle: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          start_date?: string | null
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      career_applications: {
+        Row: {
+          cover_letter_url: string | null
+          created_at: string
+          cv_url: string | null
+          email: string
+          full_name: string
+          id: string
+          major: string | null
+          motivation: string | null
+          opportunity_id: string | null
+          phone: string | null
+          program: string | null
+          semester: number | null
+          status: string | null
+          transcript_url: string | null
+          university: string | null
+          updated_at: string
+        }
+        Insert: {
+          cover_letter_url?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          full_name: string
+          id?: string
+          major?: string | null
+          motivation?: string | null
+          opportunity_id?: string | null
+          phone?: string | null
+          program?: string | null
+          semester?: number | null
+          status?: string | null
+          transcript_url?: string | null
+          university?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cover_letter_url?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          major?: string | null
+          motivation?: string | null
+          opportunity_id?: string | null
+          phone?: string | null
+          program?: string | null
+          semester?: number | null
+          status?: string | null
+          transcript_url?: string | null
+          university?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_applications_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "career_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      career_opportunities: {
+        Row: {
+          application_deadline: string | null
+          benefits: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration: string | null
+          id: string
+          is_published: boolean
+          location: string | null
+          requirements: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          application_deadline?: string | null
+          benefits?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration?: string | null
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          requirements?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          application_deadline?: string | null
+          benefits?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration?: string | null
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          requirements?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       content_sections: {
         Row: {
           content: Json
@@ -86,6 +241,150 @@ export type Database = {
           section_key?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean
+          order_index: number | null
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number | null
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          order_index?: number | null
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      media_items: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          file_url: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          published_at: string | null
+          tags: string[] | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          file_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string | null
+          tags?: string[] | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          file_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          published_at?: string | null
+          tags?: string[] | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      museums: {
+        Row: {
+          address: string | null
+          contact_info: Json | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          gallery_images: string[] | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          name: string
+          opening_hours: Json | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_info?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          name: string
+          opening_hours?: Json | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_info?: Json | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          name?: string
+          opening_hours?: Json | null
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }

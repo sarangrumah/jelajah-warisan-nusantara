@@ -11,24 +11,11 @@ import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-interface Banner {
-  id: string;
-  title: string;
-  subtitle: string;
-  description?: string;
-  image_url?: string;
-  start_date?: string;
-  end_date?: string;
-  is_published: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 const BannerManagement = () => {
-  const [banners, setBanners] = useState<Banner[]>([]);
+  const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
+  const [editingBanner, setEditingBanner] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
@@ -49,7 +36,7 @@ const BannerManagement = () => {
       console.error('Error fetching banners:', error);
       toast({
         title: 'Error',
-        description: 'Gagal memuat data banner',
+        description: 'Failed to load banners',
         variant: 'destructive',
       });
     } finally {
@@ -57,29 +44,29 @@ const BannerManagement = () => {
     }
   };
 
-  const saveBanner = async (banner: Partial<Banner>) => {
+  const saveBanner = async (formData: any) => {
     setSaving(true);
     try {
       if (editingBanner?.id) {
         const { error } = await supabase
           .from('banners')
-          .update(banner)
+          .update(formData)
           .eq('id', editingBanner.id);
         
         if (error) throw error;
         
         setBanners(prev => prev.map(b => 
-          b.id === editingBanner.id ? { ...b, ...banner } : b
+          b.id === editingBanner.id ? { ...b, ...formData } : b
         ));
         
         toast({
-          title: 'Berhasil',
-          description: 'Banner berhasil diperbarui',
+          title: 'Success',
+          description: 'Banner updated successfully',
         });
       } else {
         const { data, error } = await supabase
           .from('banners')
-          .insert([banner])
+          .insert(formData)
           .select()
           .single();
         
@@ -88,8 +75,8 @@ const BannerManagement = () => {
         setBanners(prev => [data, ...prev]);
         
         toast({
-          title: 'Berhasil',
-          description: 'Banner berhasil ditambahkan',
+          title: 'Success',
+          description: 'Banner created successfully',
         });
       }
       
@@ -99,7 +86,7 @@ const BannerManagement = () => {
       console.error('Error saving banner:', error);
       toast({
         title: 'Error',
-        description: 'Gagal menyimpan banner',
+        description: 'Failed to save banner',
         variant: 'destructive',
       });
     } finally {
@@ -121,22 +108,22 @@ const BannerManagement = () => {
       ));
       
       toast({
-        title: 'Berhasil',
-        description: `Banner ${isPublished ? 'dipublikasikan' : 'diturunkan'}`,
+        title: 'Success',
+        description: `Banner ${isPublished ? 'published' : 'unpublished'}`,
       });
     } catch (error) {
       console.error('Error toggling banner:', error);
       toast({
         title: 'Error',
-        description: 'Gagal mengubah status banner',
+        description: 'Failed to update banner status',
         variant: 'destructive',
       });
     }
   };
 
   const BannerForm = ({ banner, onSave, onCancel }: {
-    banner?: Banner | null;
-    onSave: (data: Partial<Banner>) => void;
+    banner?: any;
+    onSave: (data: any) => void;
     onCancel: () => void;
   }) => {
     const [formData, setFormData] = useState({
@@ -158,7 +145,7 @@ const BannerManagement = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Judul Banner</Label>
+            <Label htmlFor="title">Banner Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -167,7 +154,7 @@ const BannerManagement = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="subtitle">Subjudul</Label>
+            <Label htmlFor="subtitle">Subtitle</Label>
             <Input
               id="subtitle"
               value={formData.subtitle}
@@ -178,7 +165,7 @@ const BannerManagement = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Deskripsi</Label>
+          <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
             value={formData.description}
@@ -188,7 +175,7 @@ const BannerManagement = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="image_url">URL Gambar</Label>
+          <Label htmlFor="image_url">Image URL</Label>
           <Input
             id="image_url"
             value={formData.image_url}
@@ -199,7 +186,7 @@ const BannerManagement = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="start_date">Tanggal Mulai</Label>
+            <Label htmlFor="start_date">Start Date</Label>
             <Input
               id="start_date"
               type="datetime-local"
@@ -208,7 +195,7 @@ const BannerManagement = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="end_date">Tanggal Berakhir</Label>
+            <Label htmlFor="end_date">End Date</Label>
             <Input
               id="end_date"
               type="datetime-local"
@@ -224,18 +211,18 @@ const BannerManagement = () => {
             checked={formData.is_published}
             onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
           />
-          <Label htmlFor="is_published">Publikasikan Banner</Label>
+          <Label htmlFor="is_published">Publish Banner</Label>
         </div>
 
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
             <X className="w-4 h-4 mr-2" />
-            Batal
+            Cancel
           </Button>
           <Button type="submit" disabled={saving}>
             {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             <Save className="w-4 h-4 mr-2" />
-            Simpan
+            Save
           </Button>
         </div>
       </form>
@@ -254,23 +241,23 @@ const BannerManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Manajemen Banner</h2>
-          <p className="text-muted-foreground">Kelola banner untuk halaman utama website</p>
+          <h2 className="text-2xl font-bold">Banner Management</h2>
+          <p className="text-muted-foreground">Manage banners for the homepage</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingBanner(null)}>
               <Plus className="w-4 h-4 mr-2" />
-              Tambah Banner
+              Add Banner
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingBanner ? 'Edit Banner' : 'Tambah Banner Baru'}
+                {editingBanner ? 'Edit Banner' : 'Add New Banner'}
               </DialogTitle>
               <DialogDescription>
-                {editingBanner ? 'Perbarui informasi banner' : 'Buat banner baru untuk halaman utama'}
+                {editingBanner ? 'Update banner information' : 'Create a new banner for the homepage'}
               </DialogDescription>
             </DialogHeader>
             <BannerForm
@@ -288,10 +275,10 @@ const BannerManagement = () => {
       {banners.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-muted-foreground mb-4">Belum ada banner yang dibuat</p>
+            <p className="text-muted-foreground mb-4">No banners created yet</p>
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Buat Banner Pertama
+              Create First Banner
             </Button>
           </CardContent>
         </Card>
@@ -338,15 +325,15 @@ const BannerManagement = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium">Periode:</span>
+                    <span className="font-medium">Period:</span>
                     <p className="text-muted-foreground">
                       {banner.start_date && banner.end_date
                         ? `${new Date(banner.start_date).toLocaleDateString()} - ${new Date(banner.end_date).toLocaleDateString()}`
-                        : 'Tidak terbatas'}
+                        : 'Unlimited'}
                     </p>
                   </div>
                   <div>
-                    <span className="font-medium">Terakhir diperbarui:</span>
+                    <span className="font-medium">Last updated:</span>
                     <p className="text-muted-foreground">
                       {new Date(banner.updated_at).toLocaleDateString()}
                     </p>
