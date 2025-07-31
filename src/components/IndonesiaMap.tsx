@@ -266,7 +266,7 @@ const IndonesiaMap = () => {
               </div>
             ` : ''}
           </div>
-          <div style="display: flex; gap: 8px; position: relative; z-index: 1000;">
+          <div style="display: flex; gap: 8px; position: relative; z-index: 10000;">
             <button 
               class="popup-btn-detail"
               data-id="${location.id}"
@@ -283,6 +283,8 @@ const IndonesiaMap = () => {
                 font-weight: 500;
                 transition: background-color 0.2s ease;
                 pointer-events: auto;
+                position: relative;
+                z-index: 10001;
               "
               onmouseover="this.style.backgroundColor='#2563eb'"
               onmouseout="this.style.backgroundColor='#3b82f6'"
@@ -305,6 +307,8 @@ const IndonesiaMap = () => {
                 font-weight: 500;
                 transition: background-color 0.2s ease;
                 pointer-events: auto;
+                position: relative;
+                z-index: 10001;
               "
               onmouseover="this.style.backgroundColor='#059669'"
               onmouseout="this.style.backgroundColor='#10b981'"
@@ -410,9 +414,26 @@ const IndonesiaMap = () => {
         .custom-popup .leaflet-popup-content-wrapper {
           border-radius: 8px !important;
           box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+          z-index: 10000 !important;
+          position: relative !important;
         }
         .custom-popup .leaflet-popup-tip {
           background: white !important;
+          z-index: 10000 !important;
+        }
+        .custom-popup {
+          z-index: 10000 !important;
+        }
+        .leaflet-popup-pane {
+          z-index: 10000 !important;
+        }
+        .popup-btn-detail, .popup-btn-list {
+          touch-action: manipulation !important;
+          user-select: none !important;
+          pointer-events: auto !important;
+        }
+        .popup-btn-detail:active, .popup-btn-list:active {
+          transform: scale(0.95) !important;
         }
       `}</style>
     </div>
