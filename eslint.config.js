@@ -28,7 +28,7 @@ export default tseslint.config(
         "varsIgnorePattern": "^_" 
       }],
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/prefer-const": "error",
+      
       "no-console": ["warn", { "allow": ["warn", "error"] }],
       "prefer-const": "error",
       "no-var": "error",
