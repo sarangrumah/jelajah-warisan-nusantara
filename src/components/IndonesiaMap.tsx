@@ -239,7 +239,7 @@ const IndonesiaMap = () => {
         icon: createCustomIcon(location),
       }).addTo(map.current!);
 
-      // Create popup content
+      // Create popup content with better button handling
       const popupContent = `
         <div style="padding: 16px; min-width: 280px; max-width: 320px;">
           <div style="margin-bottom: 12px;">
@@ -266,16 +266,48 @@ const IndonesiaMap = () => {
               </div>
             ` : ''}
           </div>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 8px; position: relative; z-index: 1000;">
             <button 
-              onclick="window.handleViewDetails('${location.id}', '${location.type}')"
-              style="flex: 1; background-color: #3b82f6; color: white; padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;"
+              class="popup-btn-detail"
+              data-id="${location.id}"
+              data-type="${location.type}"
+              style="
+                flex: 1; 
+                background-color: #3b82f6; 
+                color: white; 
+                padding: 10px 12px; 
+                border: none; 
+                border-radius: 6px; 
+                font-size: 12px; 
+                cursor: pointer; 
+                font-weight: 500;
+                transition: background-color 0.2s ease;
+                pointer-events: auto;
+              "
+              onmouseover="this.style.backgroundColor='#2563eb'"
+              onmouseout="this.style.backgroundColor='#3b82f6'"
             >
               Lihat Detail
             </button>
             <button 
-              onclick="window.handleShowInList('${location.region}', '${location.type}')"
-              style="flex: 1; background-color: #10b981; color: white; padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;"
+              class="popup-btn-list"
+              data-region="${location.region}"
+              data-type="${location.type}"
+              style="
+                flex: 1; 
+                background-color: #10b981; 
+                color: white; 
+                padding: 10px 12px; 
+                border: none; 
+                border-radius: 6px; 
+                font-size: 12px; 
+                cursor: pointer; 
+                font-weight: 500;
+                transition: background-color 0.2s ease;
+                pointer-events: auto;
+              "
+              onmouseover="this.style.backgroundColor='#059669'"
+              onmouseout="this.style.backgroundColor='#10b981'"
             >
               Lihat Daftar
             </button>
@@ -291,6 +323,44 @@ const IndonesiaMap = () => {
         maxWidth: 320
       });
 
+      // Add click event listeners after popup opens
+      marker.on('popupopen', () => {
+        const popup = marker.getPopup();
+        if (popup && popup.getElement()) {
+          const popupElement = popup.getElement();
+          
+          // Add event listener for detail button
+          const detailBtn = popupElement.querySelector('.popup-btn-detail');
+          if (detailBtn) {
+            detailBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = (detailBtn as HTMLElement).dataset.id;
+              const type = (detailBtn as HTMLElement).dataset.type;
+              if (type === 'museum') {
+                navigate(`/museum/${id}`);
+              } else {
+                navigate(`/heritage/${id}`);
+              }
+            });
+          }
+          
+          // Add event listener for list button
+          const listBtn = popupElement.querySelector('.popup-btn-list');
+          if (listBtn) {
+            listBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const region = (listBtn as HTMLElement).dataset.region;
+              const type = (listBtn as HTMLElement).dataset.type;
+              if (type === 'museum') {
+                navigate(`/museum?region=${region}`);
+              } else {
+                navigate(`/heritage?region=${region}`);
+              }
+            });
+          }
+        }
+      });
+
       // Add hover effects
       marker.on('mouseover', function() {
         this.getElement()?.style.setProperty('transform', 'scale(1.2)');
@@ -300,23 +370,6 @@ const IndonesiaMap = () => {
         this.getElement()?.style.setProperty('transform', 'scale(1)');
       });
     });
-
-    // Add global handlers for popup buttons
-    (window as any).handleViewDetails = (id: string, type: string) => {
-      if (type === 'museum') {
-        navigate(`/museum/${id}`);
-      } else {
-        navigate(`/heritage/${id}`);
-      }
-    };
-
-    (window as any).handleShowInList = (region: string, type: string) => {
-      if (type === 'museum') {
-        navigate(`/museum?region=${region}`);
-      } else {
-        navigate(`/heritage?region=${region}`);
-      }
-    };
 
   }, [filteredLocations, navigate]);
 
