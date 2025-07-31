@@ -5,60 +5,148 @@ import { Button } from '@/components/ui/button';
 const InternshipSection = () => {
   const internshipPrograms = [
     {
-      title: 'Magang Konservasi',
+      id: 'konservasi',
+      title: 'Magang Konservasi & Restorasi',
       department: 'Divisi Konservasi & Restorasi',
       duration: '3-6 bulan',
       slots: 5,
+      location: 'Jakarta Pusat',
       requirements: [
-        'Mahasiswa D3/S1 Arkeologi, Sejarah, atau bidang terkait',
-        'Semester 5 ke atas',
-        'IPK minimal 3.0',
-        'Memiliki minat pada konservasi budaya'
+        'Mahasiswa D3/S1 Arkeologi, Sejarah, Kimia, atau bidang terkait',
+        'Semester 5 ke atas dengan IPK minimal 3.0',
+        'Memiliki minat pada konservasi budaya',
+        'Tidak takut bekerja dengan bahan kimia (dengan APD)',
+        'Teliti dan sabar dalam bekerja dengan artefak'
       ],
-      description: 'Program magang untuk mempelajari teknik konservasi dan restorasi artefak budaya serta manajemen koleksi museum.',
-      deadline: '15 Februari 2024'
+      description: 'Program magang untuk mempelajari teknik konservasi dan restorasi artefak budaya, manajemen koleksi museum, serta dokumentasi kondisi benda cagar budaya.',
+      responsibilities: [
+        'Membantu proses konservasi artefak di laboratorium',
+        'Dokumentasi kondisi sebelum dan sesudah konservasi',
+        'Belajar teknik pembersihan dan stabilisasi artefak',
+        'Membantu pengelolaan database koleksi'
+      ],
+      deadline: '15 Februari 2024',
+      supervisor: 'Dr. Sari Yuliati, M.Si. (Konservator Senior)'
     },
     {
-      title: 'Magang Digital Heritage',
+      id: 'digital-heritage',
+      title: 'Magang Digital Heritage & IT',
       department: 'Divisi Teknologi Informasi',
       duration: '4-6 bulan',
       slots: 3,
+      location: 'Jakarta Pusat (Hybrid)',
       requirements: [
         'Mahasiswa S1 Teknik Informatika, Sistem Informasi, atau DKV',
-        'Semester 6 ke atas',
-        'IPK minimal 3.2',
-        'Menguasai software desain/pemrograman'
+        'Semester 6 ke atas dengan IPK minimal 3.2',
+        'Menguasai bahasa pemrograman (Python, JavaScript, atau PHP)',
+        'Familiar dengan database dan web development',
+        'Portfolio projek teknologi (wajib)'
       ],
-      description: 'Program magang untuk mengembangkan sistem digitalisasi warisan budaya dan platform teknologi museum.',
-      deadline: '20 Februari 2024'
+      description: 'Program magang untuk mengembangkan sistem digitalisasi warisan budaya, platform virtual museum, dan aplikasi teknologi untuk pelestarian.',
+      responsibilities: [
+        'Pengembangan sistem informasi museum',
+        'Digitalisasi koleksi dengan teknologi 3D scanning',
+        'Pembuatan virtual tour dan AR/VR experiences',
+        'Maintenance website dan aplikasi mobile'
+      ],
+      deadline: '20 Februari 2024',
+      supervisor: 'Budi Santoso, S.Kom, M.T. (IT Manager)'
     },
     {
-      title: 'Magang Penelitian',
+      id: 'penelitian',
+      title: 'Magang Penelitian & Dokumentasi',
       department: 'Divisi Penelitian & Pengembangan',
       duration: '6 bulan',
       slots: 4,
+      location: 'Jakarta Pusat + Site visits',
       requirements: [
         'Mahasiswa S1/S2 Arkeologi, Antropologi, atau Sejarah',
-        'Sedang mengerjakan tugas akhir',
+        'Sedang mengerjakan tugas akhir dengan topik relevan',
         'IPK minimal 3.25',
-        'Proposal penelitian yang relevan'
+        'Proposal penelitian yang sudah disetujui dosen pembimbing',
+        'Kemampuan analisis dan penulisan ilmiah yang baik'
       ],
-      description: 'Program magang untuk melakukan penelitian ilmiah terkait warisan budaya Indonesia.',
-      deadline: '28 Februari 2024'
+      description: 'Program magang untuk melakukan penelitian ilmiah terkait warisan budaya Indonesia, publikasi jurnal, dan dokumentasi temuan arkeologi.',
+      responsibilities: [
+        'Penelitian koleksi museum dan situs cagar budaya',
+        'Analisis data arkeologi dan historis',
+        'Penulisan laporan penelitian dan artikel ilmiah',
+        'Presentasi hasil penelitian di seminar internal'
+      ],
+      deadline: '28 Februari 2024',
+      supervisor: 'Prof. Dr. Agus Aris Munandar (Peneliti Senior)'
     },
     {
+      id: 'komunikasi',
       title: 'Magang Komunikasi & Media',
       department: 'Divisi Humas & Komunikasi',
       duration: '3-4 bulan',
       slots: 2,
+      location: 'Jakarta Pusat',
       requirements: [
-        'Mahasiswa Ilmu Komunikasi, Jurnalistik, atau PR',
-        'Semester 5 ke atas',
-        'IPK minimal 3.0',
-        'Portfolio karya komunikasi'
+        'Mahasiswa Ilmu Komunikasi, Jurnalistik, atau Public Relations',
+        'Semester 5 ke atas dengan IPK minimal 3.0',
+        'Portfolio karya komunikasi (artikel, video, desain)',
+        'Kemampuan menulis dan editing yang baik',
+        'Familiar dengan media sosial dan content creation'
       ],
-      description: 'Program magang untuk mengelola komunikasi publik, media sosial, dan publikasi institusi.',
-      deadline: '10 Maret 2024'
+      description: 'Program magang untuk mengelola komunikasi publik, media sosial, publikasi institusi, dan event management.',
+      responsibilities: [
+        'Pengelolaan konten media sosial (@museumcagarbudaya)',
+        'Penulisan press release dan artikel publikasi',
+        'Dokumentasi acara dan kegiatan museum',
+        'Koordinasi dengan media dan influencer'
+      ],
+      deadline: '10 Maret 2024',
+      supervisor: 'Maya Sari, S.Sos, M.I.Kom (Head of Communications)'
+    },
+    {
+      id: 'edukasi',
+      title: 'Magang Program Edukasi',
+      department: 'Divisi Edukasi & Pengunjung',
+      duration: '4-5 bulan',
+      slots: 3,
+      location: 'Jakarta Pusat + Museum sites',
+      requirements: [
+        'Mahasiswa Pendidikan, Psikologi, atau bidang terkait',
+        'Semester 5 ke atas dengan IPK minimal 3.0',
+        'Pengalaman mengajar atau public speaking',
+        'Kreatif dalam mengembangkan materi edukasi',
+        'Suka berinteraksi dengan anak-anak dan dewasa'
+      ],
+      description: 'Program magang untuk mengembangkan program edukasi museum, workshop, dan kegiatan pembelajaran untuk berbagai usia.',
+      responsibilities: [
+        'Pengembangan materi edukasi interaktif',
+        'Memandu tur edukasi untuk sekolah dan grup',
+        'Pembuatan worksheet dan aktivitas pembelajaran',
+        'Evaluasi efektivitas program edukasi'
+      ],
+      deadline: '5 Maret 2024',
+      supervisor: 'Rina Handayani, S.Pd, M.Ed (Education Manager)'
+    },
+    {
+      id: 'kuratorial',
+      title: 'Magang Kuratorial & Pameran',
+      department: 'Divisi Kuratorial',
+      duration: '5-6 bulan',
+      slots: 2,
+      location: 'Jakarta Pusat + Gallery spaces',
+      requirements: [
+        'Mahasiswa S1 Seni Rupa, Desain, Arkeologi, atau Sejarah Seni',
+        'Semester 6 ke atas dengan IPK minimal 3.3',
+        'Portfolio desain atau karya kuratorial',
+        'Pemahaman teori kuratorial dan exhibition design',
+        'Kemampuan riset dan presentasi yang baik'
+      ],
+      description: 'Program magang untuk belajar kuratorial pameran, exhibition design, dan manajemen galeri museum.',
+      responsibilities: [
+        'Riset untuk pameran temporer dan permanent',
+        'Membantu perencanaan layout dan display pameran',
+        'Penulisan label dan katalog pameran',
+        'Koordinasi dengan seniman dan peminjam koleksi'
+      ],
+      deadline: '25 Februari 2024',
+      supervisor: 'Dr. Farah Wardani, M.A. (Chief Curator)'
     }
   ];
 
@@ -109,21 +197,49 @@ const InternshipSection = () => {
                     <span>{program.duration}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <Users size={16} className="text-primary" />
-                    <span>{program.slots} posisi tersedia</span>
+                    <MapPin size={16} className="text-primary" />
+                    <span>{program.location}</span>
                   </div>
                 </div>
 
                 <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
                   <ul className="space-y-1">
-                    {program.requirements.map((req, reqIndex) => (
+                    {program.requirements.slice(0, 3).map((req, reqIndex) => (
                       <li key={reqIndex} className="text-sm text-muted-foreground flex items-start gap-2">
                         <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                         {req}
                       </li>
                     ))}
+                    {program.requirements.length > 3 && (
+                      <li className="text-xs text-muted-foreground/70 italic">
+                        +{program.requirements.length - 3} persyaratan lainnya
+                      </li>
+                    )}
                   </ul>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
+                  <ul className="space-y-1">
+                    {program.responsibilities.slice(0, 2).map((resp, respIndex) => (
+                      <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        {resp}
+                      </li>
+                    ))}
+                    {program.responsibilities.length > 2 && (
+                      <li className="text-xs text-muted-foreground/70 italic">
+                        +{program.responsibilities.length - 2} tanggung jawab lainnya
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="border-t border-border pt-3 mb-4">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Supervisor:</strong> {program.supervisor}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between">
