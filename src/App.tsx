@@ -18,6 +18,7 @@ import MuseumDetail from "./pages/MuseumDetail";
 import CollectionDetail from "./pages/CollectionDetail";
 import HeritageDetail from "./pages/HeritageDetail";
 import EventDetail from "./pages/EventDetail";
+import NewsDetail from "./pages/NewsDetail";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/collection" element={<Collection />} />
           <Route path="/collection/:id" element={<CollectionDetail />} />
           <Route path="/event/:id" element={<EventDetail />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

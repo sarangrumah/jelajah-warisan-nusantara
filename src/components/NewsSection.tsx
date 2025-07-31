@@ -1,5 +1,6 @@
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 
 const NewsSection = () => {
   const news = [
@@ -77,10 +78,10 @@ const NewsSection = () => {
                     <span>{article.author}</span>
                   </div>
                 </div>
-                <button className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+                <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
                   Baca Selengkapnya
                   <ArrowRight size={16} />
-                </button>
+                </Link>
               </CardContent>
             </Card>
           ))}

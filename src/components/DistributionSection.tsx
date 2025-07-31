@@ -1,5 +1,6 @@
 import { MapPin, Building, Landmark } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import IndonesiaMap from './IndonesiaMap';
 
 const DistributionSection = () => {
   const regions = [
@@ -56,20 +57,7 @@ const DistributionSection = () => {
         </div>
 
         <div className="text-center scroll-reveal">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <MapPin size={32} className="text-primary" />
-              <h3 className="text-2xl font-bold text-foreground">
-                Peta Interaktif
-              </h3>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              Jelajahi lokasi museum dan cagar budaya di seluruh Indonesia melalui peta interaktif kami.
-            </p>
-            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              Buka Peta Interaktif
-            </button>
-          </div>
+          <IndonesiaMap />
         </div>
       </div>
     </section>
