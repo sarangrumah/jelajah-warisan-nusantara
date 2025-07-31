@@ -84,6 +84,24 @@ const resources = {
         manage: "Manage",
         viewAgenda: "View Agenda"
       },
+      // Agenda Section
+      agenda: {
+        title: "Agenda & Events",
+        subtitle: "Follow exciting activities from museums and cultural heritage sites throughout Indonesia"
+      },
+      // Footer translations
+      footer: {
+        orgName: "Museum and Cultural Heritage",
+        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
+        phone: "+62 21 1234 5678",
+        email: "info@museumbudaya.go.id",
+        quickLinks: "Quick Links",
+        socialMedia: "Social Media",
+        copyright: "© 2024 Museum and Cultural Heritage. All Rights Reserved.",
+        privacy: "Privacy Policy",
+        terms: "Terms & Conditions",
+        sitemap: "Sitemap"
+      },
       // About Us sections
       about: {
         companyProfile: {
@@ -449,6 +467,24 @@ const resources = {
         },
         manage: "Kelola",
         viewAgenda: "Lihat Agenda"
+      },
+      // Agenda Section
+      agenda: {
+        title: "Agenda & Event",
+        subtitle: "Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia"
+      },
+      // Footer translations
+      footer: {
+        orgName: "Museum dan Cagar Budaya",
+        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
+        phone: "+62 21 1234 5678",
+        email: "info@museumbudaya.go.id",
+        quickLinks: "Tautan Cepat",
+        socialMedia: "Media Sosial",
+        copyright: "© 2024 Museum dan Cagar Budaya. Hak Cipta Dilindungi.",
+        privacy: "Kebijakan Privasi",
+        terms: "Syarat & Ketentuan",
+        sitemap: "Peta Situs"
       },
       // About Us sections
       about: {

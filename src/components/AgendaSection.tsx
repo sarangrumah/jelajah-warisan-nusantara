@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const AgendaSection = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
 
   const categories = [
@@ -91,10 +93,10 @@ const AgendaSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Agenda & Event
+            {t('agenda.title', 'Agenda & Event')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia
+            {t('agenda.subtitle', 'Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia')}
           </p>
         </div>
 

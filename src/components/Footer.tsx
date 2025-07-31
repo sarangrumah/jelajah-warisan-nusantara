@@ -1,6 +1,8 @@
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook' },
     { icon: Instagram, href: '#', label: 'Instagram' },
@@ -25,7 +27,7 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-heritage-gradient">
-                  Museum dan Cagar Budaya
+                  {t('footer.orgName')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Republik Indonesia
@@ -43,16 +45,16 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">+62 21 1234 5678</span>
+                <span className="text-sm text-muted-foreground">{t('footer.phone')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">info@museumbudaya.go.id</span>
+                <span className="text-sm text-muted-foreground">{t('footer.email')}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={16} className="text-primary mt-0.5" />
                 <span className="text-sm text-muted-foreground">
-                  Jl. Medan Merdeka Barat No. 12, Jakarta Pusat 10110
+                  {t('footer.address')}
                 </span>
               </div>
             </div>
@@ -60,7 +62,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">Tautan Cepat</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('footer.quickLinks')}</h4>
             <div className="space-y-2">
               {quickLinks.map((link) => (
                 <a
@@ -76,7 +78,7 @@ const Footer = () => {
 
           {/* Social Media */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">Ikuti Kami</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('footer.socialMedia')}</h4>
             <div className="flex space-x-3">
               {socialLinks.map((social) => (
                 <a
@@ -95,17 +97,17 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © 2024 Museum dan Cagar Budaya. Hak Cipta Dilindungi.
+            {t('footer.copyright')}
           </p>
           <div className="flex space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              Kebijakan Privasi
+              {t('footer.privacy')}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              Syarat & Ketentuan
+              {t('footer.terms')}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              Sitemap
+              {t('footer.sitemap')}
             </a>
           </div>
         </div>
