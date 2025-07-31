@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBorobudur from '@/assets/hero-borobudur.jpg';
 import museumInterior from '@/assets/museum-interior.jpg';
@@ -86,12 +87,14 @@ const HeroSection = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                size="lg"
-                className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
-              >
-                {slides[currentSlide].cta}
-              </Button>
+              <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/museum"}>
+                <Button
+                  size="lg"
+                  className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
+                >
+                  {slides[currentSlide].cta}
+                </Button>
+              </Link>
               
               <Button
                 variant="outline"
