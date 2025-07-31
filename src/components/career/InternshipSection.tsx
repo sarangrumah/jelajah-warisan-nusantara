@@ -1,8 +1,73 @@
-import { GraduationCap, Clock, MapPin, Users, FileText, Send } from 'lucide-react';
+import { GraduationCap, Clock, MapPin, Users, FileText, Send, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+
+const registrationSchema = z.object({
+  fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
+  email: z.string().email('Email tidak valid'),
+  phone: z.string().min(10, 'Nomor telepon minimal 10 digit'),
+  university: z.string().min(2, 'Nama universitas harus diisi'),
+  major: z.string().min(2, 'Program studi harus diisi'),
+  semester: z.string().min(1, 'Semester harus diisi'),
+  gpa: z.string().min(1, 'IPK harus diisi'),
+  internshipProgram: z.string().min(1, 'Program magang harus dipilih'),
+  motivation: z.string().min(50, 'Motivasi minimal 50 karakter'),
+  cv: z.instanceof(File, { message: 'CV harus diupload' }),
+  transcript: z.instanceof(File, { message: 'Transkrip nilai harus diupload' }),
+  coverLetter: z.instanceof(File).optional(),
+});
+
+type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 const InternshipSection = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+  
+  const form = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phone: '',
+      university: '',
+      major: '',
+      semester: '',
+      gpa: '',
+      internshipProgram: '',
+      motivation: '',
+    }
+  });
+
+  const onSubmit = async (data: RegistrationFormData) => {
+    try {
+      // Here you would typically upload files and submit form data
+      console.log('Form data:', data);
+      
+      toast({
+        title: "Pendaftaran Berhasil!",
+        description: "Aplikasi magang Anda telah dikirim. Tim kami akan menghubungi Anda dalam 1-2 minggu.",
+      });
+      
+      form.reset();
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Gagal mengirim aplikasi. Silakan coba lagi.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const internshipPrograms = [
     {
       id: 'konservasi',
@@ -172,92 +237,8 @@ const InternshipSection = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 mb-16">
-          {internshipPrograms.map((program, index) => (
-            <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-xl mb-2">{program.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{program.department}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {program.slots} posisi
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">{program.description}</p>
-                
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock size={16} className="text-primary" />
-                    <span>{program.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin size={16} className="text-primary" />
-                    <span>{program.location}</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
-                  <ul className="space-y-1">
-                    {program.requirements.slice(0, 3).map((req, reqIndex) => (
-                      <li key={reqIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                        {req}
-                      </li>
-                    ))}
-                    {program.requirements.length > 3 && (
-                      <li className="text-xs text-muted-foreground/70 italic">
-                        +{program.requirements.length - 3} persyaratan lainnya
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
-                  <ul className="space-y-1">
-                    {program.responsibilities.slice(0, 2).map((resp, respIndex) => (
-                      <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                        {resp}
-                      </li>
-                    ))}
-                    {program.responsibilities.length > 2 && (
-                      <li className="text-xs text-muted-foreground/70 italic">
-                        +{program.responsibilities.length - 2} tanggung jawab lainnya
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                <div className="border-t border-border pt-3 mb-4">
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Supervisor:</strong> {program.supervisor}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Deadline: </span>
-                    <span className="font-semibold text-primary">{program.deadline}</span>
-                  </div>
-                  <Button size="sm">
-                    <FileText size={16} className="mr-2" />
-                    Daftar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-12">
+        {/* Benefits and Registration Process Section */}
+        <div className="grid lg:grid-cols-2 gap-12 mb-16">
           <div>
             <Card className="heritage-glow">
               <CardHeader>
@@ -340,13 +321,352 @@ const InternshipSection = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-6">
-                  <Send size={16} className="mr-2" />
-                  Mulai Pendaftaran
-                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full mt-6">
+                      <Send size={16} className="mr-2" />
+                      Mulai Pendaftaran
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Formulir Pendaftaran Magang</DialogTitle>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="fullName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nama Lengkap *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Masukkan nama lengkap" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Email *</FormLabel>
+                                <FormControl>
+                                  <Input type="email" placeholder="email@example.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nomor Telepon *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="08XXXXXXXXX" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="university"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Universitas *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Nama universitas" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="major"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Program Studi *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Jurusan" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="semester"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Semester *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="5" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="gpa"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>IPK *</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="3.50" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name="internshipProgram"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Program Magang *</FormLabel>
+                              <FormControl>
+                                <select {...field} className="w-full p-2 border border-input rounded-md">
+                                  <option value="">Pilih program magang</option>
+                                  {internshipPrograms.map((program) => (
+                                    <option key={program.id} value={program.id}>
+                                      {program.title}
+                                    </option>
+                                  ))}
+                                </select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="motivation"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Motivasi & Tujuan *</FormLabel>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="Jelaskan motivasi dan tujuan Anda mengikuti program magang ini..."
+                                  className="min-h-[100px]"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Dokumen yang Diperlukan</h4>
+                          
+                          <FormField
+                            control={form.control}
+                            name="cv"
+                            render={({ field: { onChange, value, ...field } }) => (
+                              <FormItem>
+                                <FormLabel>CV/Resume *</FormLabel>
+                                <FormControl>
+                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.doc,.docx"
+                                      onChange={(e) => onChange(e.target.files?.[0])}
+                                      className="w-full"
+                                      {...field}
+                                    />
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                      Format: PDF, DOC, DOCX (Max 5MB)
+                                    </p>
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="transcript"
+                            render={({ field: { onChange, value, ...field } }) => (
+                              <FormItem>
+                                <FormLabel>Transkrip Nilai *</FormLabel>
+                                <FormControl>
+                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      onChange={(e) => onChange(e.target.files?.[0])}
+                                      className="w-full"
+                                      {...field}
+                                    />
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                      Format: PDF, JPG, PNG (Max 5MB)
+                                    </p>
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="coverLetter"
+                            render={({ field: { onChange, value, ...field } }) => (
+                              <FormItem>
+                                <FormLabel>Surat Pengantar (Opsional)</FormLabel>
+                                <FormControl>
+                                  <div className="border-2 border-dashed border-border rounded-lg p-4">
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.doc,.docx"
+                                      onChange={(e) => onChange(e.target.files?.[0])}
+                                      className="w-full"
+                                      {...field}
+                                    />
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                      Format: PDF, DOC, DOCX (Max 5MB)
+                                    </p>
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                            className="flex-1"
+                          >
+                            Batal
+                          </Button>
+                          <Button type="submit" className="flex-1">
+                            <Upload size={16} className="mr-2" />
+                            Kirim Aplikasi
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Internship Programs */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-16">
+          {internshipPrograms.map((program, index) => (
+            <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-xl mb-2">{program.title}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{program.department}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                      {program.slots} posisi
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{program.description}</p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock size={16} className="text-primary" />
+                    <span>{program.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin size={16} className="text-primary" />
+                    <span>{program.location}</span>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
+                  <ul className="space-y-1">
+                    {program.requirements.slice(0, 3).map((req, reqIndex) => (
+                      <li key={reqIndex} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        {req}
+                      </li>
+                    ))}
+                    {program.requirements.length > 3 && (
+                      <li className="text-xs text-muted-foreground/70 italic">
+                        +{program.requirements.length - 3} persyaratan lainnya
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
+                  <ul className="space-y-1">
+                    {program.responsibilities.slice(0, 2).map((resp, respIndex) => (
+                      <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        {resp}
+                      </li>
+                    ))}
+                    {program.responsibilities.length > 2 && (
+                      <li className="text-xs text-muted-foreground/70 italic">
+                        +{program.responsibilities.length - 2} tanggung jawab lainnya
+                      </li>
+                    )}
+                  </ul>
+                </div>
+
+                <div className="border-t border-border pt-3 mb-4">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Supervisor:</strong> {program.supervisor}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Deadline: </span>
+                    <span className="font-semibold text-primary">{program.deadline}</span>
+                  </div>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" onClick={() => form.setValue('internshipProgram', program.id)}>
+                        <FileText size={16} className="mr-2" />
+                        Daftar
+                      </Button>
+                    </DialogTrigger>
+                  </Dialog>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="mt-16 text-center">
