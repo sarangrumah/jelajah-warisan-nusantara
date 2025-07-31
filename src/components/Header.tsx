@@ -33,6 +33,7 @@ const Header = () => {
       name: t('nav.tentangKami'), 
       href: '/tentang-kami',
       subItems: [
+        { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },

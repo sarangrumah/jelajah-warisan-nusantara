@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Beranda from "./pages/Beranda";
 import Agenda from "./pages/Agenda";
+import CompanyProfile from "./pages/CompanyProfile";
 import TentangKami from "./pages/TentangKami";
 import MediaPublikasi from "./pages/MediaPublikasi";
 import HubungiKami from "./pages/HubungiKami";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/beranda" element={<Beranda />} />
           <Route path="/agenda" element={<Agenda />} />
+          <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
           <Route path="/tentang-kami" element={<TentangKami />} />
           <Route path="/media-publikasi" element={<MediaPublikasi />} />
           <Route path="/hubungi-kami" element={<HubungiKami />} />
