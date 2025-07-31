@@ -26,11 +26,6 @@ const AdminDashboard = () => {
   const [userRole, setUserRole] = useState<string>('viewer');
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Redirect if not authenticated
-  if (!user && !loading) {
-    return <Navigate to="/auth" replace />;
-  }
-
   useEffect(() => {
     if (user) {
       // Fetch user role
@@ -49,6 +44,11 @@ const AdminDashboard = () => {
       fetchUserRole();
     }
   }, [user]);
+
+  // Redirect if not authenticated
+  if (!user && !loading) {
+    return <Navigate to="/auth" replace />;
+  }
 
   const handleSignOut = async () => {
     await signOut();
