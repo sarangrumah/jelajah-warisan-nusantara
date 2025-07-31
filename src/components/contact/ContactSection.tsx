@@ -132,7 +132,7 @@ const ContactSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">
+        <div className="text-center mb-16">{/* removed scroll-reveal for testing */}
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
             Hubungi Kami
           </h2>
@@ -143,7 +143,7 @@ const ContactSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
-          <div className="scroll-reveal">
+          <div>
             <h3 className="text-2xl font-bold mb-8">Informasi Kontak</h3>
             <div className="grid md:grid-cols-2 gap-6">
               {contactInfo.map((info, index) => (
@@ -187,7 +187,7 @@ const ContactSection = () => {
             </div>
           </div>
 
-          <div className="scroll-reveal">
+          <div>
             <Card className="heritage-glow">
               <CardHeader>
                 <CardTitle className="text-2xl">Kirim Pesan</CardTitle>
@@ -250,7 +250,7 @@ const ContactSection = () => {
           </div>
         </div>
         {/* FAQ Section */}
-        <div className="mb-16 scroll-reveal">
+        <div className="mb-16">
           <Card className="heritage-glow">
             <CardHeader>
               <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
@@ -280,7 +280,7 @@ const ContactSection = () => {
           </Card>
         </div>
 
-        <div className="scroll-reveal">
+        <div>
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle className="text-2xl text-center">Lokasi Kantor</CardTitle>

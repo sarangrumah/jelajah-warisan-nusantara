@@ -162,7 +162,7 @@ const InternshipSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">
+        <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
             Program Magang
           </h2>
@@ -174,7 +174,7 @@ const InternshipSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 mb-16">
           {internshipPrograms.map((program, index) => (
-            <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+            <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
@@ -258,7 +258,7 @@ const InternshipSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          <div className="scroll-reveal">
+          <div>
             <Card className="heritage-glow">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
@@ -279,7 +279,7 @@ const InternshipSection = () => {
             </Card>
           </div>
 
-          <div className="scroll-reveal">
+          <div>
             <Card className="heritage-glow">
               <CardHeader>
                 <CardTitle className="text-2xl">Proses Pendaftaran</CardTitle>
@@ -349,7 +349,7 @@ const InternshipSection = () => {
           </div>
         </div>
 
-        <div className="mt-16 text-center scroll-reveal">
+        <div className="mt-16 text-center">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               Ada Pertanyaan?
