@@ -16,8 +16,13 @@ import {
   BarChart3
 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import ContentManagement from '@/components/admin/ContentManagement';
+import BannerManagement from '@/components/admin/BannerManagement';
+import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
+import MuseumManagement from '@/components/admin/MuseumManagement';
 import AgendaManagement from '@/components/admin/AgendaManagement';
+import MediaManagement from '@/components/admin/MediaManagement';
+import FAQManagement from '@/components/admin/FAQManagement';
+import CareerManagement from '@/components/admin/CareerManagement';
 import UserManagement from '@/components/admin/UserManagement';
 
 const AdminDashboard = () => {
@@ -113,21 +118,41 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 lg:grid-cols-4 mb-8">
+          <TabsList className="grid grid-cols-2 lg:grid-cols-5 xl:grid-cols-9 mb-8">
             <TabsTrigger value="overview">
               <BarChart3 className="w-4 h-4 mr-2" />
               Overview
             </TabsTrigger>
-            <TabsTrigger value="content" disabled={!canEdit}>
+            <TabsTrigger value="banner" disabled={!canEdit}>
               <FileText className="w-4 h-4 mr-2" />
-              Konten
+              Banner
+            </TabsTrigger>
+            <TabsTrigger value="company" disabled={!canEdit}>
+              <Settings className="w-4 h-4 mr-2" />
+              Profil
+            </TabsTrigger>
+            <TabsTrigger value="museum" disabled={!canEdit}>
+              <Settings className="w-4 h-4 mr-2" />
+              Museum
             </TabsTrigger>
             <TabsTrigger value="agenda" disabled={!canEdit}>
               <Calendar className="w-4 h-4 mr-2" />
               Agenda
             </TabsTrigger>
-            <TabsTrigger value="users" disabled={!isAdmin}>
+            <TabsTrigger value="media" disabled={!canEdit}>
+              <FileText className="w-4 h-4 mr-2" />
+              Media
+            </TabsTrigger>
+            <TabsTrigger value="faq" disabled={!canEdit}>
+              <Settings className="w-4 h-4 mr-2" />
+              FAQ
+            </TabsTrigger>
+            <TabsTrigger value="career" disabled={!canEdit}>
               <Users className="w-4 h-4 mr-2" />
+              Karir
+            </TabsTrigger>
+            <TabsTrigger value="users" disabled={!isAdmin}>
+              <Shield className="w-4 h-4 mr-2" />
               Users
             </TabsTrigger>
           </TabsList>
@@ -196,12 +221,32 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="content">
-            <ContentManagement />
+          <TabsContent value="banner">
+            <BannerManagement />
+          </TabsContent>
+
+          <TabsContent value="company">
+            <CompanyProfileManagement />
+          </TabsContent>
+
+          <TabsContent value="museum">
+            <MuseumManagement />
           </TabsContent>
 
           <TabsContent value="agenda">
             <AgendaManagement />
+          </TabsContent>
+
+          <TabsContent value="media">
+            <MediaManagement />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <FAQManagement />
+          </TabsContent>
+
+          <TabsContent value="career">
+            <CareerManagement />
           </TabsContent>
 
           <TabsContent value="users">
