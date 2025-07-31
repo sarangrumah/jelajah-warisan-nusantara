@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,14 +18,14 @@ const Header = () => {
   }, []);
 
   const navigationItems = [
-    { name: 'Beranda', href: '#beranda' },
-    { name: 'Agenda', href: '#agenda' },
-    { name: 'Tentang Kami', href: '#tentang' },
-    { name: 'Media & Publikasi', href: '#media' },
-    { name: 'Hubungi Kami', href: '#kontak' },
-    { name: 'Career', href: '#career' },
-    { name: 'PPID', href: '#ppid' },
-    { name: 'Admin', href: '/auth' },
+    { name: 'Beranda', href: '/beranda' },
+    { name: 'Agenda', href: '/agenda' },
+    { name: 'Tentang Kami', href: '/tentang-kami' },
+    { name: 'Media & Publikasi', href: '/media-publikasi' },
+    { name: 'Hubungi Kami', href: '/hubungi-kami' },
+    { name: 'Career', href: '/career' },
+    { name: 'PPID', href: '/ppid' },
+    { name: 'Admin', href: '/admin' },
   ];
 
   return (
@@ -56,13 +58,17 @@ const Header = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
               {navigationItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
-                  className="text-foreground hover:text-primary transition-heritage font-medium"
+                  to={item.href}
+                  className={`transition-heritage font-medium ${
+                    location.pathname === item.href 
+                      ? 'text-primary border-b-2 border-primary' 
+                      : 'text-foreground hover:text-primary'
+                  }`}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -86,14 +92,18 @@ const Header = () => {
           <div className="fixed right-0 top-0 h-full w-64 bg-card border-l border-border p-6 mt-20">
             <nav className="space-y-4">
               {navigationItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
-                  className="block text-foreground hover:text-primary transition-heritage font-medium py-2"
+                  to={item.href}
+                  className={`block transition-heritage font-medium py-2 ${
+                    location.pathname === item.href 
+                      ? 'text-primary bg-primary/10' 
+                      : 'text-foreground hover:text-primary'
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
