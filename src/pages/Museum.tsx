@@ -20,34 +20,52 @@ const Museum = () => {
       title: 'Museum Nasional Indonesia',
       subtitle: 'Koleksi artefak budaya nusantara terlengkap',
       type: 'museum',
-      location: 'Jakarta',
+      location: 'Jakarta Pusat',
       image: '/src/assets/museum-interior.jpg',
       description: 'Museum terbesar di Indonesia dengan koleksi lebih dari 140.000 artefak'
     },
     {
       id: 2,
-      title: 'Candi Borobudur',
+      title: 'Galeri Nasional',
       subtitle: 'Warisan dunia UNESCO yang memukau',
-      type: 'heritage',
-      location: 'Yogyakarta',
+      type: 'museum',
+      location: 'Jakarta Pusat',
       image: '/src/assets/hero-borobudur.jpg',
       description: 'Candi Buddha terbesar di dunia yang dibangun pada abad ke-8'
     },
     {
       id: 3,
-      title: 'Museum Fatahillah',
+      title: 'Museum Basoeeki Abdullah',
       subtitle: 'Sejarah Jakarta dari masa ke masa',
       type: 'museum',
-      location: 'Jakarta',
+      location: 'Jakarta Selatan',
       image: '/src/assets/heritage-sites.jpg',
       description: 'Museum sejarah Jakarta yang berlokasi di Kota Tua'
     },
     {
       id: 4,
-      title: 'Candi Prambanan',
+      title: 'Museum Batik Indonesia',
       subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'heritage',
-      location: 'Yogyakarta',
+      type: 'museum',
+      location: 'Jakarta Timur',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 5,
+      title: 'Museum Kebangkitan Nasional',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 6,
+      title: 'Museum Sumpah Pemuda',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
       image: '/src/assets/heritage-sites.jpg',
       description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
     }
