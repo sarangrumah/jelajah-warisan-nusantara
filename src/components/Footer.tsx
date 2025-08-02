@@ -22,8 +22,9 @@ const Footer = () => {
           {/* Logo and Ministry Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">M</span>
+              <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+                {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
+                <img src="/src/assets/images/logo/MCB Logo_Putih.png" alt="Logo" className='w-[7rem] h-[5rem]x' />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-heritage-gradient">

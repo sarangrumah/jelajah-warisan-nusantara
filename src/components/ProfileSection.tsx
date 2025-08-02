@@ -1,15 +1,34 @@
 import { Users, Award, MapPin, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { DynamicComponent } from './dynamic-components';
+
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const stats = [
+  const [stats, setStats] = useState([]);
+  
+  const statsx = [
     { icon: Users, value: '500+', label: t('profile.stats.museums') },
     { icon: Award, value: '1,200+', label: t('profile.stats.heritage') },
     { icon: MapPin, value: '34', label: t('profile.stats.provinces') },
     { icon: Clock, value: '50+', label: t('profile.stats.experience') },
   ];
+
+  const getStats = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/stats');
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  useEffect(() => {
+    getStats();
+  }, []);
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -55,12 +74,13 @@ const ProfileSection = () => {
                 className="bg-card border border-border rounded-lg p-6 text-center heritage-glow hover:scale-105 transition-bounce"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <stat.icon size={32} className="text-primary mx-auto mb-4" />
+                {/* {<stat.icon size={32} className="text-primary mx-auto mb-4" />} */}
+                <DynamicComponent componentName={stat.icon} size={32} className="text-primary mx-auto mb-4" />
                 <div className="text-3xl font-bold text-heritage-gradient mb-2">
-                  {stat.value}
+                  {stat.value >= 50 ? `${stat.value}+` : stat.value}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {stat.label}
+                  {t(`profile.stats.${stat.label}`)}
                 </div>
               </div>
             ))}

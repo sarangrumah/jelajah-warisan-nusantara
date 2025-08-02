@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -10,11 +10,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Museum = () => {
+  const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
 
-  const museums = [
+  const museumsx = [
     {
       id: 1,
       title: 'Museum Nasional Indonesia',
@@ -52,6 +53,20 @@ const Museum = () => {
       description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
     }
   ];
+
+  const getMuseums = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/museums');
+      const data = await response.json();
+      setMuseums(data);
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  };
+
+  useEffect(() => {
+    getMuseums();
+  }, []);
 
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,11 +119,11 @@ const Museum = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMuseums.map((item) => (
-            <Link key={item.id} to={`/museum/${item.id}`}>
+            <Link key={item.museum_id} to={`/museum/${item.museum_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image}
+                    src={`/src/assets/images/museums/${item.image}`} // Replace with the actual image path for each museumitem.image}
                     alt={item.title}
                     className="w-full h-full object-cover"
                   />

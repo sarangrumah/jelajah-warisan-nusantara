@@ -1,11 +1,14 @@
 import { Building, Users, Target, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { DynamicComponent } from '../dynamic-components';
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
+  const [highlights, setHighlights] = useState([]);
   
-  const highlights = [
+  const highlightsx = [
     {
       icon: Building,
       title: t('about.companyProfile.highlights.institution.title'),
@@ -27,6 +30,20 @@ const CompanyProfile = () => {
       description: t('about.companyProfile.highlights.recognition.description')
     }
   ];
+
+  const getHighlights = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/highlights');
+      const data = await response.json();
+      setHighlights(data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getHighlights();
+  }, []);
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -73,12 +90,12 @@ const CompanyProfile = () => {
           {highlights.map((item, index) => (
             <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
               <CardHeader className="text-center">
-                <item.icon size={48} className="text-primary mx-auto mb-4" />
-                <CardTitle className="text-xl">{item.title}</CardTitle>
+                <DynamicComponent componentName={item.icon} size={48} className="text-primary mx-auto mb-4" />
+                <CardTitle className="text-xl">{t(`about.companyProfile.highlights.${item.title}`)}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center text-sm">
-                  {item.description}
+                  {t(`about.companyProfile.highlights.${item.description}`)}
                 </p>
               </CardContent>
             </Card>

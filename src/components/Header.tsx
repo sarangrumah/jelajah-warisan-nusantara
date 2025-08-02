@@ -58,8 +58,10 @@ const Header = () => {
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">M</span>
+              <div className="w-12x w-[5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+                {/* <span className="text-primary-foreground font-bold text-xl">
+                </span> */}
+                <img src="/src/assets/images/logo/MCB Logo_Putih.png" alt="Logo" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-heritage-gradient">
