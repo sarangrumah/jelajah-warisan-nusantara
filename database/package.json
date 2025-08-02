@@ -1,0 +1,17 @@
+{
+  "name": "database-migration",
+  "version": "1.0.0",
+  "description": "Database migration utilities for Heritage Museum",
+  "scripts": {
+    "export": "tsx export-data.ts",
+    "setup-local": "psql heritage_museum_db < schema.sql",
+    "import-data": "psql heritage_museum_db < exports/import_all_data.sql"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.53.0",
+    "tsx": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0"
+  }
+}
