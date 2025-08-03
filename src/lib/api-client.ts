@@ -139,7 +139,7 @@ class ApiClient {
   }
 
   // File upload
-  async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; path: string }>> {
+  async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; name: string; originalName: string; size: number; type: string }>> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('bucket', bucket);
@@ -153,13 +153,13 @@ class ApiClient {
         body: formData,
       });
 
-      const data = await response.json();
+      const responseData = await response.json();
 
       if (!response.ok) {
-        return { error: data.error || 'Upload failed' };
+        return { error: responseData.error || 'Upload failed' };
       }
 
-      return { data };
+      return { data: responseData.file };
     } catch (error) {
       return { error: 'Upload failed' };
     }

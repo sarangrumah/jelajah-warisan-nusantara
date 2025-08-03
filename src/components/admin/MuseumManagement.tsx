@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageUpload } from '@/components/ui/image-upload';
+import { GalleryUpload } from '@/components/ui/gallery-upload';
 
 const MuseumManagement = () => {
   const [museums, setMuseums] = useState<any[]>([]);
@@ -152,6 +154,7 @@ const MuseumManagement = () => {
       address: museum?.address || '',
       image_url: museum?.image_url || '',
       gallery_images: (museum?.gallery_images || []).join(', '),
+      gallery_images_array: museum?.gallery_images || [],
       latitude: museum?.latitude?.toString() || '',
       longitude: museum?.longitude?.toString() || '',
       opening_hours: museum?.opening_hours ? JSON.stringify(museum.opening_hours, null, 2) : '{}',
@@ -222,26 +225,24 @@ const MuseumManagement = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image_url">Main Image URL</Label>
-          <Input
-            id="image_url"
-            value={formData.image_url}
-            onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-            placeholder="https://example.com/image.jpg"
-          />
-        </div>
+        <ImageUpload
+          label="Main Image"
+          value={formData.image_url}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+          bucket="images"
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="gallery_images">Gallery Images (comma separated URLs)</Label>
-          <Textarea
-            id="gallery_images"
-            value={formData.gallery_images}
-            onChange={(e) => setFormData(prev => ({ ...prev, gallery_images: e.target.value }))}
-            placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-            rows={2}
-          />
-        </div>
+        <GalleryUpload
+          label="Gallery Images"
+          value={formData.gallery_images_array || []}
+          onChange={(urls) => setFormData(prev => ({ 
+            ...prev, 
+            gallery_images_array: urls,
+            gallery_images: urls.join(',')
+          }))}
+          bucket="images"
+          maxImages={8}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

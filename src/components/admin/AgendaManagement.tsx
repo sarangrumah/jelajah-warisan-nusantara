@@ -19,6 +19,7 @@ import {
   Save
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface AgendaItem {
   id: string;
@@ -286,18 +287,12 @@ const AgendaManagement = () => {
                   />
                 </div>
                 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="image_url" className="text-right">
-                    URL Gambar
-                  </Label>
-                  <Input
-                    id="image_url"
+                <div className="grid grid-cols-1 gap-4">
+                  <ImageUpload
+                    label="Event Image"
                     value={editingItem.image_url}
-                    onChange={(e) =>
-                      setEditingItem({ ...editingItem, image_url: e.target.value })
-                    }
-                    className="col-span-3"
-                    placeholder="https://example.com/image.jpg"
+                    onChange={(url) => setEditingItem({ ...editingItem, image_url: url })}
+                    bucket="images"
                   />
                 </div>
                 
