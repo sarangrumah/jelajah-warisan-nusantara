@@ -94,16 +94,21 @@ export const userService = {
   getAll: () => apiClient.getAll('users'),
   getById: (id: string) => apiClient.getById('users', id),
   updateRole: async (userId: string, role: string) => {
-    // First delete existing roles
-    await apiClient.delete('user_roles', userId);
+    // First delete existing roles for this user
+    try {
+      const existingRoles = await apiClient.getAll(`user_roles?user_id=${userId}`);
+      if (existingRoles.data && Array.isArray(existingRoles.data) && existingRoles.data.length > 0) {
+        for (const userRole of existingRoles.data) {
+          if (userRole && typeof userRole === 'object' && 'id' in userRole) {
+            await apiClient.delete('user_roles', userRole.id as string);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('No existing roles to delete:', error);
+    }
     // Then create new role
     return apiClient.create('user_roles', { user_id: userId, role });
   },
-  getProfiles: () => apiClient.getAll<{
-    user_id: string;
-    email?: string;
-    created_at: string;
-    display_name?: string;
-    roles?: string[];
-  }>('profiles'),
+  getProfiles: () => apiClient.getAll('profiles'),
 };
