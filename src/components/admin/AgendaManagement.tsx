@@ -222,7 +222,7 @@ const AgendaManagement = () => {
                     id="title"
                     value={editingItem.title}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, title: e.target.value })
+                      setEditingItem(prev => ({ ...prev, title: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -236,7 +236,7 @@ const AgendaManagement = () => {
                     id="description"
                     value={editingItem.description}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, description: e.target.value })
+                      setEditingItem(prev => ({ ...prev, description: e.target.value }))
                     }
                     className="col-span-3"
                     rows={3}
@@ -252,7 +252,7 @@ const AgendaManagement = () => {
                     type="date"
                     value={editingItem.event_date}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, event_date: e.target.value })
+                      setEditingItem(prev => ({ ...prev, event_date: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -267,7 +267,7 @@ const AgendaManagement = () => {
                     type="time"
                     value={editingItem.event_time}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, event_time: e.target.value })
+                      setEditingItem(prev => ({ ...prev, event_time: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -281,7 +281,7 @@ const AgendaManagement = () => {
                     id="location"
                     value={editingItem.location}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, location: e.target.value })
+                      setEditingItem(prev => ({ ...prev, location: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -291,7 +291,7 @@ const AgendaManagement = () => {
                   <ImageUpload
                     label="Event Image"
                     value={editingItem.image_url}
-                    onChange={(url) => setEditingItem({ ...editingItem, image_url: url })}
+                    onChange={(url) => setEditingItem(prev => ({ ...prev, image_url: url }))}
                     bucket="images"
                   />
                 </div>
@@ -304,7 +304,7 @@ const AgendaManagement = () => {
                     id="is_published"
                     checked={editingItem.is_published}
                     onCheckedChange={(checked) =>
-                      setEditingItem({ ...editingItem, is_published: checked })
+                      setEditingItem(prev => ({ ...prev, is_published: checked }))
                     }
                   />
                 </div>
