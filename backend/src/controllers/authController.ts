@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '../config/database';
 import { body, validationResult } from 'express-validator';
+import { AuthRequest } from '../middleware/auth';
 
 export const signUpValidation = [
   body('email').isEmail().normalizeEmail(),
@@ -179,6 +180,21 @@ export const getProfile = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getUserRoles = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    res.json({
+      roles: req.user.roles
+    });
+  } catch (error) {
+    console.error('Error fetching user roles:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

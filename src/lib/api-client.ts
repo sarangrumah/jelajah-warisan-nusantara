@@ -94,6 +94,10 @@ class ApiClient {
     return this.request<User>(`/api/auth/profile/${userId}`);
   }
 
+  async getCurrentUserRoles(): Promise<ApiResponse<string[]>> {
+    return this.request<string[]>('/api/auth/roles');
+  }
+
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem('auth_token', token);
