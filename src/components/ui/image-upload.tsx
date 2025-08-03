@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, X, Image, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Upload, X, Image, Loader2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
 
@@ -142,24 +143,44 @@ export const ImageUpload = ({
       >
         <CardContent className="p-6">
           {value && preview ? (
-            <div className="relative">
+            <div className="relative group">
               <img
                 src={value}
                 alt="Preview"
                 className="w-full h-32 object-cover rounded-md"
               />
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clearImage();
-                }}
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-3xl">
+                    <img
+                      src={value}
+                      alt="Full preview"
+                      className="w-full h-auto rounded-md"
+                    />
+                  </DialogContent>
+                </Dialog>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearImage();
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center">
