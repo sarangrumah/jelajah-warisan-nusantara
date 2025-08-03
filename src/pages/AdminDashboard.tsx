@@ -32,9 +32,12 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('👤 User object:', user);
+      console.log('🔐 User roles:', user.roles);
       // User roles are already included in the auth response
       // Get the primary role (first role if multiple)
       const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'viewer';
+      console.log('🎯 Primary role set to:', primaryRole);
       setUserRole(primaryRole);
     }
   }, [user]);
