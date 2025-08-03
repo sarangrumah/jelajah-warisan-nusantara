@@ -105,7 +105,10 @@ export const signIn = async (req: Request, res: Response) => {
     console.log('🔍 Querying user data for:', email);
     const userResult = await query(
       `SELECT u.id, u.email, u.password_hash, p.display_name,
-              COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), '{}') as roles
+              COALESCE(
+                array_remove(array_agg(ur.role), NULL), 
+                '{}'::app_role[]
+              ) as roles
        FROM users u
        LEFT JOIN profiles p ON u.id = p.user_id
        LEFT JOIN user_roles ur ON u.id = ur.user_id
@@ -160,7 +163,11 @@ export const getProfile = async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     const profileResult = await query(
-      `SELECT p.*, u.email, COALESCE(array_agg(ur.role), '{}') as roles
+      `SELECT p.*, u.email, 
+              COALESCE(
+                array_remove(array_agg(ur.role), NULL), 
+                '{}'::app_role[]
+              ) as roles
        FROM profiles p
        JOIN users u ON p.user_id = u.id
        LEFT JOIN user_roles ur ON p.user_id = ur.user_id
@@ -176,7 +183,7 @@ export const getProfile = async (req: Request, res: Response) => {
     const profile = profileResult.rows[0];
     res.json({
       ...profile,
-      roles: profile.roles.filter((role: string) => role !== null)
+      roles: Array.isArray(profile.roles) ? profile.roles.filter((role: string) => role !== null) : []
     });
   } catch (error) {
     console.error('Get profile error:', error);
