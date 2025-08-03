@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { careerService, careerApplicationService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,13 +29,9 @@ const CareerManagement = () => {
 
   const fetchOpportunities = async () => {
     try {
-      const { data, error } = await supabase
-        .from('career_opportunities')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOpportunities(data || []);
+      const response = await careerService.getAll();
+      if (response.error) throw new Error(response.error);
+      setOpportunities(response.data || []);
     } catch (error) {
       console.error('Error fetching opportunities:', error);
       toast({
@@ -50,19 +46,9 @@ const CareerManagement = () => {
 
   const fetchApplications = async () => {
     try {
-      const { data, error } = await supabase
-        .from('career_applications')
-        .select(`
-          *,
-          career_opportunities (
-            title,
-            type
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setApplications(data || []);
+      const response = await careerApplicationService.getAll();
+      if (response.error) throw new Error(response.error);
+      setApplications(response.data || []);
     } catch (error) {
       console.error('Error fetching applications:', error);
     }
@@ -84,12 +70,8 @@ const CareerManagement = () => {
       };
 
       if (editingOpportunity?.id) {
-        const { error } = await supabase
-          .from('career_opportunities')
-          .update(opportunityData)
-          .eq('id', editingOpportunity.id);
-        
-        if (error) throw error;
+        const response = await careerService.update(editingOpportunity.id, opportunityData);
+        if (response.error) throw new Error(response.error);
         
         setOpportunities(prev => prev.map(o => 
           o.id === editingOpportunity.id ? { ...o, ...opportunityData } : o
@@ -100,15 +82,10 @@ const CareerManagement = () => {
           description: 'Career opportunity updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('career_opportunities')
-          .insert(opportunityData)
-          .select()
-          .single();
+        const response = await careerService.create(opportunityData);
+        if (response.error) throw new Error(response.error);
         
-        if (error) throw error;
-        
-        setOpportunities(prev => [data, ...prev]);
+        setOpportunities(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -132,12 +109,8 @@ const CareerManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('career_opportunities')
-        .update({ is_published: isPublished })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await careerService.update(id, { is_published: isPublished });
+      if (response.error) throw new Error(response.error);
       
       setOpportunities(prev => prev.map(opportunity => 
         opportunity.id === id ? { ...opportunity, is_published: isPublished } : opportunity
@@ -159,12 +132,8 @@ const CareerManagement = () => {
 
   const updateApplicationStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('career_applications')
-        .update({ status })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await careerApplicationService.update(id, { status });
+      if (response.error) throw new Error(response.error);
       
       setApplications(prev => prev.map(app => 
         app.id === id ? { ...app, status } : app
