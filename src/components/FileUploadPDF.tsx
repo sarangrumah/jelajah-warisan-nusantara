@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { uploadService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -108,48 +108,22 @@ const FileUploadPDF = ({
         throw new Error('Invalid PDF file. The file does not appear to be a valid PDF document.');
       }
 
-      // Generate file path with user ID for security
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) {
-        throw new Error('User not authenticated');
+      const response = await uploadService.uploadFile(file, bucket);
+
+      if (response.error) {
+        throw new Error(response.error);
       }
-
-      const fileExt = '.pdf';
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}${fileExt}`;
-      const filePath = `${user.data.user.id}/${fileName}`;
-
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-          metadata: {
-            originalName: file.name,
-            uploadedAt: new Date().toISOString(),
-            userId: user.data.user.id,
-          }
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(data.path);
 
       setUploadState({
         uploading: false,
         progress: 100,
         uploadedFile: {
           name: file.name,
-          url: publicUrl,
+          url: response.data!.url,
         }
       });
 
-      onUploadComplete?.(publicUrl, file.name);
+      onUploadComplete?.(response.data!.url, file.name);
       
       toast({
         title: 'Success',
