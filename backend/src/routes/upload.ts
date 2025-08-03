@@ -60,6 +60,68 @@ const uploadTranscript = createMulterConfig('transcripts', pdfFileFilter, 5 * 10
 const uploadCoverLetter = createMulterConfig('cover-letters', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadImage = createMulterConfig('images', imageFileFilter, 5 * 1024 * 1024); // 5MB
 
+// Generic upload endpoint that handles different buckets
+const uploadMulter = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const bucket = req.body.bucket || 'images';
+      const bucketPath = path.join(uploadDir, bucket);
+      
+      // Ensure bucket directory exists
+      if (!fs.existsSync(bucketPath)) {
+        fs.mkdirSync(bucketPath, { recursive: true });
+      }
+      
+      cb(null, bucketPath);
+    },
+    filename: (req, file, cb) => {
+      const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
+      cb(null, uniqueName);
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    const bucket = req.body.bucket || 'images';
+    
+    if (bucket === 'documents' || bucket === 'cv-uploads' || bucket === 'transcripts' || bucket === 'cover-letters') {
+      // PDF files for these buckets
+      if (file.mimetype === 'application/pdf') {
+        cb(null, true);
+      } else {
+        cb(new Error('Only PDF files are allowed for this bucket'), false);
+      }
+    } else {
+      // Image files for other buckets
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed for this bucket'), false);
+      }
+    }
+  },
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB max
+});
+
+// Generic upload endpoint
+router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  
+  const bucket = req.body.bucket || 'images';
+  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  
+  res.json({
+    message: 'File uploaded successfully',
+    file: {
+      url: fileUrl,
+      name: req.file.filename,
+      originalName: req.file.originalname,
+      size: req.file.size,
+      type: req.file.mimetype
+    }
+  });
+});
+
 // Upload routes
 router.post('/documents', authenticateToken, uploadPDF.single('file'), (req, res) => {
   if (!req.file) {
