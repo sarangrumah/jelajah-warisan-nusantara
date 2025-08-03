@@ -144,7 +144,7 @@ export const signIn = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         displayName: user.display_name,
-        roles: (user.roles || []).filter((role: string) => role !== null)
+        roles: Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []
       },
       token
     });
