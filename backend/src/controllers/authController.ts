@@ -183,8 +183,8 @@ export const getProfile = async (req: Request, res: Response) => {
     const profileResult = await query(
       `SELECT p.*, u.email, 
               COALESCE(
-                array_remove(array_agg(ur.role), NULL), 
-                '{}'::app_role[]
+                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
+                ARRAY[]::app_role[]
               ) as roles
        FROM profiles p
        JOIN users u ON p.user_id = u.id
@@ -199,9 +199,21 @@ export const getProfile = async (req: Request, res: Response) => {
     }
 
     const profile = profileResult.rows[0];
+    
+    // Process roles like in other functions
+    let userRoles = [];
+    if (Array.isArray(profile.roles)) {
+      userRoles = profile.roles.filter((role: string) => role !== null);
+    } else if (profile.roles) {
+      const rolesStr = profile.roles.toString();
+      if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
+        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+      }
+    }
+    
     res.json({
       ...profile,
-      roles: Array.isArray(profile.roles) ? profile.roles.filter((role: string) => role !== null) : []
+      roles: userRoles
     });
   } catch (error) {
     console.error('Get profile error:', error);
