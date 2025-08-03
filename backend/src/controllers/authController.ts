@@ -142,6 +142,11 @@ export const signIn = async (req: Request, res: Response) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
+    console.log('🔐 Token generated for user:', user.id);
+    console.log('👤 User roles from DB:', user.roles);
+    console.log('📋 Is array?', Array.isArray(user.roles));
+    console.log('📋 Filtered roles:', Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []);
+
     res.json({
       message: 'Sign in successful',
       user: {
