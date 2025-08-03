@@ -11,7 +11,8 @@ export const newsService = {
 
 // Agenda Items
 export const agendaService = {
-  getAll: () => apiClient.getAll('agenda_items', { is_published: 'true' }),
+  getAll: () => apiClient.getAll('agenda_items'), // Get all for admin, filtering happens in components
+  getPublished: () => apiClient.getAll('agenda_items', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('agenda_items', id),
   create: (data: any) => apiClient.create('agenda_items', data),
   update: (id: string, data: any) => apiClient.update('agenda_items', id, data),
@@ -29,7 +30,8 @@ export const museumService = {
 
 // Banners
 export const bannerService = {
-  getAll: () => apiClient.getAll('banners', { is_published: 'true' }),
+  getAll: () => apiClient.getAll('banners'), // Get all for admin, filtering happens in components
+  getPublished: () => apiClient.getAll('banners', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('banners', id),
   create: (data: any) => apiClient.create('banners', data),
   update: (id: string, data: any) => apiClient.update('banners', id, data),
@@ -38,7 +40,8 @@ export const bannerService = {
 
 // Career Opportunities
 export const careerService = {
-  getAll: () => apiClient.getAll('career_opportunities', { is_published: 'true' }),
+  getAll: () => apiClient.getAll('career_opportunities'), // Get all for admin, filtering happens in components
+  getPublished: () => apiClient.getAll('career_opportunities', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('career_opportunities', id),
   create: (data: any) => apiClient.create('career_opportunities', data),
   update: (id: string, data: any) => apiClient.update('career_opportunities', id, data),
@@ -76,6 +79,14 @@ export const contentService = {
 // File Upload
 export const uploadService = {
   uploadFile: (file: File, bucket: string) => apiClient.uploadFile(file, bucket),
+};
+
+// Career Applications
+export const careerApplicationService = {
+  getAll: () => apiClient.getAll('career_applications'),
+  getById: (id: string) => apiClient.getById('career_applications', id),
+  update: (id: string, data: any) => apiClient.update('career_applications', id, data),
+  delete: (id: string) => apiClient.delete('career_applications', id),
 };
 
 // User Management

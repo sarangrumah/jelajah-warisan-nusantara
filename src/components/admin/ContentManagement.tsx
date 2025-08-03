@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -42,13 +42,9 @@ const ContentManagement = () => {
 
   const fetchContentSections = async () => {
     try {
-      const { data, error } = await supabase
-        .from('content_sections')
-        .select('*')
-        .order('section_key');
-
-      if (error) throw error;
-      setSections(data || []);
+      const response = await contentService.getAll();
+      if (response.error) throw new Error(response.error);
+      setSections((response.data as ContentSection[]) || []);
     } catch (error) {
       console.error('Error fetching content sections:', error);
       toast({
@@ -64,12 +60,8 @@ const ContentManagement = () => {
   const updateSection = async (sectionId: string, updates: Partial<ContentSection>) => {
     setSaving(sectionId);
     try {
-      const { error } = await supabase
-        .from('content_sections')
-        .update(updates)
-        .eq('id', sectionId);
-
-      if (error) throw error;
+      const response = await contentService.update(sectionId, updates);
+      if (response.error) throw new Error(response.error);
 
       setSections(prev => 
         prev.map(section => 

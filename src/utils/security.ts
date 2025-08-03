@@ -29,8 +29,8 @@ export const CSP_POLICY = {
   ],
   'connect-src': [
     "'self'",
-    "https://lwsvbapkipseuqolfpji.supabase.co",
-    "wss://lwsvbapkipseuqolfpji.supabase.co",
+    "http://localhost:3001",
+    "https://your-backend-domain.com", // Replace with your production backend URL
   ],
   'frame-ancestors': ["'none'"],
   'base-uri': ["'self'"],
