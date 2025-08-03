@@ -32,6 +32,9 @@ export const useAuth = () => {
           return;
         }
 
+        // Set the token in apiClient before making requests
+        apiClient.setToken(token);
+        
         // Fetch user profile
         const response = await apiClient.getProfile(decoded.userId);
         
