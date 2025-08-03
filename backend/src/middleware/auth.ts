@@ -27,8 +27,8 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     const userResult = await query(
       `SELECT p.*, 
               COALESCE(
-                array_remove(array_agg(ur.role), NULL), 
-                '{}'::app_role[]
+                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
+                ARRAY[]::app_role[]
               ) as roles
        FROM profiles p
        LEFT JOIN user_roles ur ON p.user_id = ur.user_id
@@ -41,10 +41,23 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
       return res.status(401).json({ error: 'User not found' });
     }
 
+    // Ensure roles is always an array
+    let userRoles = [];
+    const dbRoles = userResult.rows[0].roles;
+    if (Array.isArray(dbRoles)) {
+      userRoles = dbRoles.filter(role => role !== null);
+    } else if (dbRoles) {
+      // Handle PostgreSQL array format like {admin,editor}
+      const rolesStr = dbRoles.toString();
+      if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
+        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+      }
+    }
+
     req.user = {
       id: decoded.userId,
       email: decoded.email,
-      roles: Array.isArray(userResult.rows[0].roles) ? userResult.rows[0].roles : []
+      roles: userRoles
     };
 
     next();
