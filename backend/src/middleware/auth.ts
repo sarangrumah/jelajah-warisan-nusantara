@@ -19,7 +19,9 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
   }
 
   try {
+    console.log('🔑 Verifying token with secret length:', process.env.JWT_SECRET?.length);
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    console.log('✅ Token decoded successfully:', { userId: decoded.userId, email: decoded.email });
     
     // Fetch user with roles
     const userResult = await query(
@@ -43,6 +45,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
     next();
   } catch (error) {
+    console.error('❌ Token verification failed:', error);
     return res.status(403).json({ error: 'Invalid token' });
   }
 };
