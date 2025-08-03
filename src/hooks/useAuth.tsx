@@ -1,71 +1,93 @@
 import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { apiClient, User } from '@/lib/api-client';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthState {
   user: User | null;
-  session: Session | null;
   loading: boolean;
 }
 
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
-    session: null,
     loading: true,
   });
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setAuthState({
-          user: session?.user ?? null,
-          session,
-          loading: false,
-        });
+    const checkAuth = async () => {
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
+        setAuthState({ user: null, loading: false });
+        return;
       }
-    );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthState({
-        user: session?.user ?? null,
-        session,
-        loading: false,
-      });
-    });
+      try {
+        const decoded: any = jwtDecode(token);
+        
+        // Check if token is expired
+        if (decoded.exp * 1000 < Date.now()) {
+          localStorage.removeItem('auth_token');
+          setAuthState({ user: null, loading: false });
+          return;
+        }
 
-    return () => subscription.unsubscribe();
+        // Fetch user profile
+        const response = await apiClient.getProfile(decoded.userId);
+        
+        if (response.data) {
+          setAuthState({
+            user: {
+              id: decoded.userId,
+              email: decoded.email,
+              roles: response.data.roles,
+              display_name: response.data.display_name,
+            },
+            loading: false,
+          });
+        } else {
+          localStorage.removeItem('auth_token');
+          setAuthState({ user: null, loading: false });
+        }
+      } catch (error) {
+        localStorage.removeItem('auth_token');
+        setAuthState({ user: null, loading: false });
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    const response = await apiClient.signIn(email, password);
+    
+    if (response.data) {
+      setAuthState({
+        user: response.data.user,
+        loading: false,
+      });
+    }
+    
+    return { error: response.error ? new Error(response.error) : null };
   };
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const response = await apiClient.signUp(email, password, displayName);
     
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          display_name: displayName,
-        },
-      },
-    });
-    return { error };
+    if (response.data) {
+      setAuthState({
+        user: response.data.user,
+        loading: false,
+      });
+    }
+    
+    return { error: response.error ? new Error(response.error) : null };
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    apiClient.clearToken();
+    setAuthState({ user: null, loading: false });
+    return { error: null };
   };
 
   return {
