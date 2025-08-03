@@ -143,7 +143,7 @@ export const signIn = async (req: Request, res: Response) => {
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.display_name,
+        display_name: user.display_name,
         roles: Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []
       },
       token
