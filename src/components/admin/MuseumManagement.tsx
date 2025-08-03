@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { museumService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,13 +26,13 @@ const MuseumManagement = () => {
 
   const fetchMuseums = async () => {
     try {
-      const { data, error } = await supabase
-        .from('museums')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMuseums(data || []);
+      const response = await museumService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMuseums(response.data || []);
     } catch (error) {
       console.error('Error fetching museums:', error);
       toast({
@@ -68,12 +68,11 @@ const MuseumManagement = () => {
       };
 
       if (editingMuseum?.id) {
-        const { error } = await supabase
-          .from('museums')
-          .update(museumData)
-          .eq('id', editingMuseum.id);
+        const response = await museumService.update(editingMuseum.id, museumData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
         setMuseums(prev => prev.map(m => 
           m.id === editingMuseum.id ? { ...m, ...museumData } : m
@@ -84,15 +83,13 @@ const MuseumManagement = () => {
           description: 'Museum updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('museums')
-          .insert(museumData)
-          .select()
-          .single();
+        const response = await museumService.create(museumData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
-        setMuseums(prev => [data, ...prev]);
+        setMuseums(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -116,12 +113,11 @@ const MuseumManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('museums')
-        .update({ is_published: isPublished })
-        .eq('id', id);
+      const response = await museumService.update(id, { is_published: isPublished });
       
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
       
       setMuseums(prev => prev.map(museum => 
         museum.id === id ? { ...museum, is_published: isPublished } : museum

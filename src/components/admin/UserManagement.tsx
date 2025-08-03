@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { userService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -52,33 +52,25 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      // Fetch users with their profiles and roles
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*');
+      // Fetch user profiles
+      const profilesResponse = await userService.getProfiles();
+      
+      if (profilesResponse.error) {
+        throw new Error(profilesResponse.error);
+      }
 
-      if (profilesError) throw profilesError;
+      const profilesData = profilesResponse.data || [];
 
-      // Fetch user roles separately
-      const { data: rolesData, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('*');
-
-      if (rolesError) throw rolesError;
-
-      // Combine the data
-      const transformedUsers: User[] = profilesData?.map(profile => {
-        const userRoles = rolesData?.filter(role => role.user_id === profile.user_id) || [];
-        return {
-          id: profile.user_id,
-          email: '', // We'll need to get this from another source or skip it
-          created_at: profile.created_at,
-          profiles: {
-            display_name: profile.display_name || 'No Name',
-          },
-          user_roles: userRoles.map(role => ({ role: role.role })),
-        };
-      }) || [];
+      // Transform the data for display
+      const transformedUsers: User[] = profilesData.map(profile => ({
+        id: profile.user_id,
+        email: profile.email || '', 
+        created_at: profile.created_at,
+        profiles: {
+          display_name: profile.display_name || 'No Name',
+        },
+        user_roles: profile.roles ? [{ role: profile.roles[0] || 'viewer' }] : [{ role: 'viewer' }],
+      }));
 
       setUsers(transformedUsers);
     } catch (error) {
@@ -96,21 +88,11 @@ const UserManagement = () => {
   const updateUserRole = async (userId: string, role: string) => {
     setSaving(true);
     try {
-      // First, remove existing role
-      await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId);
-
-      // Then add new role with proper typing
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({ 
-          user_id: userId, 
-          role: role as 'admin' | 'editor' | 'viewer'
-        });
-
-      if (error) throw error;
+      const response = await userService.updateRole(userId, role);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
 
       // Update local state
       setUsers(prev =>

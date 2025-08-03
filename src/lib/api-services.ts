@@ -77,3 +77,22 @@ export const contentService = {
 export const uploadService = {
   uploadFile: (file: File, bucket: string) => apiClient.uploadFile(file, bucket),
 };
+
+// User Management
+export const userService = {
+  getAll: () => apiClient.getAll('users'),
+  getById: (id: string) => apiClient.getById('users', id),
+  updateRole: async (userId: string, role: string) => {
+    // First delete existing roles
+    await apiClient.delete('user_roles', userId);
+    // Then create new role
+    return apiClient.create('user_roles', { user_id: userId, role });
+  },
+  getProfiles: () => apiClient.getAll<{
+    user_id: string;
+    email?: string;
+    created_at: string;
+    display_name?: string;
+    roles?: string[];
+  }>('profiles'),
+};
