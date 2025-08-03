@@ -80,6 +80,10 @@ export const ImageUpload = ({
       });
     } finally {
       setUploading(false);
+      // Clear the file input to prevent issues
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 

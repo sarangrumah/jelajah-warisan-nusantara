@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 const CompanyProfileManagement = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -183,15 +184,13 @@ const CompanyProfileManagement = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="logo_url">Logo URL</Label>
-          <Input
-            id="logo_url"
-            value={formData.logo_url}
-            onChange={(e) => setFormData(prev => ({ ...prev, logo_url: e.target.value }))}
-            placeholder="https://example.com/logo.jpg"
-          />
-        </div>
+        <ImageUpload
+          label="Logo"
+          value={formData.logo_url}
+          onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
+          bucket="logos"
+          maxSize={2}
+        />
 
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
