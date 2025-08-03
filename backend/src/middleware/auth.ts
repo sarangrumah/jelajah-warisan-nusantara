@@ -25,7 +25,11 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     
     // Fetch user with roles
     const userResult = await query(
-      `SELECT p.*, COALESCE(array_agg(ur.role), '{}') as roles
+      `SELECT p.*, 
+              COALESCE(
+                array_remove(array_agg(ur.role), NULL), 
+                '{}'::app_role[]
+              ) as roles
        FROM profiles p
        LEFT JOIN user_roles ur ON p.user_id = ur.user_id
        WHERE p.user_id = $1
@@ -40,7 +44,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     req.user = {
       id: decoded.userId,
       email: decoded.email,
-      roles: userResult.rows[0].roles.filter((role: string) => role !== null)
+      roles: Array.isArray(userResult.rows[0].roles) ? userResult.rows[0].roles : []
     };
 
     next();
