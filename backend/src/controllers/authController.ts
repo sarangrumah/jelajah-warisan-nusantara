@@ -104,7 +104,7 @@ export const signIn = async (req: Request, res: Response) => {
     console.log('🔍 Querying user data for:', email);
     const userResult = await query(
       `SELECT u.id, u.email, u.password_hash, p.display_name,
-              COALESCE(array_agg(ur.role), '{}') as roles
+              COALESCE(array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), '{}') as roles
        FROM users u
        LEFT JOIN profiles p ON u.id = p.user_id
        LEFT JOIN user_roles ur ON u.id = ur.user_id
@@ -144,7 +144,7 @@ export const signIn = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         displayName: user.display_name,
-        roles: user.roles.filter((role: string) => role !== null)
+        roles: Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []
       },
       token
     });

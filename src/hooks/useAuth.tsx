@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react';
-import { apiClient, User } from '@/lib/api-client';
-import { jwtDecode } from 'jwt-decode';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
+
+interface AuthUser {
+  id: string;
+  email: string;
+  roles: string[];
+  display_name?: string;
+}
 
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
 }
 
@@ -12,82 +19,122 @@ export const useAuth = () => {
     user: null,
     loading: true,
   });
+  const [session, setSession] = useState<Session | null>(null);
+
+  const fetchUserData = async (userId: string) => {
+    try {
+      // Fetch user profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', userId)
+        .single();
+
+      // Fetch user roles
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+
+      return {
+        display_name: profile?.display_name,
+        roles: roles?.map(r => r.role) || []
+      };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return { display_name: null, roles: [] };
+    }
+  };
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('auth_token');
-      
-      if (!token) {
-        setAuthState({ user: null, loading: false });
-        return;
-      }
-
-      try {
-        const decoded: any = jwtDecode(token);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
         
-        // Check if token is expired
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.removeItem('auth_token');
-          setAuthState({ user: null, loading: false });
-          return;
-        }
-
-        // Fetch user profile
-        const response = await apiClient.getProfile(decoded.userId);
-        
-        if (response.data) {
+        if (session?.user) {
+          const userData = await fetchUserData(session.user.id);
           setAuthState({
             user: {
-              id: decoded.userId,
-              email: decoded.email,
-              roles: response.data.roles,
-              display_name: response.data.display_name,
+              id: session.user.id,
+              email: session.user.email || '',
+              roles: userData.roles,
+              display_name: userData.display_name,
             },
             loading: false,
           });
         } else {
-          localStorage.removeItem('auth_token');
           setAuthState({ user: null, loading: false });
         }
-      } catch (error) {
-        localStorage.removeItem('auth_token');
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      
+      if (session?.user) {
+        const userData = await fetchUserData(session.user.id);
+        setAuthState({
+          user: {
+            id: session.user.id,
+            email: session.user.email || '',
+            roles: userData.roles,
+            display_name: userData.display_name,
+          },
+          loading: false,
+        });
+      } else {
         setAuthState({ user: null, loading: false });
       }
-    };
+    });
 
-    checkAuth();
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const response = await apiClient.signIn(email, password);
+    setAuthState(prev => ({ ...prev, loading: true }));
     
-    if (response.data) {
-      setAuthState({
-        user: response.data.user,
-        loading: false,
-      });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) {
+      setAuthState(prev => ({ ...prev, loading: false }));
+      return { error };
     }
     
-    return { error: response.error ? new Error(response.error) : null };
+    return { error: null };
   };
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const response = await apiClient.signUp(email, password, displayName);
+    setAuthState(prev => ({ ...prev, loading: true }));
     
-    if (response.data) {
-      setAuthState({
-        user: response.data.user,
-        loading: false,
-      });
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          display_name: displayName,
+        },
+      },
+    });
+    
+    if (error) {
+      setAuthState(prev => ({ ...prev, loading: false }));
+      return { error };
     }
     
-    return { error: response.error ? new Error(response.error) : null };
+    return { error: null };
   };
 
   const signOut = async () => {
-    apiClient.clearToken();
-    setAuthState({ user: null, loading: false });
-    return { error: null };
+    const { error } = await supabase.auth.signOut();
+    return { error };
   };
 
   return {
