@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { agendaService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,13 +56,9 @@ const AgendaManagement = () => {
 
   const fetchAgendaItems = async () => {
     try {
-      const { data, error } = await supabase
-        .from('agenda_items')
-        .select('*')
-        .order('event_date', { ascending: false });
-
-      if (error) throw error;
-      setAgendaItems(data || []);
+      const response = await agendaService.getAll();
+      if (response.error) throw new Error(response.error);
+      setAgendaItems((response.data as AgendaItem[]) || []);
     } catch (error) {
       console.error('Error fetching agenda items:', error);
       toast({
@@ -78,14 +74,11 @@ const AgendaManagement = () => {
   const saveAgendaItem = async (item: Partial<AgendaItem>) => {
     setSaving(true);
     try {
+      let response;
       if (item.id) {
         // Update existing item
-        const { error } = await supabase
-          .from('agenda_items')
-          .update(item)
-          .eq('id', item.id);
-
-        if (error) throw error;
+        response = await agendaService.update(item.id, item);
+        if (response.error) throw new Error(response.error);
         
         setAgendaItems(prev =>
           prev.map(existing =>
@@ -94,22 +87,19 @@ const AgendaManagement = () => {
         );
       } else {
         // Create new item
-        const { data, error } = await supabase
-          .from('agenda_items')
-          .insert([{
-            title: item.title || '',
-            description: item.description || '',
-            event_date: item.event_date || '',
-            event_time: item.event_time || '',
-            location: item.location || '',
-            image_url: item.image_url || '',
-            is_published: item.is_published ?? true,
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-        setAgendaItems(prev => [data, ...prev]);
+        const newItem = {
+          title: item.title || '',
+          description: item.description || '',
+          event_date: item.event_date || '',
+          event_time: item.event_time || '',
+          location: item.location || '',
+          image_url: item.image_url || '',
+          is_published: item.is_published ?? true,
+        };
+        
+        response = await agendaService.create(newItem);
+        if (response.error) throw new Error(response.error);
+        setAgendaItems(prev => [response.data, ...prev]);
       }
 
       toast({
@@ -133,12 +123,8 @@ const AgendaManagement = () => {
 
   const deleteAgendaItem = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('agenda_items')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const response = await agendaService.delete(id);
+      if (response.error) throw new Error(response.error);
       
       setAgendaItems(prev => prev.filter(item => item.id !== id));
       toast({
@@ -157,12 +143,8 @@ const AgendaManagement = () => {
 
   const togglePublished = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
-        .from('agenda_items')
-        .update({ is_published: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
+      const response = await agendaService.update(id, { is_published: !currentStatus });
+      if (response.error) throw new Error(response.error);
       
       setAgendaItems(prev =>
         prev.map(item =>

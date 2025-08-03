@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,14 +25,13 @@ const CompanyProfileManagement = () => {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('content_sections')
-        .select('*')
-        .eq('section_key', 'company_profile')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProfiles(data || []);
+      const response = await contentService.getAll();
+      if (response.error) throw new Error(response.error);
+      // Filter company profiles on the client side for now
+      const companyProfiles = (response.data || []).filter(
+        (item: any) => item.section_key === 'company_profile'
+      );
+      setProfiles(companyProfiles);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       toast({
@@ -71,12 +70,8 @@ const CompanyProfileManagement = () => {
       };
 
       if (editingProfile?.id) {
-        const { error } = await supabase
-          .from('content_sections')
-          .update(profileData)
-          .eq('id', editingProfile.id);
-        
-        if (error) throw error;
+        const response = await contentService.update(editingProfile.id, profileData);
+        if (response.error) throw new Error(response.error);
         
         setProfiles(prev => prev.map(p => 
           p.id === editingProfile.id ? { ...p, ...profileData } : p
@@ -87,15 +82,10 @@ const CompanyProfileManagement = () => {
           description: 'Company profile updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('content_sections')
-          .insert(profileData)
-          .select()
-          .single();
+        const response = await contentService.create(profileData);
+        if (response.error) throw new Error(response.error);
         
-        if (error) throw error;
-        
-        setProfiles(prev => [data, ...prev]);
+        setProfiles(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -119,12 +109,8 @@ const CompanyProfileManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('content_sections')
-        .update({ is_published: isPublished })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await contentService.update(id, { is_published: isPublished });
+      if (response.error) throw new Error(response.error);
       
       setProfiles(prev => prev.map(profile => 
         profile.id === id ? { ...profile, is_published: isPublished } : profile
