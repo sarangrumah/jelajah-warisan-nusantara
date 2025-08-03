@@ -90,14 +90,18 @@ export const signUp = async (req: Request, res: Response) => {
 
 export const signIn = async (req: Request, res: Response) => {
   try {
+    console.log('🔐 Sign in attempt for:', req.body.email);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({ error: 'Validation failed', details: errors.array() });
     }
 
     const { email, password } = req.body;
 
     // Get user with profile
+    console.log('🔍 Querying user data for:', email);
     const userResult = await query(
       `SELECT u.id, u.email, u.password_hash, p.display_name,
               COALESCE(array_agg(ur.role), '{}') as roles
@@ -109,14 +113,21 @@ export const signIn = async (req: Request, res: Response) => {
       [email]
     );
 
+    console.log('📊 Query result rows:', userResult.rows.length);
+    
     if (userResult.rows.length === 0) {
+      console.log('❌ User not found in database for email:', email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const user = userResult.rows[0];
+    console.log('👤 Found user:', { id: user.id, email: user.email, hasPassword: !!user.password_hash });
+    
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    console.log('🔑 Password validation result:', isValidPassword);
 
     if (!isValidPassword) {
+      console.log('❌ Invalid password for user:', email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
