@@ -106,8 +106,8 @@ export const signIn = async (req: Request, res: Response) => {
     const userResult = await query(
       `SELECT u.id, u.email, u.password_hash, p.display_name,
               COALESCE(
-                array_remove(array_agg(ur.role), NULL), 
-                '{}'::app_role[]
+                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
+                ARRAY[]::app_role[]
               ) as roles
        FROM users u
        LEFT JOIN profiles p ON u.id = p.user_id
@@ -145,7 +145,20 @@ export const signIn = async (req: Request, res: Response) => {
     console.log('🔐 Token generated for user:', user.id);
     console.log('👤 User roles from DB:', user.roles);
     console.log('📋 Is array?', Array.isArray(user.roles));
-    console.log('📋 Filtered roles:', Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []);
+    
+    // Ensure roles is always an array
+    let userRoles = [];
+    if (Array.isArray(user.roles)) {
+      userRoles = user.roles.filter((role: string) => role !== null);
+    } else if (user.roles) {
+      // Handle PostgreSQL array format like {admin,editor}
+      const rolesStr = user.roles.toString();
+      if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
+        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+      }
+    }
+    
+    console.log('📋 Final processed roles:', userRoles);
 
     res.json({
       message: 'Sign in successful',
@@ -153,7 +166,7 @@ export const signIn = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         display_name: user.display_name,
-        roles: Array.isArray(user.roles) ? user.roles.filter((role: string) => role !== null) : []
+        roles: userRoles
       },
       token
     });
