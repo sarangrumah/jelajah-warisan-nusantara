@@ -3,7 +3,7 @@ import { Calendar, MapPin, Clock, Filter, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { agendaService } from '@/lib/api-services';
 
 const AgendaList = () => {
   const [events, setEvents] = useState([]);
@@ -24,14 +24,14 @@ const AgendaList = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data, error } = await supabase
-        .from('agenda_items')
-        .select('*')
-        .eq('is_published', true)
-        .order('event_date', { ascending: true });
+      const response = await agendaService.getAll();
 
-      if (error) throw error;
-      setEvents(data || []);
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+        return;
+      }
+
+      setEvents(response.data || []);
     } catch (error) {
       console.error('Error fetching events:', error);
     }

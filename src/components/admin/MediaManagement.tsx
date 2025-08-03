@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { mediaService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,13 +26,13 @@ const MediaManagement = () => {
 
   const fetchMediaItems = async () => {
     try {
-      const { data, error } = await supabase
-        .from('media_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMediaItems(data || []);
+      const response = await mediaService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMediaItems(response.data || []);
     } catch (error) {
       console.error('Error fetching media items:', error);
       toast({
@@ -62,12 +62,11 @@ const MediaManagement = () => {
       };
 
       if (editingMedia?.id) {
-        const { error } = await supabase
-          .from('media_items')
-          .update(mediaData)
-          .eq('id', editingMedia.id);
+        const response = await mediaService.update(editingMedia.id, mediaData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
         setMediaItems(prev => prev.map(m => 
           m.id === editingMedia.id ? { ...m, ...mediaData } : m
@@ -78,15 +77,13 @@ const MediaManagement = () => {
           description: 'Media item updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('media_items')
-          .insert(mediaData)
-          .select()
-          .single();
+        const response = await mediaService.create(mediaData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
-        setMediaItems(prev => [data, ...prev]);
+        setMediaItems(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -110,15 +107,14 @@ const MediaManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('media_items')
-        .update({ 
-          is_published: isPublished,
-          published_at: isPublished ? new Date().toISOString() : null
-        })
-        .eq('id', id);
+      const response = await mediaService.update(id, { 
+        is_published: isPublished,
+        published_at: isPublished ? new Date().toISOString() : null
+      });
       
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
       
       setMediaItems(prev => prev.map(item => 
         item.id === id ? { ...item, is_published: isPublished } : item
