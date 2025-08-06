@@ -8,13 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { museums } from '@/../database/get-data';
 
 const Museum = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
 
-  const museums = [
+  const museumsx = [
     {
       id: 1,
       title: 'Museum Nasional Indonesia',
@@ -35,7 +36,7 @@ const Museum = () => {
     },
     {
       id: 3,
-      title: 'Museum Basoeeki Abdullah',
+      title: 'Museum Basoeki Abdullah',
       subtitle: 'Sejarah Jakarta dari masa ke masa',
       type: 'museum',
       location: 'Jakarta Selatan',
@@ -68,7 +69,25 @@ const Museum = () => {
       location: 'Jakarta Pusat',
       image: '/src/assets/heritage-sites.jpg',
       description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    }
+    },
+    {
+      id: 7,
+      title: 'Museum Perumusan Naskah Proklamasi',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 8,
+      title: 'Museum Perumusan Naskah Proklamasi',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
   ];
 
   const filteredMuseums = museums.filter(museum => {
@@ -128,7 +147,7 @@ const Museum = () => {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-bottom"
                   />
                 </div>
                 <CardHeader>
