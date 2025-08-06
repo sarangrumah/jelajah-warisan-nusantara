@@ -25,6 +25,7 @@ const AgendaList = () => {
   const fetchEvents = async () => {
     try {
       const response = await agendaService.getAll();
+      console.log(response)
 
       if (response.error) {
         console.error('Error fetching events:', response.error);

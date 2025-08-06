@@ -2,6 +2,7 @@ import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ const ManagementSection = () => {
         'Layanan edukasi publik',
         'Penelitian dan dokumentasi'
       ],
-      stats: { museums: 500, visitors: '2.5M', programs: 150 },
+      stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
       gradient: 'from-primary to-primary-glow'
     },
     {
@@ -29,7 +30,7 @@ const ManagementSection = () => {
         'Program restorasi',
         'Penelitian arkeologi'
       ],
-      stats: { sites: 1200, provinces: 34, projects: 85 },
+      stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
       gradient: 'from-accent to-secondary'
     }
   ];
