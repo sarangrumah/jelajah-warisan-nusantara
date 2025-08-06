@@ -12,17 +12,18 @@ This directory contains all the necessary files to migrate from Supabase to a lo
 
 ```bash
 # Create a new database
-createdb heritage_museum_db
+createdb -U postgres heritage_museum_db
 
 # Connect to the database
-psql heritage_museum_db
+psql -U postgres heritage_museum_db
 ```
 
 ### Step 2: Create Database Schema
 
 ```bash
 # Run the schema creation script
-psql heritage_museum_db < database/schema.sql
+# psql heritage_museum_db < database/schema.sql
+psql -U postgres -d heritage_museum_db -f database/schema.sql
 ```
 
 ### Step 3: Export Data from Supabase
@@ -45,7 +46,8 @@ This will create:
 
 ```bash
 # Import all data at once
-psql heritage_museum_db < database/exports/import_all_data.sql
+# psql heritage_museum_db < database/exports/import_all_data.sql
+psql -U postgres -d heritage_museum_db -f database/exports/import_all_data.sql
 
 # Or import individual tables
 psql heritage_museum_db < database/exports/profiles.sql
