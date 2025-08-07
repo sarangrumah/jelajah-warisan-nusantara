@@ -11,10 +11,14 @@ const resources = {
         beranda: "Home",
         agenda: "Agenda",
         tentangKami: "About Us",
+        strukturOrganisasi: "Organizational structure",
+        layananKonservasi: "Conservation Services",
         mediaPublikasi: "Media & Publications",
         hubungiKami: "Contact Us",
         career: "Career",
         ppid: "PPID",
+        sop: "Standard Operating Procedures",
+        pengaturan: "Arrangement",
         admin: "Admin"
       },
       // Hero Section
@@ -395,10 +399,14 @@ const resources = {
         beranda: "Beranda",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
+        strukturOrganisasi: "Struktur Organisasi",
+        layananKonservasi: "Layanan Konservasi",
         mediaPublikasi: "Media & Publikasi",
         hubungiKami: "Hubungi Kami",
         career: "Career",
         ppid: "PPID",
+        sop: "Standar Operasional Prosedur",
+        pengaturan: "Pengaturan",
         admin: "Admin"
       },
       // Hero Section

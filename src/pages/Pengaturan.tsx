@@ -1,12 +1,10 @@
 import Header from '@/components/Header';
-import CompanyProfile from '@/components/about/CompanyProfile';
-import Services from '@/components/about/Services';
-import RulesAndSOP from '@/components/about/RulesAndSOP';
+import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 
-const TentangKami = () => {
+const Pengaturan = () => {
   useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
@@ -26,17 +24,15 @@ const TentangKami = () => {
 
     return () => observer.disconnect();
   }, []);
-
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <CompanyProfile />
-      <Services />
-      <RulesAndSOP />
+      <PPIDSection />
       <Footer />
       <FloatingButtons />
     </div>
   );
 };
 
-export default TentangKami;
+export default Pengaturan;
