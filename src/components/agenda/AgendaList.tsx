@@ -4,23 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { agendaService } from '@/lib/api-services';
+import { categories, placeholder, events } from '@/../database/get-data';
+import { Link } from 'react-router-dom';
 
 const AgendaList = () => {
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
 
-  const categories = [
+  const categoriesx = [
     { id: 'semua', name: 'Semua Event' },
     { id: 'workshop', name: 'Workshop' },
     { id: 'pameran', name: 'Pameran' },
     { id: 'seminar', name: 'Seminar' },
     { id: 'festival', name: 'Festival' },
   ];
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
 
   const fetchEvents = async () => {
     try {
@@ -38,11 +36,15 @@ const AgendaList = () => {
     }
   };
 
-  const filteredEvents = events.filter(event => {
+  const filteredEventsx = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.description?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
+
+  const filteredEvents = activeCategory === 'semua' 
+    ? events 
+    : events.filter(event => event.category === activeCategory);
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('id-ID', {
@@ -81,7 +83,7 @@ const AgendaList = () => {
                   onClick={() => setActiveCategory(category.id)}
                   className="text-sm"
                 >
-                  {category.name}
+                  {category.label}
                 </Button>
               ))}
             </div>
@@ -89,17 +91,15 @@ const AgendaList = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event, index) => (
+          {filteredEvents.map((event) => (
             <Card key={event.id} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
-              {event.image_url && (
                 <div className="aspect-video relative overflow-hidden">
                   <img 
-                    src={event.image_url} 
+                    src={event.image ? event.image : placeholder.image} 
                     alt={event.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
-              )}
               <CardHeader>
                 <CardTitle className="text-xl line-clamp-2">{event.title}</CardTitle>
               </CardHeader>
@@ -111,13 +111,15 @@ const AgendaList = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-primary" />
-                    <span>{formatDate(event.event_date)}</span>
+                    {/* <span>{formatDate(event.date)}</span> */}
+                    <span>{event.date}</span>
                   </div>
                   
-                  {event.event_time && (
+                  {event.time && (
                     <div className="flex items-center gap-2 text-sm">
                       <Clock size={16} className="text-primary" />
-                      <span>{formatTime(event.event_time)} WIB</span>
+                      {/* <span>{formatTime(event.time)} WIB</span> */}
+                      <span>{event.time}</span>
                     </div>
                   )}
                   
@@ -129,9 +131,11 @@ const AgendaList = () => {
                   )}
                 </div>
                 
-                <Button className="w-full">
-                  Detail Event
-                </Button>
+                <Link to={`/event/${event.id}`}>
+                  <Button className="w-full">
+                    Detail Event
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

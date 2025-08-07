@@ -36,12 +36,16 @@ const Header = () => {
       subItems: [
         { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
+        { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+        { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/career' },
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
+    { name: t('nav.sop'), href: '/standar-operasional-prosedur' },
+    { name: t('nav.pengaturan'), href: '/pengaturan' },
     { name: t('nav.admin'), href: '/admin' },
   ];
 
@@ -73,7 +77,7 @@ const Header = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-6 text-[0.8rem]">
               {navigationItems.map((item) => (
                 item.subItems ? (
                   <DropdownMenu key={item.name}>
