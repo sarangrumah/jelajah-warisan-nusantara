@@ -59,7 +59,7 @@ class ApiClient {
 
       return { data };
     } catch (error) {
-      return { error: 'Network error occurred' };
+      return { error: 'Network error occurred ' + error };
     }
   }
 
