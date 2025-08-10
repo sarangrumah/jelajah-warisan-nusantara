@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
@@ -9,11 +9,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { museums } from '@/../database/get-data';
+import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [events, setEvents] = useState([]);
+
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const museumsx = [
     {
@@ -89,6 +97,26 @@ const Museum = () => {
       description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
     },
   ];
+
+  const fetchEvents = async () => {
+    try {
+      const response = await museumService.getAll();
+      console.log(response)
+
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+        return;
+      }
+
+      setEvents(response.data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, [])
 
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

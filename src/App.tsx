@@ -24,9 +24,9 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
-import Pengaturan from "./pages/Pengaturan";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";
+import Peraturan from "./pages/Peraturan";
 
 const queryClient = new QueryClient();
 
@@ -48,8 +48,8 @@ const App = () => (
           <Route path="/hubungi-kami" element={<HubungiKami />} />
           <Route path="/career" element={<Career />} />
           <Route path="/ppid" element={<PPID />} />
-          <Route path="/standar-operasional-prosedur" element={<StandarOperasionalProsedur />} />
-          <Route path="/pengaturan" element={<Pengaturan />} />
+          <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
+          <Route path="/peraturan" element={<Peraturan />} />
           <Route path="/museum" element={<Museum />} />
           <Route path="/museum/:id" element={<MuseumDetail />} />
           <Route path="/heritage" element={<Heritage />} />
