@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Clock, Phone, Globe, Calendar } from 'lucide-react';
 import Header from '@/components/Header';
@@ -6,10 +6,17 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { museums } from '@/../database/get-data';
+import { useEffect } from 'react';
 
 const MuseumDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+
+  const { pathname } = useLocation();
+      
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
 
   // Mock data - in real app, fetch from API based on id
   const museumDatax = {

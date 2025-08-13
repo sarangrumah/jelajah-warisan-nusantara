@@ -60,6 +60,25 @@ const AgendaList = () => {
     return time.slice(0, 5);
   };
 
+  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'bg-blue-500';
+      case 'ongoing': return 'bg-green-500';
+      case 'registration': return 'bg-yellow-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'Akan Datang';
+      case 'ongoing': return 'Berlangsung';
+      case 'registration': return 'Pendaftaran';
+      default: return 'Selesai';
+    }
+  };
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -90,15 +109,21 @@ const AgendaList = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event) => (
             <Card key={event.id} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
                 <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={event.image ? event.image : placeholder.image} 
-                    alt={event.title}
-                    className="w-full h-full object-contain"
-                  />
+                  <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                      {getStatusLabel(event.status)}
+                    </div>
+                    <img 
+                      src={event.image ? event.image : placeholder.image} 
+                      alt={event.title}
+                      className="w-full h-full object-contain object-center"
+                    />
+                  </div>
                 </div>
               <CardHeader>
                 <CardTitle className="text-xl line-clamp-2">{event.title}</CardTitle>
