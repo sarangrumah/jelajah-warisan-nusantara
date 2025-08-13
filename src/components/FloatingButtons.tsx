@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 const FloatingButtons = () => {
   const socialMedia = [
     { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
     { icon: Youtube, href: '#', label: 'YouTube' },
     { icon: Twitter, href: '#', label: 'Twitter' },
   ];
@@ -16,7 +16,7 @@ const FloatingButtons = () => {
         <Button
           size="lg"
           className="rounded-full w-14 h-14 bg-green-600 hover:bg-green-700 heritage-glow shadow-lg float-animation"
-          onClick={() => window.open('https://wa.me/6212345678', '_blank')}
+          onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
         >
           <MessageCircle size={24} className="text-white" />
         </Button>
@@ -29,7 +29,7 @@ const FloatingButtons = () => {
             key={social.label}
             size="icon"
             variant="secondary"
-            className="rounded-full w-12 h-12 cultural-shadow hover:scale-110 transition-bounce"
+            className="rounded-full w-12 h-12 cultural-shadow hover:scale-110 transition-bounce bg-[rgba(80,61,48,0.75)]"
             style={{ animationDelay: `${index * 0.1}s` }}
             onClick={() => window.open(social.href, '_blank')}
           >

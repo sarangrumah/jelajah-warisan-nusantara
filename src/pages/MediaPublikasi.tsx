@@ -4,28 +4,35 @@ import PublikationSection from '@/components/media/PublikationSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const MediaPublikasi = () => {
- // Scroll reveal animation
- useEffect(() => {
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
+  const { pathname } = useLocation();
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-      }
-    });
-  }, observerOptions);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-  scrollRevealElements.forEach((el) => observer.observe(el));
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
 
-  return () => observer.disconnect();
-}, []);  return (
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+  return (
     <div className="min-h-screen bg-background">
       <Header />
       <NewsListSection />

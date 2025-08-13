@@ -18,7 +18,7 @@ const resources = {
         career: "Career",
         ppid: "PPID",
         sop: "Standard Operating Procedures",
-        pengaturan: "Arrangement",
+        peraturan: "Arrangement",
         admin: "Admin"
       },
       // Hero Section
@@ -96,9 +96,9 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum and Cultural Heritage",
-        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
-        phone: "+62 21 1234 5678",
-        email: "info@museumbudaya.go.id",
+        address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
+        phone: "+62 21 5725019",
+        email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Quick Links",
         socialMedia: "Social Media",
         copyright: "© 2024 Museum and Cultural Heritage. All Rights Reserved.",
@@ -405,8 +405,8 @@ const resources = {
         hubungiKami: "Hubungi Kami",
         career: "Career",
         ppid: "PPID",
-        sop: "Standar Operasional Prosedur",
-        pengaturan: "Pengaturan",
+        sop: "Prosedur Operasional Standar",
+        peraturan: "Peraturan",
         admin: "Admin"
       },
       // Hero Section
@@ -484,9 +484,9 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum dan Cagar Budaya",
-        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
-        phone: "+62 21 1234 5678",
-        email: "info@museumbudaya.go.id",
+        address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
+        phone: "+62 21 5725019",
+        email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Tautan Cepat",
         socialMedia: "Media Sosial",
         copyright: "© 2024 Museum dan Cagar Budaya. Hak Cipta Dilindungi.",
