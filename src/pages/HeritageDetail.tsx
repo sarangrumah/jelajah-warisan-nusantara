@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Calendar, Clock, Users, Camera } from 'lucide-react';
 import Header from '@/components/Header';
@@ -6,10 +6,17 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { heritages } from '@/../database/get-data';
+import { useEffect } from 'react';
 
 const HeritageDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   // Mock data - in real app, fetch by ID
   const heritagex = {
