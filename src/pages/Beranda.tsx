@@ -10,8 +10,9 @@ import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
 
 const Beranda = () => {
+
+  // Scroll reveal animation
   useEffect(() => {
-    // Scroll reveal animation
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
