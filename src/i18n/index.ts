@@ -11,10 +11,14 @@ const resources = {
         beranda: "Home",
         agenda: "Agenda",
         tentangKami: "About Us",
+        strukturOrganisasi: "Organizational structure",
+        layananKonservasi: "Conservation Services",
         mediaPublikasi: "Media & Publications",
         hubungiKami: "Contact Us",
         career: "Career",
         ppid: "PPID",
+        sop: "Standard Operating Procedures",
+        peraturan: "Arrangement",
         admin: "Admin"
       },
       // Hero Section
@@ -92,9 +96,9 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum and Cultural Heritage",
-        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
-        phone: "+62 21 1234 5678",
-        email: "info@museumbudaya.go.id",
+        address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
+        phone: "+62 21 5725019",
+        email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Quick Links",
         socialMedia: "Social Media",
         copyright: "© 2024 Museum and Cultural Heritage. All Rights Reserved.",
@@ -395,10 +399,14 @@ const resources = {
         beranda: "Beranda",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
+        strukturOrganisasi: "Struktur Organisasi",
+        layananKonservasi: "Layanan Konservasi",
         mediaPublikasi: "Media & Publikasi",
         hubungiKami: "Hubungi Kami",
         career: "Career",
         ppid: "PPID",
+        sop: "Prosedur Operasional Standar",
+        peraturan: "Peraturan",
         admin: "Admin"
       },
       // Hero Section
@@ -476,9 +484,9 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum dan Cagar Budaya",
-        address: "Jl. Jenderal Sudirman No. 123, Jakarta",
-        phone: "+62 21 1234 5678",
-        email: "info@museumbudaya.go.id",
+        address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
+        phone: "+62 21 5725019",
+        email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Tautan Cepat",
         socialMedia: "Media Sosial",
         copyright: "© 2024 Museum dan Cagar Budaya. Hak Cipta Dilindungi.",

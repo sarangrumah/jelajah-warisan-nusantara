@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 const CompanyProfileManagement = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -25,14 +26,13 @@ const CompanyProfileManagement = () => {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('content_sections')
-        .select('*')
-        .eq('section_key', 'company_profile')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProfiles(data || []);
+      const response = await contentService.getAll();
+      if (response.error) throw new Error(response.error);
+      // Filter company profiles on the client side for now
+      const companyProfiles = (response.data || []).filter(
+        (item: any) => item.section_key === 'company_profile'
+      );
+      setProfiles(companyProfiles);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       toast({
@@ -71,12 +71,8 @@ const CompanyProfileManagement = () => {
       };
 
       if (editingProfile?.id) {
-        const { error } = await supabase
-          .from('content_sections')
-          .update(profileData)
-          .eq('id', editingProfile.id);
-        
-        if (error) throw error;
+        const response = await contentService.update(editingProfile.id, profileData);
+        if (response.error) throw new Error(response.error);
         
         setProfiles(prev => prev.map(p => 
           p.id === editingProfile.id ? { ...p, ...profileData } : p
@@ -87,15 +83,10 @@ const CompanyProfileManagement = () => {
           description: 'Company profile updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('content_sections')
-          .insert(profileData)
-          .select()
-          .single();
+        const response = await contentService.create(profileData);
+        if (response.error) throw new Error(response.error);
         
-        if (error) throw error;
-        
-        setProfiles(prev => [data, ...prev]);
+        setProfiles(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -119,12 +110,8 @@ const CompanyProfileManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('content_sections')
-        .update({ is_published: isPublished })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await contentService.update(id, { is_published: isPublished });
+      if (response.error) throw new Error(response.error);
       
       setProfiles(prev => prev.map(profile => 
         profile.id === id ? { ...profile, is_published: isPublished } : profile
@@ -197,15 +184,13 @@ const CompanyProfileManagement = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="logo_url">Logo URL</Label>
-          <Input
-            id="logo_url"
-            value={formData.logo_url}
-            onChange={(e) => setFormData(prev => ({ ...prev, logo_url: e.target.value }))}
-            placeholder="https://example.com/logo.jpg"
-          />
-        </div>
+        <ImageUpload
+          label="Logo"
+          value={formData.logo_url}
+          onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
+          bucket="logos"
+          maxSize={2}
+        />
 
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>

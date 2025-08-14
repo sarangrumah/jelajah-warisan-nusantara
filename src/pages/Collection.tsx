@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { collections, placeholder } from '@/../database/get-data';
 import { da } from 'zod/v4/locales';
 
 const Collection = () => {
@@ -154,7 +155,7 @@ const Collection = () => {
                   <img
                     src={`/src/assets/images/collections/${item.image}`}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain object-center"
                   />
                 </div>
                 <CardHeader>

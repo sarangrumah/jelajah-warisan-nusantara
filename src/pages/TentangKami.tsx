@@ -6,9 +6,15 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 
+import { useLocation } from 'react-router-dom';
+
 const TentangKami = () => {
+  const { pathname } = useLocation();
+      
   useEffect(() => {
-    // Scroll reveal animation
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
@@ -27,7 +33,7 @@ const TentangKami = () => {
 
     return () => observer.disconnect();
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

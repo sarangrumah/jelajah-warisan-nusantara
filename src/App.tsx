@@ -25,6 +25,10 @@ import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import Sites from "./pages/Sites";
 import SitesDetail from "./pages/SitesDetail";
+import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
+import StrukturOrganisasi from "./pages/StrukturOrganisasi";
+import LayananKonservasi from "./pages/LayananKonservasi";
+import Peraturan from "./pages/Peraturan";
 
 const queryClient = new QueryClient();
 
@@ -40,10 +44,14 @@ const App = () => (
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
           <Route path="/tentang-kami" element={<TentangKami />} />
+          <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
+          <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
           <Route path="/media-publikasi" element={<MediaPublikasi />} />
           <Route path="/hubungi-kami" element={<HubungiKami />} />
           <Route path="/career" element={<Career />} />
           <Route path="/ppid" element={<PPID />} />
+          <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
+          <Route path="/peraturan" element={<Peraturan />} />
           <Route path="/museum" element={<Museum />} />
           <Route path="/museum/:id" element={<MuseumDetail />} />
           <Route path="/heritage" element={<Heritage />} />
