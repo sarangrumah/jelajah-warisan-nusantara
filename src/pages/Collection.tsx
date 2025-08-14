@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, Calendar, Building } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { collections, placeholder } from '@/../database/get-data';
@@ -14,69 +13,11 @@ const Collection = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-
-  const collectionsx = [
-    {
-      id: 1,
-      title: 'Keris Pusaka Majapahit',
-      subtitle: 'Senjata tradisional bersejarah dari era Majapahit',
-      category: 'weapons',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-14',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Keris pusaka yang ditemukan di situs Majapahit dengan ukiran detail yang menawan'
-    },
-    {
-      id: 2,
-      title: 'Arca Ganesha Kuno',
-      subtitle: 'Patung dewa Ganesha dari periode klasik',
-      category: 'sculpture',
-      museum: 'Museum Fatahillah',
-      period: 'Abad ke-9',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Arca Ganesha yang terbuat dari batu andesit dengan detail yang sangat halus'
-    },
-    {
-      id: 3,
-      title: 'Manuskrip Lontar Bali',
-      subtitle: 'Naskah kuno pada daun lontar dari Bali',
-      category: 'manuscript',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-16',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Koleksi manuskrip lontar berisi ajaran agama dan filosofi Bali kuno'
-    },
-    {
-      id: 4,
-      title: 'Kain Tenun Sumba',
-      subtitle: 'Tekstil tradisional dengan motif simbolis',
-      category: 'textile',
-      museum: 'Museum Tekstil Jakarta',
-      period: 'Abad ke-19',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Kain tenun ikat dari Sumba dengan pewarna alami dan motif tradisional'
-    },
-    {
-      id: 5,
-      title: 'Perhiasan Emas Srivijaya',
-      subtitle: 'Ornamen emas dari kerajaan Srivijaya',
-      category: 'jewelry',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-7-8',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Koleksi perhiasan emas dengan teknik filigri khas Srivijaya'
-    },
-    {
-      id: 6,
-      title: 'Gerabah Neolitikum',
-      subtitle: 'Tembikar dari periode prasejarah Indonesia',
-      category: 'ceramic',
-      museum: 'Museum Arkeologi Jakarta',
-      period: '2000 SM',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Gerabah dengan motif geometris dari situs neolitikum di Indonesia'
-    }
-  ];
+  const { pathname } = useLocation();
+    
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const filteredCollections = collections.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -9,66 +9,15 @@ const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
 
-  const categoriesx = [
-    { id: 'semua', label: 'Semua Event' },
-    { id: 'event', label: 'Event' },
-    { id: 'pameranTemporer', label: 'Pameran Temporer' },
-    { id: 'pameran', label: 'Pameran' },
-    { id: 'workshop', label: 'Workshop' },
-    { id: 'konservasi', label: 'Konservasi' },
-    { id: 'edukasi', label: 'Edukasi' },
-  ];
-
-  const eventsx = [
-    {
-      id: 1,
-      title: 'Pameran Warisan Majapahit',
-      category: 'pameran',
-      date: '15-30 Februari 2024',
-      time: '09:00 - 17:00 WIB',
-      location: 'Museum Nasional Jakarta',
-      participants: 500,
-      description: 'Pameran artefak dan benda bersejarah dari era Kerajaan Majapahit',
-      image: '/api/placeholder/400/250',
-      status: 'upcoming'
-    },
-    {
-      id: 2,
-      title: 'Workshop Konservasi Naskah Kuno',
-      category: 'workshop',
-      date: '20 Februari 2024',
-      time: '08:00 - 16:00 WIB',
-      location: 'Museum Nasional Jakarta',
-      participants: 30,
-      description: 'Pelatihan teknik konservasi dan restorasi naskah kuno Indonesia',
-      image: '/api/placeholder/400/250',
-      status: 'registration'
-    },
-    {
-      id: 3,
-      title: 'Program Edukasi Sekolah: Mengenal Budaya Nusantara',
-      category: 'edukasi',
-      date: '25 Februari 2024',
-      time: '10:00 - 15:00 WIB',
-      location: 'Museum Tekstil Jakarta',
-      participants: 150,
-      description: 'Program edukasi interaktif untuk siswa SD-SMA tentang kekayaan budaya Indonesia',
-      image: '/api/placeholder/400/250',
-      status: 'ongoing'
-    },
-    {
-      id: 4,
-      title: 'Restorasi Candi Borobudur Fase 3',
-      category: 'konservasi',
-      date: '1 Maret - 30 Juni 2024',
-      time: 'Ongoing',
-      location: 'Candi Borobudur, Magelang',
-      participants: 50,
-      description: 'Proyek restorasi dan konservasi struktur candi untuk pelestarian jangka panjang',
-      image: '/api/placeholder/400/250',
-      status: 'ongoing'
-    },
-  ];
+  // const categoriesx = [
+  //   { id: 'semua', label: 'Semua Event' },
+  //   { id: 'event', label: 'Event' },
+  //   { id: 'pameranTemporer', label: 'Pameran Temporer' },
+  //   { id: 'pameran', label: 'Pameran' },
+  //   { id: 'workshop', label: 'Workshop' },
+  //   { id: 'konservasi', label: 'Konservasi' },
+  //   { id: 'edukasi', label: 'Edukasi' },
+  // ];
   
   useEffect(() => {
     const observerOptions = {
@@ -116,7 +65,7 @@ const AgendaSection = () => {
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-5xl font-bold pb-3 text-heritage-gradient">
             {t('agenda.title', 'Agenda & Event')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
