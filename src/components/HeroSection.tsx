@@ -11,8 +11,9 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
+  const [slides, setSlides] = useState([]);
 
-  const slides = [
+  const slidesx = [
     {
       image: heroBorobudur,
       title: 'Melestarikan Warisan Budaya Indonesia',
@@ -32,6 +33,20 @@ const HeroSection = () => {
       cta: 'Temukan Situs',
     },
   ];
+
+  const getHeroes = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/heroes');
+      const data = await response.json();
+      setSlides(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getHeroes();
+  }, []);
 
   useEffect(() => {
     if (!isVideoPlaying) {
@@ -58,7 +73,7 @@ const HeroSection = () => {
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {slides.map((slide, index) => (
+        {slides.length > 0 && slides.map((slide, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -66,7 +81,7 @@ const HeroSection = () => {
             }`}
           >
             <img
-              src={slide.image}
+              src={`/src/assets/images/hero-section/${slide.image}`}
               alt={slide.title}
               className="w-full h-full object-cover parallax"
             />
@@ -80,19 +95,19 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradient">
-              {slides[currentSlide].title}
+              {slides.length > 0 && slides[currentSlide].title}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {slides[currentSlide].subtitle}
+              {slides.length > 0 && slides[currentSlide].subtitle}
             </p>
-            
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/museum"}>
+              {/* <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/museum"}> */}
+              <Link to={`/${slides.length > 0 && slides[currentSlide].link_to}`}>
                 <Button
                   size="lg"
                   className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
                 >
-                  {slides[currentSlide].cta}
+                  {slides.length > 0 && slides[currentSlide].cta}
                 </Button>
               </Link>
               
@@ -152,7 +167,8 @@ const HeroSection = () => {
             </button>
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Video player placeholder</p>
+                {/* <p className="text-muted-foreground">Video player placeholder</p> */}
+                <video src="/src/assets/videos/heritage.mp4" controls className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
