@@ -44,8 +44,14 @@ const Header = () => {
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
-    { name: t('nav.sop'), href: '/standar-operasional-prosedur' },
-    { name: t('nav.pengaturan'), href: '/pengaturan' },
+    { 
+      name: t('nav.peraturan'), 
+      href: '/tentang-kami',
+      subItems: [
+        { name: t('nav.peraturan'), href: '/peraturan' },
+        { name: t('nav.sop'), href: '/prosedur-operasional-standar' },
+      ]
+    },
     { name: t('nav.admin'), href: '/admin' },
   ];
 
@@ -77,7 +83,7 @@ const Header = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-6 text-[0.8rem]">
+            <div className="hidden lg:flex items-center space-x-8 text-[1rem]">
               {navigationItems.map((item) => (
                 item.subItems ? (
                   <DropdownMenu key={item.name}>
