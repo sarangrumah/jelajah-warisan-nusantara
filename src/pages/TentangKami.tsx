@@ -5,6 +5,7 @@ import RulesAndSOP from '@/components/about/RulesAndSOP';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
+
 import { useLocation } from 'react-router-dom';
 
 const TentangKami = () => {
