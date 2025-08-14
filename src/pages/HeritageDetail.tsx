@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Calendar, Clock, Users, Camera } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Clock, Camera } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -17,35 +17,6 @@ const HeritageDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
-  // Mock data - in real app, fetch by ID
-  const heritagex = {
-    id: 1,
-    title: 'Candi Borobudur',
-    subtitle: 'Warisan dunia UNESCO yang memukau',
-    location: 'Magelang, Jawa Tengah',
-    period: 'Abad ke-8',
-    image: '/src/assets/hero-borobudur.jpg',
-    description: 'Candi Buddha terbesar di dunia yang dibangun pada abad ke-8 dan menjadi keajaiban arsitektur kuno',
-    fullDescription: `Candi Borobudur adalah sebuah candi Buddha yang terletak di Borobudur, Magelang, Jawa Tengah, Indonesia. Candi ini terletak kurang lebih 100 km di sebelah barat daya Semarang, 86 km di sebelah barat Surakarta, dan 40 km di sebelah barat laut Yogyakarta.
-
-Candi yang didirikan oleh para penganut agama Buddha Mahayana sekitar tahun 800-an Masehi ini merupakan salah satu monument Buddha terbesar di dunia. Borobudur dibangun dalam tiga tingkatan: dasar piramidal dengan lima teras persegi konsentris, batang kerucut dengan tiga platform melingkar dan, di atas, sebuah stupa monumental.
-
-Monument ini baik sebagai kuil maupun tempat ziarah Buddha lengkap, secara simbolis mewakili kosmologi Buddha. Dalam kosmologi Buddha, alam semesta dibagi menjadi tiga tingkatan, Kamadhatu, Rupadhatu, dan Arupadhatu.`,
-    details: {
-      height: '42 meter',
-      baseSize: '123 x 123 meter',
-      stones: '2.672.000 blok batu',
-      reliefs: '2.672 panel relief',
-      buddhaStatues: '504 patung Buddha'
-    },
-    visitInfo: {
-      openHours: '06:00 - 17:00 WIB',
-      ticketPrice: 'Rp 50.000 - Rp 750.000',
-      bestTime: 'Sunrise (05:30 - 07:00)',
-      facilities: ['Parkir', 'Toilet', 'Restoran', 'Toko Souvenir', 'Guide']
-    }
-  };
 
   const filteredHeritage = heritages.filter((h) => h.id === parseInt(id as string));
 

@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter, MapPin, Calendar } from 'lucide-react';
+import { Search, Filter, MapPin } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { museums } from '@/../database/get-data';
@@ -22,81 +21,6 @@ const Museum = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
-  const museumsx = [
-    {
-      id: 1,
-      title: 'Museum Nasional Indonesia',
-      subtitle: 'Koleksi artefak budaya nusantara terlengkap',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Museum terbesar di Indonesia dengan koleksi lebih dari 140.000 artefak'
-    },
-    {
-      id: 2,
-      title: 'Galeri Nasional',
-      subtitle: 'Warisan dunia UNESCO yang memukau',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/hero-borobudur.jpg',
-      description: 'Candi Buddha terbesar di dunia yang dibangun pada abad ke-8'
-    },
-    {
-      id: 3,
-      title: 'Museum Basoeki Abdullah',
-      subtitle: 'Sejarah Jakarta dari masa ke masa',
-      type: 'museum',
-      location: 'Jakarta Selatan',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Museum sejarah Jakarta yang berlokasi di Kota Tua'
-    },
-    {
-      id: 4,
-      title: 'Museum Batik Indonesia',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'museum',
-      location: 'Jakarta Timur',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    },
-    {
-      id: 5,
-      title: 'Museum Kebangkitan Nasional',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    },
-    {
-      id: 6,
-      title: 'Museum Sumpah Pemuda',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    },
-    {
-      id: 7,
-      title: 'Museum Perumusan Naskah Proklamasi',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    },
-    {
-      id: 8,
-      title: 'Museum Perumusan Naskah Proklamasi',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'museum',
-      location: 'Jakarta Pusat',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    },
-  ];
 
   const fetchEvents = async () => {
     try {

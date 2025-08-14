@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Calendar, MapPin, Clock, Users, Phone, Mail, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users, Phone, Mail, Share2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -10,51 +10,6 @@ import { events, placeholder } from '@/../database/get-data';
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-
-  // Mock data - in real app, fetch by ID
-  const eventx = {
-    id: 1,
-    title: 'Pameran Warisan Majapahit',
-    category: 'pameran',
-    date: '15-30 Februari 2024',
-    time: '09:00 - 17:00 WIB',
-    location: 'Museum Nasional Jakarta',
-    address: 'Jl. Medan Merdeka Barat No.12, Gambir, Jakarta Pusat',
-    participants: 500,
-    description: 'Pameran artefak dan benda bersejarah dari era Kerajaan Majapahit',
-    image: '/src/assets/heritage-sites.jpg',
-    status: 'upcoming',
-    fullDescription: `Pameran Warisan Majapahit merupakan sebuah pameran komprehensif yang menampilkan koleksi artefak bersejarah dari era Kerajaan Majapahit, salah satu kerajaan terbesar dalam sejarah Indonesia.
-
-Pameran ini menampilkan lebih dari 200 artefak autentik termasuk prasasti, keramik, perhiasan, senjata tradisional, dan karya seni dari periode 1293-1527 Masehi. Pengunjung akan dapat melihat langsung bukti-bukti kejayaan Majapahit yang pernah menguasai sebagian besar wilayah Nusantara.
-
-Pameran dilengkapi dengan teknologi multimedia interaktif, diorama, dan rekonstruksi 3D yang memberikan pengalaman immersive kepada pengunjung untuk memahami kehidupan dan budaya masyarakat Majapahit.`,
-    highlights: [
-      'Prasasti Kudadu asli dari tahun 1294',
-      'Koleksi keramik Ming dari periode perdagangan',
-      'Replika mahkota Raja Hayam Wuruk',
-      'Diorama Trowulan - ibu kota Majapahit',
-      'Film dokumenter "Jejak Majapahit"'
-    ],
-    schedule: [
-      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
-      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
-      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
-      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
-      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
-    ],
-    contact: {
-      phone: '+62 21 3868172',
-      email: 'info@museumnasional.or.id',
-      website: 'www.museumnasional.or.id'
-    },
-    requirements: [
-      'Pendaftaran online melalui website museum',
-      'Membawa identitas diri (KTP/SIM/Paspor)',
-      'Mengikuti protokol kesehatan',
-      'Usia minimal 12 tahun untuk workshop'
-    ]
-  };
 
   const filteredEvent = events.filter((event) => event.id === Number(id));
 

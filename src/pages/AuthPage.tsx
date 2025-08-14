@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, LogIn } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import logo from '@/assets/MCB-Logo.png';
 
 const AuthPage = () => {
   const { user, loading, signIn } = useAuth();
@@ -55,8 +56,8 @@ const AuthPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center mx-auto mb-4">
-            <span className="text-primary-foreground font-bold text-2xl">M</span>
+          <div className="w-16 h-16 bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center mx-auto mb-4x p-3 pb-3">
+            <img src={logo} alt="MCB-Logo" />
           </div>
           <CardTitle className="text-2xl">Admin Panel</CardTitle>
           <CardDescription>
