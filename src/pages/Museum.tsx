@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { museums } from '@/../database/get-data';
+import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
   const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [events, setEvents] = useState([]);
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const museumsx = [
     {
@@ -21,52 +29,95 @@ const Museum = () => {
       title: 'Museum Nasional Indonesia',
       subtitle: 'Koleksi artefak budaya nusantara terlengkap',
       type: 'museum',
-      location: 'Jakarta',
+      location: 'Jakarta Pusat',
       image: '/src/assets/museum-interior.jpg',
       description: 'Museum terbesar di Indonesia dengan koleksi lebih dari 140.000 artefak'
     },
     {
       id: 2,
-      title: 'Candi Borobudur',
+      title: 'Galeri Nasional',
       subtitle: 'Warisan dunia UNESCO yang memukau',
-      type: 'heritage',
-      location: 'Yogyakarta',
+      type: 'museum',
+      location: 'Jakarta Pusat',
       image: '/src/assets/hero-borobudur.jpg',
       description: 'Candi Buddha terbesar di dunia yang dibangun pada abad ke-8'
     },
     {
       id: 3,
-      title: 'Museum Fatahillah',
+      title: 'Museum Basoeki Abdullah',
       subtitle: 'Sejarah Jakarta dari masa ke masa',
       type: 'museum',
-      location: 'Jakarta',
+      location: 'Jakarta Selatan',
       image: '/src/assets/heritage-sites.jpg',
       description: 'Museum sejarah Jakarta yang berlokasi di Kota Tua'
     },
     {
       id: 4,
-      title: 'Candi Prambanan',
+      title: 'Museum Batik Indonesia',
       subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'heritage',
-      location: 'Yogyakarta',
+      type: 'museum',
+      location: 'Jakarta Timur',
       image: '/src/assets/heritage-sites.jpg',
       description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
-    }
+    },
+    {
+      id: 5,
+      title: 'Museum Kebangkitan Nasional',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 6,
+      title: 'Museum Sumpah Pemuda',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 7,
+      title: 'Museum Perumusan Naskah Proklamasi',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
+    {
+      id: 8,
+      title: 'Museum Perumusan Naskah Proklamasi',
+      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
+      type: 'museum',
+      location: 'Jakarta Pusat',
+      image: '/src/assets/heritage-sites.jpg',
+      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti'
+    },
   ];
 
-  const getMuseums = async () => {
+  const fetchEvents = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/museums');
-      const data = await response.json();
-      setMuseums(data);
+      const response = await museumService.getAll();
+      console.log(response)
+
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+        return;
+      }
+
+      setEvents(response.data || []);
     } catch (error) {
-      console.error('Error fetching museums:', error);
+      console.error('Error fetching events:', error);
     }
   };
 
   useEffect(() => {
     getMuseums();
   }, []);
+
 
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -125,7 +176,7 @@ const Museum = () => {
                   <img
                     src={`/src/assets/images/museums/${item.image}`} // Replace with the actual image path for each museumitem.image}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-bottom"
                   />
                 </div>
                 <CardHeader>

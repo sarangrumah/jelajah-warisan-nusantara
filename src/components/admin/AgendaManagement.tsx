@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { agendaService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import {
   Save
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface AgendaItem {
   id: string;
@@ -56,13 +57,9 @@ const AgendaManagement = () => {
 
   const fetchAgendaItems = async () => {
     try {
-      const { data, error } = await supabase
-        .from('agenda_items')
-        .select('*')
-        .order('event_date', { ascending: false });
-
-      if (error) throw error;
-      setAgendaItems(data || []);
+      const response = await agendaService.getAll();
+      if (response.error) throw new Error(response.error);
+      setAgendaItems((response.data as AgendaItem[]) || []);
     } catch (error) {
       console.error('Error fetching agenda items:', error);
       toast({
@@ -78,14 +75,11 @@ const AgendaManagement = () => {
   const saveAgendaItem = async (item: Partial<AgendaItem>) => {
     setSaving(true);
     try {
+      let response;
       if (item.id) {
         // Update existing item
-        const { error } = await supabase
-          .from('agenda_items')
-          .update(item)
-          .eq('id', item.id);
-
-        if (error) throw error;
+        response = await agendaService.update(item.id, item);
+        if (response.error) throw new Error(response.error);
         
         setAgendaItems(prev =>
           prev.map(existing =>
@@ -94,22 +88,19 @@ const AgendaManagement = () => {
         );
       } else {
         // Create new item
-        const { data, error } = await supabase
-          .from('agenda_items')
-          .insert([{
-            title: item.title || '',
-            description: item.description || '',
-            event_date: item.event_date || '',
-            event_time: item.event_time || '',
-            location: item.location || '',
-            image_url: item.image_url || '',
-            is_published: item.is_published ?? true,
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-        setAgendaItems(prev => [data, ...prev]);
+        const newItem = {
+          title: item.title || '',
+          description: item.description || '',
+          event_date: item.event_date || '',
+          event_time: item.event_time || '',
+          location: item.location || '',
+          image_url: item.image_url || '',
+          is_published: item.is_published ?? true,
+        };
+        
+        response = await agendaService.create(newItem);
+        if (response.error) throw new Error(response.error);
+        setAgendaItems(prev => [response.data, ...prev]);
       }
 
       toast({
@@ -133,12 +124,8 @@ const AgendaManagement = () => {
 
   const deleteAgendaItem = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('agenda_items')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const response = await agendaService.delete(id);
+      if (response.error) throw new Error(response.error);
       
       setAgendaItems(prev => prev.filter(item => item.id !== id));
       toast({
@@ -157,12 +144,8 @@ const AgendaManagement = () => {
 
   const togglePublished = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
-        .from('agenda_items')
-        .update({ is_published: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
+      const response = await agendaService.update(id, { is_published: !currentStatus });
+      if (response.error) throw new Error(response.error);
       
       setAgendaItems(prev =>
         prev.map(item =>
@@ -239,7 +222,7 @@ const AgendaManagement = () => {
                     id="title"
                     value={editingItem.title}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, title: e.target.value })
+                      setEditingItem(prev => ({ ...prev, title: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -253,7 +236,7 @@ const AgendaManagement = () => {
                     id="description"
                     value={editingItem.description}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, description: e.target.value })
+                      setEditingItem(prev => ({ ...prev, description: e.target.value }))
                     }
                     className="col-span-3"
                     rows={3}
@@ -269,7 +252,7 @@ const AgendaManagement = () => {
                     type="date"
                     value={editingItem.event_date}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, event_date: e.target.value })
+                      setEditingItem(prev => ({ ...prev, event_date: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -284,7 +267,7 @@ const AgendaManagement = () => {
                     type="time"
                     value={editingItem.event_time}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, event_time: e.target.value })
+                      setEditingItem(prev => ({ ...prev, event_time: e.target.value }))
                     }
                     className="col-span-3"
                   />
@@ -298,24 +281,18 @@ const AgendaManagement = () => {
                     id="location"
                     value={editingItem.location}
                     onChange={(e) =>
-                      setEditingItem({ ...editingItem, location: e.target.value })
+                      setEditingItem(prev => ({ ...prev, location: e.target.value }))
                     }
                     className="col-span-3"
                   />
                 </div>
                 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="image_url" className="text-right">
-                    URL Gambar
-                  </Label>
-                  <Input
-                    id="image_url"
+                <div className="grid grid-cols-1 gap-4">
+                  <ImageUpload
+                    label="Event Image"
                     value={editingItem.image_url}
-                    onChange={(e) =>
-                      setEditingItem({ ...editingItem, image_url: e.target.value })
-                    }
-                    className="col-span-3"
-                    placeholder="https://example.com/image.jpg"
+                    onChange={(url) => setEditingItem(prev => ({ ...prev, image_url: url }))}
+                    bucket="images"
                   />
                 </div>
                 
@@ -327,7 +304,7 @@ const AgendaManagement = () => {
                     id="is_published"
                     checked={editingItem.is_published}
                     onCheckedChange={(checked) =>
-                      setEditingItem({ ...editingItem, is_published: checked })
+                      setEditingItem(prev => ({ ...prev, is_published: checked }))
                     }
                   />
                 </div>

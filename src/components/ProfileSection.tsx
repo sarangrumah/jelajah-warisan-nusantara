@@ -3,17 +3,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { DynamicComponent } from './dynamic-components';
-
+import { museumStat } from '@/../database/get-data';
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const [stats, setStats] = useState([]);
-  
-  const statsx = [
-    { icon: Users, value: '500+', label: t('profile.stats.museums') },
-    { icon: Award, value: '1,200+', label: t('profile.stats.heritage') },
-    { icon: MapPin, value: '34', label: t('profile.stats.provinces') },
-    { icon: Clock, value: '50+', label: t('profile.stats.experience') },
+  const stats = [
+    { icon: Users, value: museumStat.museums, label: t('profile.stats.museums') },
+    { icon: Award, value: museumStat.heritages, label: t('profile.stats.heritage') },
+    { icon: MapPin, value: museumStat.provinces, label: t('profile.stats.provinces') },
+    { icon: Clock, value: museumStat.experiences, label: t('profile.stats.experience') },
   ];
 
   const getStats = async () => {

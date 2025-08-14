@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { faqService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,13 +25,13 @@ const FAQManagement = () => {
 
   const fetchFaqs = async () => {
     try {
-      const { data, error } = await supabase
-        .from('faqs')
-        .select('*')
-        .order('order_index', { ascending: true });
-
-      if (error) throw error;
-      setFaqs(data || []);
+      const response = await faqService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setFaqs(response.data || []);
     } catch (error) {
       console.error('Error fetching FAQs:', error);
       toast({
@@ -56,12 +56,11 @@ const FAQManagement = () => {
       };
 
       if (editingFaq?.id) {
-        const { error } = await supabase
-          .from('faqs')
-          .update(faqData)
-          .eq('id', editingFaq.id);
+        const response = await faqService.update(editingFaq.id, faqData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
         setFaqs(prev => prev.map(f => 
           f.id === editingFaq.id ? { ...f, ...faqData } : f
@@ -72,15 +71,13 @@ const FAQManagement = () => {
           description: 'FAQ updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('faqs')
-          .insert(faqData)
-          .select()
-          .single();
+        const response = await faqService.create(faqData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
-        setFaqs(prev => [...prev, data].sort((a, b) => a.order_index - b.order_index));
+        setFaqs(prev => [...prev, response.data].sort((a, b) => a.order_index - b.order_index));
         
         toast({
           title: 'Success',
@@ -104,12 +101,11 @@ const FAQManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('faqs')
-        .update({ is_published: isPublished })
-        .eq('id', id);
+      const response = await faqService.update(id, { is_published: isPublished });
       
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
       
       setFaqs(prev => prev.map(faq => 
         faq.id === id ? { ...faq, is_published: isPublished } : faq
@@ -131,12 +127,11 @@ const FAQManagement = () => {
 
   const updateOrder = async (id: string, newOrder: number) => {
     try {
-      const { error } = await supabase
-        .from('faqs')
-        .update({ order_index: newOrder })
-        .eq('id', id);
+      const response = await faqService.update(id, { order_index: newOrder });
       
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
       
       setFaqs(prev => prev.map(faq => 
         faq.id === id ? { ...faq, order_index: newOrder } : faq

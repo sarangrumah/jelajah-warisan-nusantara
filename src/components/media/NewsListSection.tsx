@@ -3,7 +3,7 @@ import { Search, Filter, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { newsService } from '@/lib/api-services';
 
 const NewsListSection = () => {
   const [articles, setArticles] = useState([]);
@@ -24,14 +24,14 @@ const NewsListSection = () => {
 
   const fetchArticles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('news_articles')
-        .select('*')
-        .eq('is_published', true)
-        .order('published_at', { ascending: false });
+      const response = await newsService.getAll();
 
-      if (error) throw error;
-      setArticles(data || []);
+      if (response.error) {
+        console.error('Error fetching articles:', response.error);
+        return;
+      }
+
+      setArticles(response.data || []);
     } catch (error) {
       console.error('Error fetching articles:', error);
     }

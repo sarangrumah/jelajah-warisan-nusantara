@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,20 +32,13 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      // Fetch user role
-      const fetchUserRole = async () => {
-        const { data } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (data) {
-          setUserRole(data.role);
-        }
-      };
-      
-      fetchUserRole();
+      console.log('👤 User object:', user);
+      console.log('🔐 User roles:', user.roles);
+      // User roles are already included in the auth response
+      // Get the primary role (first role if multiple)
+      const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'viewer';
+      console.log('🎯 Primary role set to:', primaryRole);
+      setUserRole(primaryRole);
     }
   }, [user]);
 

@@ -1,22 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { placeholder, categories, events } from '@/../database/get-data';
 
 const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
 
-  const categories = [
+  const categoriesx = [
     { id: 'semua', label: 'Semua Event' },
+    { id: 'event', label: 'Event' },
+    { id: 'pameranTemporer', label: 'Pameran Temporer' },
     { id: 'pameran', label: 'Pameran' },
     { id: 'workshop', label: 'Workshop' },
     { id: 'konservasi', label: 'Konservasi' },
     { id: 'edukasi', label: 'Edukasi' },
   ];
 
-  const events = [
+  const eventsx = [
     {
       id: 1,
       title: 'Pameran Warisan Majapahit',
@@ -66,10 +69,30 @@ const AgendaSection = () => {
       status: 'ongoing'
     },
   ];
+  
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [activeCategory]);
 
   const filteredEvents = activeCategory === 'semua' 
-    ? events 
-    : events.filter(event => event.category === activeCategory);
+    ? events.slice(0, 6) 
+    : events.filter(event => event.category === activeCategory).slice(0, 6);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -132,6 +155,9 @@ const AgendaSection = () => {
                 <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
+                <img src={event.image ? event.image : placeholder.image } alt={event.title} className="w-full h-full object-contain object-center" />
+              </div>
+              <div>
               </div>
 
               {/* Event Content */}

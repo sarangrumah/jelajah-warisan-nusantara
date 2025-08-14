@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 const BannerManagement = () => {
   const [banners, setBanners] = useState<any[]>([]);
@@ -25,13 +26,9 @@ const BannerManagement = () => {
 
   const fetchBanners = async () => {
     try {
-      const { data, error } = await supabase
-        .from('banners')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setBanners(data || []);
+      const response = await bannerService.getAll();
+      if (response.error) throw new Error(response.error);
+      setBanners(response.data || []);
     } catch (error) {
       console.error('Error fetching banners:', error);
       toast({
@@ -48,12 +45,8 @@ const BannerManagement = () => {
     setSaving(true);
     try {
       if (editingBanner?.id) {
-        const { error } = await supabase
-          .from('banners')
-          .update(formData)
-          .eq('id', editingBanner.id);
-        
-        if (error) throw error;
+        const response = await bannerService.update(editingBanner.id, formData);
+        if (response.error) throw new Error(response.error);
         
         setBanners(prev => prev.map(b => 
           b.id === editingBanner.id ? { ...b, ...formData } : b
@@ -64,15 +57,10 @@ const BannerManagement = () => {
           description: 'Banner updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('banners')
-          .insert(formData)
-          .select()
-          .single();
+        const response = await bannerService.create(formData);
+        if (response.error) throw new Error(response.error);
         
-        if (error) throw error;
-        
-        setBanners(prev => [data, ...prev]);
+        setBanners(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -96,12 +84,8 @@ const BannerManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('banners')
-        .update({ is_published: isPublished })
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await bannerService.update(id, { is_published: isPublished });
+      if (response.error) throw new Error(response.error);
       
       setBanners(prev => prev.map(banner => 
         banner.id === id ? { ...banner, is_published: isPublished } : banner
@@ -174,15 +158,12 @@ const BannerManagement = () => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image_url">Image URL</Label>
-          <Input
-            id="image_url"
-            value={formData.image_url}
-            onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-            placeholder="https://example.com/image.jpg"
-          />
-        </div>
+        <ImageUpload
+          label="Banner Image"
+          value={formData.image_url}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+          bucket="images"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

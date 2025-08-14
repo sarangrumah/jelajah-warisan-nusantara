@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { mediaService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 const MediaManagement = () => {
   const [mediaItems, setMediaItems] = useState<any[]>([]);
@@ -26,13 +27,13 @@ const MediaManagement = () => {
 
   const fetchMediaItems = async () => {
     try {
-      const { data, error } = await supabase
-        .from('media_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMediaItems(data || []);
+      const response = await mediaService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMediaItems(response.data || []);
     } catch (error) {
       console.error('Error fetching media items:', error);
       toast({
@@ -62,12 +63,11 @@ const MediaManagement = () => {
       };
 
       if (editingMedia?.id) {
-        const { error } = await supabase
-          .from('media_items')
-          .update(mediaData)
-          .eq('id', editingMedia.id);
+        const response = await mediaService.update(editingMedia.id, mediaData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
         setMediaItems(prev => prev.map(m => 
           m.id === editingMedia.id ? { ...m, ...mediaData } : m
@@ -78,15 +78,13 @@ const MediaManagement = () => {
           description: 'Media item updated successfully',
         });
       } else {
-        const { data, error } = await supabase
-          .from('media_items')
-          .insert(mediaData)
-          .select()
-          .single();
+        const response = await mediaService.create(mediaData);
         
-        if (error) throw error;
+        if (response.error) {
+          throw new Error(response.error);
+        }
         
-        setMediaItems(prev => [data, ...prev]);
+        setMediaItems(prev => [response.data, ...prev]);
         
         toast({
           title: 'Success',
@@ -110,15 +108,14 @@ const MediaManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const { error } = await supabase
-        .from('media_items')
-        .update({ 
-          is_published: isPublished,
-          published_at: isPublished ? new Date().toISOString() : null
-        })
-        .eq('id', id);
+      const response = await mediaService.update(id, { 
+        is_published: isPublished,
+        published_at: isPublished ? new Date().toISOString() : null
+      });
       
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
       
       setMediaItems(prev => prev.map(item => 
         item.id === id ? { ...item, is_published: isPublished } : item
@@ -210,15 +207,13 @@ const MediaManagement = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="image_url">Image URL</Label>
-            <Input
-              id="image_url"
-              value={formData.image_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
+          <ImageUpload
+            label="Featured Image"
+            value={formData.image_url}
+            onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+            bucket="media"
+            maxSize={5}
+          />
           <div className="space-y-2">
             <Label htmlFor="file_url">File URL (for documents)</Label>
             <Input
