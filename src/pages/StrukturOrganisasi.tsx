@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 
-const PPID = () => {
+const StrukturOrganisasi = () => {
   useEffect(() => {
       const observerOptions = {
         threshold: 0.1,
@@ -34,4 +34,4 @@ const PPID = () => {
   );
 };
 
-export default PPID;
+export default StrukturOrganisasi;
