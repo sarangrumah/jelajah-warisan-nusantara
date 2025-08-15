@@ -3,13 +3,28 @@ import React from 'react'
 
 const components = { Building, Users, Target, Award, MapPin, Clock, Shield, BookOpen, Microscope, Globe, Camera };
 
-export const DynamicComponent = ({ componentName, ...props }) => {
-  const TargetComponent = components[componentName];
+interface DynamicComponentProps {
+  componentName: string | React.ComponentType;
+  [key: string]: any;
+}
 
-  if (!TargetComponent) {
-    // Handle cases where the component name is not found
-    return <div>Component "{componentName}" not found.</div>;
+export const DynamicComponent: React.FC<DynamicComponentProps> = ({ componentName, ...props }) => {
+  // Handle string component names
+  if (typeof componentName === 'string') {
+    const TargetComponent = components[componentName as keyof typeof components];
+    
+    if (!TargetComponent) {
+      return <div>Component "{componentName}" not found.</div>;
+    }
+    
+    return <TargetComponent {...props} />;
+  }
+  
+  // Handle direct React component references
+  if (typeof componentName === 'function') {
+    const Component = componentName;
+    return <Component {...props} />;
   }
 
-  return <TargetComponent {...props} />;
+  return <div>Invalid component type</div>;
 }

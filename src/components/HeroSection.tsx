@@ -12,35 +12,47 @@ const HeroSection = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const slidesx = [
+  const defaultSlides = [
     {
       image: heroBorobudur,
       title: 'Melestarikan Warisan Budaya Indonesia',
       subtitle: 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang',
       cta: 'Jelajahi Museum',
+      link_to: 'museum'
     },
     {
       image: museumInterior,
       title: 'Koleksi Bersejarah Nusantara',
       subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
       cta: 'Lihat Koleksi',
+      link_to: 'collection'
     },
     {
       image: heritageSites,
       title: 'Cagar Budaya Indonesia',
       subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
       cta: 'Temukan Situs',
+      link_to: 'heritage'
     },
   ];
 
   const getHeroes = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch('http://localhost:5000/api/heroes');
       const data = await response.json();
-      setSlides(data);
+      if (data && Array.isArray(data) && data.length > 0) {
+        setSlides(data);
+      } else {
+        setSlides(defaultSlides);
+      }
     } catch (error) {
       console.error(error);
+      setSlides(defaultSlides);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +61,7 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
-    if (!isVideoPlaying) {
+    if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
       }, 5000);
@@ -62,18 +74,22 @@ const HeroSection = () => {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    if (slides.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    if (slides.length > 0) {
+      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    }
   };
 
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {slides.length > 0 && slides.map((slide, index) => (
+        {!isLoading && slides.length > 0 && slides.map((slide, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -81,13 +97,18 @@ const HeroSection = () => {
             }`}
           >
             <img
-              src={`/src/assets/images/hero-section/${slide.image}`}
-              alt={slide.title}
+              src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
+              alt={slide.title || 'Heritage Image'}
               className="w-full h-full object-cover parallax"
             />
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
+        {isLoading && (
+          <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -95,19 +116,18 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradient">
-              {slides.length > 0 && slides[currentSlide].title}
+              {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].title : 'Melestarikan Warisan Budaya Indonesia'}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {slides.length > 0 && slides[currentSlide].subtitle}
+              {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].subtitle : 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang'}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {/* <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/museum"}> */}
-              <Link to={`/${slides.length > 0 && slides[currentSlide].link_to}`}>
+              <Link to={`/${!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].link_to : 'museum'}`}>
                 <Button
                   size="lg"
                   className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
                 >
-                  {slides.length > 0 && slides[currentSlide].cta}
+                  {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].cta : 'Jelajahi Museum'}
                 </Button>
               </Link>
               
@@ -141,19 +161,21 @@ const HeroSection = () => {
       </button>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-heritage ${
-              index === currentSlide
-                ? 'bg-primary heritage-glow'
-                : 'bg-foreground/30 hover:bg-foreground/50'
-            }`}
-          />
-        ))}
-      </div>
+      {!isLoading && slides.length > 0 && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-heritage ${
+                index === currentSlide
+                  ? 'bg-primary heritage-glow'
+                  : 'bg-foreground/30 hover:bg-foreground/50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Video Modal */}
       {isVideoPlaying && (

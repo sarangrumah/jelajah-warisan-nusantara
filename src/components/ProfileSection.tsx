@@ -7,18 +7,20 @@ import { museumStat } from '@/../database/get-data';
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const stats = [
-    { icon: Users, value: museumStat.museums, label: t('profile.stats.museums') },
-    { icon: Award, value: museumStat.heritages, label: t('profile.stats.heritage') },
-    { icon: MapPin, value: museumStat.provinces, label: t('profile.stats.provinces') },
-    { icon: Clock, value: museumStat.experiences, label: t('profile.stats.experience') },
-  ];
+  const [stats, setStats] = useState([
+    { icon: 'Users', value: museumStat.museums, label: 'museums' },
+    { icon: 'Award', value: museumStat.heritages, label: 'heritage' },
+    { icon: 'MapPin', value: museumStat.provinces, label: 'provinces' },
+    { icon: 'Clock', value: museumStat.experiences, label: 'experience' },
+  ]);
 
   const getStats = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/stats');
       const data = await response.json();
-      setStats(data);
+      if (data && Array.isArray(data)) {
+        setStats(data);
+      }
     } catch (error) {
       console.log(error)
     }
