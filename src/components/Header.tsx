@@ -107,7 +107,7 @@ const Header = () => {
                             to={subItem.href}
                             className={`w-full ${
                               location.pathname === subItem.href ? 'bg-primary/10' : ''
-                            }`}
+                            } cursor-pointer`}
                           >
                             {subItem.name}
                           </Link>

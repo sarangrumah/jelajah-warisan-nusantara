@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { heritages } from '@/../database/get-data';
@@ -20,49 +20,6 @@ const Heritage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
-  const heritagesx = [
-    {
-      id: 1,
-      title: 'Candi Borobudur',
-      subtitle: 'Warisan dunia UNESCO yang memukau',
-      type: 'temple',
-      location: 'Magelang, Jawa Tengah',
-      period: 'Abad ke-8',
-      image: '/src/assets/hero-borobudur.jpg',
-      description: 'Candi Buddha terbesar di dunia yang dibangun pada abad ke-8 dan menjadi keajaiban arsitektur kuno'
-    },
-    {
-      id: 2,
-      title: 'Candi Prambanan',
-      subtitle: 'Kompleks candi Hindu terbesar di Indonesia',
-      type: 'temple',
-      location: 'Yogyakarta',
-      period: 'Abad ke-9',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Kompleks candi Hindu yang didedikasikan untuk Trimurti dengan arsitektur yang menakjubkan'
-    },
-    {
-      id: 3,
-      title: 'Situs Sangiran',
-      subtitle: 'Situs fosil manusia purba',
-      type: 'archaeological',
-      location: 'Sragen, Jawa Tengah',
-      period: '1.5 juta tahun lalu',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Situs arkeologi penting yang mengungkap sejarah evolusi manusia di Asia Tenggara'
-    },
-    {
-      id: 4,
-      title: 'Benteng Vredeburg',
-      subtitle: 'Benteng kolonial bersejarah',
-      type: 'fortress',
-      location: 'Yogyakarta',
-      period: 'Abad ke-18',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Benteng kolonial Belanda yang kini menjadi museum sejarah perjuangan Indonesia'
-    }
-  ];
 
   const filteredHeritages = heritages.filter(heritage => {
     const matchesSearch = heritage.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
