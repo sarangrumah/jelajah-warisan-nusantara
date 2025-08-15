@@ -1,10 +1,20 @@
 import Header from '@/components/Header';
-import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
+import AboutSection from '@/components/layanan-konservasi/AboutSection';
+import CollectionSection from '@/components/layanan-konservasi/CollectionSection';
+import ConservationSection from '@/components/layanan-konservasi/ConservationSection';
+import EducationSection from '@/components/layanan-konservasi/EducationSection';
+import PartnershipSection from '@/components/layanan-konservasi/PartnershipSection';
+import { useLocation } from 'react-router-dom';
 
 const LayananKonservasi = () => {
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   useEffect(() => {
       const observerOptions = {
         threshold: 0.1,
@@ -27,7 +37,11 @@ const LayananKonservasi = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <PPIDSection />
+      <AboutSection />
+      <CollectionSection />
+      <ConservationSection />
+      <EducationSection />
+      <PartnershipSection />
       <Footer />
       <FloatingButtons />
     </div>
