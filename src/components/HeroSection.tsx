@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBorobudur from '@/assets/hero-borobudur.jpg';
@@ -10,9 +10,11 @@ import heritageSites from '@/assets/heritage-sites.jpg';
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
 
   const defaultSlides = [
     {
@@ -115,8 +117,8 @@ const HeroSection = () => {
       <div className="relative z-10 h-full flex items-center justify-center">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradient">
-              {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].title : 'Melestarikan Warisan Budaya Indonesia'}
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
+              {slides[currentSlide].title}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
               {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].subtitle : 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang'}

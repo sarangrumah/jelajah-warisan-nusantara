@@ -22,7 +22,7 @@ const AgendaBanner = () => {
         <div className="mb-6">
           <Calendar size={64} className="mx-auto mb-4 text-primary-glow hidden" />
         </div>
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradient">
+        <h1 className="text-5xl md:text-7xl font-bold pb-6 text-heritage-gradient">
           {slides[0].title}
         </h1>
         <p className="text-xl md:text-2xl mb-8 text-white/90">
