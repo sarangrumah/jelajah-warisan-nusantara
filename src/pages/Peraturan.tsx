@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import PeraturanSection from '@/components/peraturan/PeraturanSection';
 
 const Peraturan = () => {
   const { pathname } = useLocation();
@@ -35,7 +36,7 @@ const Peraturan = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <PPIDSection />
+      <PeraturanSection />
       <Footer />
       <FloatingButtons />
     </div>

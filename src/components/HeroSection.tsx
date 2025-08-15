@@ -33,6 +33,18 @@ const HeroSection = () => {
     },
   ];
 
+  const videoList = [
+    '/src/assets/hero-sections/Profil Lengkap IHA & MNI.mp4',
+    '/src/assets/hero-sections/Ada Apa di MNI.mp4',
+    '/src/assets/hero-sections/Profil IHA.mp4',
+    '/src/assets/hero-sections/Profil Pendek IHA.mp4',
+    '/src/assets/hero-sections/Video Existing Web IHA.mp4',
+  ];
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const handleVideoEnded = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
+  };
+
   useEffect(() => {
     if (!isVideoPlaying) {
       const interval = setInterval(() => {
@@ -152,7 +164,10 @@ const HeroSection = () => {
             </button>
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Video player placeholder</p>
+                <video 
+                key={currentVideoIndex} 
+                src={videoList[currentVideoIndex]}
+                onEnded={handleVideoEnded} controls autoPlay className="w-full" />
               </div>
             </div>
           </div>
