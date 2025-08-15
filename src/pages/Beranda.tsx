@@ -8,10 +8,17 @@ import DistributionSection from '@/components/DistributionSection';
 import NewsSection from '@/components/NewsSection';
 import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
+import { useLocation } from 'react-router-dom';
 
 const Beranda = () => {
+  const { pathname } = useLocation();
+  
   useEffect(() => {
-    // Scroll reveal animation
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  // Scroll reveal animation
+  useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'

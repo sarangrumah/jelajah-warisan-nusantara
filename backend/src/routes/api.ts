@@ -14,7 +14,12 @@ const tableConfigs = {
   career_applications: ['id', 'opportunity_id', 'full_name', 'email', 'phone', 'university', 'major', 'semester', 'program', 'motivation', 'cv_url', 'transcript_url', 'cover_letter_url', 'status', 'created_at', 'updated_at'],
   media_items: ['id', 'title', 'type', 'category', 'excerpt', 'content', 'image_url', 'file_url', 'tags', 'is_published', 'published_at', 'created_by', 'created_at', 'updated_at'],
   faqs: ['id', 'question', 'answer', 'category', 'order_index', 'is_published', 'created_by', 'created_at', 'updated_at'],
-  content_sections: ['id', 'section_key', 'title', 'content', 'is_published', 'created_by', 'created_at', 'updated_at']
+  content_sections: ['id', 'section_key', 'title', 'content', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  heroes: ['id', 'title', 'subtitle', 'image', 'cta', 'link_to', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  stats: ['id', 'icon', 'value', 'label', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  highlights: ['id', 'icon', 'title', 'description', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  services: ['id', 'icon', 'title', 'description', 'features', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image', 'description', 'is_published', 'created_by', 'created_at', 'updated_at']
 };
 
 // Create CRUD routes for each table

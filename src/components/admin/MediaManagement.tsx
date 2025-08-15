@@ -28,6 +28,9 @@ interface MediaItem {
 }
 
 
+
+
+
 const MediaManagement = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,22 +94,22 @@ const MediaManagement = () => {
         );
       } else {
         // Create new media item
-        // const newItem: Omit<MediaItem, 'id' | 'created_at'> = {
-        //   title: item.title || '',
-        //   type: item.type || '',
-        //   category: item.category || '',
-        //   excerpt: item.excerpt || '',
-        //   content: item.content || '',
-        //   image_url: item.image_url || '',
-        //   file_url: item.file_url || '',
-        //   tags: typeof item.tags === 'string'
-        //     ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-        //     : (item.tags || []),
-        //   is_published: item.is_published ?? true,
-        //   published_at: item.is_published ? new Date().toISOString() : null,
-        // };
+        const newItem: Omit<MediaItem, 'id' | 'created_at'> = {
+          title: item.title || '',
+          type: item.type || '',
+          category: item.category || '',
+          excerpt: item.excerpt || '',
+          content: item.content || '',
+          image_url: item.image_url || '',
+          file_url: item.file_url || '',
+          tags: typeof item.tags === 'string'
+            ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+            : (item.tags || []),
+          is_published: item.is_published ?? true,
+          published_at: item.is_published ? new Date().toISOString() : null,
+        };
 
-        response = await mediaService.create(item);
+        response = await mediaService.create(newItem);
         if (response.error) throw new Error(response.error);
 
         setMediaItems(prev => [response.data, ...prev]);
@@ -162,63 +165,43 @@ const MediaManagement = () => {
     }
   };
 
- const MediaForm = ({ 
-  media, 
-  onSave, 
-  onCancel,
-  saving 
-}: {
-  media: MediaItem;
-  onSave: (data: MediaItem) => void;
-  onCancel: () => void;
-  saving: boolean;
-}) => {
-  const [formData, setFormData] = useState<MediaItem>(media);
+  const MediaForm = ({ onclick, onSave, onCancel }: {
+    onclick: () => void;
+    onSave: (data: any) => void;
+    onCancel: () => void;
+  }) => {
 
-  // Update form when media prop changes
-  useEffect(() => {
-    setFormData(media);
-  }, [media]);
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      onSave(editingMedia);
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({
-      ...formData,
-      tags: typeof formData.tags === 'string' 
-        ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-        : formData.tags || []
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            required
-          />
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              value={editingMedia.title}
+              onChange={(e) => setEditingMedia(prev => ({ ...prev, title: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="type">Type</Label>
+            <Select value={editingMedia.type} onValueChange={(value) => setEditingMedia(prev => ({ ...prev, type: value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="news">News</SelectItem>
+                <SelectItem value="publication">Publication</SelectItem>
+                <SelectItem value="document">Document</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="type">Type</Label>
-          <Select 
-            value={formData.type} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="news">News</SelectItem>
-              <SelectItem value="publication">Publication</SelectItem>
-              <SelectItem value="document">Document</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
         <div className="space-y-2">
           <Label htmlFor="excerpt">Excerpt</Label>
@@ -321,17 +304,9 @@ const MediaManagement = () => {
           <h2 className="text-2xl font-bold">Media & Publication Management</h2>
           <p className="text-muted-foreground">Manage news articles and publications</p>
         </div>
-        <Dialog 
-          open={isDialogOpen} 
-          onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) {
-              setTimeout(() => setEditingMedia(null), 300);
-            }
-          }}
-        >
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingMedia(emptyItem as MediaItem)}>
+            <Button onClick={() => setEditingMedia(null)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Media
             </Button>
@@ -339,17 +314,20 @@ const MediaManagement = () => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingMedia?.id ? 'Edit Media Item' : 'Add New Media Item'}
+                {editingMedia ? 'Edit Media Item' : 'Add New Media Item'}
               </DialogTitle>
+              <DialogDescription>
+                {editingMedia ? 'Update media item information' : 'Create a new news article, publication, or document'}
+              </DialogDescription>
             </DialogHeader>
-            {editingMedia && (
-              <MediaForm
-                media={editingMedia}
-                onSave={saveMediaItem}
-                onCancel={() => setIsDialogOpen(false)}
-                saving={saving}
-              />
-            )}
+            <MediaForm
+              onclick={() => setEditingMedia(emptyItem as MediaItem)}
+              onSave={saveMediaItem}
+              onCancel={() => {
+                setEditingMedia(null);
+                setIsDialogOpen(false);
+              }}
+            />
           </DialogContent>
         </Dialog>
       </div>

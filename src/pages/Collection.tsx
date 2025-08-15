@@ -1,81 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, Calendar, Building } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { collections, placeholder } from '@/../database/get-data';
+import { da } from 'zod/v4/locales';
 
 const Collection = () => {
   const { t } = useTranslation();
+  const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const { pathname } = useLocation();
+    
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  const collections = [
-    {
-      id: 1,
-      title: 'Keris Pusaka Majapahit',
-      subtitle: 'Senjata tradisional bersejarah dari era Majapahit',
-      category: 'weapons',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-14',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Keris pusaka yang ditemukan di situs Majapahit dengan ukiran detail yang menawan'
-    },
-    {
-      id: 2,
-      title: 'Arca Ganesha Kuno',
-      subtitle: 'Patung dewa Ganesha dari periode klasik',
-      category: 'sculpture',
-      museum: 'Museum Fatahillah',
-      period: 'Abad ke-9',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Arca Ganesha yang terbuat dari batu andesit dengan detail yang sangat halus'
-    },
-    {
-      id: 3,
-      title: 'Manuskrip Lontar Bali',
-      subtitle: 'Naskah kuno pada daun lontar dari Bali',
-      category: 'manuscript',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-16',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Koleksi manuskrip lontar berisi ajaran agama dan filosofi Bali kuno'
-    },
-    {
-      id: 4,
-      title: 'Kain Tenun Sumba',
-      subtitle: 'Tekstil tradisional dengan motif simbolis',
-      category: 'textile',
-      museum: 'Museum Tekstil Jakarta',
-      period: 'Abad ke-19',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Kain tenun ikat dari Sumba dengan pewarna alami dan motif tradisional'
-    },
-    {
-      id: 5,
-      title: 'Perhiasan Emas Srivijaya',
-      subtitle: 'Ornamen emas dari kerajaan Srivijaya',
-      category: 'jewelry',
-      museum: 'Museum Nasional Indonesia',
-      period: 'Abad ke-7-8',
-      image: '/src/assets/heritage-sites.jpg',
-      description: 'Koleksi perhiasan emas dengan teknik filigri khas Srivijaya'
-    },
-    {
-      id: 6,
-      title: 'Gerabah Neolitikum',
-      subtitle: 'Tembikar dari periode prasejarah Indonesia',
-      category: 'ceramic',
-      museum: 'Museum Arkeologi Jakarta',
-      period: '2000 SM',
-      image: '/src/assets/museum-interior.jpg',
-      description: 'Gerabah dengan motif geometris dari situs neolitikum di Indonesia'
+  const getCollection = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/collections');
+      const data = await response.json();
+      setCollections(data);
+    } catch (error) {
+      console.error('Error fetching collections:', error);
     }
-  ];
+  };
+
+  useEffect(() => {
+    getCollection();
+  }, []);
 
   const filteredCollections = collections.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,13 +90,13 @@ const Collection = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCollections.map((item) => (
-            <Link key={item.id} to={`/collection/${item.id}`}>
+            <Link key={item.id} to={`/collection/${item.collection_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image}
+                    src={`/src/assets/images/collections/${item.image}`}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain object-center"
                   />
                 </div>
                 <CardHeader>
