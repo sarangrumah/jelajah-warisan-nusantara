@@ -11,11 +11,11 @@ import { museums } from '@/../database/get-data';
 import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
+  const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [events, setEvents] = useState([]);
-
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -39,8 +39,9 @@ const Museum = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, [])
+    getMuseums();
+  }, []);
+
 
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,11 +94,11 @@ const Museum = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMuseums.map((item) => (
-            <Link key={item.id} to={`/museum/${item.id}`}>
+            <Link key={item.museum_id} to={`/museum/${item.museum_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image}
+                    src={`/src/assets/images/museums/${item.image}`} // Replace with the actual image path for each museumitem.image}
                     alt={item.title}
                     className="w-full h-full object-cover object-bottom"
                   />

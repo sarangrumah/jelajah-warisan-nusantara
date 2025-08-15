@@ -1,25 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, Calendar, Building } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collections, placeholder } from '@/../database/get-data';
 import { da } from 'zod/v4/locales';
 
-const Collection = () => {
+const Sites = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const { pathname } = useLocation();
-    
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
 
   const getCollection = async () => {
     try {
@@ -96,7 +91,7 @@ const Collection = () => {
                   <img
                     src={`/src/assets/images/collections/${item.image}`}
                     alt={item.title}
-                    className="w-full h-full object-contain object-center"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <CardHeader>
@@ -140,4 +135,4 @@ const Collection = () => {
   );
 };
 
-export default Collection;
+export default Sites;

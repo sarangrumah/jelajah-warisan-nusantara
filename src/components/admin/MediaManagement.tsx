@@ -13,13 +13,41 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
+interface MediaItem {
+  id?: string | null;
+  title: string;
+  type: string;
+  category: string;
+  excerpt: string;
+  content: string;
+  image_url: string;
+  file_url: string;
+  is_published: boolean;
+  published_at?: string | null;
+  tags: any;
+}
+
+
 const MediaManagement = () => {
-  const [mediaItems, setMediaItems] = useState<any[]>([]);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingMedia, setEditingMedia] = useState<any>(null);
+  const [editingMedia, setEditingMedia] = useState<MediaItem>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+
+
+  const emptyItem: Partial<MediaItem> = {
+    title: '',
+    type: 'news',
+    category: '',
+    excerpt: '',
+    content: '',
+    image_url: '',
+    file_url: '',
+    tags: [],
+    is_published: true,
+  };
 
   useEffect(() => {
     fetchMediaItems();
@@ -33,7 +61,7 @@ const MediaManagement = () => {
         throw new Error(response.error);
       }
       
-      setMediaItems(response.data || []);
+      setMediaItems(response.data as MediaItem[] || []);
     } catch (error) {
       console.error('Error fetching media items:', error);
       toast({
@@ -46,54 +74,53 @@ const MediaManagement = () => {
     }
   };
 
-  const saveMediaItem = async (formData: any) => {
+  const saveMediaItem = async (item: Partial<MediaItem>) => {
     setSaving(true);
     try {
-      const mediaData = {
-        title: formData.title,
-        type: formData.type,
-        content: formData.content,
-        excerpt: formData.excerpt,
-        image_url: formData.image_url,
-        file_url: formData.file_url,
-        category: formData.category,
-        tags: formData.tags?.split(',').map((tag: string) => tag.trim()).filter(Boolean) || [],
-        is_published: formData.is_published,
-        published_at: formData.is_published ? new Date().toISOString() : null,
-      };
+      let response;
 
-      if (editingMedia?.id) {
-        const response = await mediaService.update(editingMedia.id, mediaData);
-        
-        if (response.error) {
-          throw new Error(response.error);
-        }
-        
-        setMediaItems(prev => prev.map(m => 
-          m.id === editingMedia.id ? { ...m, ...mediaData } : m
-        ));
-        
-        toast({
-          title: 'Success',
-          description: 'Media item updated successfully',
-        });
+      if (item.id) {
+        // Update existing media item
+        response = await mediaService.update(item.id, item);
+        if (response.error) throw new Error(response.error);
+
+        setMediaItems(prev =>
+          prev.map(existing =>
+            existing.id === item.id ? { ...existing, ...item } as MediaItem : existing
+          )
+        );
       } else {
-        const response = await mediaService.create(mediaData);
-        
-        if (response.error) {
-          throw new Error(response.error);
-        }
-        
+        // Create new media item
+        // const newItem: Omit<MediaItem, 'id' | 'created_at'> = {
+        //   title: item.title || '',
+        //   type: item.type || '',
+        //   category: item.category || '',
+        //   excerpt: item.excerpt || '',
+        //   content: item.content || '',
+        //   image_url: item.image_url || '',
+        //   file_url: item.file_url || '',
+        //   tags: typeof item.tags === 'string'
+        //     ? item.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        //     : (item.tags || []),
+        //   is_published: item.is_published ?? true,
+        //   published_at: item.is_published ? new Date().toISOString() : null,
+        // };
+
+        response = await mediaService.create(item);
+        if (response.error) throw new Error(response.error);
+
         setMediaItems(prev => [response.data, ...prev]);
-        
-        toast({
-          title: 'Success',
-          description: 'Media item created successfully',
-        });
       }
-      
-      setEditingMedia(null);
+
+      toast({
+        title: 'Success',
+        description: item.id
+          ? 'Media item updated successfully'
+          : 'Media item created successfully',
+      });
+
       setIsDialogOpen(false);
+      setEditingMedia(null);
     } catch (error) {
       console.error('Error saving media item:', error);
       toast({
@@ -135,61 +162,70 @@ const MediaManagement = () => {
     }
   };
 
-  const MediaForm = ({ media, onSave, onCancel }: {
-    media?: any;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
-    const [formData, setFormData] = useState({
-      title: media?.title || '',
-      type: media?.type || 'news',
-      content: media?.content || '',
-      excerpt: media?.excerpt || '',
-      image_url: media?.image_url || '',
-      file_url: media?.file_url || '',
-      category: media?.category || '',
-      tags: (media?.tags || []).join(', '),
-      is_published: media?.is_published ?? true,
+ const MediaForm = ({ 
+  media, 
+  onSave, 
+  onCancel,
+  saving 
+}: {
+  media: MediaItem;
+  onSave: (data: MediaItem) => void;
+  onCancel: () => void;
+  saving: boolean;
+}) => {
+  const [formData, setFormData] = useState<MediaItem>(media);
+
+  // Update form when media prop changes
+  useEffect(() => {
+    setFormData(media);
+  }, [media]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({
+      ...formData,
+      tags: typeof formData.tags === 'string' 
+        ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        : formData.tags || []
     });
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave(formData);
-    };
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="news">News</SelectItem>
-                <SelectItem value="publication">Publication</SelectItem>
-                <SelectItem value="document">Document</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            required
+          />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="type">Type</Label>
+          <Select 
+            value={formData.type} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="news">News</SelectItem>
+              <SelectItem value="publication">Publication</SelectItem>
+              <SelectItem value="document">Document</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
         <div className="space-y-2">
           <Label htmlFor="excerpt">Excerpt</Label>
           <Textarea
             id="excerpt"
-            value={formData.excerpt}
-            onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+            value={editingMedia.excerpt}
+            onChange={(e) => setEditingMedia(prev => ({ ...prev, excerpt: e.target.value }))}
             rows={2}
             placeholder="Brief summary of the content"
           />
@@ -199,8 +235,8 @@ const MediaManagement = () => {
           <Label htmlFor="content">Content</Label>
           <Textarea
             id="content"
-            value={formData.content}
-            onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+            value={editingMedia.content}
+            onChange={(e) => setEditingMedia(prev => ({ ...prev, content: e.target.value }))}
             rows={6}
             placeholder="Full content of the article/publication"
           />
@@ -209,8 +245,8 @@ const MediaManagement = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ImageUpload
             label="Featured Image"
-            value={formData.image_url}
-            onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+            value={editingMedia.image_url}
+            onChange={(url) => setEditingMedia(prev => ({ ...prev, image_url: url }))}
             bucket="media"
             maxSize={5}
           />
@@ -218,8 +254,8 @@ const MediaManagement = () => {
             <Label htmlFor="file_url">File URL (for documents)</Label>
             <Input
               id="file_url"
-              value={formData.file_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, file_url: e.target.value }))}
+              value={editingMedia.file_url}
+              onChange={(e) => setEditingMedia(prev => ({ ...prev, file_url: e.target.value }))}
               placeholder="https://example.com/document.pdf"
             />
           </div>
@@ -230,8 +266,8 @@ const MediaManagement = () => {
             <Label htmlFor="category">Category</Label>
             <Input
               id="category"
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              value={editingMedia.category}
+              onChange={(e) => setEditingMedia(prev => ({ ...prev, category: e.target.value }))}
               placeholder="e.g., Museum Events, Press Release"
             />
           </div>
@@ -239,8 +275,8 @@ const MediaManagement = () => {
             <Label htmlFor="tags">Tags (comma separated)</Label>
             <Input
               id="tags"
-              value={formData.tags}
-              onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+              value={editingMedia.tags}
+              onChange={(e) => setEditingMedia(prev => ({ ...prev, tags: e.target.value }))}
               placeholder="heritage, museum, culture"
             />
           </div>
@@ -249,8 +285,8 @@ const MediaManagement = () => {
         <div className="flex items-center space-x-2">
           <Switch
             id="is_published"
-            checked={formData.is_published}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+            checked={editingMedia.is_published}
+            onCheckedChange={(checked) => setEditingMedia(prev => ({ ...prev, is_published: checked }))}
           />
           <Label htmlFor="is_published">Publish Media Item</Label>
         </div>
@@ -285,9 +321,17 @@ const MediaManagement = () => {
           <h2 className="text-2xl font-bold">Media & Publication Management</h2>
           <p className="text-muted-foreground">Manage news articles and publications</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog 
+          open={isDialogOpen} 
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              setTimeout(() => setEditingMedia(null), 300);
+            }
+          }}
+        >
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingMedia(null)}>
+            <Button onClick={() => setEditingMedia(emptyItem as MediaItem)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Media
             </Button>
@@ -295,20 +339,17 @@ const MediaManagement = () => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingMedia ? 'Edit Media Item' : 'Add New Media Item'}
+                {editingMedia?.id ? 'Edit Media Item' : 'Add New Media Item'}
               </DialogTitle>
-              <DialogDescription>
-                {editingMedia ? 'Update media item information' : 'Create a new news article, publication, or document'}
-              </DialogDescription>
             </DialogHeader>
-            <MediaForm
-              media={editingMedia}
-              onSave={saveMediaItem}
-              onCancel={() => {
-                setEditingMedia(null);
-                setIsDialogOpen(false);
-              }}
-            />
+            {editingMedia && (
+              <MediaForm
+                media={editingMedia}
+                onSave={saveMediaItem}
+                onCancel={() => setIsDialogOpen(false)}
+                saving={saving}
+              />
+            )}
           </DialogContent>
         </Dialog>
       </div>
