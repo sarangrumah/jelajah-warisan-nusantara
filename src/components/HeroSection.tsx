@@ -41,7 +41,7 @@ const HeroSection = () => {
   const getHeroes = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/api/heroes');
+      const response = await fetch('http://localhost:3001/api/heroes');
       const data = await response.json();
       if (data && Array.isArray(data) && data.length > 0) {
         setSlides(data);
