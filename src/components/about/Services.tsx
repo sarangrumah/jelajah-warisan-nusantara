@@ -49,7 +49,7 @@ const Services = () => {
 
   const getServices = async () => {
     try {
-      const services = await fetch('http://localhost:5000/api/services');
+      const services = await fetch('http://localhost:3001/api/services');
       const data = await services.json();
       setServices(data);
     } catch (error) {

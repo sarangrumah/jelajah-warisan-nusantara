@@ -18,7 +18,7 @@ const Sites = () => {
 
   const getCollection = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/collections');
+      const response = await fetch('http://localhost:3001/api/collections');
       const data = await response.json();
       setCollections(data);
     } catch (error) {
