@@ -1,3 +1,6 @@
+export const placeholder = {
+  image: 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'
+}
 export const museumStat = {
     museums: 19,
     heritages: 34,
@@ -17,10 +20,10 @@ export const museums = [
       type: 'museum',
       location: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
       image: '/src/assets/museums/Museum Nasional Indonesia.jpg',
-      description: 'Berlokasi strategis di jantung Kota Jakarta, Museum Nasional Indonesia adalah rumah bagi lebih dari 195.000 koleksi prasejarah, sejarah, arkeologi, etnografi, geografi, keramik, serta numismatik dan heraldik.',
+      description: 'Berlokasi strategis di jantung Kota Jakarta, Museum Nasional Indonesia adalah rumah bagi lebih dari 195.000 koleksi prasejarah, sejarah, arkeologi, etnografi, geografi, keramik, serta numismatik dan heraldik. Temukan pengalaman seru melalui pertunjukan video mapping di Ruang imersifA, pemanduan tetap keliling museum, hingga lokakarya menarik yang cocok untuk kamu. Jangan lupa, coba instalasi Mengenal Paras Nusantara serta bermain dan belajar di Ruang Anak yang hanya bisa kamu #TemuiDiMNI. Yuk, kunjungi dan ikuti perjalanan sejarah yang tak terlupakan—ikuti info terkini di Instagram @museumnasionalindonesia!',
       openingHours: 'Selasa - Minggu: 08:00 - 16:00',
       phone: '+6221-3868172',
-      website: 'www.www.museumnasional.or.id',
+      website: 'www.museumnasional.or.id',
       ticketPrice: 'Dewasa: Rp 5.000, Anak: Rp 2.000',
       facilities: ['Parkir', 'Toilet', 'Kafeteria', 'Toko Souvenir', 'Audio Guide', 'WiFi'],
       collections: [
@@ -34,7 +37,7 @@ export const museums = [
     },
     {
       id: 2,
-      title: 'Galeri Nasional',
+      title: 'Galeri Nasional Indonesia',
       subtitle: 'Warisan dunia UNESCO yang memukau',
       type: 'museum',
       location: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
@@ -127,7 +130,7 @@ export const museums = [
       type: 'museum',
       location: 'Jalan Kramat Raya No.106, RT.2/RW.9, Kwitang, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10420',
       image: '/src/assets//museums/Museum Sumpah Pemuda.png',
-      description: 'Museum Sumpah Pemuda menginspirasi pemuda sebagai agen perubahan untuk kemajuan Bangsa Indonesia.',
+      description: 'Museum Sumpah Pemuda adalah Museum bersejarah yang terletak di Jalan Kramat Raya No. 106, Jakarta Pusat. Dahulu, Museum ini merupakan rumah tinggal milik Sie Kong Lian dan kemudian menjadi rumah kost bagi para pemuda dari berbagai daerah yang belajar di Stovia, dimana mereka berkumpul, bertukar pikiran, dan melakukan berbagai aktivitas kepemudaan serta menjadi sentra pemuda. Museum ini menjadi Tempat Kongres Sumpah Pemuda Kedua (Indonesische Clubgebouw) dan menjadi saksi bisu dari semangat perjuangan dan persatuan Indonesia.',
       openingHours: 'Selasa - Minggu: 08:00 - 16:00',
       phone: '+62817-028-1928',
       website: 'www.museumsumpahpemuda.kemdikbud.go.id',
@@ -1225,4 +1228,3055 @@ export const heritages = [
         facilities: ['Parkir', 'Toilet', 'Restoran', 'Toko Souvenir', 'Guide']
       }
     },
-]
+];
+
+export const categories = [
+  { id: 'semua', label: 'Semua Event' },
+  { id: 'event', label: 'Event' },
+  { id: 'pameranTemporer', label: 'Pameran Temporer' },
+  // { id: 'pameran', label: 'Pameran' },
+  // { id: 'workshop', label: 'Workshop' },
+  // { id: 'konservasi', label: 'Konservasi' },
+  // { id: 'edukasi', label: 'Edukasi' },
+];
+
+export const status = {
+  upcoming: 'Upcoming',
+  registration: 'Registration',
+  ongoing: 'Ongoing',
+}
+
+export const events = [
+  {
+    id: 1,
+    title: 'MCB FEST',
+    category: 'event',
+    date: '20 Februari 2024',
+    time: '08:00 - 16:00 WIB',
+    location: 'Galeri Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
+    participants: 30,
+    description: 'MCB Fest hadir sebagai ruang perjumpaan antara masa lalu, masa kini dan masa depan, sebuah perayaan terhadap museum dan cagar budaya yang tak hanya dilihat, tapi dialami. Melalui pendekatan interaktif, festival ini menghidupkan kembali warisan budaya bangsa dalam konteks kehidupan modern, mengajak publik menemukan relevansi sejarah dalam keseharian, dan merasakan bahwa budaya bukanlah milik masa lampau, melainkan bagian dari percakapan hari ini. Acara ini digelar di Terusan Permata Hijau, Senayan City dari 24-27 Juli 2025.',
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62858-9444-3839 (chat only)',
+      email: '-',
+      website: 'www.gni.kemdikbud.go.id'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 2,
+    title: 'Pameran Kids Biennale Indonesia 2025: Tumbuh Tanpa Takut',
+    category: 'pameranTemporer',
+    date: '25 Februari 2024',
+    time: '10:00 - 15:00 WIB',
+    location: 'Galeri Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
+    participants: 150,
+    description: '',
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62858-9444-3839 (chat only)',
+      email: '-',
+      website: 'www.gni.kemdikbud.go.id'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 3,
+    title: 'Pameran NYALA: 200 Tahun Perang Diponegoro',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Galeri Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: '',
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62858-9444-3839 (chat only)',
+      email: '-',
+      website: 'www.gni.kemdikbud.go.id'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 4,
+    title: 'Dinding kreasi "Rupa-Rupa Penuh Cerita"',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Basoeki Abdullah',
+    address: 'Jalan Keuangan Raya RT.7/RW.5 No.19, Cilandak Barat, Kec. Cilandak, Kota Jakarta Selatan, DKI Jakarta 12430',
+    participants: 50,
+    description: 'Dinding kreasi "Rupa-Rupa Penuh Cerita" adalah sebuah ruang untuk pengunjung mengekspresikan dirinya melalui proses melukis wajah-wajah  humanoid yang dapat dikreasikan sesuai imajinasi, berlokasi di ruang pameran temporer Museum Basoeki Abdullah.',
+    image: '/src/assets/events/Foto Dinding 2.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '-',
+      email: '-',
+      website: 'www.museumbasoekiabdullah.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 5,
+    title: 'Workshop Mencanting',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Batik Indonesia',
+    address: 'Taman Mini Indonesia Indah, Ceger, Kec. Cipayung, Kota Jakarta Timur, DKI Jakarta 13820',
+    participants: 50,
+    description: 'Workshop Mencanting merupakan kegiatan pembuatan batik tulis yang dilakukan mulai dari menggambar pola hingga tahap mencanting di atas kain berukuran 25 x 25 cm. Pada kegiatan ini tidak dilakukan tahap pewarnaan.  Workshop tersedia pada Selasa-Minggu, jam 09.00-11.00 (kuota terbatas)',
+    image: '/src/assets/events/Mencanting.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-22097046',
+      email: '-',
+      website: 'www.museumbatik.kemdikbud.go.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 6,
+    title: 'Workshop Isen-Isen',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Batik Indonesia',
+    address: 'Taman Mini Indonesia Indah, Ceger, Kec. Cipayung, Kota Jakarta Timur, DKI Jakarta 13820',
+    participants: 50,
+    description: 'Workshop Isen-Isen merupakan kegiatan menggambar isen-isen (isian) dari motif batik pada selembar kertas menggunakan pensil warna. Seluruh peralatan dipinjamkan oleh museum.  Workshop tersedia pada Selasa-Minggu, jam 09.00-11.00 (kuota terbatas)',
+    image: '/src/assets/events/isen isen.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-22097046',
+      email: '-',
+      website: 'www.museumbatik.kemdikbud.go.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 7,
+    title: 'Batavia Toastmaster',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `"Berdiri tahun 1924, Toastmasters adalah organisasi yang terfokus pada pengembangan komunikasi publik dan kepemimpinan, tersebar di 150 negara, salah satunya Indonesia.
+
+Di masa sekarang, berbicara di depan umum tanpa memiliki struktur bicara yang jelas, akan dianggap kurang cakap. Tentunya, mayoritas orang ingin viral dengan menunjukkan potensi dalam diri mereka yang berkualitas.
+
+Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari bahwa keahlian berbicara dengan terstruktur bisa dipelajari oleh setiap orang. Untuk itu, kami menghadirkan Public Speaking Class yang bertemakan Viral Jalur Verbal 2.0 sebagai program edukasi untuk mengasah potensi berbicara di depan umum dengan lebih berkualitas dan percaya diri."`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 8,
+    title: 'Masterclass Wayang Potehi: Make Your Own Wayang Potehi!',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Sanggar Wayang Potehi Siauw Pek San merupakan sanggar wayang yang berfokus pada preservasi, pengembangan, dan edukasi wayang potehi Indonesia. Komunitas ini merupakan satu-satunya yang berfokus pada wayang potehi yang berbasis di Jakarta Pusat. Didirikan pada Mei 2023, hingga kini Sanggar Wayang Potehi Siauw Pek San terus menerus menyebarluaskan dan mendekatkan pengetahuan wayang potehi ke masyarakat dengan pementasannya serta program edukasi seperti workshop “Sehari Bersama Wayang Potehi” dan “Mini Masterclass Membuat Wayang Potehi”. Melalui pementasannya serta program kolaborasi ruang publik seperti museum dan pameran, Siauw Pek San terus berupaya memperkenalkan kesenian tradisional Tionghoa ini kepada publik hingga sekarang ini`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 9,
+    title: 'C.A.N.V.A.S. 2025 (Creative Art Narratives, Visual Aesthetic Showcase)',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `C.A.N.V.A.S. 2025 (Creative Art Narratives, Visual Aesthetic Showcase) adalah pameran karya desain dari siswa DKV SMKN 14 Jakarta yang akan diselenggarakan pada 24 Juni 2025 di Museum Kebangkitan Nasional. Mengangkat tema “Awal Mula Sejarah”, program ini menjadi ruang untuk menuangkan cerita dan estetika melalui desain visual. Selain pameran, akan ada sesi interaktif bersama pengunjung. Acara ini terbuka untuk umum.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 10,
+    title: 'Pameran Seni Whisper From The Past SMA Labschool Jakarta',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Yuk, datang dan saksikan langsung Pameran Seni Rupa "Whisper From the Past" dari SMA Labschool Jakarta di Museum Kebangkitan Nasional! Dari 15 hingga 19 Juli 2025, kamu akan diajak menyelami "A Glimpse into Indonesia’s Gentle Past" melalui karya-karya lukisan, fashion, dan instalasi 3D kreatif yang menyuarakan keindahan budaya Indonesia. Ini adalah kesempatan langka untuk mengapresiasi seni tradisional secara autentik di tengah era digital.  Jangan lewatkan pengalaman inspiratif ini di tempat bersejarah yang relevan dengan kebangkitan nasional kita!`,
+    image: '/src/assets/events/Poster SMA Labschool Jakarta.jpeg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 11,
+    title: 'Pameran Lukisan Dua Negeri Harmoni Budaya Indonesia–Jepang di Museum Kebangkitan Nasional oleh Lions Club',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Lions Club Jakarta adalah bagian dari Lions Clubs International, organisasi pelayanan sosial global. Lions Club Jakarta memiliki beberapa cabang atau klub yang aktif di berbagai wilayah Jakarta, seperti Lions Club Jakarta Nusantara, Lions Club Jakarta Selatan Metteyya, dan lainnya. Lions Club Jakarta melalui Lions Club Distrik Lions Club 307a1 mempersembahkan Pameran Lukisan 2 Negeri Indonesia & Jepang yang diadakan pada 26 - 30 April 2025. Lions Club 307a1 menghadirkan pelukis dari Indonesia dan Jepang serta mengadakan kegiatan lainnya dalam pameran tersebut seperti: cara melukis kaligrafi Jepang, fashion show kimono dan kebaya, workshop melukis ala Jepang untuk siswa SD, serta workshop Furoshiki (seni membungkus dengan kain).`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 12,
+    title: 'Kelas Tari Bersama Belantara Budaya Indonesia',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Kelas Tari Bersama Belantara Budaya Indonesia adalah program pelatihan tari tradisional gratis yang diselenggarakan oleh Yayasan Belantara Budaya Indonesia (BBI). BBI bertujuan untuk mengembangkan karakter anak-anak dan remaja melalui pendidikan, kesenian, dan kebudayaan. Program ini menyediakan sekolah tari dan musik tradisional serta literasi bahasa asing gratis`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 13,
+    title: 'Kelas Teater  Bersama Komunitas Teras',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Teater Anak Nusantara atau biasa disingkat Teras adalah sanggar teater anak yang berbasis di Jakarta. Teater ini merupakan wadah bagi siapapun yang tertarik belajar akting dan seni teater, khususnya untuk pemula. Komunitas ini bertujuan untuk memperkenalkan dan melestarikan cerita rakyat Indonesia melalui pementasan teater, serta membantu anggotanya mengembangkan potensi diri. Kelas ini terbuka untuk berbagai kalangan, mulai dari siswa SD hingga mahasiswa. `,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 14,
+    title: 'Pameran Seni oleh komunitas Outsider Art Jakarta (Harkitnas)',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kebangkitan Nasional',
+    address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
+    participants: 50,
+    description: `Outsider Art Jakarta adalah komunitas seni yang didirikan oleh Kak Toto (Timotius Toto Suwarsito) dengan tujuan untuk memberikan ruang bagi seniman dari berbagai latar belakang, termasuk untuk anak-anak berkebutuhan khusus, individu neurodiverse, penyandang disabilitas fisik, serta anak-anak non-ABK. Dalam rangka memperingati Hari Kebangkitan Nasional, Outsider Art Jakarta akan menghadirkan pameran lukisan “Bangkit dan Berdaya” di Museum Kebangkitan Nasional selama dua minggu. 
+Pameran ini bukan sekadar ajang seni, tetapi sebuah gerakan yang menegaskan bahwa keberagaman adalah kekuatan, inklusivitas adalah jalan, dan seni adalah medium untuk merayakan kebangkitan sebuah bangsa. Kegiatan yang akan diadakan bukan hanya pamera, Outsider Art Jakarta juga akan menghadirkan workshop dan webinar serta melukis bersama.
+`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62851-5617-2853 (chat only)',
+      email: '-',
+      website: 'www.museumkebangkitannasional.com',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 15,
+    title: 'Walking Tour Kebangsaan Edisi Perjuangan dan Teladan Sang Bapak Pembangunan',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan. 
+
+Pada 28 Juni 2025 telah dilaksanakan Walking Tour Kebangsaan dengan tema "Perjuangan dan Teladan Sang Bapak Pembangunan". Dengan ada program tur sejarah ini diharapkan peserta mendapat informasi terkait rekam jejak karir Presiden Soeharto hingga sisi humanisme ketika berada di dalam rumah tercinta.  Destinasi pertama dalam kegiatan ini adalah mengunjungi Markas Kostrad untuk mengulik kisah dan kiprah militer Presiden Soeharto. Selanjutnya dilanjutkan dengan mengunjungi Galeri Nasional untuk mengulik kisah seputar pandangan kebudayaan Presiden Soeharto. Destinasi terakhir adalah mengunjungi kediaman Presiden Soeharto di Jalan Cendana sekaligus bertemu dengan keluarga Presiden Soeharto.
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat. `,
+    image: '/src/assets/events/WTK 28 Juni 2025_1R2.png',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 16,
+    title: 'Buitenzorg Dalam Sekeping Kartu Pos',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Kegiatan Direktorat Sejarah dan Permuseuman dengan Perkumpulan Filatelis Indonesia (PFI):
+a. Pameran Kartupos Bergambar Buitenzorg. Pameran menampilkan
+lebih dari 300 kartupos bergambar dari masa Hindia Belanda yang
+menyajikan visual kota Bogor atau Buitenzorg. Pameran akan
+dilangsung selama seminggu (Enam hari) dan terbuka untuk umum.
+b. Seremonial Peluncuran Buku berjudul Kartupos Bergambar dari
+Buitenzorg (Bogor) karya Fadli Zon dan Mahpudi (2024) yang ditandai
+dengan penyerahan buku dimaksud kepada tokoh-tokoh penting.
+c. Diskusi Buku Kartupos Bergambar dari Buitenzorg (Bogor) yang
+menampilkan penulis dan pembahas dengan latar belakang filatelis
+dan sejarah.
+d. Workshop`,
+    image: '/src/assets/events/E-FLYER PAMERAN FILATELI-IG FEED.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 17,
+    title: 'Walking Tour Kebangsaan Buitenzorg En Omstreken',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan. 
+
+Pada 16 Maret 2025 telah dilaksanakan Walking Tour Kebangsaan dengan tema "Buitenzorg En Omstreken".  Destinasi pertama dalam kegiatan ini adalah mengunjungi Stasiun Bogor untuk mengulik kisah sejarah transportasi di Bogor (Buitenzorg). Perjalanan dilanjutkan dengan mengunjungi kediaman arsitek F. Silaban dan bertemu dengan keluarga besar F. Silaban. Tidak berhenti sampai disitu, perjalanan berlanjut ke Hotel Salak untuk mengilik kisah bangunan bersejarah era kolonial sekaligus kisah Konferensi Bogor. Destinasi terakhir adalah mengunjungi Museum Kepresidenan RI Balai Kirti sekaligus buka bersama dengan menu kesukaan para presiden dan wakil presiden Republik Indonesia.
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat. `,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 18,
+    title: 'Walking Tour Kebangsaan Cita Rasa Pemimpin Bangsa',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan.
+
+Pada tanggal 8 Februari telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Cita Rasa Pemimpin Bangsa". Destinasi pertama dalam kegiatan ini adalah pabrik roti Tan Ek Tjoan (salah satu roti kesukaan Wakil Presiden Moh. Hatta). Destinasi berikutnya adalah Vihara Dhanagun untuk mengulik kisah kuliner tradisional masyarakat Tionghoa. Perjalanan dilanjutkan dengan mengunjungi gedung Algemene Secretarie. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti dengan talkshow tentang kuliner kesukaan presiden sekaligus mencicipi sejumlah kudapan kesukaan para presiden dan wakil presiden Republik Indonesia. 
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 19,
+    title: 'Walking Tour Kebangsaan Dari Gubernur Jenderal Ke Presiden',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan.
+
+Pada tanggal 8 Desember 2025 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Dari Gubernur Jenderal ke Presiden". Destinasi pertama dalam kegiatan ini adalah Lapangan Sempur untuk mengulik kisah Bogor era kolonial dan kisah seputar Karsten Plan. Destinasi berikutnya adalah Markas Denpom Kota Bogor yang berkisah tentang militer era kolonial. Perjalanan dilanjutkan dengan mengunjungi gedung Bakorwil Bogor yang dahulu merupakan kantor asisten residen era kolonial. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti. 
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 20,
+    title: 'Museum Keliling Koleksi Kepresidenan - Pakkamase',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: ``,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 21,
+    title: 'Balai Kirti Menyapa Taman Ekspresi Sempur',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: ``,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 22,
+    title: 'Walking Tour Edisi Taman Ekspresi Sempur - Menelusuri Bagunan Bersejarah Di Kota Bogor',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan.
+
+Pada tanggal 14 September 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan sebagai rangkaian kegiatan Balai Kirti Menyapa. Destinasi pertama dalam kegiatan ini adalah Museum Kepresidenan RI Balai Kirti. Perjalanan berlanjut ke Kantor Balaikota Bogor. Destinasi berikutnya adalah  gedung Bakorwil Bogor yang dahulu merupakan kantor asisten residen era kolonial. Tidak berhenti sampai disitu, perjalanan berlanjut ke salah satu sekolah berejarah di Kota Bogor yakni Regina Pacis. Kunjungan ditutup di Lapangan Sempur. 
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat."`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 23,
+    title: 'Marhaban Yaa Ramadan Marhaban Yaa Museum Kepresidenan - Kisah Keberagaman Di Kota Bogor',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan.
+
+Pada tanggal 15 Maret 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Kisah Keberagaman di Kota Bogor". Destinasi pertama dalam kegiatan ini adalah Vihara Dhanagun untuk mengulik kisah area pemukiman etnis Tionghoa di Bogor era kolonial. Perjalanan berlanjut ke Kantor Pos Bogor yang dulunya merupakan bangunan gereja tertua di Kota Bogor. Destinasi berikutnya adalah  Gereja Zebaouth yang telah berdiri sejak tahun 1920. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti sekaligus buka bersama menikmati kuliner kesukaan para presiden dan wakil presiden Republik Indonesia. 
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 24,
+    title: 'Walking Tour Kebangsaan "Bogor Bergerak"',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Walking Tour Kebangsaan merupakan salah satu kegiatan rutin Museum Kepresidenan RI Balai Kirti.  Kegiatan ini merupakan jelajah sejarah kepresidenan dengan berjalan kaki mengunjungi sambil mengunjungi destinasi-destinasi bersejarah. Kegiatan ini terdiri dari beberapa rute tematik seputar kepresidenan.
+
+Pada tanggal 25 Agustus 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Bogor Bergerak" sekaligus memperingati bulan kemerdekaan. Destinasi pertama dalam kegiatan ini adalah Stasiun Bogor untuk mengulik kisah perjuangan Margonda. Perjalanan berlanjut ke gedung Balaikota Bogor. Destinasi berikutnya adalah  gedung Bakorwil yang dulunya merupakan kantor asisten residen era kolonial sekligus tempat pengibaran bendera merah putih pertama di Kota Bogor. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti. 
+
+Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 25,
+    title: 'Petualangan di Balai Kirti Episode Kecil-Kecil Jadi Presiden',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
+    participants: 50,
+    description: `Petualangan di Balai Kirti merupakan salah satu program publik Museum Kepresidenan RI Balai Kirti dengan sasaran anak-anak usia 5-10 tahun. Tujuan utama dari kegiatan ini adalah untuk mengenalkan figur presiden kepada anak-anak kecil melalui sejumlah kegiatan dan permainan seru didalamnya. Kegiatan permainan mencakup imajinasi, eksplorasi, sensori, dan kolaborasi. 
+
+Pada tanggal 26 Juli 2025 dilaksanakan Petualangan di Balai Kirti dengan sejumlah permainan seru didalamnya. Kegiatan dimulai dengan Kecil Bergerak yang mengajak peserta untuk menanam bibit strawberry sekaligus mengajarkan dasar-dasar berkebun untuk peserta. Kegiatan dilanjutkan dengan melukis kue sesuai dengan imajinasi dan kreativitas peserta. Kegiatan terakhir adalah Kecil-Kecil Jadi Presiden. Aksi kecil-kecil jadi presiden memberikan ruang bagi si kecil untuk terlibat dalam pesta demokrasi mini. Si Kecil akan memilih calon presiden (yang terdiri dari semua peserta kegiatan) melalui mekanisme pemilihan presiden di Indonesia. Tersedia juga kotak suara, bilik suara, dan surat suara. Setelah itu, Presiden Kecil akan membentuk kabinetnya sendiri. Para peserta yang tidak menjadi presiden akan mengisi kuisioner untuk posisi menteri kabinet kecil. Kegiatan diakhiri dengan pelantikan presiden kecil.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62812-1151-1722',
+      email: '-',
+      website: 'www.museumkepresidenan.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 26,
+    title: 'Night at the Museum (Jelajah Malam Sangiran)',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Manusia Purba Sangiran',
+    address: 'Jalan Sangiran No.Km. 4, Kebayanan II, Krikilan, Kec. Kalijambe, Kabupaten Sragen, Jawa Tengah 57275',
+    participants: 50,
+    description: `Kegiatan "Night at the Museum/Jelajah Malam Sangiran" merupakan sebuah inisiatif yang bertujuan untuk memberikan pengalaman edukasi yang berbeda kepada masyarakat, khususnya generasi muda, tentang kekayaan sejarah dan prasejarah di Situs Sangiran.
+
+Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum yang unik dan mendapatkan pemahaman lebih mendalam mengenai koleksi serta penelitian yang dilakukan di Sangiran, dengan cara yang lebih seru dan menarik.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '-',
+      email: '-',
+      website: '-'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 27,
+    title: 'Sangiran International Youth Forum',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Manusia Purba Sangiran',
+    address: 'Jalan Sangiran No.Km. 4, Kebayanan II, Krikilan, Kec. Kalijambe, Kabupaten Sragen, Jawa Tengah 57275',
+    participants: 50,
+    description: `Forum ini bertujuan untuk membangun jejaring global dan mendorong pelestarian serta pengembangan kawasan Sangiran sebagai situs warisan dunia. Peserta forum, yang terdiri dari pemuda dari berbagai negara, terlibat dalam berbagai kegiatan, termasuk proyek kolaboratif dan diskusi tentang pelestarian warisan budaya`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '-',
+      email: '-',
+      website: '-'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 28,
+    title: '130 Years after Pithecanthropus erectus - Kolaborasi dengan Museum Nasional Indonesia',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Manusia Purba Sangiran',
+    address: 'Jalan Sangiran No.Km. 4, Kebayanan II, Krikilan, Kec. Kalijambe, Kabupaten Sragen, Jawa Tengah 57275',
+    participants: 50,
+    description: ``,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '-',
+      email: '-',
+      website: '-'
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 29,
+    title: 'Pameran 75 Tahun Perancis Indonesia - Black Room: The Soul Gallery',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: `Hitam - rona yang intens, sebuah suara formalitas, kemewahan, dan keanggunan, sekaligus menyiratkan misteri dan kontemplasi. The Black Room mencurahkan seluruh lapisan makna ini ke dalam The Soul Gallery, sebuah ruang renungan dimana abstraksi, memori, dan kontras berpadu, ketika artefak dari berbagai penjuru Indonesia berdialog dengan karya seni kontemporer. Tekstur dan simbolisme keduanya mengingatkan kita pada sulaman kain dan hiasan upacara ritual leluhur, menciptakan gesekan sunyi antar zaman yang memadukan minimalisme modern dengan akar tradisi yang dalam. Dalam ruang gelap dan intim ini, bayangan dan bentuk menjadi narator, mengizinkan budaya, kriya, dan emosi hadir berdampingan.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 30,
+    title: 'Pameran 75 Tahun Perancis Indonesia - Pink Room:  Tenun Rosé Lounge',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: `Tenun Rosé Lounge terinspirasi oleh keindahan warisan budaya Indonesia yang tertenun dalam setiap helai kain songket - simbol kesabaran, cinta, dan kerja keras yang diwariskan turun-temurun. Di balik benang emas yang ditenun dengan tangan penuh ketelatenan, tersimpan kisah harapan dan kebahagiaan keluarga, menjadikan songket bukan sekadar kain, melainkan ungkapan rasa syukur dan sukacita yang tulus. Warna merah muda dipilih untuk melambangkan bonheur (kebahagiaan), yang mewakili kelembutan, kasih sayang, dan semangat hidup yang cerah. Melalui perpaduan nuansa merah muda dan makna mendalam di balik proses menenun songket, lounge ini menjadi ruang yang merayakan kekayaan tradisi dan kebahagiaan hidup dallam suasana modern yang penuh cinta.`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 31,
+    title: 'Sekolah Tari Tradisional Gratis Museum Nasional Indonesia',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: `Program ini merupakan bentuk kerja sama Museum dan Cagar Budaya (MCB) Unit Museum Nasional Indonesia bersama Yayasan Belantara Budaya Indonesia dalam mempromosikan & melestarikan budaya Indonesia melalui program Museum & Publik.`,
+    image: '/src/assets/events/Sekolah Tari Tradisional Indonesia_YBBI.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 32,
+    title: 'WISATA EDUKASI LORONG SEJARAH KEMHAN RI',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: `WISATA EDUKASI LORONG SEJARAH KEMHAN RI
+🛡️ Menyusuri Jejak Perjuangan, Memahami Arti Pertahanan
+
+✨ Kemhan Demi Bangsa ✨
+Ayo ikuti kunjungan edukatif ke Lorong Sejarah Kementerian Pertahanan RI dan temukan kisah perjuangan para pahlawan dalam menjaga kedaulatan negara!
+
+📍 Kementerian Pertahanan RI
+🎫 Khusus bagi pengunjung yang telah membeli tiket Museum Nasional`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 33,
+    title: 'Nglaras Gamelan',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: ` “Nglaras Gamelan” bersama Laras Kanita setiap Sabtu terakhir tiap bulan.
+Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan mencoba memainkan gamelan. ✨`,
+    image: '/src/assets/events/nglaras gamelan.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 34,
+    title: 'Rakopi: Rasa dan Kisah Kopi',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Nasional Indonesia',
+    address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
+    participants: 50,
+    description: `Belajar cara meracik kopi & tur seru keliling Museum Nasional Indonesia`,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-3868172',
+      email: '-',
+      website: 'www.www.museumnasional.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 35,
+    title: 'Tapak Tilas Proklamasi',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Perumusan Naskah Proklamasi',
+    address: 'Jalan Imam Bonjol No.1, RT.9/RW.4, Menteng, Kec. Menteng, Kota Jakarta Pusat, DKI Jakarta 10310',
+    participants: 50,
+    description: ``,
+    image: '',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+6221-31447439',
+      email: '-',
+      website: 'www.munasprok.or.id',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 36,
+    title: 'Soft Launching Museum Song Terus 2022',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan "Soft Launching Museum Song Terus" dilakukan pada tanggal 12 Oktober 2022 dengan turut mengundang dari pihak pemerintah kabupaten pacitan dan stakeholder terkait seperti bpkw XI dan komunitas`,
+    image: '/src/assets/events/soft launching song terus.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 37,
+    title: 'Kegiatan Jelajah Terus 2023',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan jelajah situs yang berada di kawasan museum song terus dengan peserta dari tingkat smp/mts kecamatan punung, donorojo dan pringkuku.`,
+    image: '/src/assets/events/Jelajah Terus 2023.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 38,
+    title: 'Temu Publik 2023',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan yang dilakukan museum song terus dengan mempertemukan pihak museum song terus dengan para pelaku wisata di kabupaten pacitan`,
+    image: '/src/assets/events/Temu Public Song Terus.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 39,
+    title: 'Vredeburg Fair 9',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Pameran temporer yang dilakukan di museum benteng vredeburg dalam rangka kegiatan vredeburg fair #9`,
+    image: '/src/assets/events/vredeburg Fair 9.jpg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 40,
+    title: 'Workshop replika alat batu',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Workshop pembuatan replika alat batu yang dilakukan di museum song terus, dengan mengundang narasumber peneliti dan dari bpkw XI untuk menjelaskan tentang proses pembuatan replika dan praktek pembuatan replika alat batu`,
+    image: '/src/assets/events/Workshop Replika Alat Batu.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 41,
+    title: 'Song Terus Expo',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: ``,
+    image: '/src/assets/events/Song Terus Expo.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 42,
+    title: 'Temu publik vol 2',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan yang mempertemukan pihak museum song terus dengan pihak sekolah dari SD/MI, SMP/MTS, dan SMA/SMK/STM di kabupaten pacitan`,
+    image: '/src/assets/events/Temu Publik Vol2.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 43,
+    title: 'Temu publik vol 3',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan yang dilakukan museum song terus dengan mempertemukan pihak museum song terus dengan para pelaku wisata di kabupaten pacitan, kabupaten wonogiri dan propinsi daerah istimewa yogyakarta`,
+    image: '/src/assets/events/Temu Publik Vol3.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 44,
+    title: 'Jelajah Terus 2024',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan jelajah situs dengan melakukan penjelajahan situs sekitar museum song terus yang dilombakan di tingkat SMA/SMK`,
+    image: '/src/assets/events/Jelajah Terus 2024.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 45,
+    title: 'Ruang daya',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan menyaring aspirasi penggiat budaya di kabupaten pacitan dengan tema kegiatan seminar pemajuan kebudayaan pacitan`,
+    image: '/src/assets/events/Ruang Daya Desember.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 46,
+    title: 'Pameran Malang',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Pameran yang dilakukan di gedung kppn malang, dalam rangka harmusindo`,
+    image: '/src/assets/events/Pameran Malang Oktober.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 47,
+    title: 'Pameran Tulungagung',
+    category: 'pameranTemporer',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Pameran yang dilakukan di museum daerah tulungagung`,
+    image: '/src/assets/events/Pameran Tulungagung Oktober.jpeg',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 48,
+    title: 'Workshop LKTI',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan lokakarya Lomba Karya Tulis Ilmiah dilakukan di museum song terus dengan mengundang peserta se karesidenan madiun`,
+    image: '/src/assets/events/Workshop LKTI 2024.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 49,
+    title: 'Layar Purba',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan kolaborasi dengan pihak ruang film pacitan dengan menggelar kegiatan nonton film bersama di amphiteater museum song terus`,
+    image: '/src/assets/events/Layanan Purba April 2025.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 50,
+    title: 'Rona Budaya',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Kegiatan kolaborasi dengan pihak rumah wayang beber tawangalun donorojo dengan mengadakan lomba mewarnai tingkat SD/MI`,
+    image: '/src/assets/events/Rona Budaya.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+  {
+    id: 51,
+    title: 'Festival kuliner',
+    category: 'event',
+    date: '1 Maret - 30 Juni 2024',
+    time: 'Ongoing',
+    location: 'Museum Song Terus',
+    address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
+    participants: 50,
+    description: `Pameran museum song terus yang dilakukan di pantai pancer door di kabupaten pacitan dalam rangka festival kuliner`,
+    image: '/src/assets/events/Festival Kuliner Juli 2025.JPG',
+    status: 'upcoming',
+    highlights: [
+      'Prasasti Kudadu asli dari tahun 1294',
+      'Koleksi keramik Ming dari periode perdagangan',
+      'Replika mahkota Raja Hayam Wuruk',
+      'Diorama Trowulan - ibu kota Majapahit',
+      'Film dokumenter "Jejak Majapahit"'
+    ],
+    schedule: [
+      { time: '09:00-10:00', activity: 'Pembukaan dan sambutan' },
+      { time: '10:00-12:00', activity: 'Tur terpandu koleksi utama' },
+      { time: '12:00-13:00', activity: 'Istirahat dan makan siang' },
+      { time: '13:00-15:00', activity: 'Workshop kaligrafi Jawa kuno' },
+      { time: '15:00-17:00', activity: 'Diskusi panel dan tanya jawab' }
+    ],
+    contact: {
+      phone: '+62821-4052-3401',
+      email: '-',
+      website: '-',
+    },
+    requirements: [
+      'Pendaftaran online melalui website museum',
+      'Membawa identitas diri (KTP/SIM/Paspor)',
+      'Mengikuti protokol kesehatan',
+      'Usia minimal 12 tahun untuk workshop'
+    ]
+  },
+];
+
+export const collections = [
+  {
+    id: 1,
+    title: 'Mahkota Sultan Siak Sri Indrapura',
+    subtitle: 'Mahkota ini adalah mahkota Sultan Siak Sri Indrapura terbuat dari bahan emas 17 karat dihias berlian dan rubi.',
+    category: 'crown',
+    museum: 'Museum Nasional Indonesia',
+    period: '-',
+    image: '/src/assets/collections/Mahkota Sultan Siak Sri.JPG',
+    description: 'Mahkota ini adalah mahkota Sultan Siak Sri Indrapura terbuat dari bahan emas 17 karat dihias berlian dan rubi. Motif pada mahkota dibuat dengan teknik karawang atau filigree. Motif ini biasanya digunakan untuk perhiasan dengan menggunakan benang logam atau kawat halus (emas, perak, atau tembaga) yang dipelintir, dianyam, dibentuk, dan disatukan dengan patri menjadi sebuah bentuk tertentu. Teknik karawang atau filigree dibuat secara manual dan membutuhkan ketelitian dan keahlian yang tinggi dengan menyusun kawat-kawat tipis tersebut kemudian disolder atau ditempelkan pada kerangka sehingga menghasilkan motif yang unik, personal, juga bernilai tinggi. Mahkota bukan sekedar hiasan kepala yang dikenakan oleh raja, ratu ataupun dewa. Mahkota ialah simbol kemasyhuran penguasa, kekuasaan legitimasi, keabadian, kemakmuran serta kehidupan setelah kematian. Mahkota ini beserta benda regalia lainnya diberikan oleh Sultan Syarif Kasim Abdul Jalil Syaifuddin atau dikenal dengan nama Sultan Syarif Kasim II kepada pemerintah Republik Indonesia pada tahun 1945 sebagai bentuk dukungan penuh terhadap kemerdekaan Indonesia. Dukungan diberikan dengan cara mengakui bahwa Kesultanan Siak Sri Indrapura merupakan bagian dari Negara Kesatuan Republik Indonesia. Mahkota ini telah ditetapkan sebagai Cagar Budaya berperingkat Nasional melalui Surat Keputusan Nomor 248/M/2013 pada tanggal 27 Desember 2013 oleh Menteri Pendidikan dan Kebudayaan.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 2,
+    title: 'Kamera SLR Leica',
+    subtitle: 'Kamera Leica ini adalah kamera pribadi milik Presiden B.J. Habibie yang kerap beliau gunakan.',
+    category: 'camera',
+    museum: 'Museum Kepresidenan Republik Indonesia Balai Kirti',
+    period: '-',
+    image: '/src/assets/collections/Kamera SLR Leica.jpg',
+    description: 'Kamera Leica ini adalah kamera pribadi milik Presiden B.J. Habibie yang kerap beliau gunakan. Presiden B.J. Habibie dikenal mempunyai kegemaran dalam bidang fotografi. Ketika menjabat sebagai Presiden RI ke-3, B.J. Habibie pernah menggelar pameran dan peluncuran buku fotografi yang menampilkan hasil karya-karyanya. Pameran yang menampilkan 178 karya foto dan peluncuran buku "Pesona Cahaya, Kecepatan, Waktu, dan Ruang Angkasa" tersebut diselenggarakan di Galeri Depdikbud (saat ini Galeri Nasional) pada tanggal 26 Juni 1999 hingga 2 Juli 1999. Objek fotografi yang menjadi kesukaan beliau antara lain awan, lanskap, rumah, laut, hutan cemara, gunung, hingga bunga-bunga yang bermekaran di taman. Dalam waktu senggangnya, Presiden B.J. Habibie juga senang mengabadikan momen-momen kebersamaan dengan keluarga menggunakan kamera tersebut.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 3,
+    title: 'Lukisan dr. Wahidin Soedirohoesodo',
+    subtitle: 'Lukisan Dokter Wahidin Soedirohoesodo merupakan karya maestro lukis Indonesia Basoeki Abdullah.',
+    category: 'portrait',
+    museum: 'Museum Kebangkitan Nasional',
+    period: '-',
+    image: '/src/assets/collections/Lukisan dr. Wahidin Soedirohoesodo.jpg',
+    description: 'Lukisan Dokter Wahidin Soedirohoesodo merupakan karya maestro lukis Indonesia Basoeki Abdullah. Karakter Wahidin Soedirohoesodo dilukis dengan teliti khususnya pada bagian wajah. Pada bagian baju dan kain proses lukis dilakukan dengan gaya realis impresif, sedangkan pada bagian belakang brushstroke dilakukan dengan menggunakan campuran cat yang terdiri dari merah, kuning, orange, dan putih yang dipadukan dengan warna biru tua dan ungu, sehingga menghasilkan kesan gelap terang yang dramatis. Posisi tangan pada lukisan bersedekap yang dimaknai sebagai sebuah keprihatinan terhadap kondisi masyarakat yang sengsara karena penjajahan, sedangkan kaki tidak menggunakan alas sebagai lambang bahwa Dokter Wahidin Soedirohoesodo sangat merakyat. Hal ini dibutktikan dengan usahanya menemui bangsawan dan priyayi di Pulau Jawa dengan berjalan kaki untuk memperkenalkan dana belajar untuk para pelajar yang tidak mampu.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 4,
+    title: 'Master Poster Soekarno',
+    subtitle: 'Master Poster ini berbentuk seperti vinyet yang merupakan gambar dekoratif tanpa maksud yang jelas, biasanya berupa kreasi improvisatif sebagai pengisi halaman kosong.',
+    category: 'portrait',
+    museum: 'Museum Perumusan Naskah Proklamasi',
+    period: '-',
+    image: '/src/assets/collections/Master Poster Soekarno.jpg',
+    description: 'Master Poster ini berbentuk seperti vinyet yang merupakan gambar dekoratif tanpa maksud yang jelas, biasanya berupa kreasi improvisatif sebagai pengisi halaman kosong. Siluet merupakan efek yang dihasilkan dalam fotografi karena adanya perbedaan signifikan antara pantulan cahaya objek utama di bagian depan gambar dengan latar belakangnya. gambar Ir. Soekarno dari arah samping kiri. Tampak Ir. Soekarno memakai peci. Master poster ini berwarna hitam putih.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 5,
+    title: 'Biola W.R. Supratman',
+    subtitle: 'Biola WR Supratman ini yang digunakan saat melagukan Indonesa Raya pada 28 Oktober 1928 saat kongres sumpah pemuda dilaksanakan.',
+    category: 'music instrument',
+    museum: 'Museum Sumpah Pemuda',
+    period: '-',
+    image: '/src/assets/collections/Biola W.R. Supratman.jpg',
+    description: 'Biola WR Supratman ini yang digunakan saat melagukan Indonesa Raya pada 28 Oktober 1928 saat kongres sumpah pemuda dilaksanakan. Pada bagian dalam terdapat tulisan “Nicolaus Amatus Fecit In Cremona 16” yang menunjukkan nama pembuat dan alamatnya. Pada bagian badan juga terdapat tick rest atau penahan dagu. Adapun biola ini memiliki ukuran standar (4/4) dengan panjang badan 36 cm, lebar badan bagian bawah 20 cm, lebar badan bagian atas 11 cm, tebal 4,1 cm pada bagian tepi, dan tebal 6 cm pada bagian tengah. Leher biola berukuran panjang 37,2 cm, lebar leher pada sisi terlebar 4 cm dan sisi tersempit 2,5 cm. Pada bagian leher ini terdapat setelan senar sepanjang 6 cm yang berujung bundar dengan diameter 2,5 cm. Penggesek biola memiliki ukuran panjang 71,2 cm dan panjang senar 62,5 cm. Kayu Cyprus (Peronema canescens): Membentuk bagian depan biola. Kayu Maple Italia (Acer pseudoplatanus): Membentuk bagian samping (side plate), bagian belakang (back plate), leher (neck), kepala (scroll), dan jembatan (bridge). Kayu Eboni Afrika Selatan (Diospyros melanida): Membentuk bagian senar holder (tail piece), penggulung senar (driver), kriplang (finger board), dan end pin. Lis tepi biola: Terbuat dari kayu rosewood atau eboni.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 6,
+    title: 'Set Lukisan Pimpinan GNB (5 buah): 1. 14 Pimp Neg GNB dari M Zanawi (Ethiophia)',
+    subtitle: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992.',
+    category: 'portrait',
+    museum: 'Museum Basoeki Abdullah',
+    period: '-',
+    image: '/src/assets/collections/Set Lukisan Pimpinan GNB1.JPG',
+    description: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992. Karya ini diciptakan sebagai bentuk penghormatan kepada para pemimpin negara anggota GNB yang hadir dalam forum internasional yang diselenggarakan di Jakarta, Indonesia, pada 1–6 September 1992. Dalam proses kreatifnya, Basoeki Abdullah melukis potret para kepala negara ini berdasarkan foto resmi yang dikirimkan oleh masing-masing negara peserta. Dengan pendekatan realisme, ia berhasil menangkap tidak hanya rupa, tetapi juga karakter dan wibawa setiap tokoh. Detail yang halus, ketepatan anatomi, serta penyajian ekspresi yang kuat menjadikan seri lukisan ini tidak hanya sebagai dokumentasi visual, tetapi juga sebagai karya seni yang sarat nilai historis, diplomatik, dan estetika.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 7,
+    title: 'Set Lukisan Pimpinan GNB (5 buah): 2. 10 Pim Neg GNB dari N Soglo',
+    subtitle: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992.',
+    category: 'portrait',
+    museum: 'Museum Basoeki Abdullah',
+    period: '-',
+    image: '/src/assets/collections/Set Lukisan Pimpinan GNB2.JPG',
+    description: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992. Karya ini diciptakan sebagai bentuk penghormatan kepada para pemimpin negara anggota GNB yang hadir dalam forum internasional yang diselenggarakan di Jakarta, Indonesia, pada 1–6 September 1992. Dalam proses kreatifnya, Basoeki Abdullah melukis potret para kepala negara ini berdasarkan foto resmi yang dikirimkan oleh masing-masing negara peserta. Dengan pendekatan realisme, ia berhasil menangkap tidak hanya rupa, tetapi juga karakter dan wibawa setiap tokoh. Detail yang halus, ketepatan anatomi, serta penyajian ekspresi yang kuat menjadikan seri lukisan ini tidak hanya sebagai dokumentasi visual, tetapi juga sebagai karya seni yang sarat nilai historis, diplomatik, dan estetika.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 8,
+    title: 'Set Lukisan Pimpinan GNB (5 buah): 3. 10 Pimp Neg GNB dari Demond H (Guyana)',
+    subtitle: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992.',
+    category: 'portrait',
+    museum: 'Museum Basoeki Abdullah',
+    period: '-',
+    image: '/src/assets/collections/Set Lukisan Pimpinan GNB3.JPG',
+    description: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992. Karya ini diciptakan sebagai bentuk penghormatan kepada para pemimpin negara anggota GNB yang hadir dalam forum internasional yang diselenggarakan di Jakarta, Indonesia, pada 1–6 September 1992. Dalam proses kreatifnya, Basoeki Abdullah melukis potret para kepala negara ini berdasarkan foto resmi yang dikirimkan oleh masing-masing negara peserta. Dengan pendekatan realisme, ia berhasil menangkap tidak hanya rupa, tetapi juga karakter dan wibawa setiap tokoh. Detail yang halus, ketepatan anatomi, serta penyajian ekspresi yang kuat menjadikan seri lukisan ini tidak hanya sebagai dokumentasi visual, tetapi juga sebagai karya seni yang sarat nilai historis, diplomatik, dan estetika.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 9,
+    title: 'Set Lukisan Pimpinan GNB (5 buah): 4. 10 Pimp Neg GNB dari Dr.RB. Cellos (Equador)',
+    subtitle: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992.',
+    category: 'portrait',
+    museum: 'Museum Basoeki Abdullah',
+    period: '-',
+    image: '/src/assets/collections/Set Lukisan Pimpinan GNB4.JPG',
+    description: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992. Karya ini diciptakan sebagai bentuk penghormatan kepada para pemimpin negara anggota GNB yang hadir dalam forum internasional yang diselenggarakan di Jakarta, Indonesia, pada 1–6 September 1992. Dalam proses kreatifnya, Basoeki Abdullah melukis potret para kepala negara ini berdasarkan foto resmi yang dikirimkan oleh masing-masing negara peserta. Dengan pendekatan realisme, ia berhasil menangkap tidak hanya rupa, tetapi juga karakter dan wibawa setiap tokoh. Detail yang halus, ketepatan anatomi, serta penyajian ekspresi yang kuat menjadikan seri lukisan ini tidak hanya sebagai dokumentasi visual, tetapi juga sebagai karya seni yang sarat nilai historis, diplomatik, dan estetika.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 10,
+    title: 'Set Lukisan Pimpinan GNB (5 buah): 5. 41 Pimp Neg GNB',
+    subtitle: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992.',
+    category: 'portrait',
+    museum: 'Museum Basoeki Abdullah',
+    period: '-',
+    image: '/src/assets/collections/Set Lukisan Pimpinan GNB5.JPG',
+    description: 'Koleksi Lukisan Kepala Negara KTT-GNB terdiri dari 5 (lima) seri lukisan potret para kepala negara peserta Konferensi Tingkat Tinggi Gerakan Non-Blok (KTT-GNB) yang dilukis oleh maestro lukis Indonesia, Basoeki Abdullah, pada tahun 1992. Karya ini diciptakan sebagai bentuk penghormatan kepada para pemimpin negara anggota GNB yang hadir dalam forum internasional yang diselenggarakan di Jakarta, Indonesia, pada 1–6 September 1992. Dalam proses kreatifnya, Basoeki Abdullah melukis potret para kepala negara ini berdasarkan foto resmi yang dikirimkan oleh masing-masing negara peserta. Dengan pendekatan realisme, ia berhasil menangkap tidak hanya rupa, tetapi juga karakter dan wibawa setiap tokoh. Detail yang halus, ketepatan anatomi, serta penyajian ekspresi yang kuat menjadikan seri lukisan ini tidak hanya sebagai dokumentasi visual, tetapi juga sebagai karya seni yang sarat nilai historis, diplomatik, dan estetika.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 11,
+    title: 'Lukisan Kapal Tenggelam/The Sinking Ship , c.1840, karya Raden Saleh Sjarif Boestaman (c.1811 - 1880)',
+    subtitle: 'Badai di laut dan kapal tenggelam termasuk pengalaman dasar sejak manusia mulai berlayar.',
+    category: 'portrait',
+    museum: 'Galeri Nasional Indonesia',
+    period: '1811 - 1880',
+    image: '/src/assets/collections/Lukisan Kapal Tenggelam.jpg',
+    description: 'Badai di laut dan kapal tenggelam termasuk pengalaman dasar sejak manusia mulai berlayar. Tema lukisan ini berkembang di Eropa karena kedekatan mereka dengan laut dan perdagangan maritim. Raden Saleh, yang mengalami badai saat berlayar ke Eropa, melukis "Zinkend Schip/Kapal Tenggelam" dengan gaya Romantikisme, menggambarkan pergulatan dramatis kapal melawan alam. Karya ini mencerminkan ketegangan antara imajinasi dan realitas, dengan pencahayaan dramatis serta suasana yang mencekam. Lukisan tersebut menggambarkan dua buah kapal yang sedang berjuang melawan badai dahsyat. Tampak sebuah kapal hampir tenggelam dan kapal lainnya pecah berantakan terhempas batu karang.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 12,
+    title: 'Batik Sogan Parang Ukel Seling',
+    subtitle: 'Kain panjang batik tulis bermotif Parang Ukel Seling, salah satu variasi motif Parang dalam langgam Sudagaran, dengan paduan warna kecoklatan (sogan) dan menampilkan aksen remekan khas Batik Wonogiri.',
+    category: 'fabric',
+    museum: 'Museum Batik Indonesia',
+    period: '-',
+    image: '/src/assets/collections/Batik Sogan Parang Ukel Seling.jpg',
+    description: 'Kain panjang batik tulis bermotif Parang Ukel Seling, salah satu variasi motif Parang dalam langgam Sudagaran, dengan paduan warna kecoklatan (sogan) dan menampilkan aksen remekan khas Batik Wonogiri. Pada salah satu sudut kain terdapat tanda stempel “Ibu Puspaningrat” yang mengindikasikan bahwa kain ini berasal dari Surakarta. Kain ini pernah menjadi bagian dari koleksi pribadi Ibu Tien Soeharto, dikenakan oleh beliau ketika menghadiri acara peringatan Hari Pers Nasional di Sulawesi Selatan pada tanggal 8 Februari 1990. Koleksi ini merupakan hibah dari Museum Purna Bhakti Pertiwi yang masuk sebagai koleksi Museum Batik Indonesia pada tahun 2024.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 13,
+    title: 'Fosil Fragmen Tengkorak (Cranium) Homo erectus',
+    subtitle: 'Fosil ini ditemukan secara tidak sengaja oleh Setu Wiryorejo penduduk Dusun Bojong, Desa Manyarejo, Kecamatan Plupuh, Kabupaten Sragen pada tanggal 6 Februari 2016.',
+    category: 'sculpture',
+    museum: 'Museum Manusia Purba Sangiran Klaster Manyarejo',
+    period: '-',
+    image: '/src/assets/collections/Fosil Fragmen Tengkorak (Cranium) Homo erectus.jpg',
+    description: 'Fosil ini ditemukan secara tidak sengaja oleh Setu Wiryorejo penduduk Dusun Bojong, Desa Manyarejo, Kecamatan Plupuh, Kabupaten Sragen pada tanggal 6 Februari 2016. Fosil ditemukan pada dasar Sungai Bojong yang terletak di Dusun Bojong, Desa Manyarejo, Kecamatan Plupuh, Kabupaten Sragen. Fosil ditemukan dalam perjalanan pulang setelah mencari rumput untuk pakan ternak. Selanjutnya fosil diserahkan oleh penemu kepada Museum Manusia Purba Sangiran Sangiran pada hari berikutnya, yaitu tanggal 7 Februari 2016. Dalam peninjauan di lokasi penemuan diketahui bahwa tengkorak Homo erectus tersebut merupakan temuan lepas (berada di endapan alluvium Sungai Bojong). Daerah ini dapat dikatakan merupakan zona perubahan dari Formasi Pucangan-Kabuh. Ahli paleoanthropologi Dr. Harry Widianto telah melakukan craniometry dan identifikasi terhadap fosil ini dan memasukkannya dalam kelompok Homo erectus arkaik yang merupakan Homo erectus tertua yang pernah hidup di Sangiran. Selanjutnya ahli paleontologi Perancis Dominique melakukan pembersihan mekanis terhadap tengkorak ini. Lapisan tanah yang menempel pada fosil merupakan endapan lempung pasiran. Dari beberapa temuan tengkorak Homo erectus arkaik sampai saat ini, fosil temuan Setu ini merupakan atap tengkorak terlengkap nomor 2 setelah temuan dari Situs Perning yang ditemukan pada tahun 1936.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 14,
+    title: 'Kendil Dalung',
+    subtitle: 'Kendil dalung milik Mertopawiro atau dikenal dengan nama Mbah Sayuk yang digunakan untuk merebus 3 butir telur ayam sebagai jamuan makan malam Jenderal Soedirman ketika beristirahat dalam perjalanan gerilyanya di rumah Mbah Sayuk.',
+    category: 'pottery',
+    museum: 'Museum Benteng Vredeburg Yogyakarta & Museum Perjuangan Yogyakarta',
+    period: '-',
+    image: '/src/assets/collections/Kendil Dalung.png',
+    description: 'Kendil dalung milik Mertopawiro atau dikenal dengan nama Mbah Sayuk yang digunakan untuk merebus 3 butir telur ayam sebagai jamuan makan malam Jenderal Soedirman ketika beristirahat dalam perjalanan gerilyanya di rumah Mbah Sayuk. Menghadapi Agresi Militer Belanda II, Jenderal Soedirman memutuskan untuk mundur ke luar kota dan berjuang gerilya membentuk pertahanan di desa-desa dengan menjadikan rumah penduduk sebagai tempat singgah atau markas sementara, salah satunya adalah rumah Mbah Sayuk di Paliyan, Karangduwet, Gunung Kidul. Pada tanggal 21 Desember 1948 sekitar pukul 16.00, Jenderal Soedirman datang dari arah selatan dengan ditandu dan berhenti di rumah Mbah Sayuk. Bersama Kapten Soepardjo Roestam, Tjokropranolo, dan dr. Soewondo, mereka beristirahat dari pukul 16.00 hingga 23.30. Saat itu, Jenderal Soedirman berbaring di ruang tengah rumah Mbah Sayuk yang berbentuk limasan Jawa dan hanya mau disebut dengan panggilan “Kang” bukan jenderal atau komandan. Pada tanggal 21 Oktober 1996, kendil dalung ini diserahkan ke Museum Benteng Vredeburg untuk dijadikan koleksi dan saat ini dipamerkan di Ruang Tata Pameran Diorama 3. Karena nilai penting sejarah, ilmu pengetahuan, pendidikan, dan kebudayaan, maka pada tanggal 26 November 2019, kendil dalung ditetapkan sebagai benda cagar budaya peringkat kabupaten.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 15,
+    title: "Jubah KH. Hasyim Asy'ari",
+    subtitle: "Jubah ini ditemukan secara tidak sengaja oleh Bapak Abdul Malik, seorang abdi dalem Nyai Masruroh (istri KH. Hasyim Asy’ari asal Kediri) dan putri beliau, Nyai Hj. Chodidjah Hasyim, di Pondok Pesantren Tebuireng.",
+    category: 'fabric',
+    museum: "Museum Islam Indonesia KH Hasyim Asy'ari",
+    period: 'abad ke-19',
+    image: '/src/assets/collections/Jubah KH. Hasyim Asyari.jpg',
+    description: "Jubah ini ditemukan secara tidak sengaja oleh Bapak Abdul Malik, seorang abdi dalem Nyai Masruroh (istri KH. Hasyim Asy’ari asal Kediri) dan putri beliau, Nyai Hj. Chodidjah Hasyim, di Pondok Pesantren Tebuireng. Pada tahun 1977, saat hendak mencuci pakaian para pengasuh pondok, Bapak Abdul Malik menemukan jubah ini di antara tumpukan pakaian. Karena penasaran, beliau menanyakannya kepada Nyai Masruroh. Beliau pun menjelaskan bahwa jubah tersebut merupakan milik KH. Hasyim Asy’ari. Bersama putrinya, Nyai Hj. Chodidjah Hasyim, Nyai Masruroh kemudian menyerahkan jubah tersebut kepada Bapak Abdul Malik untuk disimpan. Sejak saat itu, jubah ini disimpan oleh Bapak Abdul Malik di kampung halamannya, tepatnya di Jl. KH. Hasyim Asy'ari No. 69, RT 002, RW 002, Dusun Kapurejo, Desa Pagu, Kecamatan Pagu, Kabupaten Kediri, Jawa Timur. Jubah ini merupakan simbol busana kaum muslim Indonesia yang telah menunaikan ibadah haji pada abad ke-19 dan ke-20 Masehi. Pada tahun 2023, jubah ini dihibahkan ke Museum Islam Indonesia KH. Hasyim Asy’ari dan kini dipamerkan di Ruang Pameran KH. Hasyim Asy’ari sebagai bagian dari warisan sejarah dan tokoh bangsa.",
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 16,
+    title: 'Replika Rangka ST-1 "Mbah Sayem"',
+    subtitle: 'Satu-satunya temuan rangka utuh di Situs Song Terus.',
+    category: 'sculpture',
+    museum: 'Museum Song Terus',
+    period: '-',
+    image: '/src/assets/collections/Replika Rangka ST-1 Mbah Sayem.jpg',
+    description: 'Satu-satunya temuan rangka utuh di Situs Song Terus. Rangka ditemukan dengan posisi dikuburkan terlipat. Berjenis kelamin laki-laki, berumur kurang lebih 50-60 tahun, dan termasuk dalam ras Australomelanesid. Berasal dari masa 8500 tahun yang lalu dan termasuk dalam periode Mesolitik/Preneolitik. Temuan ini menjadi representasi bagaimana manusia menjalani hidup pada Masa Prasejarah khususnya di wilayah Gunung Sewu.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 17,
+    title: 'Mata Panah',
+    subtitle: 'Merupakan alat yang berasal dari Masa Neolitik, berbentuk segitiga, tipis, diretus pada kedua sisinya dan memiliki dasar yang berbentuk cekung.',
+    category: 'weapon',
+    museum: 'Museum Song Terus',
+    period: '-',
+    image: '/src/assets/collections/MST_MATA PANAH-1.jpg',
+    description: 'Merupakan alat yang berasal dari Masa Neolitik, berbentuk segitiga, tipis, diretus pada kedua sisinya dan memiliki dasar yang berbentuk cekung. Artefak ini menjadi bukti bahwa wilayah Gunung Sewu menjadi kawasan bagaimana industri litik berkembang di Masa Prasejarah dari alat sederhana di Masa Paleolitik hingga mencapai puncak teknologinya di Masa Neolitik yang salah satunya diwakili oleh mata panah.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 18,
+    title: 'Beliung Setengah Jadi',
+    subtitle: 'Merupakan beliung persegi yang belum selesai dikerjakan, terbuat dari batuan basalt dengan dominasi warna abu-abu gelap.',
+    category: 'weapon',
+    museum: 'Museum Semedo',
+    period: '-',
+    image: '/src/assets/collections/Beliung Setengah Jadi.jpg',
+    description: 'Merupakan beliung persegi yang belum selesai dikerjakan, terbuat dari batuan basalt dengan dominasi warna abu-abu gelap. Pada koleksi ini terdapat korteks pada satu sisi, sedangkan sisi yang lain sudah tidak berkorteks. Jejak pembuatan yang masih dapat diamati berupa pemangkasan pada permukaannya. Koleksi beliung persegi setengah jadi menjadi indikasi bahwa budaya artefak batu Kawasan Cagar Budaya Semedo tidak hanya berlangsung pada periode Paloelitik, melainkan hingga periode Neolitik.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 19,
+    title: 'Fragmen Tempurung Kura-Kura',
+    subtitle: 'Merupakan tempurung kura-kura yang terkonservasi bagian carapace dan plastron.',
+    category: 'sculpture',
+    museum: 'Museum Semedo',
+    period: '-',
+    image: '/src/assets/collections/Fragmen Tempurung Kura-Kura.JPG',
+    description: 'Merupakan tempurung kura-kura yang terkonservasi bagian carapace dan plastron. Permukaan koleksi didominasi warna coklat keabuan. Pada carapace masih dapat diamati bagian pleural dan periphericalnya, tetapi sebagian carapace telah hilang dan tertutup sedimen. Pada bagian plastron yang masih dapat diamati adalah bagian hypoplastron, xiphiplastron, sedikit bagian hyoplatron dan epiplastron, sedangkan bagian lainnya sudah mengalami pergeseran akibat sedimentasi. Berdasarkan penelitian Prof. Akio Takahashi dari Okayama University of Science, fosil fauna ini diduga berasal dari spesies kura-kura Duboisemys isoclina dan merupakan spesimen terbaik kedua setelah spesiman sejenis yang ditemukan di Trinil.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 20,
+    title: 'Benteng Marlborough',
+    subtitle: 'Benteng Marlborough adalah benteng kolonial yang dibangun oleh East India Company (EIC) pada 1713–1719.',
+    category: 'fortress',
+    museum: 'CB Unit Banten, Jawa Barat, Sumatera',
+    period: '-',
+    image: '/src/assets/collections/Benteng Marlborough.JPG',
+    description: 'Benteng Marlborough adalah benteng kolonial yang dibangun oleh East India Company (EIC) pada 1713–1719. Benteng ini menjadi markas penting Inggris di Pantai Barat Sumatera selama masa kolonial yang bertujuan untuk melindungi kepentingan perdagangan rempah-rempah dan sebagai pusat pertahanan melawan saingan seperti Belanda dan pemberontakan lokal. Benteng ini memiliki desain berbentuk kura-kura dengan dinding tebal dan parit pertahanan, mencerminkan arsitektur militer Eropa abad ke-18 Masehi. Benteng ini juga merupakan saksi peristiwa “Mount Fellix” tahun 1807 yang menewaskan residen EIC, Thomas Parr. Peristiwa ini merupakan perlawanan dan protes para rakyat Bengkulu terhadap sistem tanam kopi yang dipaksakan. Pada 1825, Inggris menyerahkan Bengkulu kepada Belanda melalui Traktat London (Anglo-Dutch Treaty of 1824) dengan ditukar wilayah Melaka. Benteng ini kemudian beralih fungsi menjadi markas militer selama masa kolonial Belanda hingga masa pendudukan Jepang. Benteng Marlborough telah ditetapkan sebagai Cagar Budaya dan merupakan bukti interaksi kompleks antara kolonialisme, perlawanan lokal, dan dinamika perdagangan global.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 21,
+    title: 'Rumah Bekas Pengasingan Bung Karno',
+    subtitle: 'Rumah kediaman Bung Karno di Bengkulu adalah salah satu situs bersejarah yang terkait dengan masa pengasingan Presiden pertama Indonesia, Soekarno, oleh pemerintah kolonial Belanda pada 1938–1942.',
+    category: 'sites',
+    museum: 'CB Unit Banten, Jawa Barat, Sumatera',
+    period: '-',
+    image: '/src/assets/collections/Rumah Bekas Pengasingan Bung Karno.JPG',
+    description: 'Rumah kediaman Bung Karno di Bengkulu adalah salah satu situs bersejarah yang terkait dengan masa pengasingan Presiden pertama Indonesia, Soekarno, oleh pemerintah kolonial Belanda pada 1938–1942. Bangunan ini awalnya merupakan rumah milik seorang pedagang Tionghoa yang disewa Belanda untuk tempat tinggal Soekarno selama diasingkan di Bengkulu. Selama menempati rumah ini, Soekarno aktif berinteraksi dengan masyarakat lokal, mengajar, berkesenian, dan menyebarkan ide-ide nasionalisme. Ia juga merancang beberapa bangunan, termasuk Masjid Jami’ Bengkulu, yang masih berdiri hingga kini. Rumah ini menjadi saksi perjalanan politik Soekarno sebelum kemerdekaan Indonesia. Setelah Indonesia merdeka, rumah tersebut kemudian dipugar dan dijadikan tempat menyimpan dan memajang barang-barang koleksi Bung Karno, meliputi furnitur, foto-foto, barangbarang, dan dokumen peninggalan Bung Karno. Rumah yang dibangun awal abad ke-20 ini berbentuk persegi panjang seluas 162 m², terletak di tengah halaman yang luas dan dikelilingi pagar. Bangunan ini memiliki teras depan dan belakang, jendela kaca besar, pintu masuk utama berdaun ganda, dan atap limas. Di dalamnya, terdapat ruang tamu, beberapa kamar (tiga di sisi kanan dan dua di sisi kiri), serta paviliun di belakang. Bagian belakang rumah juga memiliki beranda dan bangunan memanjang berisi kamar mandi, gudang, dan dapur.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 22,
+    title: 'Situs Megalitik Pugung Raharjo',
+    subtitle: 'Taman Purbakala Pugung Raharjo adalah kompleks arkeologi yang berlokasi di Lampung, yang mengandung peninggalan dari masa prasejarah hingga pengaruh Hindu-Buddha.',
+    category: 'sites',
+    museum: 'CB Unit Banten, Jawa Barat, Sumatera',
+    period: 'Abad ke-14',
+    image: '/src/assets/collections/Situs Megalitik Pugung Raharjo.JPG',
+    description: 'Taman Purbakala Pugung Raharjo adalah kompleks arkeologi yang berlokasi di Lampung, yang mengandung peninggalan dari masa prasejarah hingga pengaruh Hindu-Buddha. Situs ini ditemukan pada 1957 secara tidak sengaja oleh transmigran yang membuka lahan di wilayah Lampung Timur. Temuan-temuan di Taman Purbakala mencakup berbagai struktur seperti punden berundak, batu berdiri (menhir), dolmen, parit kuno, dan arca, serta artefak seperti keramik asing dan prasasti abad ke-14. Di salah satu punden itu juga ditemukan Arca Boddhisatwa "Putri Bodariah". Temuan-temuan tersebut menunjukkan perpaduan kebudayaan megalitik dan pengaruh kerajaan seperti Sriwijaya. Selain itu, terdapat mata air dengan kolam dan batuan bergores, serta temuan arca lain termasuk sosok duduk berhias dan Arca Avalokitecvara perunggu berlanggam Sailendra, menegaskan kekayaan sejarah dan budaya situs ini. Situs ini awalnya dianggap sebagai pemukiman kuno yang berkembang antara abad ke-7 hingga sekitar abad ke-13 Masehi. Beberapa peneliti meyakini Pugung Raharjo berfungsi sebagai pusat ritual atau permukiman pertahanan, dibuktikan dengan adanya parit buatan dan struktur tanah yang membentuk benteng alami.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 23,
+    title: 'Situs Megalitik Gunung Padang',
+    subtitle: 'Situs Gunung Padang di Cianjur, Jawa Barat, merupakan salah satu kompleks megalitik terbesar di Asia Tenggara yang memicu perdebatan menarik di kalangan arkeolog.',
+    category: 'sites',
+    museum: 'CB Unit Banten, Jawa Barat, Sumatera', 
+    period: '1500 - 2500 SM',
+    image: '/src/assets/collections/Situs Megalitik Gunung Padang.jpg',
+    description: 'Situs Gunung Padang di Cianjur, Jawa Barat, merupakan salah satu kompleks megalitik terbesar di Asia Tenggara yang memicu perdebatan menarik di kalangan arkeolog. Dikenal sebagai "gunung cahaya" oleh masyarakat setempat, situs ini terdiri dari lima teras bertingkat dengan susunan batu kolom andesit berbentuk unik, diduga kuat berasal dari masa Neolitik (1500-2500 SM). Keunikan situs ini terletak pada kontroversi usianya. Dalam penelitian geoelektrik diklaim adanya struktur bawah tanah yang mungkin berusia hingga 20.000 tahun, menjadikannya potensial sebagai struktur piramida tertua di dunia. Namun, klaim ini masih diperdebatkan karena bukti arkeologis hanya mendukung interpretasi penggunaan situs sebagai tempat pemujaan megalitik pada milenium pertama SM. Terlepas dari kontroversi yang ada, Gunung Padang diakui sebagai warisan megalitik penting dengan nilai budaya tinggi, tercermin dari statusnya sebagai cagar budaya nasional. Temuan alat batu dan fragmen gerabah memperkuat dugaan sebagai pusat aktivitas spiritual masa lalu. Cagar Budaya Gunung Padang saat ini menjadi tempat yang menawarkan pengalaman luar biasa tentang hubungan manusia, alam, dan spiritualitasnya. Di sini, kita dapat merenung tentang bagaimana nenek moyang kita dapat membangun peradaban dengan kepemimpinan yang hebat dan kerjasama yang erat. Jejak-jejak nilai luhur yang ditemukan di Gunung Padang ini bisa menjadi inspirasi bagi kita dalam menjalani kehidupan sehari-hari.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 24,
+    title: 'Candi Borobudur',
+    subtitle: 'Terletak di Jawa Tengah, sekitar 40 km dari Yogyakarta, Candi Borobudur berdiri megah di atas bukit alami dengan struktur batu andesit yang simetris dan tanpa atap.',
+    category: 'sites',
+    museum: 'Unit Wardun Borobudur', 
+    period: 'Abad ke-9',
+    image: '/src/assets/collections/Candi Borobudur.jpg',
+    description: 'Terletak di Jawa Tengah, sekitar 40 km dari Yogyakarta, Candi Borobudur berdiri megah di atas bukit alami dengan struktur batu andesit yang simetris dan tanpa atap. Candi Borobudur, monumen Buddha terbesar di dunia yang dibangun abad ke-9 oleh Dinasti Sailendra, merupakan mahakarya arsitektur dan spiritual Jawa Kuno. Prasasti Tri Tepusan (842 M) menyebutnya sebagai kamulan ni Bhumisambhara (bukit kebijaksanaan), dengan struktur 10 tingkat berbentuk piramida berundak dari batu andesit, melambangkan perjalanan menuju pencerahan dalam Buddhisme. Desainnya yang menyerupai bunga teratai mencerminkan simbol kesucian, sementara lebih dari 2.600 panel reliefnya mengilustrasikan ajaran Buddha seperti karmawibhangga (hukum sebab-akibat), lalitawistara (kisah Siddharta Gautama), dan gandawyuha (pencarian kebijaksanaan). Selain nilai keagamaan dan moral, relief juga menyimpan informasi sosial-budaya masyarakat Jawa Kuna: alat musik, senjata, kapal dagang, pakaian, dan arsitektur. Hal ini menandakan peradaban yang maju dalam ilmu pengetahuan, kemaritiman, dan agrikultur, serta memiliki keselarasan hidup dengan alam. Candi Borobudur adalah simbol kebijaksanaan, toleransi, dan nilai-nilai kemanusiaan. Ia merupakan warisan adiluhung Nusantara yang mencerminkan perpaduan antara spiritualitas dan kejayaan budaya Jawa Kuna.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 25,
+    title: 'Candi Pawon',
+    subtitle: 'Candi Pawon, terletak di antara Candi Mendut dan Borobudur, diperkirakan dibangun pada abad ke-8 Masehi sebagai bagian dari kompleks ritual Dinasti Syailendra.',
+    category: 'sites',
+    museum: 'Unit Wardun Borobudur', 
+    period: 'Abad ke-8',
+    image: '/src/assets/collections/Candi Pawon.jpg',
+    description: 'Candi Pawon, terletak di antara Candi Mendut dan Borobudur, diperkirakan dibangun pada abad ke-8 Masehi sebagai bagian dari kompleks ritual Dinasti Syailendra. Menurut epigraf J.G. de Casparis, candi ini dikaitkan dengan Raja Indra, ayah Samaratungga, dengan nama "Pawon" yang diduga berasal dari kata pa-awu-an (tempat abu), mengisyaratkan fungsi pemujaan atau pensucian. Prasasti Karang Tengah (824 M) menyebutkan arca logam yang mengeluarkan vajranala (api petir), diduga terkait dengan nama daerah "Brojonalan". Secara arsitektural, Candi Pawon memiliki struktur tiga bagian (kaki, tubuh, atap) dengan puncak stupa besar dikelilingi delapan stupa kecil. Uniknya, candi ini tidak memiliki pagar langkan tetapi dilengkapi ventilasi persegi panjang di tiga sisi dan relung bermotif Kala-Makara tanpa arca. Reliefnya kaya simbol Buddhisme, seperti Kuwera (dewa kekayaan), Kinara-Kinari (makhluk setengah burung), dan Purnakalasa (jambangan kesuburan), mencerminkan nilai kemakmuran dan spiritualitas. Ahli Poerbatjaraka menilai kesamaan motif Candi Pawon, Mendut, dan Borobudur menunjukkan hubungan fungsional sebagai satu kesatuan ritual, dengan Pawon sebagai upa angga (bagian pendukung) menuju Borobudur. Namun, beberapa ahli masih memperdebatkan fungsi pastinya karena terbatasnya bukti tertulis.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 26,
+    title: 'Candi Mendut',
+    subtitle: 'Candi Mendut merupakan candi bercorak keagamaan Buddha Mahayana yang didirikan pada masa pemerintahan Raja Indra dari Dinasti Syailendra, masa kerajaan Mataram Kuna pada abad ke-8 M.',
+    category: 'sites',
+    museum: 'Unit Wardun Borobudur', 
+    period: 'Abad ke-8',
+    image: '/src/assets/collections/Candi Mendut.jpg',
+    description: 'Candi Mendut merupakan candi bercorak keagamaan Buddha Mahayana yang didirikan pada masa pemerintahan Raja Indra dari Dinasti Syailendra, masa kerajaan Mataram Kuna pada abad ke-8 M. Candi ini dibangun tidak jauh dari Candi Borobudur dan Candi Pawon, membentuk satu rangkaian spiritual Buddhis. Arsitekturnya yang persegi panjang dengan tiga bagian (kaki, tubuh, atap) menampilkan tiga arca utama: Adhi Buddha (pemutar roda dharma), Avalokiteshvara, dan Vajrapani. Relief pada Candi Mendut menggambarkan cerita Jataka, Tantri, dan Pancatantra, serta tokohtokoh penting seperti Hariti dan Kuwera yang melambangkan kesuburan dan perlindungan anak. Relief Bodhisattva seperti Manjushri, Padmapani, Maitreya, Samantabhadra, dan lainnya menunjukkan adanya pemujaan terhadap Asta Maha Bodhisattva (delapan Bodhisattva utama). Keberadaan arca dan relief tersebut mengindikasikan bahwa Candi Mendut berfungsi tidak hanya sebagai tempat pemujaan Buddha, tetapi kemungkinan juga sebagai tempat penobatan raja pada masa Mataram Kuna.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 27,
+    title: 'Kawasan Percandian Dieng',
+    subtitle: 'Kawasan Cagar Budaya Percandian Dieng, sebuah kumpulan candi Hindu yang terletak di dataran tinggi kaki Pegunungan Dieng pada ketinggian sekitar 2000 mdpl, membentang sepanjang 1900 meter dari utara ke selatan dengan lebar 800 meter.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: 'Abad ke-8',
+    image: '/src/assets/collections/Kawasan Percandian Dieng.jpeg',
+    description: 'Kawasan Cagar Budaya Percandian Dieng, sebuah kumpulan candi Hindu yang terletak di dataran tinggi kaki Pegunungan Dieng pada ketinggian sekitar 2000 mdpl, membentang sepanjang 1900 meter dari utara ke selatan dengan lebar 800 meter. Secara administratif, kompleks ini terbagi antara Kabupaten Banjarnegara (meliputi Kelompok Percandian Arjuna, Dwarawati, Parikesit, Bima, dan Gangsiran Aswatama) dan Kabupaten Wonosobo (termasuk Petirtaan Bima Lukar, Watu Kelir, dan Situs Sitinggil), dengan Kali Tulis sebagai batas pembatas. Kawasan ini telah ditetapkan sebagai cagar budaya sejak tahun 1998 karena menyimpan sejarah peradaban Hindu dari abad ke-8 hingga ke-12 M, ditandai dengan keberadaan candi-candi dan struktur ritual lainnya. Pembangunan kompleks di puncak gunung dengan suhu dingin ini menunjukkan dedikasi spiritual luar biasa dari para pembangunnya.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 28,
+    title: 'Kompleks Percandian Gedongsongo',
+    subtitle: 'Candi Gedong Songo, terletak di lereng Gunung Ungaran, Jawa Tengah, merupakan kompleks percandian Hindu dari abad ke-8 hingga ke-9 Masehi yang terdiri dari sembilan candi kecil yang tersebar di ketinggian 1.200-1.400 mdpl.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: 'Abad ke-8',
+    image: '/src/assets/collections/Kompleks Percandian Gedongsongo.JPG',
+    description: 'Candi Gedong Songo, terletak di lereng Gunung Ungaran, Jawa Tengah, merupakan kompleks percandian Hindu dari abad ke-8 hingga ke-9 Masehi yang terdiri dari sembilan candi kecil yang tersebar di ketinggian 1.200-1.400 mdpl. Candi-candi ini diduga kuat dibangun pada masa Wangsa Sanjaya dan memiliki kesamaan gaya arsitektur dengan Candi Dieng, meskipun ukurannya lebih kecil dan sederhana. Situs ini terletak pada lokasi yang strategis di kawasan pegunungan dengan pemandangan alam memukau, serta pola penyebaran candi yang mengikuti kontur alam, menunjukkan adaptasi terhadap lingkungan berbukit. Candi-candi tersebut umumnya dipersembahkan untuk Dewa Siwa, dengan ditemukannya "lingga-yoni" dan arca-arca Hindu di beberapa candi, meskipun kondisi sebagian besar struktur sudah tidak utuh lagi.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 29,
+    title: 'Situs Candi Sukuh',
+    subtitle: 'Situs Cagar Budaya Candi Sukuh terletak di Desa Berjo, Kecamatan Ngargoyoso, Kab. Karanganyar, Jawa Tengah.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: 'Abad ke-15',
+    image: '/src/assets/collections/Situs Candi Sukuh.jpeg',
+    description: 'Situs Cagar Budaya Candi Sukuh terletak di Desa Berjo, Kecamatan Ngargoyoso, Kab. Karanganyar, Jawa Tengah. Candi Sukuh dibangun pada akhir periode klasik Hindu-Buddha (masa akhir Majapahit) sekitar abad ke-15 Masehi, pada masa pemerintahan Ratu Suhita (1429-1446). Situs Candi Sukuh terdiri atas 3 halaman teras yang semakin ke belakang semakin tinggi. Setiap teras dibatasi pagar/talud batu dan untuk memasuki masing- masing teras harus melalui sebuah gapura. Pada halaman ketiga, halaman yang paling sakral terdapat struktur candi utama Sukuh berukuran 15 x 15 meter. Candi utama di Sukuh berbentuk "piramida terpancung". Bentuk khas piramida terpancung merupakan karya kreatif yang sangat langka, tidak umum ditemui di candi-candi lain di Indonesia. Candi Sukuh sarat akan nilai pembebasan, penyucian kembali atau ruwatan dan mitologi ikonik dari tokoh-tokoh arca yang ditemui. Cerita dan tokoh tersebut menjadi ciri khas Candi Sukuh, yaitu Garudeya (pembebasan Dewi Winata), Bima Suci (pencerahan Bima oleh Dewa Ruci dalam kisah Bima mencari Tirtha Amrta, Sudhamala (pembebasan/pelepasan kutukan Dewi Durga oleh Sadewa), dan Samudramanthana',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 30,
+    title: 'Situs Candi Cetho',
+    subtitle: 'Candi Cetho, terletak di lereng Gunung Lawu pada ketinggian 1.400 mdpl di Kabupaten Karanganyar, Jawa Tengah, merupakan candi Hindu peninggalan akhir masa Majapahit (abad ke-15 Masehi) yang menunjukkan ciri khas arsitektur Jawa Timur periode akhir.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: 'Abad ke-15',
+    image: '/src/assets/collections/Situs Candi Cetho.jpg',
+    description: 'Candi Cetho, terletak di lereng Gunung Lawu pada ketinggian 1.400 mdpl di Kabupaten Karanganyar, Jawa Tengah, merupakan candi Hindu peninggalan akhir masa Majapahit (abad ke-15 Masehi) yang menunjukkan ciri khas arsitektur Jawa Timur periode akhir. Kata cetho sendiri berarti "jelas" dalam bahasa Jawa karena pemandangan luas dari lokasi candi. Candi Cetho terkait erat dengan Candi Sukuh dan diduga berfungsi sebagai situs suci penghormatan arwah leluhur dan monumen Hindu-Jawa dengan karakter lokal untuk pensucian diri. Candi Cetho memiliki struktur berundak paling banyak di Indonesia yaitu 13 teras, yang memadukan fungsi religius dan astronomis, serta dianggap sebagai tempat pertapaan dan pemujaan Siwa. Keunikannya terletak pada relief yang menggambarkan kisah wayang dan simbol-simbol spiritual, termasuk lingga-yoni yang masih digunakan untuk ritual hingga saat ini oleh masyarakat setempat. Ciri khas lain candi ini adalah arca berukuran besar dengan pahatan sederhana seperti arca Bima, dan gaya arsitekturnya menyerupai punden berundak. Meskipun diakui sebagai situs penting untuk memahami transisi Hindu-Buddha di Jawa pasca- Majapahit, keaslian candi ini menjadi bahan perdebatan karena telah mengalami rekonstruksi cukup signifikan pada tahun 1928 oleh Van der Vlis dan pemugaran kontroversial pada era 1970-an yang mengubah beberapa struktur aslinya.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 31,
+    title: 'Kawasan Sangiran',
+    subtitle: 'Kawasan Sangiran di Jawa Tengah merupakan salah satu situs prasejarah terpenting di dunia, dikenal sebagai "laboratorium evolusi manusia" yang menyumbangkan setidaknya 50% fosil Homo erectus dunia atau sekitar 60% fosil Homo erectus di Indonesia.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: '-',
+    image: '/src/assets/collections/Kawasan Sangiran.jpg',
+    description: 'Kawasan Sangiran di Jawa Tengah merupakan salah satu situs prasejarah terpenting di dunia, dikenal sebagai "laboratorium evolusi manusia" yang menyumbangkan setidaknya 50% fosil Homo erectus dunia atau sekitar 60% fosil Homo erectus di Indonesia. Sangiran ditetapkan sebagai Warisan Dunia UNESCO pada 1996 karena nilai pentingnya bagi dunia. Situs arkeologinya sendiri memiliki luas 59,21 km² dan berada di wilayah dua kabupaten, yaitu Kabupaten Sragen dan Karanganyar. Situs ini ini menyajikan rekaman kehidupan manusia purba sejak 2,4 juta tahun lalu beserta lingkungannya melalui lapisan stratigrafi yang utuh dari masa Pliosen-Holosen. Temuan penting dari Kawasan Sangiran di antaranya adalah fosil "Sangiran 17" (tengkorak Homo erectus terlengkap) dan berbagai alat batu paleolitik membuktikan perkembangan teknologi manusia purba di Asia.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 32,
+    title: 'Candi Plaosan',
+    subtitle: 'Candi Plaosan, terletak di Kabupaten Klaten, Jawa Tengah, merupakan kompleks candi unik dari abad ke-9 Masehi yang mencerminkan harmoni antara agama Hindu dan Buddha pada masa Kerajaan Medang.',
+    category: 'sites',
+    museum: 'CB Unit Jateng', 
+    period: 'Abad ke-9',
+    image: '/src/assets/collections/Candi Plaosan.jpeg',
+    description: 'Candi Plaosan, terletak di Kabupaten Klaten, Jawa Tengah, merupakan kompleks candi unik dari abad ke-9 Masehi yang mencerminkan harmoni antara agama Hindu dan Buddha pada masa Kerajaan Medang. Dibangun atas prakarsa Rakai Pikatan dari Wangsa Sanjaya (Hindu) dan Permaisuri Pramodhawardhani dari Wangsa Syailendra (Buddha), kompleks candi yang dulunya disebut Jina Mandira ini terdiri dari Candi Plaosan Lor (utara) yang bercorak Buddha dengan arca-arca Bodhisattva dan Candi Plaosan Kidul (selatan) yang menunjukkan pengaruh Hindu. Keunikan arsitekturnya terlihat dari perpaduan gaya Jawa Tengah dan Jawa Timur, serta relief-relief halus yang menggambarkan kehidupan spiritual masa itu. Plaosan menjadi bukti nyata kerukunan antar umat beragama di masa lalu dan pencapaian seni yang tinggi. Arsitekturnya megah, unik, kaya ornamen yang indah. Arsitektur Candi Plaosan menunjukkan ciri khas dengan dua candi induk “kembar” dua lantai yang dikelilingi candi perwara dan stupa perwara serta parit buatan. Ciri khas dalam konsep religi tercermin dari keberadaan Pantheon tiga Trikaya Buddha serta relief dewa-dewi wewangian dan cahaya di kedua candi induknya. Arca-arcanya memiliki gaya seni tersendiri yang menjadi penanda zaman. Bentang pandang ke arah Gunung Merapi di utara dan deretan pegunungan breksi di Selatan. Golden moment saat sunrise dan sunset membentuk siluet percandian yang indah dan langka, dikelilingi lahan sawah dan tegalan yang luas, didukung nuansa pedesaan. Lokasinya dekat dengan candi-candi lainnya yang berada kawasan Prambanan yang juga kaya akan peninggalan budaya tak benda lainnya.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 33,
+    title: 'Candi Prambanan',
+    subtitle: 'Candi Prambanan, terletak di perbatasan Jawa Tengah dan Yogyakarta, adalah gugusan candi Hindu terbesar di Indonesia yang dibangun pada abad ke-9 Masehi oleh Wangsa Sanjaya.',
+    category: 'sites',
+    museum: 'CB Unit DIY', 
+    period: 'Abad ke-9',
+    image: '/src/assets/collections/Candi Prambanan.jpeg',
+    description: 'Candi Prambanan, terletak di perbatasan Jawa Tengah dan Yogyakarta, adalah gugusan candi Hindu terbesar di Indonesia yang dibangun pada abad ke-9 Masehi oleh Wangsa Sanjaya. Sebagai salah satu warisan budaya dunia UNESCO, Candi Prambanan memiliki tiga candi utama yang dipersembahkan untuk Trimurti (Siwa, Wisnu, dan Brahma). Candi Siwa adalah struktur utama setinggi 47 meter yang dihiasi relief epos Ramayana. Arsitekturnya yang megah menampilkan ciri khas Hindu Jawa dengan menara meru (atap bertingkat) dan patung-patung dewa yang detail, mencerminkan kejayaan Kerajaan Mataram Kuno. Gugusan candi ini diakui sebagai mahakarya seni dan spiritual yang diperkirakan ditinggalkan sekitar abad ke-10 Masehi, diduga akibat letusan Gunung Merapi atau perpindahan pusat kekuasaan ke Jawa Timur. Ciri khas arsitektur batu klasik Jawa Tengah dengan pahatan bas-relief yang indah, baik sebagai relief cerita maupun ornamentasi, menjadi daya tarik utama Candi Prambanan. Keberadaan gugusan candi Hindu ini berdampingan dengan candi Buddha di sekitarnya (Candi Sewu) juga menunjukkan toleransi agama dan praktik multikulturalisme pada masa itu. Gugusan Candi Prambanan, bersama Candi Sewu, telah ditetapkan sebagai Warisan Budaya Dunia oleh UNESCO pada tahun 1991 dengan nama Prambanan Temple Compound. Candi ini diakui sebagai karya adiluhung kreativitas manusia dari abad ke-10 M dan contoh harmonisasi arsitektur, teknologi, dan lanskap budaya yang menggambarkan tahapan penting dalam sejarah manusia.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 34,
+    title: 'Candi Ratu Boko',
+    subtitle: 'Kompleks Ratu Boko adalah kawasan arkeologi yang unik yang terletak di perbukitan Sleman, Yogyakarta, dengan karakteristik campuran antara istana kerajaan dan struktur religius.',
+    category: 'sites',
+    museum: 'CB Unit DIY', 
+    period: 'Abad ke-8',
+    image: '/src/assets/collections/Candi Ratu Boko.jpeg',
+    description: 'Kompleks Ratu Boko adalah kawasan arkeologi yang unik yang terletak di perbukitan Sleman, Yogyakarta, dengan karakteristik campuran antara istana kerajaan dan struktur religius. Berdasarkan prasasti yang ditemukan, situs ini diperkirakan dibangun pada abad ke-8 Masehi oleh Wangsa Sailendra atau Mataram Kuno. Arsitekturnya yang megah terbagi menjadi lima kelompok utama: Gapura Utama, Paseban (area pertemuan), Keputren (kompleks wanita), Pendapa (aula), dan Gua (termasuk Gua Lanang dan Gua Wadon), masing-masing dengan karakteristik arsitektur dan fungsinya sendiri, lengkap dengan batur, kolam, pagar, dan struktur pendukung lainnya yang menunjukkan kemahiran teknik masa itu. Keunikan situs ini terletak pada perpaduan unsur Hindu dan Buddha yang tercermin dalam relief dan struktur bangunan, menunjukkan toleransi beragama di masa lalu.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 35,
+    title: 'Candi Ijo',
+    subtitle: 'Candi Ijo merupakan candi Hindu dari abad ke-9 hingga ke-10 Masehi yang terletak di Bukit Ijo, Sleman, Yogyakarta, pada ketinggian 357 meter di atas permukaan laut.',
+    category: 'sites',
+    museum: 'CB Unit DIY', 
+    period: 'Abad ke-9',
+    image: '/src/assets/collections/Candi Ijo.jpeg',
+    description: 'Candi Ijo merupakan candi Hindu dari abad ke-9 hingga ke-10 Masehi yang terletak di Bukit Ijo, Sleman, Yogyakarta, pada ketinggian 357 meter di atas permukaan laut. Sebagai salah satu candi di lokasi tertinggi di Yogyakarta, situs ini terdiri dari satu candi utama dan 17 struktur bangunan yang tersebar di sebelas teras berundak, memanfaatkan kontur bukit untuk menciptakan tata ruang yang hierarkis. Pada candi utama terdapat lingga-yoni yang melambangkan Dewa Siwa dan Dewi Parwati, serta relungrelung untuk arca Agastya, Ganesha, dan Durga di dinding luarnya. Di depan candi induk, terdapat tiga candi perwara yang menghadap timur; candi perwara tengah berisi arca Nandi dan meja batu. Selain itu, di halaman utama terdapat delapan lingga patok yang mengelilingi mata angin, dan sisa-sisa bangunan lain tersebar di teras-teras lainnya, meskipun beberapa teras tidak memiliki struktur yang ditemukan. Candi Ijo merupakan contoh adaptasi arsitektur Hindu terhadap topografi alam dengan nilai spiritual yang tinggi.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 36,
+    title: 'Candi Sambisari',
+    subtitle: 'Candi Sambisari merupakan candi Hindu yang ditemukan secara tidak sengaja pada tahun 1966 oleh seorang petani di Sleman, Yogyakarta.',
+    category: 'sites',
+    museum: 'CB Unit DIY', 
+    period: 'Abad ke-9',
+    image: '/src/assets/collections/Candi Sambisari.jpeg',
+    description: 'Candi Sambisari merupakan candi Hindu yang ditemukan secara tidak sengaja pada tahun 1966 oleh seorang petani di Sleman, Yogyakarta. Keunikan utama candi ini terletak pada posisinya yang berada 6,5 meter di bawah permukaan tanah, memunculkan teori bahwa candi ini terkubur oleh material vulkanik dari letusan Gunung Merapi kuno. Candi ini terdiri dari satu candi utama yang didedikasikan untuk Dewa Siwa dan tiga candi perwara yang lebih kecil, dengan struktur batu andesit yang relatif utuh meskipun bagian atapnya telah runtuh. Arsitektur Candi Sambisari menunjukkan ciri khas candi Hindu Jawa Tengah dengan relief yang menggambarkan dewa-dewa Hindu seperti Durga, Ganesha, dan Agastya. Temuan penting di situs ini termasuk lingga-yoni dan beberapa arca yang menunjukkan fungsi candi sebagai tempat pemujaan Siwa. Sejarah pasti pendiriannya belum jelas, namun arsitektur dan inskripsi "om siwa sthana" pada lempeng emas pada peripih mengindikasikan bahwa Candi Sambisari didirikan antara abad ke-8 hingga ke-9 Masehi, sezaman dengan candi-candi terdekat seperti Lumbung, Gebang, Batumiring, Prambanan, Plaosan, dan Sojiwan. Setelah penemuan, candi ini menjalani rekonstruksi sementara dari 1966-1975, pemugaran dari 1975-1987, dan diresmikan setelah purna pugar pada tahun 1987. Candi Sambisari merupakan saksi bisu letusan Merapi masa lalu.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 37,
+    title: 'Kawasan Trowulan',
+    subtitle: 'Kawasan Trowulan di Mojokerto, Jawa Timur, diyakini sebagai bekas ibu kota Kerajaan Majapahit (abad ke-13 hingga ke-16 Masehi) dan merupakan kompleks arkeologi terpenting dari periode klasik Indonesia.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: '-',
+    image: '/src/assets/collections/Kawasan Trowulan.jpg',
+    description: 'Kawasan Trowulan di Mojokerto, Jawa Timur, diyakini sebagai bekas ibu kota Kerajaan Majapahit (abad ke-13 hingga ke-16 Masehi) dan merupakan kompleks arkeologi terpenting dari periode klasik Indonesia. Situs seluas sekitar 100 km² ini menyimpan berbagai tinggalan seperti candi (misalnya Candi Tikus dan Candi Bajang Ratu), kolam kuno, saluran air, serta struktur permukiman yang menunjukkan tata kota Majapahit yang maju. Temuan arkeologis seperti artefak keramik asing, perhiasan emas, dan prasasti memperkuat gambaran Trowulan sebagai pusat politik, ekonomi, dan budaya yang terhubung dengan jaringan perdagangan Asia.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 38,
+    title: 'Candi Panataran',
+    subtitle: 'Candi Panataran, terletak di Kabupaten Blitar, Jawa Timur, merupakan candi kerajaan (state temple) terbesar peninggalan Majapahit yang berfungsi sebagai pusat spiritual dan keagamaan antara abad ke- 14 hingga ke-15 Masehi.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: 'Abad ke-14',
+    image: '/src/assets/collections/Candi Panataran.jpg',
+    description: 'Candi Panataran, terletak di Kabupaten Blitar, Jawa Timur, merupakan candi kerajaan (state temple) terbesar peninggalan Majapahit yang berfungsi sebagai pusat spiritual dan keagamaan antara abad ke- 14 hingga ke-15 Masehi. Dibangun secara bertahap sejak masa Raja Jayanagara hingga Ratu Suhita, kompleks candi terdiri dari tiga halaman bertingkat dengan struktur utama seperti Candi Induk, Candi Naga, dan Bale Agung, serta dua kolam suci (patirthan). Keunikan candi ini terletak pada relief naratif seperti Ramayana dan Kresnayana, serta ornamen naga yang dominan, mencerminkan perpaduan seni, filosofi Hindu-Siwa, dan kosmologi. Sebagai pusat pemujaan Paramasiva (Siwa tertinggi dalam ajaran Siwasiddhanta), Candi Panataran juga diduga berfungsi sebagai kadewaguruan (pusat pendidikan agama), sebagaimana disebut dalam naskah Bhujangga Manik. Relief dan arsitekturnya menyimbolkan konsep axis mundi (poros alam semesta) dan mitologi Samudramanthana, dengan naga sebagai penjaga keseimbangan kosmis. Namun, ketiadaan arca utama di garbhagrha (ruang suci) dan kerusakan sebagian struktur memunculkan perdebatan tentang fungsi spesifik dan bentuk asli candi.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 39,
+    title: 'Candi Kidal',
+    subtitle: 'Candi Kidal, terletak di Desa Kidal, Malang, Jawa Timur, adalah candi Hindu Siwa dari abad ke-13 Masehi yang dibangun sebagai tempat pendharmaan Raja Anusapati dari Kerajaan Singasari.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: 'Abad ke-13',
+    image: '/src/assets/collections/Candi Kidal.jpg',
+    description: 'Candi Kidal, terletak di Desa Kidal, Malang, Jawa Timur, adalah candi Hindu Siwa dari abad ke-13 Masehi yang dibangun sebagai tempat pendharmaan Raja Anusapati dari Kerajaan Singasari. Candi ini merupakan salah satu contoh awal arsitektur Jawa Timuran dengan struktur ramping, tinggi sekitar 12 meter, dan terbuat dari batu andesit. Candi Kidal memiliki tiga bagian utama: kaki candi yang dihiasi relief cerita Garudeya (simbol pembebasan dari dosa), tubuh candi dengan relung kosong (diduga sebelumnya berisi arca Siwa), dan atap bertingkat dengan hiasan kemuncak (ratna). Keunikan Candi Kidal terletak pada relief Garudeya yang mengelilingi kaki candi, menceritakan kisah Garuda yang berjuang membebaskan ibunya dari perbudakan dengan mencuri tirta amerta. Relief ini tidak hanya bernilai artistik, tetapi juga mengandung pesan moral tentang pengorbanan dan penebusan.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 40,
+    title: 'Candi Badut',
+    subtitle: 'Candi Badut merupakan salah satu candi Hindu tertua di Jawa Timur, diperkirakan dibangun pada abad ke-8 Masehi pada masa Kerajaan Kanjuruhan di bawah pemerintahan Raja Gajayana.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: '-',
+    image: '/src/assets/collections/Candi Badut.jpg',
+    description: 'Candi Badut merupakan salah satu candi Hindu tertua di Jawa Timur, diperkirakan dibangun pada abad ke-8 Masehi pada masa Kerajaan Kanjuruhan di bawah pemerintahan Raja Gajayana. Candi ini memiliki struktur unik yang menggabungkan elemen arsitektur Jawa Tengah (gaya Mataram Kuno) dengan ciri khas Jawa Timur, seperti bentuk tubuh candi yang ramping dan atap bersusun. Candi setinggi 8 meter ini terbuat dari batu andesit dan didedikasikan untuk pemujaan Dewa Siwa, dengan relung-relung yang kemungkinan pernah berisi arca Siwa, Durga, dan Ganesha. Keunikan Candi Badut terletak pada ornamen kalamakara di atas pintu masuk dan relief sederhana yang menunjukkan pengaruh seni India awal. Prasasti Dinoyo (760 M) yang ditemukan di sekitar candi menguatkan dugaan bahwa candi ini dibangun sebagai bagian dari kompleks keagamaan Kerajaan Kanjuruhan. Candi Badut merupakan bukti penting perkembangan awal Hindu-Siwa di Jawa Timur dan transisi gaya arsitektur Jawa Tengah ke Jawa Timur.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 41,
+    title: 'Candi Jago',
+    subtitle: 'Candi Jago, terletak di Tumpang, Malang, Jawa Timur, adalah candi peninggalan Kerajaan Singasari dari abad ke-13 Masehi yang dibangun sebagai tempat pendharmaan Raja Wisnuwardhana (ayah Raja Kertanegara).',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: '-',
+    image: '/src/assets/collections/Candi Jago.jpg',
+    description: 'Candi Jago, terletak di Tumpang, Malang, Jawa Timur, adalah candi peninggalan Kerajaan Singasari dari abad ke-13 Masehi yang dibangun sebagai tempat pendharmaan Raja Wisnuwardhana (ayah Raja Kertanegara). Candi ini memiliki keunikan arsitektur dengan bentuk teras bertingkat (punden berundak). Candi setinggi sekitar 10 meter ini juga terkenal dengan reliefnya yang sangat detail, terutama cerita Kunjarakarna dan Pancatantra, yang dipahat mengelilingi tubuh candi. Relief ini tidak hanya bernilai artistik tinggi, tetapi juga mengandung ajaran moral dan spiritual. Namun demikian, kondisi candi yang tidak utuh karena bagian atap dan sebagian struktur telah hilang, menyulitkan rekonstruksi lengkap bentuk aslinya. Candi Jago dianggap sebagai mahakarya seni relief masa Singasari dan bukti penting sinkretisme Hindu-Buddha di Jawa pada masa lalu.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 42,
+    title: 'Candi Singasari',
+    subtitle: 'Candi Singasari, terletak di Desa Candirenggo, Malang, Jawa Timur, merupakan candi Hindu-Buddha peninggalan Kerajaan Singasari yang dibangun sekitar abad ke-13 Masehi.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: 'Abad ke-13',
+    image: '/src/assets/collections/Candi Singasari.jpeg',
+    description: 'Candi Singasari, terletak di Desa Candirenggo, Malang, Jawa Timur, merupakan candi Hindu-Buddha peninggalan Kerajaan Singasari yang dibangun sekitar abad ke-13 Masehi. Candi ini diduga kuat sebagai tempat pendharmaan Raja Kertanegara, raja terakhir Singasari yang gugur dalam serangan Kerajaan Kediri tahun 1292. Dengan tinggi sekitar 15 meter, candi ini menampilkan gaya arsitektur khas Jawa Timuran yang megah, meskipun kini dalam kondisi tidak utuh, atap dan sebagian tubuh candi telah runtuh. Keunikan Candi Singasari terletak pada ornamennya yang kaya, termasuk patung-patung raksasa (Dwarapala) penjaga pintu setinggi 3,7 meter yang masih berdiri kokoh di kompleks candi. Relief dan arca yang ditemukan menunjukkan perpaduan unsur Hindu (terutama Siwa) dan Buddha, mencerminkan sinkretisme agama pada masa Kerajaan Singasari.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 43,
+    title: 'Candi Jabung',
+    subtitle: 'Candi Jabung merupakan candi Buddha peninggalan Majapahit yang terletak di Desa Jabung, Probolinggo, Jawa Timur, diperkirakan dibangun pada abad ke-14 Masehi.',
+    category: 'sites',
+    museum: 'CB Unit Jatim', 
+    period: 'Abad ke-14',
+    image: '/src/assets/collections/Candi Jabung.jpg',
+    description: 'Candi Jabung merupakan candi Buddha peninggalan Majapahit yang terletak di Desa Jabung, Probolinggo, Jawa Timur, diperkirakan dibangun pada abad ke-14 Masehi. Candi ini disebutkan dalam kitab Nagarakretagama sebagai salah satu tempat yang dikunjungi Raja Hayam Wuruk selama perjalanan keliling kerajaannya. Dengan tinggi 16 meter, Candi Jabung memiliki struktur unik berbentuk silinder (seperti stupa) yang terbuat dari bata merah, berbeda dengan candi-candi Jawa Timur umumnya yang berbentuk persegi. Keunikan Candi Jabung terletak pada arsitekturnya yang menyerupai candi-candi di India Selatan, dengan relief cerita Sri Tanjung yang mengelilingi dinding candi. Relief ini tidak hanya bernilai seni tinggi, tetapi juga mengandung pesan spiritual tentang kesetiaan dan penebusan dosa.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 44,
+    title: 'Leang Pettae',
+    subtitle: 'Leang Pettae adalah gua yang terletak di Kelurahan Leang-Leang, Kecamatan Bantimurung, Kabupaten Maros, dalam kawasan Karst Maros-Pangkep.',
+    category: 'sites',
+    museum: 'CB Unit Sulawesi dan Maluku', 
+    period: '-',
+    image: '',
+    description: 'Leang Pettae adalah gua yang terletak di Kelurahan Leang-Leang, Kecamatan Bantimurung, Kabupaten Maros, dalam kawasan Karst Maros-Pangkep. Gua ini merupakan lokasi pertama ditemukannya lukisan cadas di Sulawesi, menjadikannya tonggak penting dalam kajian arkeologi Sulawesi. Temuan dari gua ini meliputi lukisan cadas cap tangan dan babirusa berwarna merah, artefak mikrolit, maros point, lancipan, sampah dapur (kjokkenmoddinger), serta fosil fauna endemik seperti babirusa dan monyet hitam. Leang Pettae ditetapkan sebagai Cagar Budaya pada 10 Januari 2018. Gua ini memiliki nilai penting sebagai tempat identifikasi awal seni cadas di Sulawesi, representasi ekspresi budaya Toala, dan bukti kehidupan manusia prasejarah di Indonesia. Sebagai bagian dari Taman Arkeologi Leang-Leang, gua ini difungsikan sebagai objek wisata edukatif yang dapat diakses oleh publik.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 45,
+    title: 'Leang Petta Kere',
+    subtitle: 'Terletak tidak jauh dari Leang Pettae, sekitar 300 meter ke arah timur, Leang Petta Kere berada di Kelurahan Leang-Leang, Kecamatan Bantimurung, Kabupaten Maros.',
+    category: 'sites',
+    museum: 'CB Unit Sulawesi dan Maluku', 
+    period: '-',
+    image: '/src/assets/collections/Leang Petta Kere.jpeg',
+    description: 'Terletak tidak jauh dari Leang Pettae, sekitar 300 meter ke arah timur, Leang Petta Kere berada di Kelurahan Leang-Leang, Kecamatan Bantimurung, Kabupaten Maros. Gua ini berada pada ketinggian sekitar 45 Mdpl serta merupakan salah satu gua di kawasan Karst Maros-Pangkep. Gua ini menyimpan tinggalan budaya yang sangat penting berupa lukisan cadas bergambar cap tangan dan babirusa, artefak mikrolit, maros point, serta sampah dapur (kjøkkenmoddinger). Lukisan cap tangan berjumlah sekitar 27 buah, dengan sebagian besar masih dalam kondisi utuh. Salah satu lukisan paling ikonik adalah gambar babirusa besar yang ditusuk tombak dan dikelilingi cap-cap tangan, yang menyampaikan ekspresi artistik masa lalu secara kuat. Pewarna merah pada lukisan diyakini berasal dari hematit (mineral besi alami) yang disemprotkan ke dinding gua. Leang Petta Kere merupakan gua pertama yang dikonservasi di kawasan Karst Maros-Pangkep, melalui kegiatan konservasi yang dilakukan oleh Suaka Peninggalan Sejarah dan Purbakala (SPSP) tahun 1986. Situs ini ditetapkan sebagai Cagar Budaya Kabupaten Maros pada 10 Januari 2018. Selain penting dari sisi arkeologi, Leang Petta Kere juga menjadi pelopor upaya konservasi gambar gua prasejarah di Indonesia dan saat ini difungsikan sebagai destinasi edukatif dalam kawasan Taman Arkeologi Leang-Leang.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 46,
+    title: 'Benteng Rotterdam',
+    subtitle: 'Benteng Rotterdam, yang semula bernama Benteng Jumpandang dan dibangun oleh Kerajaan Gowa-Tallo pada abad ke-15 M, kemudian dikembangkan oleh VOC pada abad ke-17 menjadi struktur seperti sekarang.',
+    category: 'sites',
+    museum: 'CB Unit Sulawesi dan Maluku', 
+    period: 'Abad ke-15',
+    image: '/src/assets/collections/Benteng Rotterdam.jpg',
+    description: 'Benteng Rotterdam, yang semula bernama Benteng Jumpandang dan dibangun oleh Kerajaan Gowa-Tallo pada abad ke-15 M, kemudian dikembangkan oleh VOC pada abad ke-17 menjadi struktur seperti sekarang. Dengan denah menyerupai penyu dan lima bastion, benteng ini telah menjadi saksi bisu berbagai peristiwa sejarah, termasuk penahanan Pangeran Diponegoro yang bahkan menyusun catatannya di sini. Setelah berbagai fungsi mulai dari markas komando hingga pusat penelitian, benteng ini dipugar pada tahun 1970 dan kini menjadi kantor serta rumah bagi Museum La Galigo.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+  {
+    id: 47,
+    title: 'Benteng Duurstede',
+    subtitle: 'Benteng Duurstede terletak di Pulau Saparua, Maluku Tengah.',
+    category: 'sites',
+    museum: 'CB Unit Sulawesi dan Maluku', 
+    period: '-',
+    image: '/src/assets/collections/Benteng Duurstede.jpg',
+    description: 'Benteng Duurstede terletak di Pulau Saparua, Maluku Tengah. Awalnya dibangun oleh Portugis pada 1676 dan dibangun kembali oleh Gubernur Ambon, Nicolaes Schaghen, pada 1691. Arsitekturnya berbentuk belah ketupat dengan bastion berbentuk setengah lingkaran di sisi utara dan selatan, serta dua menara pengintai di sisi timur dan barat. Benteng ini menjadi saksi peristiwa penyerangan pada 16 Mei 1817 oleh rakyat Saparua yang dipimpin oleh Kapitan Pattimura. Seluruh penghuni benteng, termasuk Residen Jan Rudolf van den Berg dan keluarganya, gugur dalam peristiwa tersebut, kecuali putranya Johan Lubbert. Peristiwa ini dikenang sebagai bagian penting dari perlawanan rakyat Maluku terhadap kolonialisme Belanda.',
+    material: 'Baja dengan pamor, gagang kayu, sarung kayu',
+    dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
+    origin: 'Trowulan, Mojokerto, Jawa Timur',
+    discoveredYear: '1965',
+    condition: 'Baik, terawat dengan preservasi khusus',
+    significance: 'Keris ini memiliki nilai sejarah tinggi sebagai bukti kemajuan teknologi metallurgi pada masa Majapahit. Pamor pada bilahnya menunjukkan teknik penempaan yang sangat canggih.',
+    culturalContext: 'Dalam budaya Jawa, keris bukan hanya senjata tetapi juga simbol status, kekuatan spiritual, dan warisan keluarga yang diwariskan turun temurun.',
+    relatedArtifacts: [
+      'Tombak Majapahit',
+      'Pedang Ceremonial',
+      'Perhiasan Emas Majapahit'
+    ]
+  },
+];

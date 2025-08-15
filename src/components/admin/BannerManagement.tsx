@@ -12,36 +12,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
-interface BannerItem {
-  id?: string | null;
-  title: string;
-  subtitle: string;
-  description: string;
-  image_url: string;
-  start_date: string;
-  end_date: string;
-  updated_at?: string;
-  is_published: boolean;
-}
-
 const BannerManagement = () => {
-  const [banners, setBanners] = useState<BannerItem[]>([]);
+  const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<BannerItem | null>(null);
+  const [editingBanner, setEditingBanner] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-
-  const emptyBanner: BannerItem = {
-    title: '',
-    subtitle: '',
-    description: '',
-    image_url: '',
-    start_date: '',
-    end_date: '',
-    is_published: true,
-    updated_at: "",
-  };
 
   useEffect(() => {
     fetchBanners();
@@ -51,7 +28,7 @@ const BannerManagement = () => {
     try {
       const response = await bannerService.getAll();
       if (response.error) throw new Error(response.error);
-      setBanners(response.data as BannerItem[] || []);
+      setBanners(response.data || []);
     } catch (error) {
       console.error('Error fetching banners:', error);
       toast({
@@ -64,10 +41,9 @@ const BannerManagement = () => {
     }
   };
 
-  const saveBanner = async (formData: Partial<BannerItem>) => {
+  const saveBanner = async (formData: any) => {
     setSaving(true);
     try {
-       let response;
       if (editingBanner?.id) {
         const response = await bannerService.update(editingBanner.id, formData);
         if (response.error) throw new Error(response.error);
@@ -81,7 +57,7 @@ const BannerManagement = () => {
           description: 'Banner updated successfully',
         });
       } else {
-        response = await bannerService.create(formData);
+        const response = await bannerService.create(formData);
         if (response.error) throw new Error(response.error);
         
         setBanners(prev => [response.data, ...prev]);
@@ -129,23 +105,25 @@ const BannerManagement = () => {
     }
   };
 
- const BannerForm = ({ banner, onSave, onCancel, saving }: {
-    banner: BannerItem;
-    onSave: (data: BannerItem) => void;
+  const BannerForm = ({ banner, onSave, onCancel }: {
+    banner?: any;
+    onSave: (data: any) => void;
     onCancel: () => void;
-    saving: boolean;
   }) => {
-    const [formData, setFormData] = useState<BannerItem>(banner);
-
-    useEffect(() => {
-      setFormData(banner);
-    }, [banner]);
+    const [formData, setFormData] = useState({
+      title: banner?.title || '',
+      subtitle: banner?.subtitle || '',
+      description: banner?.description || '',
+      image_url: banner?.image_url || '',
+      start_date: banner?.start_date || '',
+      end_date: banner?.end_date || '',
+      is_published: banner?.is_published ?? true,
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       onSave(formData);
     };
-
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -212,7 +190,7 @@ const BannerManagement = () => {
           <Switch
             id="is_published"
             checked={formData.is_published}
-            onCheckedChange={(checked) => setEditingBanner(prev => ({ ...prev, is_published: checked }))}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
           />
           <Label htmlFor="is_published">Publish Banner</Label>
         </div>
@@ -249,28 +227,28 @@ const BannerManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingBanner(emptyBanner)}>
+            <Button onClick={() => setEditingBanner(null)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Banner
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingBanner?.id ? 'Edit Banner' : 'Add New Banner'}
+                {editingBanner ? 'Edit Banner' : 'Add New Banner'}
               </DialogTitle>
+              <DialogDescription>
+                {editingBanner ? 'Update banner information' : 'Create a new banner for the homepage'}
+              </DialogDescription>
             </DialogHeader>
-            {editingBanner && (
-              <BannerForm
-                banner={editingBanner}
-                onSave={saveBanner}
-                onCancel={() => {
-                  setEditingBanner(null);
-                  setIsDialogOpen(false);
-                }}
-                saving={saving}
-              />
-            )}
+            <BannerForm
+              banner={editingBanner}
+              onSave={saveBanner}
+              onCancel={() => {
+                setEditingBanner(null);
+                setIsDialogOpen(false);
+              }}
+            />
           </DialogContent>
         </Dialog>
       </div>
