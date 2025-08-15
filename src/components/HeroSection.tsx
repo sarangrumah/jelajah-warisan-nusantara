@@ -35,10 +35,6 @@ const HeroSection = () => {
 
   const videoList = [
     '/src/assets/hero-sections/Profil Lengkap IHA & MNI.mp4',
-    '/src/assets/hero-sections/Ada Apa di MNI.mp4',
-    '/src/assets/hero-sections/Profil IHA.mp4',
-    '/src/assets/hero-sections/Profil Pendek IHA.mp4',
-    '/src/assets/hero-sections/Video Existing Web IHA.mp4',
   ];
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const handleVideoEnded = () => {
