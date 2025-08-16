@@ -6,30 +6,31 @@ import { Button } from '@/components/ui/button';
 import heroBorobudur from '@/assets/hero-borobudur.jpg';
 import museumInterior from '@/assets/museum-interior.jpg';
 import heritageSites from '@/assets/heritage-sites.jpg';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
 
   const slides = [
     {
       image: heroBorobudur,
-      title: 'Melestarikan Warisan Budaya Indonesia',
-      subtitle: 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang',
-      cta: 'Jelajahi Museum',
+      title: t('hero.museum.title'),
+      subtitle: t('hero.museum.subtitle'),
+      cta: t('hero.museum.cta'),
     },
     {
       image: museumInterior,
-      title: 'Koleksi Bersejarah Nusantara',
-      subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
-      cta: 'Lihat Koleksi',
+      title: t('hero.collection.title'),
+      subtitle: t('hero.collection.subtitle'),
+      cta: t('hero.collection.cta'),
     },
     {
       image: heritageSites,
-      title: 'Cagar Budaya Indonesia',
-      subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
-      cta: 'Temukan Situs',
+      title: t('hero.sites.title'),
+      subtitle: t('hero.sites.subtitle'),
+      cta: t('hero.sites.cta'),
     },
   ];
 
@@ -111,7 +112,7 @@ const HeroSection = () => {
                 onClick={() => setIsVideoPlaying(true)}
               >
                 <Play size={24} className="mr-2" />
-                Tonton Video
+                {t('hero.watchVideo')}
               </Button>
             </div>
           </div>
