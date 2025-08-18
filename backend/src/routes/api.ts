@@ -19,6 +19,8 @@ const tableConfigs = {
   stats: ['id', 'icon', 'value', 'label', 'is_published', 'created_by', 'created_at', 'updated_at'],
   highlights: ['id', 'icon', 'title', 'description', 'is_published', 'created_by', 'created_at', 'updated_at'],
   services: ['id', 'icon', 'title', 'description', 'features', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  // profiles: ['id','user_id','display_name','avatar_url','roles','created_at', 'updated_at'],
+  user_roles:['id','user_id','role','created_at'],
   collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image', 'description', 'is_published', 'created_by', 'created_at', 'updated_at']
 };
 

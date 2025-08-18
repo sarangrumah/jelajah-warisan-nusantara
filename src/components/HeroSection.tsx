@@ -8,15 +8,7 @@ import museumInterior from '@/assets/museum-interior.jpg';
 import heritageSites from '@/assets/heritage-sites.jpg';
 
 const HeroSection = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
-  const { t } = useTranslation();
-  const [slides, setSlides] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-
-  const defaultSlides = [
+    const defaultSlides = [
     {
       image: heroBorobudur,
       title: 'Melestarikan Warisan Budaya Indonesia',
@@ -39,6 +31,15 @@ const HeroSection = () => {
       link_to: 'heritage'
     },
   ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  // const { t } = useTranslation();
+  const [slides, setSlides] = useState(defaultSlides);
+  const [isLoading, setIsLoading] = useState(true);
+
+
 
   const getHeroes = async () => {
     try {
@@ -63,6 +64,7 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
+    console.log("ini masuk dong uwu")
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
