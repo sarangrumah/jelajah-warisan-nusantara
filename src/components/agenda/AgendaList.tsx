@@ -1,46 +1,33 @@
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Filter, Search } from 'lucide-react';
+import { Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { agendaService } from '@/lib/api-services';
-import { categories, placeholder, events } from '@/../database/get-data';
+import { eventCategories, placeholder, defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 
 const AgendaList = () => {
   // const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
-
-  const categoriesx = [
-    { id: 'semua', name: 'Semua Event' },
-    { id: 'workshop', name: 'Workshop' },
-    { id: 'pameran', name: 'Pameran' },
-    { id: 'seminar', name: 'Seminar' },
-    { id: 'festival', name: 'Festival' },
-  ];
+  const [events, setEvents] = useState([]);
 
   const fetchEvents = async () => {
     try {
       const response = await agendaService.getAll();
-      console.log(response)
-
       if (response.error) {
         console.error('Error fetching events:', response.error);
-        return;
       }
 
-      setEvents(response.data || []);
+      setEvents(response.data || defaultEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
-
-  const filteredEventsx = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const filteredEvents = activeCategory === 'semua' 
     ? events 
@@ -59,7 +46,6 @@ const AgendaList = () => {
     if (!time) return '';
     return time.slice(0, 5);
   };
-
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -95,7 +81,7 @@ const AgendaList = () => {
             </div>
             
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              {eventCategories.map((category) => (
                 <Button
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}

@@ -5,13 +5,31 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { events, placeholder } from '@/../database/get-data';
+import { defaultEvents, placeholder } from '@/../database/default-data';
+import { agendaService } from '@/lib/api-services';
+import { useEffect, useState } from 'react';
 
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+  const [events, setEvents] = useState([]);
 
   const filteredEvent = events.filter((event) => event.id === Number(id));
+
+  const fetchEvents = async () => {
+    try {
+      const response = await agendaService.getAll();
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+      }
+      setEvents(response.data || defaultEvents);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {

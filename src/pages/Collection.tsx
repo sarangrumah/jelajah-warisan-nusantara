@@ -7,17 +7,36 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collections, placeholder } from '@/../database/get-data';
+import { placeholder, defaultCollections } from '@/../database/default-data';
+import { collectionService } from '@/lib/api-services';
 
 const Collection = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const { pathname } = useLocation();
+  const [collections, setCollections] = useState([]);
     
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  const fetchCollections = async () => {
+    try {
+      const response = await collectionService.getAll();
+
+      if (response.error) {
+        console.error('Error fetching collections:', response.error);
+      }
+
+      setCollections(response.data || defaultCollections);
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+    }
+  };
+  useEffect(() => {
+    fetchCollections();
+  }, []);
 
   const filteredCollections = collections.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -78,7 +97,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image ? item.image : placeholder.image}
+                    src={item.image_url ? item.image_url : placeholder.image}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />

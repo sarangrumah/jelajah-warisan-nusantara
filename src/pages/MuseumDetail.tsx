@@ -5,22 +5,39 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { museums } from '@/../database/get-data';
-import { useEffect } from 'react';
+import { defaultMuseums } from '@/../database/default-data';
+// import { museums } from '@/../database/get-data';
+import { useEffect, useState } from 'react';
+import { museumService } from '@/lib/api-services';
 
 const MuseumDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-
   const { pathname } = useLocation();
+  
+  const [museums, setMuseums] = useState([]);
       
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  // const museumx = museumDatax[parseInt(id as string) as keyof typeof museumData];
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+      if (response.error) {
+        console.error('Error fetching museums:', response.error);
+      }
 
-  const filteredMuseum = museums.filter((m) => m.id === parseInt(id as string));
+      setMuseums(response.data || defaultMuseums);
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  }
+  useEffect(() => {
+    fetchMuseums();
+  }, []);
+
+  const filteredMuseum = museums.filter((m) => m.id === id);
 
   if (filteredMuseum.length === 0) {
     return (
@@ -45,8 +62,8 @@ const MuseumDetail = () => {
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={museum.image}
-            alt={museum.title}
+            src={museum.image_url}
+            alt={museum.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/50" />
@@ -54,7 +71,7 @@ const MuseumDetail = () => {
             <Badge className="mb-2">
               {museum.type === 'museum' ? t('Museum') : t('Heritage Site')}
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.title}</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.name}</h1>
             <p className="text-xl">{museum.subtitle}</p>
           </div>
         </section>  
