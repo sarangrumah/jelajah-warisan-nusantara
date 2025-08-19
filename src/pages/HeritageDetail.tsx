@@ -5,20 +5,36 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { heritages } from '@/../database/get-data';
-import { useEffect } from 'react';
+import { defaultHeritages } from '@/../database/default-data';
+import { useEffect, useState } from 'react';
+import { heritageService } from '@/lib/api-services';
 
 const HeritageDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-
+  const [heritages, setHeritages] = useState([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const filteredHeritage = heritages.filter((h) => h.id === parseInt(id as string));
+  const fetchHeritages = async () => {
+    try {
+      const response = await heritageService.getAll();
+      if(response.error) {
+        console.error('Error fetching heritages:', response.error);
+      }
+      setHeritages(response.data || defaultHeritages);
+    } catch (error) {
+      console.error('Error fetching heritages:', error);
+    }
+  };
+  useEffect(() => {
+    fetchHeritages();
+  }, []);
+
+  const filteredHeritage = heritages.filter((h) => h.id.toString() === id);
 
   if (filteredHeritage.length === 0) {
     return (
@@ -50,7 +66,7 @@ const HeritageDetail = () => {
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={heritage.image}
+            src={heritage.image_url}
             alt={heritage.title}
             className="w-full h-full object-cover"
           />
@@ -70,7 +86,7 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-4">{t('About')}</h2>
                   <div className="space-y-4 text-muted-foreground">
-                    {heritage.fullDescription.split('\n\n').map((paragraph, index) => (
+                    {heritage.full_description.split('\n\n').map((paragraph, index) => (
                       <p key={index}>{paragraph}</p>
                     ))}
                   </div>
@@ -82,12 +98,16 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">{t('Technical Details')}</h3>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {Object.entries(heritage.details).map(([key, value]) => (
-                      <div key={key} className="flex justify-between">
-                        <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')}:</span>
-                        <span className="font-semibold">{value}</span>
-                      </div>
-                    ))}
+                    {typeof heritage.details === 'string' ? Object.entries(JSON.parse(heritage.details.replace(/'/g, '"'))).map(([key, value]) => (
+                      <div key={key} className="flex justify-start">
+                        <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')+' ' }:</span>
+                        <span className="font-semibold ps-1">{ `${value}` }</span>
+                      </div>)) : Object.entries(heritage.details).map(([key, value]) => (
+                      <div key={key} className="flex justify-start">
+                        <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')+' ' }:</span>
+                        <span className="font-semibold ps-1">{ `${value}` }</span>
+                      </div>))
+                    }
                   </div>
                 </CardContent>
               </Card>
@@ -121,24 +141,24 @@ const HeritageDetail = () => {
                       <h4 className="font-semibold text-sm mb-2">{t('Opening Hours')}</h4>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Clock size={16} className="mr-2" />
-                        {heritage.visitInfo.openHours}
+                        {heritage.visit_info.openHours}
                       </div>
                     </div>
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Ticket Price')}</h4>
-                      <p className="text-sm text-muted-foreground">{heritage.visitInfo.ticketPrice}</p>
+                      <p className="text-sm text-muted-foreground">{heritage.visit_info.ticketPrice}</p>
                     </div>
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Best Time to Visit')}</h4>
-                      <p className="text-sm text-muted-foreground">{heritage.visitInfo.bestTime}</p>
+                      <p className="text-sm text-muted-foreground">{heritage.visit_info.bestTime}</p>
                     </div>
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Facilities')}</h4>
                       <div className="flex flex-wrap gap-2">
-                        {heritage.visitInfo.facilities.map((facility, index) => (
+                        {heritage.facilities && heritage.facilities.map((facility, index) => (
                           <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
                             {facility}
                           </span>
