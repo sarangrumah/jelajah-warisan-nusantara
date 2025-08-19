@@ -61,8 +61,11 @@ const UserManagement = () => {
 
       const profilesData = profilesResponse.data || [];
 
+
+      
       // Transform the data for display
-      const transformedUsers: User[] = Array.isArray(profilesData) ? profilesData.map((profile: any) => ({
+      const transformedUsers: User[] = Array.isArray(profilesData) ? profilesData.map((profile: any) => (
+      {
         id: profile.user_id || profile.id,
         email: profile.email || '', 
         created_at: profile.created_at,
@@ -73,6 +76,9 @@ const UserManagement = () => {
           ? [{ role: profile.roles[0] || 'viewer' }] 
           : [{ role: 'viewer' }],
       })) : [];
+
+      console.log(profilesResponse)
+      console.log(transformedUsers)
 
       setUsers(transformedUsers);
     } catch (error) {

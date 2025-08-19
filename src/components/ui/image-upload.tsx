@@ -116,6 +116,8 @@ export const ImageUpload = ({
   };
 
   const clearImage = () => {
+    console.log("masuk sini emang");
+    
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';

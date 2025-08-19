@@ -12,11 +12,37 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
+interface CompanyProfileContent {
+  logo_url?: string;
+  company_name?: string;
+  description?: string;
+  vision?: string;
+  mission?: string;
+  history?: string;
+  contact_info?: {
+    address?: string;
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
+  services?: string[];
+  values?: string[];
+}
+
+interface CompanyProfile {
+  id : string;
+  section_key: 'company_profile';
+  title: string;
+  content: CompanyProfileContent;
+  is_published?: boolean;
+  updated_at: string;
+}
+
 const CompanyProfileManagement = () => {
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<any>(null);
+  const [editingProfile, setEditingProfile] = useState<CompanyProfile>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
@@ -24,12 +50,37 @@ const CompanyProfileManagement = () => {
     fetchProfiles();
   }, []);
 
+
+  
+  const EmptyprofileData: CompanyProfile = {
+    id: "",
+    section_key: 'company_profile',
+    title: "",
+    content: {
+      logo_url:  "",
+      company_name:  "",
+      description:  "",
+      vision:  "",
+      mission:  "",
+      history: "",
+      contact_info: {
+        address:  "",
+        phone:  "",
+        email:  "",
+        website: "",
+      },
+      services:  [],
+      values:  []
+    },
+    is_published: true,
+    updated_at: ""
+  };
   const fetchProfiles = async () => {
     try {
       const response = await contentService.getAll();
       if (response.error) throw new Error(response.error);
       // Filter company profiles on the client side for now
-      const companyProfiles = (response.data || []).filter(
+      const companyProfiles = (response.data as CompanyProfile[]|| []).filter(
         (item: any) => item.section_key === 'company_profile'
       );
       setProfiles(companyProfiles);
@@ -45,54 +96,60 @@ const CompanyProfileManagement = () => {
     }
   };
 
-  const saveProfile = async (formData: any) => {
+  const saveProfile = async (formData: CompanyProfile) => {
     setSaving(true);
     try {
       const profileData = {
         section_key: 'company_profile',
         title: formData.title,
         content: {
-          logo_url: formData.logo_url,
-          company_name: formData.company_name,
-          description: formData.description,
-          vision: formData.vision,
-          mission: formData.mission,
-          history: formData.history,
+          logo_url: formData.content.logo_url || "",
+          company_name: formData.content.company_name || "",
+          description: formData.content.description || "",
+          vision: formData.content.vision || "",
+          mission: formData.content.mission || "",
+          history: formData.content.history || "",
           contact_info: {
-            address: formData.address,
-            phone: formData.phone,
-            email: formData.email,
-            website: formData.website,
+            address: formData.content.contact_info?.address || "",
+            phone: formData.content.contact_info?.phone || "",
+            email: formData.content.contact_info?.email || "",
+            website: formData.content.contact_info?.website || "",
           },
-          services: formData.services?.split(',').map((s: string) => s.trim()).filter(Boolean) || [],
-          values: formData.values?.split(',').map((v: string) => v.trim()).filter(Boolean) || [],
+          services: Array.isArray(formData.content.services) 
+            ? formData.content.services 
+            : [],
+          values: Array.isArray(formData.content.values) 
+            ? formData.content.values 
+            : []
         },
         is_published: formData.is_published,
       };
 
+      let response;
       if (editingProfile?.id) {
-        const response = await contentService.update(editingProfile.id, profileData);
+        response = await contentService.update(editingProfile.id, profileData);
         if (response.error) throw new Error(response.error);
         
-        setProfiles(prev => prev.map(p => 
-          p.id === editingProfile.id ? { ...p, ...profileData } : p
-        ));
-        
-        toast({
-          title: 'Success',
-          description: 'Company profile updated successfully',
-        });
+        setProfiles(prev => 
+          prev.map(profile => 
+            profile.id === editingProfile.id 
+              ? { ...profile, ...response.data, updated_at: new Date().toISOString() }
+              : profile
+          )
+        );
       } else {
-        const response = await contentService.create(profileData);
+        response = await contentService.create(profileData);
         if (response.error) throw new Error(response.error);
         
-        setProfiles(prev => [response.data, ...prev]);
-        
-        toast({
-          title: 'Success',
-          description: 'Company profile created successfully',
-        });
+        setProfiles(prev => [{ ...response.data, updated_at: new Date().toISOString() }, ...prev]);
       }
+      
+      toast({
+        title: 'Success',
+        description: editingProfile?.id 
+          ? 'Company profile updated successfully' 
+          : 'Company profile created successfully',
+      });
       
       setEditingProfile(null);
       setIsDialogOpen(false);
@@ -132,34 +189,53 @@ const CompanyProfileManagement = () => {
   };
 
   const ProfileForm = ({ profile, onSave, onCancel }: {
-    profile?: any;
-    onSave: (data: any) => void;
+    profile: CompanyProfile;
+    onSave: (data: CompanyProfile) => void;
     onCancel: () => void;
   }) => {
-    const content = profile?.content || {};
-    const contactInfo = content.contact_info || {};
     
-    const [formData, setFormData] = useState({
-      title: profile?.title || '',
-      logo_url: content.logo_url || '',
-      company_name: content.company_name || '',
-      description: content.description || '',
-      vision: content.vision || '',
-      mission: content.mission || '',
-      history: content.history || '',
-      address: contactInfo.address || '',
-      phone: contactInfo.phone || '',
-      email: contactInfo.email || '',
-      website: contactInfo.website || '',
-      services: (content.services || []).join(', '),
-      values: (content.values || []).join(', '),
-      is_published: profile?.is_published ?? true,
-    });
+    const [formData, setFormData] = useState<CompanyProfile>({
+    id: profile?.id || '',
+    section_key: 'company_profile',
+    title: profile?.title || '',
+    content: {
+      logo_url: profile?.content?.logo_url || '',
+      company_name: profile?.content?.company_name || '',
+      description: profile?.content?.description || '',
+      vision: profile?.content?.vision || '',
+      mission: profile?.content?.mission || '',
+      history: profile?.content?.history || '',
+      contact_info: {
+        address: profile?.content?.contact_info?.address || '',
+        phone: profile?.content?.contact_info?.phone || '',
+        email: profile?.content?.contact_info?.email || '',
+        website: profile?.content?.contact_info?.website || '',
+      },
+      services: profile?.content?.services || [],
+      values: profile?.content?.values || []
+    },
+    is_published: profile?.is_published || false,
+    updated_at: profile?.updated_at || ''
+  });
+    
+
+    const handleChange = async (url: string) => {
+      setEditingProfile((prev) => ({
+        ...prev,
+        content: {
+          ...prev.content,  // Spread the existing content
+          logo_url: url     // Update just the logo_url
+        }
+      }));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
+      console.log(formData);
+      
       onSave(formData);
     };
+
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -177,8 +253,10 @@ const CompanyProfileManagement = () => {
             <Label htmlFor="company_name">Company Name</Label>
             <Input
               id="company_name"
-              value={formData.company_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
+              value={formData.content.company_name}
+              onChange={(e) => setFormData(prev => ({ ...prev, content: {
+                ...prev.content
+              }, company_name: e.target.value }))}
               required
             />
           </div>
@@ -186,8 +264,8 @@ const CompanyProfileManagement = () => {
 
         <ImageUpload
           label="Logo"
-          value={formData.logo_url}
-          onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
+          value={formData.content.logo_url}
+          onChange={(url) => handleChange(url)}
           bucket="logos"
           maxSize={2}
         />
@@ -196,8 +274,10 @@ const CompanyProfileManagement = () => {
           <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            value={formData.content.description}
+            onChange={(e) => setFormData(prev => ({...prev, content: {
+                ...prev.content
+              },  description: e.target.value }))}
             rows={3}
           />
         </div>
@@ -207,8 +287,10 @@ const CompanyProfileManagement = () => {
             <Label htmlFor="vision">Vision</Label>
             <Textarea
               id="vision"
-              value={formData.vision}
-              onChange={(e) => setFormData(prev => ({ ...prev, vision: e.target.value }))}
+              value={formData.content.vision}
+              onChange={(e) => setFormData(prev => ({...prev, content: {
+                ...prev.content
+              },  vision: e.target.value }))}
               rows={3}
             />
           </div>
@@ -216,8 +298,10 @@ const CompanyProfileManagement = () => {
             <Label htmlFor="mission">Mission</Label>
             <Textarea
               id="mission"
-              value={formData.mission}
-              onChange={(e) => setFormData(prev => ({ ...prev, mission: e.target.value }))}
+              value={formData.content.mission}
+              onChange={(e) => setFormData(prev => ({...prev, content: {
+                ...prev.content
+              },  mission: e.target.value }))}
               rows={3}
             />
           </div>
@@ -227,8 +311,10 @@ const CompanyProfileManagement = () => {
           <Label htmlFor="history">Company History</Label>
           <Textarea
             id="history"
-            value={formData.history}
-            onChange={(e) => setFormData(prev => ({ ...prev, history: e.target.value }))}
+            value={formData.content.history}
+            onChange={(e) => setFormData(prev => ({...prev, content: {
+                ...prev.content
+              },  history: e.target.value }))}
             rows={4}
           />
         </div>
@@ -238,8 +324,12 @@ const CompanyProfileManagement = () => {
             <Label htmlFor="address">Address</Label>
             <Textarea
               id="address"
-              value={formData.address}
-              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+              value={formData.content.contact_info.address}
+              onChange={(e) => setFormData(prev => ({  ...prev,
+              content: {
+                ...prev.content,
+                contact_info: {
+                  ...prev.content.contact_info, address: e.target.value }}}))}
               rows={2}
             />
           </div>
@@ -247,8 +337,12 @@ const CompanyProfileManagement = () => {
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              value={formData.content.contact_info.phone}
+              onChange={(e) => setFormData(prev => ({  ...prev,
+              content: {
+                ...prev.content,
+                contact_info: {
+                  ...prev.content.contact_info, phone: e.target.value }}}))}
             />
           </div>
         </div>
@@ -259,16 +353,24 @@ const CompanyProfileManagement = () => {
             <Input
               id="email"
               type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              value={formData.content.contact_info.email}
+              onChange={(e) => setFormData(prev => ({  ...prev,
+              content: {
+                ...prev.content,
+                contact_info: {
+                  ...prev.content.contact_info, email: e.target.value }}}))}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="website">Website</Label>
             <Input
               id="website"
-              value={formData.website}
-              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+              value={formData.content.contact_info.website}
+              onChange={(e) => setFormData(prev => ({  ...prev,
+              content: {
+                ...prev.content,
+                contact_info: {
+                  ...prev.content.contact_info, website: e.target.value }}}))}
             />
           </div>
         </div>
@@ -277,8 +379,14 @@ const CompanyProfileManagement = () => {
           <Label htmlFor="services">Services (comma separated)</Label>
           <Textarea
             id="services"
-            value={formData.services}
-            onChange={(e) => setFormData(prev => ({ ...prev, services: e.target.value }))}
+            value={formData.content.services?.join(', ') || ''} 
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              content: {
+                ...prev.content,
+                services: e.target.value.split(',').map(s => s.trim())
+              }
+            }))}
             placeholder="Museum Tours, Educational Programs, Research Services"
             rows={2}
           />
@@ -288,8 +396,14 @@ const CompanyProfileManagement = () => {
           <Label htmlFor="values">Company Values (comma separated)</Label>
           <Textarea
             id="values"
-            value={formData.values}
-            onChange={(e) => setFormData(prev => ({ ...prev, values: e.target.value }))}
+            value={formData.content.values?.join(', ') || ''} 
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              content: {
+                ...prev.content,
+                values: e.target.value.split(',').map(s => s.trim())
+              }
+            }))}
             placeholder="Heritage Preservation, Education, Cultural Awareness"
             rows={2}
           />
@@ -299,7 +413,7 @@ const CompanyProfileManagement = () => {
           <Switch
             id="is_published"
             checked={formData.is_published}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev , is_published: checked }))}
           />
           <Label htmlFor="is_published">Publish Profile</Label>
         </div>
@@ -336,7 +450,7 @@ const CompanyProfileManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingProfile(null)}>
+            <Button onClick={() => setEditingProfile(EmptyprofileData)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Profile
             </Button>

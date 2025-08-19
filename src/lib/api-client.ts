@@ -94,6 +94,10 @@ class ApiClient {
     return this.request<User>(`/api/auth/profile/${userId}`);
   }
 
+  async getAllProfile(): Promise<ApiResponse<User>> {
+    return this.request<User>(`/api/auth/profile`);
+  }
+
   async getCurrentUserRoles(): Promise<ApiResponse<string[]>> {
     return this.request<string[]>('/api/auth/roles');
   }
