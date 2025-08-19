@@ -235,3 +235,54 @@ export const getUserRoles = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getAllProfile = async (req: AuthRequest, res: Response) => {
+  try {
+
+    
+    const profileResult = await query(
+      `SELECT p.*, u.email, 
+              COALESCE(
+                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
+                ARRAY[]::app_role[]
+              ) as roles
+      FROM profiles p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN user_roles ur ON p.user_id = ur.user_id
+      WHERE p.user_id != $1
+      GROUP BY p.id, p.user_id, p.display_name, p.avatar_url, p.created_at, p.updated_at, u.email`,
+      [req.user?.id]
+    );
+
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ error: 'No profiles found' });
+    }
+
+    // normalize roles for each profile
+    const profiles = profileResult.rows.map((profile: any) => {
+      let userRoles: string[] = [];
+
+      if (Array.isArray(profile.roles)) {
+        userRoles = profile.roles.filter((role: string) => role !== null);
+      } else if (profile.roles) {
+        const rolesStr = profile.roles.toString();
+        if (rolesStr.startsWith("{") && rolesStr.endsWith("}")) {
+          userRoles = rolesStr
+            .slice(1, -1)
+            .split(",")
+            .filter((role) => role.trim() !== "");
+        }
+      }
+
+      return {
+        ...profile,
+        roles: userRoles,
+      };
+    });
+
+    res.json(profiles);
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
