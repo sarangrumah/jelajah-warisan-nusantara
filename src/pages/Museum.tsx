@@ -7,14 +7,14 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { museums } from '@/../database/get-data';
+import { defaultMuseums } from '@/../database/default-data';
 import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [events, setEvents] = useState([]);
+  const [museums, setMuseums] = useState([]);
 
   const { pathname } = useLocation();
       
@@ -22,28 +22,26 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchEvents = async () => {
+  const fetchMuseums = async () => {
     try {
       const response = await museumService.getAll();
-      console.log(response)
 
       if (response.error) {
-        console.error('Error fetching events:', response.error);
-        return;
+        console.error('Error fetching museums:', response.error);
       }
 
-      setEvents(response.data || []);
+      setMuseums(response.data || defaultMuseums);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('Error fetching museums:', error);
     }
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, [])
+    fetchMuseums();
+  }, []);
 
   const filteredMuseums = museums.filter(museum => {
-    const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || museum.type === filterType;
     return matchesSearch && matchesFilter;
@@ -97,13 +95,13 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image}
-                    alt={item.title}
+                    src={item.image_url}
+                    alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
                 <CardContent>

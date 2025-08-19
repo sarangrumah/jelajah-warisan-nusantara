@@ -1,0 +1,20 @@
+[
+  {
+    "image": "/backend/uploads/images/hero-borobudur.jpg",
+    "title": "hero.museum.title",
+    "subtitle": "hero.museum.subtitle",
+    "cta": "hero.museum.cta"
+  },
+  {
+    "image": "/backend/uploads/images/museum-interior.jpg",
+    "title": "hero.collection.title",
+    "subtitle": "hero.collection.subtitle",
+    "cta": "hero.collection.cta"
+  },
+  {
+    "image": "/backend/uploads/images/heritage-sites.jpg",
+    "title": "hero.sites.title",
+    "subtitle": "hero.sites.subtitle",
+    "cta": "hero.sites.cta"
+  }
+]

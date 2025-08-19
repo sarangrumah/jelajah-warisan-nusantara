@@ -14,7 +14,11 @@ const tableConfigs = {
   career_applications: ['id', 'opportunity_id', 'full_name', 'email', 'phone', 'university', 'major', 'semester', 'program', 'motivation', 'cv_url', 'transcript_url', 'cover_letter_url', 'status', 'created_at', 'updated_at'],
   media_items: ['id', 'title', 'type', 'category', 'excerpt', 'content', 'image_url', 'file_url', 'tags', 'is_published', 'published_at', 'created_by', 'created_at', 'updated_at'],
   faqs: ['id', 'question', 'answer', 'category', 'order_index', 'is_published', 'created_by', 'created_at', 'updated_at'],
-  content_sections: ['id', 'section_key', 'title', 'content', 'is_published', 'created_by', 'created_at', 'updated_at']
+  content_sections: ['id', 'section_key', 'title', 'content', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  hero_slides: ['id', 'title', 'subtitle', 'cta', 'image_url', 'created_by', 'created_at', 'updated_at'],
+  hero_videos: ['id', 'title', 'video', 'created_at', 'updated_at'],
+  collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image_url', 'description', 'material', 'dimensions', 'origin', 'discoverdYear', 'condition', 'significance', 'culturalContext', 'relatedArtifacts', 'created_at', 'updated_at'],
+  heritages: ['id', 'title', 'subtitle', 'type', 'location', 'period', 'image_url', 'description', 'full_description', 'details', 'visit_info', 'created_at', 'updated_at'],
 };
 
 // Create CRUD routes for each table

@@ -3,21 +3,29 @@ import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { placeholder, categories, events } from '@/../database/get-data';
+import { placeholder, eventCategories, defaultEvents } from '@/../database/default-data';
+import { agendaService } from '@/lib/api-services';
 
 const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
+  const [events, setEvents] = useState([]);
 
-  // const categoriesx = [
-  //   { id: 'semua', label: 'Semua Event' },
-  //   { id: 'event', label: 'Event' },
-  //   { id: 'pameranTemporer', label: 'Pameran Temporer' },
-  //   { id: 'pameran', label: 'Pameran' },
-  //   { id: 'workshop', label: 'Workshop' },
-  //   { id: 'konservasi', label: 'Konservasi' },
-  //   { id: 'edukasi', label: 'Edukasi' },
-  // ];
+  const fetchEvents = async () => {
+    try {
+      const response = await agendaService.getAll();
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+      }
+  
+      setEvents(response.data || defaultEvents);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
   
   useEffect(() => {
     const observerOptions = {
@@ -75,7 +83,7 @@ const AgendaSection = () => {
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
-          {categories.map((category) => (
+          {eventCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
