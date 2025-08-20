@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 *.mp4
 .env
+backend/.env
 *.pem
+backend/.env
