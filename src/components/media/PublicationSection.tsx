@@ -1,52 +1,23 @@
 import { FileText, Download, Calendar, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { publications } from '@/../database/get-data';
 
-const PublikationSection = () => {
-  const publications = [
-    {
-      title: 'Laporan Tahunan 2023',
-      description: 'Laporan lengkap kegiatan dan pencapaian Direktorat Museum dan Cagar Budaya tahun 2023',
-      type: 'Laporan Tahunan',
-      year: '2023',
-      size: '12.5 MB',
-      pages: 156,
-      downloadCount: 2543
-    },
-    {
-      title: 'Panduan Konservasi Artefak',
-      description: 'Panduan teknis konservasi dan perawatan koleksi museum',
-      type: 'Panduan Teknis',
-      year: '2023',
-      size: '8.2 MB',
-      pages: 89,
-      downloadCount: 1876
-    },
-    {
-      title: 'Katalog Museum Nasional',
-      description: 'Katalog lengkap koleksi Museum Nasional Indonesia',
-      type: 'Katalog',
-      year: '2023',
-      size: '45.7 MB',
-      pages: 324,
-      downloadCount: 3421
-    },
-    {
-      title: 'Standar Pengelolaan Museum',
-      description: 'Standar operasional pengelolaan museum di Indonesia',
-      type: 'Standar',
-      year: '2022',
-      size: '5.4 MB',
-      pages: 67,
-      downloadCount: 987
-    }
-  ];
-
+const PublicationSection = () => {
   const budgetData = [
     { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
     { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
     { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
   ];
+
+  const downloadFromUrl = (url, filename) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename || "download";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -65,7 +36,7 @@ const PublikationSection = () => {
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
             Dokumen Publikasi
           </h3>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 px-3">
             {publications.map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
@@ -98,7 +69,7 @@ const PublikationSection = () => {
                       <div className="text-muted-foreground">Download</div>
                     </div>
                   </div>
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
                     <Download size={16} className="mr-2" />
                     Unduh Dokumen
                   </Button>
@@ -158,4 +129,4 @@ const PublikationSection = () => {
   );
 };
 
-export default PublikationSection;
+export default PublicationSection;

@@ -5,21 +5,39 @@ import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-// import { Button } from '@/components/ui/button';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { heritages } from '@/../database/get-data';
+import { defaultHeritages } from '@/../database/default-data';
+import { heritageService } from '@/lib/api-services';
+
 
 const Heritage = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-
+  const [heritages, setHeritages] = useState([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  const fetchHeritages = async () => {
+    try {
+      const response = await heritageService.getAll();
+      if(response.error) {
+        console.error('Error fetching heritages:', response.error);
+      }
+      setHeritages(response.data || defaultHeritages);
+    } catch (error) {
+      console.error('Error fetching heritages:', error);
+    }
+  };
+  useEffect(() => {
+    fetchHeritages();
+  }, []);
+
 
   const filteredHeritages = heritages.filter(heritage => {
     const matchesSearch = heritage.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,7 +95,7 @@ const Heritage = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image}
+                    src={item.image_url}
                     alt={item.title}
                     className="w-full h-full object-cover"
                   />

@@ -7,8 +7,9 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { collections, placeholder } from '@/../database/get-data';
-import { da } from 'zod/v4/locales';
+import { placeholder, defaultCollections } from '@/../database/default-data';
+import { collectionService } from '@/lib/api-services';
+
 
 const Collection = () => {
   const { t } = useTranslation();
@@ -20,19 +21,23 @@ const Collection = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
-  const getCollection = async () => {
+  const fetchCollections = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/collections');
-      const data = await response.json();
-      setCollections(data);
+      const response = await collectionService.getAll();
+
+      if (response.error) {
+        console.error('Error fetching collections:', response.error);
+      }
+
+      setCollections(response.data || defaultCollections);
+
     } catch (error) {
       console.error('Error fetching collections:', error);
     }
   };
 
   useEffect(() => {
-    getCollection();
+    fetchCollections();
   }, []);
 
   const filteredCollections = collections.filter(item => {
@@ -94,7 +99,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={`/src/assets/images/collections/${item.image}`}
+                    src={item.image_url ? item.image_url : placeholder.image}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />

@@ -23,8 +23,6 @@ import NewsDetail from "./pages/NewsDetail";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
-import Sites from "./pages/Sites";
-import SitesDetail from "./pages/SitesDetail";
 import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";

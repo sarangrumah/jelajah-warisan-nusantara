@@ -1,7 +1,5 @@
-import { Shield, BookOpen, Microscope, Globe, Camera, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
 import { DynamicComponent } from '../dynamic-components';
 
 const Services = () => {
@@ -10,37 +8,37 @@ const Services = () => {
   
   const servicesx = [
     {
-      icon: Shield,
+      icon: 'Shield',
       title: t('about.services.heritage.title'),
       description: t('about.services.heritage.description'),
       features: t('about.services.heritage.features', { returnObjects: true }) as string[]
     },
     {
-      icon: BookOpen,
+      icon: 'BookOpen',
       title: t('about.services.museum.title'),
       description: t('about.services.museum.description'),
       features: t('about.services.museum.features', { returnObjects: true }) as string[]
     },
     {
-      icon: Microscope,
+      icon: 'Microscope',
       title: t('about.services.research.title'),
       description: t('about.services.research.description'),
       features: t('about.services.research.features', { returnObjects: true }) as string[]
     },
     {
-      icon: Globe,
+      icon: 'Globe',
       title: t('about.services.international.title'),
       description: t('about.services.international.description'),
       features: t('about.services.international.features', { returnObjects: true }) as string[]
     },
     {
-      icon: Camera,
+      icon: 'Camera',
       title: t('about.services.digitization.title'),
       description: t('about.services.digitization.description'),
       features: t('about.services.digitization.features', { returnObjects: true }) as string[]
     },
     {
-      icon: Users,
+      icon: 'Users',
       title: t('about.services.education.title'),
       description: t('about.services.education.description'),
       features: t('about.services.education.features', { returnObjects: true }) as string[]
@@ -78,19 +76,19 @@ const Services = () => {
             <Card key={index} className="scroll-revealx heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <DynamicComponent componentName={service.icon} size={48} className="text-primary mb-4" />
-                <CardTitle className="text-xl">{t(`about.services.${service.title}`)}</CardTitle>
-                <p className="text-muted-foreground">{t(`about.services.${service.description}`)}</p>
+
+                <CardTitle className="text-xl">{service.title}</CardTitle>
+                <p className="text-muted-foreground">{service.description}</p>
+
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <h4 className="font-semibold text-sm text-primary">Key Features:</h4>
                   <ul className="space-y-1">
-                    {(t(`about.services.${service.features}`, { returnObjects: true }) as string[]).map((feature, featureIndex) => (
-                      <li key={featureIndex} className="text-sm text-muted-foreground flex items-center gap-2">
+                      <li className="text-sm text-muted-foreground flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                        {feature}
+                        {service.features}
                       </li>
-                    ))}
                   </ul>
                 </div>
               </CardContent>
