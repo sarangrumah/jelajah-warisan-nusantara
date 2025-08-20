@@ -5,9 +5,11 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+
 import { defaultEvents, placeholder } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
+
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -30,6 +32,7 @@ const EventDetail = () => {
   }, []);
 
   const filteredEvent = events.filter((event) => event.id.toString() === id);
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -146,16 +149,6 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
                     <div className="space-y-4">
-                      {/* {event.schedule.map((item, index) => (
-                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
-                          <div className="text-sm font-semibold text-primary min-w-24">
-                            {item.time}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {item.activity}
-                          </div>
-                        </div>
-                      ))} */}
                       {typeof event.schedule === 'string' ? parseSchedule(event.schedule).map((item: any, index: number) => (
                         <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
                           <div className="text-sm font-semibold text-primary min-w-24">

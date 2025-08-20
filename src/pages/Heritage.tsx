@@ -5,10 +5,12 @@ import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
 import { heritageService } from '@/lib/api-services';
+
 
 const Heritage = () => {
   const { t } = useTranslation();
@@ -35,6 +37,7 @@ const Heritage = () => {
   useEffect(() => {
     fetchHeritages();
   }, []);
+
 
   const filteredHeritages = heritages.filter(heritage => {
     const matchesSearch = heritage.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

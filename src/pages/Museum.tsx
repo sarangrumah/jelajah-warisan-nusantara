@@ -15,6 +15,22 @@ const Museum = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [events, setEvents] = useState([]);
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await museumService.getAll();
+      console.log(response)
+
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+        return;
+      }
 
   const { pathname } = useLocation();
       
@@ -39,6 +55,7 @@ const Museum = () => {
   useEffect(() => {
     fetchMuseums();
   }, []);
+
 
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,7 +108,7 @@ const Museum = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMuseums.map((item) => (
-            <Link key={item.id} to={`/museum/${item.id}`}>
+            <Link key={item.museum_id} to={`/museum/${item.museum_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img

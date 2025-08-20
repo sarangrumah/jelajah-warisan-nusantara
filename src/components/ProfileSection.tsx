@@ -13,22 +13,6 @@ const ProfileSection = () => {
     { icon: 'Clock', value: museumStat.experiences, label: 'experience' },
   ]);
 
-  // const getStats = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:5000/api/stats');
-  //     const data = await response.json();
-  //     if (data && Array.isArray(data)) {
-  //       setStats(data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getStats();
-  // }, []);
-
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
@@ -76,7 +60,6 @@ const ProfileSection = () => {
                 {/* {<stat.icon size={32} className="text-primary mx-auto mb-4" />} */}
                 <DynamicComponent componentName={stat.icon} size={32} className="text-primary mx-auto mb-4" />
                 <div className="text-3xl font-bold text-heritage-gradient mb-2">
-                  {/* {stat.value >= 50 ? `${stat.value}+` : stat.value} */}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {t(`profile.stats.${stat.label}`)}

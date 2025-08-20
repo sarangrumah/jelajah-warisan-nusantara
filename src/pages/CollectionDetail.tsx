@@ -10,12 +10,12 @@ import { Button } from '@/components/ui/button';
 import { placeholder, defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { collectionService } from '@/lib/api-services';
-
 const CollectionDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const [collections, setCollections] = useState([]);
+
       
   useEffect(() => {
     window.scrollTo(0, 0);

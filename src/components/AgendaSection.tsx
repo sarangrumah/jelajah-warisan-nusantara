@@ -3,8 +3,10 @@ import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+
 import { placeholder, eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
+
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -46,6 +48,7 @@ const AgendaSection = () => {
 
   //   return () => observer.disconnect();
   // }, [activeCategory]);
+
 
   const filteredEvents = activeCategory === 'semua' 
     ? events.slice(0, 6) 
