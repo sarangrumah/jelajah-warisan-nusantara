@@ -190,6 +190,7 @@ const CollectionDetail = () => {
                       {artifact.trim()}
                     </Badge>
                   )) : collection.related_artifacts.map((artifact, index) => (
+
                     <Badge key={index} variant="outline">
                       {artifact}
                     </Badge>

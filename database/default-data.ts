@@ -3379,6 +3379,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 
 Pada tanggal 26 Juli 2025 dilaksanakan Petualangan di Balai Kirti dengan sejumlah permainan seru didalamnya. Kegiatan dimulai dengan Kecil Bergerak yang mengajak peserta untuk menanam bibit strawberry sekaligus mengajarkan dasar-dasar berkebun untuk peserta. Kegiatan dilanjutkan dengan melukis kue sesuai dengan imajinasi dan kreativitas peserta. Kegiatan terakhir adalah Kecil-Kecil Jadi Presiden. Aksi kecil-kecil jadi presiden memberikan ruang bagi si kecil untuk terlibat dalam pesta demokrasi mini. Si Kecil akan memilih calon presiden (yang terdiri dari semua peserta kegiatan) melalui mekanisme pemilihan presiden di Indonesia. Tersedia juga kotak suara, bilik suara, dan surat suara. Setelah itu, Presiden Kecil akan membentuk kabinetnya sendiri. Para peserta yang tidak menjadi presiden akan mengisi kuisioner untuk posisi menteri kabinet kecil. Kegiatan diakhiri dengan pelantikan presiden kecil.`,
     image_url: '',
+
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3419,6 +3420,7 @@ Pada tanggal 26 Juli 2025 dilaksanakan Petualangan di Balai Kirti dengan sejumla
 
 Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum yang unik dan mendapatkan pemahaman lebih mendalam mengenai koleksi serta penelitian yang dilakukan di Sangiran, dengan cara yang lebih seru dan menarik.`,
     image_url: '',
+
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
