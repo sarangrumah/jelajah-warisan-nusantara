@@ -9,6 +9,7 @@ import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
 const HeroSection = () => {
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
@@ -28,8 +29,8 @@ const HeroSection = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
   useEffect(() => {
+
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);

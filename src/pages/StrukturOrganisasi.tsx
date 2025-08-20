@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import StrukturOrganisasiSection from '@/components/StrukturOrganisasiSection';
 import { useLocation } from 'react-router-dom';
 
+
 const StrukturOrganisasi = () => {
   const { pathname } = useLocation();
   
