@@ -1,8 +1,8 @@
 import Header from '@/components/Header';
-import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
+import StrukturOrganisasiSection from '@/components/StrukturOrganisasiSection';
 
 const StrukturOrganisasi = () => {
   useEffect(() => {
@@ -27,7 +27,7 @@ const StrukturOrganisasi = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <PPIDSection />
+      <StrukturOrganisasiSection />
       <Footer />
       <FloatingButtons />
     </div>

@@ -23,10 +23,22 @@ const resources = {
       },
       // Hero Section
       hero: {
-        title: "Preserving Indonesia's Cultural Heritage",
-        subtitle: "Directorate of Museums and Cultural Heritage - Managing and preserving national heritage for future generations",
+        museum: {
+          title: "Preserving Indonesia's Cultural Heritage",
+          subtitle: "Directorate of Museums and Cultural Heritage - Managing and preserving national heritage for future generations",
+          cta: "Explore Museums"
+        },
+        collection: {
+          title: "Archipelago Historical Collections",
+          subtitle: "Storing and exhibiting valuable artifacts from all over Indonesia",
+          cta: "View Collections"
+        },
+        sites: {
+          title: "Indonesian Cultural Heritage",
+          subtitle: "Protecting historical sites that are the pride of the nation",
+          cta: "Discover Sites"
+        },
         watchVideo: "Watch Video",
-        exploreMuseums: "Explore Museums"
       },
       // Profile Section
       profile: {
@@ -411,10 +423,22 @@ const resources = {
       },
       // Hero Section
       hero: {
-        title: "Melestarikan Warisan Budaya Indonesia",
-        subtitle: "Direktorat Museum dan Cagar Budaya - Mengelola dan melestarikan warisan nasional untuk generasi mendatang",
+        museum: {
+          title: "Melestarikan Warisan Budaya Indonesia",
+          subtitle: "Direktorat Museum dan Cagar Budaya - Mengelola dan melestarikan warisan nasional untuk generasi mendatang",
+          cta: "Jelajahi Museum"
+        },
+        collection: {
+          title: 'Koleksi Bersejarah Nusantara',
+          subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
+          cta: 'Lihat Koleksi',
+        },
+        sites: {
+          title: 'Cagar Budaya Indonesia',
+          subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
+          cta: 'Temukan Situs',
+        },
         watchVideo: "Tonton Video",
-        exploreMuseums: "Jelajahi Museum"
       },
       // Profile Section
       profile: {
