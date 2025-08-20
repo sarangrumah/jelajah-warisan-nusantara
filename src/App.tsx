@@ -56,6 +56,8 @@ const App = () => (
           <Route path="/heritage/:id" element={<HeritageDetail />} />
           <Route path="/collection" element={<Collection />} />
           <Route path="/collection/:id" element={<CollectionDetail />} />
+          <Route path="/sites" element={<NotFound />} />
+          <Route path="/sites/:id" element={<NotFound />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/auth" element={<AuthPage />} />

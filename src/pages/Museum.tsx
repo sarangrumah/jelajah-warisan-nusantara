@@ -11,10 +11,10 @@ import { defaultMuseums } from '@/../database/default-data';
 import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
+  const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [museums, setMuseums] = useState([]);
 
   const { pathname } = useLocation();
       

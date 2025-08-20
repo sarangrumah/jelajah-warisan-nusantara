@@ -27,25 +27,25 @@ const AgendaSection = () => {
     fetchEvents();
   }, []);
   
-  useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
+  // useEffect(() => {
+  //   const observerOptions = {
+  //     threshold: 0.1,
+  //     rootMargin: '0px 0px -50px 0px'
+  //   };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-        }
-      });
-    }, observerOptions);
+  //   const observer = new IntersectionObserver((entries) => {
+  //     entries.forEach((entry) => {
+  //       if (entry.isIntersecting) {
+  //         entry.target.classList.add('revealed');
+  //       }
+  //     });
+  //   }, observerOptions);
 
-    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-    scrollRevealElements.forEach((el) => observer.observe(el));
+  //   const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+  //   scrollRevealElements.forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
-  }, [activeCategory]);
+  //   return () => observer.disconnect();
+  // }, [activeCategory]);
 
   const filteredEvents = activeCategory === 'semua' 
     ? events.slice(0, 6) 
@@ -99,11 +99,11 @@ const AgendaSection = () => {
         </div>
 
         {/* Events Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 scroll-reveal">
           {filteredEvents.map((event, index) => (
             <div
               key={event.id}
-              className="bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group scroll-reveal"
+              className="bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Event Image */}
@@ -112,7 +112,7 @@ const AgendaSection = () => {
                 <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                <img src={event.image ? event.image : placeholder.image } alt={event.title} className="w-full h-full object-contain object-center" />
+                <img src={event.image_url ? event.image_url : placeholder.image } alt={event.title} className="w-full h-full object-contain object-center" />
               </div>
               <div>
               </div>
@@ -158,7 +158,7 @@ const AgendaSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center scroll-reveal">
+        <div className="text-center">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               Jangan Lewatkan Event Menarik Lainnya

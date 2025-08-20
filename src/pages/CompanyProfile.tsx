@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Users, Building, Award, Target, Eye, Heart } from 'lucide-react';
+import { MapPin, Users, Building, Award, Target, Eye, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';

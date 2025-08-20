@@ -14,8 +14,6 @@ const EventDetail = () => {
   const { t } = useTranslation();
   const [events, setEvents] = useState([]);
 
-  const filteredEvent = events.filter((event) => event.id === Number(id));
-
   const fetchEvents = async () => {
     try {
       const response = await agendaService.getAll();
@@ -30,6 +28,8 @@ const EventDetail = () => {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const filteredEvent = events.filter((event) => event.id.toString() === id);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -48,6 +48,31 @@ const EventDetail = () => {
       default: return 'Selesai';
     }
   };
+
+  function parseSchedule(str: string) {
+    try {
+      let clean = str.trim();
+      clean = clean.replace(/^\{\{/, "[").replace(/\}\}$/, "]");
+      if (!clean.includes("{")) {
+        clean = clean.replace(/\[\s*'/, "[{ '");
+      } else {
+        clean = clean.replace(/\[\s*'/, "[{ '");
+      }
+      
+      if (!clean.includes("}")) {
+        clean = clean.replace(/}?\s*]$/, "}]");
+      } else {
+        clean = clean.replace(/}?\s*]$/, "}]");
+      }
+      clean = `[${clean}]`;
+      clean = clean.replace(/'/g, '"');
+      const parsed = JSON.parse(clean);
+      return Array.isArray(parsed[0]) ? parsed[0] : parsed;
+    } catch (e) {
+      console.error("Parsing error:", e);
+      return [];
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,7 +93,7 @@ const EventDetail = () => {
         {/* Hero Image */}
           <section className="relative h-96 overflow-hidden">
             <img
-              src={event.image ? event.image : placeholder.image}
+              src={event.image_url ? event.image_url : placeholder.image}
               alt={event.title}
               className="w-full h-full object-cover object-center"
             />
@@ -121,7 +146,28 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
                     <div className="space-y-4">
-                      {event.schedule.map((item, index) => (
+                      {/* {event.schedule.map((item, index) => (
+                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
+                          <div className="text-sm font-semibold text-primary min-w-24">
+                            {item.time}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {item.activity}
+                          </div>
+                        </div>
+                      ))} */}
+                      {typeof event.schedule === 'string' ? parseSchedule(event.schedule).map((item: any, index: number) => (
+                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
+                          <div className="text-sm font-semibold text-primary min-w-24">
+                            {item.time}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {item.activity}
+                          </div>
+                        </div>
+                      ))
+                      : 
+                      event.schedule.map((item, index) => (
                         <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
                           <div className="text-sm font-semibold text-primary min-w-24">
                             {item.time}

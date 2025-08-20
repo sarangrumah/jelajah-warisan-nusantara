@@ -186,7 +186,11 @@ const CollectionDetail = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  { collection.related_artifacts && collection.related_artifacts.map((artifact, index) => (
+                  {typeof collection.related_artifacts === 'string' ? collection.related_artifacts.slice(1, -1).split(',').map((artifact, index) => (
+                    <Badge key={index} variant="outline">
+                      {artifact.trim()}
+                    </Badge>
+                  )) : collection.related_artufacts.map((artifact, index) => (
                     <Badge key={index} variant="outline">
                       {artifact}
                     </Badge>

@@ -105,7 +105,7 @@ const AgendaList = () => {
                       {getStatusLabel(event.status)}
                     </div>
                     <img 
-                      src={event.image ? event.image : placeholder.image} 
+                      src={event.image_url ? event.image_url : placeholder.image} 
                       alt={event.title}
                       className="w-full h-full object-contain object-center"
                     />
