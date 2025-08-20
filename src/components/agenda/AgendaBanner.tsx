@@ -18,7 +18,7 @@ const AgendaBanner = () => {
         <div className="absolute inset-0 bg-black/50"></div>
       </div>
       
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto scroll-reveal">
         <div className="mb-6">
           <Calendar size={64} className="mx-auto mb-4 text-primary-glow hidden" />
         </div>

@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { museums } from '@/../database/get-data';
+import { defaultMuseums } from '@/../database/default-data';
 import { museumService } from '@/lib/api-services';
 
 const Museum = () => {
@@ -32,19 +32,33 @@ const Museum = () => {
         return;
       }
 
-      setEvents(response.data || []);
+  const { pathname } = useLocation();
+      
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+
+      if (response.error) {
+        console.error('Error fetching museums:', response.error);
+      }
+
+      setMuseums(response.data || defaultMuseums);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('Error fetching museums:', error);
     }
   };
 
   useEffect(() => {
-    getMuseums();
+    fetchMuseums();
   }, []);
 
 
   const filteredMuseums = museums.filter(museum => {
-    const matchesSearch = museum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || museum.type === filterType;
     return matchesSearch && matchesFilter;
@@ -98,13 +112,13 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={`/src/assets/images/museums/${item.image}`} // Replace with the actual image path for each museumitem.image}
-                    alt={item.title}
+                    src={item.image_url}
+                    alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Filter, Search } from 'lucide-react';
+import { Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { agendaService } from '@/lib/api-services';
-import { categories, placeholder, events } from '@/../database/get-data';
+import { eventCategories, placeholder, defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 
 const AgendaList = () => {
@@ -12,35 +12,29 @@ const AgendaList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
 
-  const categoriesx = [
-    { id: 'semua', name: 'Semua Event' },
-    { id: 'workshop', name: 'Workshop' },
-    { id: 'pameran', name: 'Pameran' },
-    { id: 'seminar', name: 'Seminar' },
-    { id: 'festival', name: 'Festival' },
-  ];
+  const [events, setEvents] = useState([]);
+
 
   const fetchEvents = async () => {
     try {
       const response = await agendaService.getAll();
-      console.log(response)
-
       if (response.error) {
         console.error('Error fetching events:', response.error);
-        return;
       }
 
-      setEvents(response.data || []);
+      setEvents(response.data || defaultEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const filteredEventsx = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
+  const filteredEvents = activeCategory === 'semua' 
+    ? events 
+    : events.filter(event => event.category === activeCategory);
+
 
   const filteredEvents = activeCategory === 'semua' 
     ? events 
@@ -58,6 +52,24 @@ const AgendaList = () => {
   const formatTime = (time) => {
     if (!time) return '';
     return time.slice(0, 5);
+  };
+  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'bg-blue-500';
+      case 'ongoing': return 'bg-green-500';
+      case 'registration': return 'bg-yellow-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'Akan Datang';
+      case 'ongoing': return 'Berlangsung';
+      case 'registration': return 'Pendaftaran';
+      default: return 'Selesai';
+    }
   };
 
   
@@ -95,7 +107,7 @@ const AgendaList = () => {
             </div>
             
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              {eventCategories.map((category) => (
                 <Button
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}
@@ -119,7 +131,7 @@ const AgendaList = () => {
                       {getStatusLabel(event.status)}
                     </div>
                     <img 
-                      src={event.image ? event.image : placeholder.image} 
+                      src={event.image_url ? event.image_url : placeholder.image} 
                       alt={event.title}
                       className="w-full h-full object-contain object-center"
                     />

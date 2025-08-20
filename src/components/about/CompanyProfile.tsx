@@ -1,7 +1,5 @@
-import { Building, Users, Target, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
 import { DynamicComponent } from '../dynamic-components';
 
 const CompanyProfile = () => {
@@ -10,22 +8,22 @@ const CompanyProfile = () => {
   
   const highlightsx = [
     {
-      icon: Building,
+      icon: 'Building',
       title: t('about.companyProfile.highlights.institution.title'),
       description: t('about.companyProfile.highlights.institution.description')
     },
     {
-      icon: Users,
+      icon: 'Users',
       title: t('about.companyProfile.highlights.team.title'),
       description: t('about.companyProfile.highlights.team.description')
     },
     {
-      icon: Target,
+      icon: 'Target',
       title: t('about.companyProfile.highlights.mission.title'),
       description: t('about.companyProfile.highlights.mission.description')
     },
     {
-      icon: Award,
+      icon: 'Award',
       title: t('about.companyProfile.highlights.recognition.title'),
       description: t('about.companyProfile.highlights.recognition.description')
     }
@@ -66,7 +64,7 @@ const CompanyProfile = () => {
             />
           </div>
           
-          <div className="space-y-6 scroll-reveal">
+          <div className="space-y-6 scroll-revealx">
             <h3 className="text-3xl font-bold text-foreground">
               {t('about.companyProfile.historyTitle')}
             </h3>
@@ -91,7 +89,7 @@ const CompanyProfile = () => {
             <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
               <CardHeader className="text-center">
                 <DynamicComponent componentName={item.icon} size={48} className="text-primary mx-auto mb-4" />
-                <CardTitle className="text-xl">{t(`about.companyProfile.highlights.${item.title}`)}</CardTitle>
+                <CardTitle className="text-xl">{item.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center text-sm">

@@ -7,20 +7,39 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { collections, placeholder } from '@/../database/get-data';
-import { useEffect } from 'react';
-
+import { placeholder, defaultCollections } from '@/../database/default-data';
+import { useEffect, useState } from 'react';
+import { collectionService } from '@/lib/api-services';
 const CollectionDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  const [collections, setCollections] = useState([]);
+
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  const fetchCollections = async () => {
+      try {
+        const response = await collectionService.getAll();
+  
+        if (response.error) {
+          console.error('Error fetching collections:', response.error);
+        }
+  
+        setCollections(response.data || defaultCollections);
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+      }
+    };
+    useEffect(() => {
+      fetchCollections();
+    }, []);
+
   // const collection = collections[parseInt(id as string) as keyof typeof collections];
-  const filteredCollection = collections.filter(collection => collection.id === parseInt(id as string));
+  const filteredCollection = collections.filter(collection => collection.id.toString() === id);
 
   if (filteredCollection.length === 0) {
     return (
@@ -60,7 +79,7 @@ const CollectionDetail = () => {
               <div className="space-y-4">
                 <div className="aspect-square overflow-hidden rounded-lg border">
                   <img
-                    src={collection.image ? collection.image : placeholder.image}
+                    src={collection.image_url ? collection.image_url : placeholder.image}
                     alt={collection.title}
                     className="w-full h-full object-cover"
                   />
@@ -155,7 +174,7 @@ const CollectionDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    {collection.culturalContext}
+                    {collection.cultural_context}
                   </p>
                 </CardContent>
               </Card>
@@ -167,7 +186,11 @@ const CollectionDetail = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {collection.relatedArtifacts.map((artifact, index) => (
+                  {typeof collection.related_artifacts === 'string' ? collection.related_artifacts.slice(1, -1).split(',').map((artifact, index) => (
+                    <Badge key={index} variant="outline">
+                      {artifact.trim()}
+                    </Badge>
+                  )) : collection.related_artufacts.map((artifact, index) => (
                     <Badge key={index} variant="outline">
                       {artifact}
                     </Badge>

@@ -68,6 +68,7 @@ The API will be available at `http://localhost:3001`
 
 All these endpoints support full CRUD operations:
 
+- `/api/hero_slides` - Hero Slide
 - `/api/banners` - Banner management
 - `/api/news_articles` - News articles
 - `/api/agenda_items` - Event agenda
