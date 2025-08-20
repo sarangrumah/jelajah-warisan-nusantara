@@ -20,9 +20,18 @@ ALTER TABLE museums
  ADD COLUMN subtitle TEXT,
  ADD COLUMN ticket_price TEXT,
  ADD COLUMN website TEXT,
- ADD COLUMN facilities JSONB,
- ADD COLUMN collections JSONB,
- ADD COLUMN contact_info JSONB;
+ ADD COLUMN facilities TEXT[],
+ ADD COLUMN collections TEXT[];
+
+ALTER TABLE agenda_items
+ ADD COLUMN category TEXT,
+ ADD COLUMN address TEXT,
+ ADD COLUMN status TEXT,
+ ADD COLUMN schedule JSONB,
+ ADD COLUMN highlights TEXT[],
+ ADD COLUMN contact JSONB,
+ ADD COLUMN requirements TEXT[],
+ ADD COLUMN participants INTEGER;
 
 CREATE TABLE IF NOT EXISTS collections (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
