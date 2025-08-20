@@ -21,6 +21,7 @@ const tableConfigs = {
   services: ['id', 'icon', 'title', 'description', 'features', 'is_published', 'created_by', 'created_at', 'updated_at'],
   // profiles: ['id','user_id','display_name','avatar_url','roles','created_at', 'updated_at'],
   user_roles:['id','user_id','role','created_at'],
+
   hero_slides: ['id', 'title', 'subtitle', 'cta', 'image_url', 'created_by', 'created_at', 'updated_at'],
   hero_videos: ['id', 'title', 'video', 'created_at', 'updated_at'],
   collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image_url', 'description', 'material', 'dimensions', 'origin', 'discoverdYear', 'condition', 'significance', 'culturalContext', 'relatedArtifacts', 'created_at', 'updated_at'],

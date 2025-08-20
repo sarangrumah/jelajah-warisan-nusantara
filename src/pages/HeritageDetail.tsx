@@ -9,6 +9,7 @@ import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { heritageService } from '@/lib/api-services';
 
+
 const HeritageDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ const HeritageDetail = () => {
   }, []);
 
   const filteredHeritage = heritages.filter((h) => h.id.toString() === id);
+
 
   if (filteredHeritage.length === 0) {
     return (

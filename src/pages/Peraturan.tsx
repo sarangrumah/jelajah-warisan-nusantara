@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PeraturanSection from '@/components/peraturan/PeraturanSection';
 
+
 const Peraturan = () => {
   const { pathname } = useLocation();
     

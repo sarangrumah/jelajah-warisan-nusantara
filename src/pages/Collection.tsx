@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { placeholder, defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 
+
 const Collection = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
@@ -20,7 +21,6 @@ const Collection = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
   const fetchCollections = async () => {
     try {
       const response = await collectionService.getAll();
@@ -30,10 +30,12 @@ const Collection = () => {
       }
 
       setCollections(response.data || defaultCollections);
+
     } catch (error) {
       console.error('Error fetching collections:', error);
     }
   };
+
   useEffect(() => {
     fetchCollections();
   }, []);
@@ -93,7 +95,7 @@ const Collection = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCollections.map((item) => (
-            <Link key={item.id} to={`/collection/${item.id}`}>
+            <Link key={item.id} to={`/collection/${item.collection_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img

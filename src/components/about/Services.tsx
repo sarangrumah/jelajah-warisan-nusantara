@@ -4,8 +4,9 @@ import { DynamicComponent } from '../dynamic-components';
 
 const Services = () => {
   const { t } = useTranslation();
+  const [services, setServices] = useState([]);
   
-  const services = [
+  const servicesx = [
     {
       icon: 'Shield',
       title: t('about.services.heritage.title'),
@@ -44,6 +45,20 @@ const Services = () => {
     }
   ];
 
+  const getServices = async () => {
+    try {
+      const services = await fetch('http://localhost:3001/api/services');
+      const data = await services.json();
+      setServices(data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getServices();
+  }, []);
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -61,8 +76,10 @@ const Services = () => {
             <Card key={index} className="scroll-revealx heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <DynamicComponent componentName={service.icon} size={48} className="text-primary mb-4" />
+
                 <CardTitle className="text-xl">{service.title}</CardTitle>
                 <p className="text-muted-foreground">{service.description}</p>
+
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">

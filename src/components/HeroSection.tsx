@@ -20,6 +20,34 @@ const HeroSection = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
   };
 
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  // const { t } = useTranslation();
+  const [slides, setSlides] = useState(defaultSlides);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+
+  const getHeroes = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('http://localhost:3001/api/heroes');
+      const data = await response.json();
+      if (data && Array.isArray(data) && data.length > 0) {
+        setSlides(data);
+      } else {
+        setSlides(defaultSlides);
+      }
+    } catch (error) {
+      console.error(error);
+      setSlides(defaultSlides);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
@@ -55,6 +83,7 @@ const HeroSection = () => {
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
+
   };
 
   useEffect(() => {
@@ -89,6 +118,7 @@ const HeroSection = () => {
             }`}
           >
             <img
+
               // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
               src={ slide.image_url }
               alt={t(slide.title)}
@@ -97,11 +127,11 @@ const HeroSection = () => {
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
-        {/* {isLoading && (
+        {isLoading && (
           <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-        )} */}
+        )}
       </div>
 
       {/* Content */}
@@ -154,7 +184,7 @@ const HeroSection = () => {
       </button>
 
       {/* Slide Indicators */}
-      {slides.length > 0 && (
+      {!isLoading && slides.length > 0 && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
           {slides.map((_, index) => (
             <button
