@@ -4,9 +4,8 @@ import { DynamicComponent } from '../dynamic-components';
 
 const Services = () => {
   const { t } = useTranslation();
-  const [services, setServices] = useState([]);
   
-  const servicesx = [
+  const services = [
     {
       icon: 'Shield',
       title: t('about.services.heritage.title'),
@@ -44,20 +43,6 @@ const Services = () => {
       features: t('about.services.education.features', { returnObjects: true }) as string[]
     }
   ];
-
-  const getServices = async () => {
-    try {
-      const services = await fetch('http://localhost:3001/api/services');
-      const data = await services.json();
-      setServices(data);
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    getServices();
-  }, []);
 
   return (
     <section className="py-20 bg-background">

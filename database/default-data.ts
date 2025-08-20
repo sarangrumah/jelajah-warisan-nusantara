@@ -3,19 +3,19 @@ export const placeholder = {
 }
 export const defaultSlides = [
     {
-      image: '/src/assets/hero-borobudur.jpg',
+      image_url: '/src/assets/hero-borobudur.jpg',
       title: 'hero.museum.title',
       subtitle: 'hero.museum.subtitle',
       cta: 'hero.museum.cta',
     },
     {
-      image: '/src/assets/museum-interior.jpg',
+      image_url: '/src/assets/museum-interior.jpg',
       title: 'hero.collection.title',
       subtitle: 'hero.collection.subtitle',
       cta: 'hero.collection.cta',
     },
     {
-      image: '/src/assets/heritage-sites.jpg',
+      image_url: '/src/assets/heritage-sites.jpg',
       title: 'hero.sites.title',
       subtitle: 'hero.sites.subtitle',
       cta: 'hero.sites.cta',
@@ -2419,7 +2419,7 @@ export const defaultEvents = [
     address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
     participants: 30,
     description: 'MCB Fest hadir sebagai ruang perjumpaan antara masa lalu, masa kini dan masa depan, sebuah perayaan terhadap museum dan cagar budaya yang tak hanya dilihat, tapi dialami. Melalui pendekatan interaktif, festival ini menghidupkan kembali warisan budaya bangsa dalam konteks kehidupan modern, mengajak publik menemukan relevansi sejarah dalam keseharian, dan merasakan bahwa budaya bukanlah milik masa lampau, melainkan bagian dari percakapan hari ini. Acara ini digelar di Terusan Permata Hijau, Senayan City dari 24-27 Juli 2025.',
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2457,7 +2457,7 @@ export const defaultEvents = [
     address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
     participants: 150,
     description: '',
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2495,7 +2495,7 @@ export const defaultEvents = [
     address: 'Jalan Medan Merdeka Timur. No.14, Gambir, Kecamatan Gambir, Kota Jakarta Pusat, DKI Jakarta 10110',
     participants: 50,
     description: '',
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2533,7 +2533,7 @@ export const defaultEvents = [
     address: 'Jalan Keuangan Raya RT.7/RW.5 No.19, Cilandak Barat, Kec. Cilandak, Kota Jakarta Selatan, DKI Jakarta 12430',
     participants: 50,
     description: 'Dinding kreasi "Rupa-Rupa Penuh Cerita" adalah sebuah ruang untuk pengunjung mengekspresikan dirinya melalui proses melukis wajah-wajah  humanoid yang dapat dikreasikan sesuai imajinasi, berlokasi di ruang pameran temporer Museum Basoeki Abdullah.',
-    image: '/src/assets/events/Foto Dinding 2.jpg',
+    image_url: '/src/assets/events/Foto Dinding 2.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2571,7 +2571,7 @@ export const defaultEvents = [
     address: 'Taman Mini Indonesia Indah, Ceger, Kec. Cipayung, Kota Jakarta Timur, DKI Jakarta 13820',
     participants: 50,
     description: 'Workshop Mencanting merupakan kegiatan pembuatan batik tulis yang dilakukan mulai dari menggambar pola hingga tahap mencanting di atas kain berukuran 25 x 25 cm. Pada kegiatan ini tidak dilakukan tahap pewarnaan.  Workshop tersedia pada Selasa-Minggu, jam 09.00-11.00 (kuota terbatas)',
-    image: '/src/assets/events/Mencanting.JPG',
+    image_url: '/src/assets/events/Mencanting.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2609,7 +2609,7 @@ export const defaultEvents = [
     address: 'Taman Mini Indonesia Indah, Ceger, Kec. Cipayung, Kota Jakarta Timur, DKI Jakarta 13820',
     participants: 50,
     description: 'Workshop Isen-Isen merupakan kegiatan menggambar isen-isen (isian) dari motif batik pada selembar kertas menggunakan pensil warna. Seluruh peralatan dipinjamkan oleh museum.  Workshop tersedia pada Selasa-Minggu, jam 09.00-11.00 (kuota terbatas)',
-    image: '/src/assets/events/isen isen.JPG',
+    image_url: '/src/assets/events/isen isen.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2651,7 +2651,7 @@ export const defaultEvents = [
 Di masa sekarang, berbicara di depan umum tanpa memiliki struktur bicara yang jelas, akan dianggap kurang cakap. Tentunya, mayoritas orang ingin viral dengan menunjukkan potensi dalam diri mereka yang berkualitas.
 
 Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari bahwa keahlian berbicara dengan terstruktur bisa dipelajari oleh setiap orang. Untuk itu, kami menghadirkan Public Speaking Class yang bertemakan Viral Jalur Verbal 2.0 sebagai program edukasi untuk mengasah potensi berbicara di depan umum dengan lebih berkualitas dan percaya diri."`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2689,7 +2689,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `Sanggar Wayang Potehi Siauw Pek San merupakan sanggar wayang yang berfokus pada preservasi, pengembangan, dan edukasi wayang potehi Indonesia. Komunitas ini merupakan satu-satunya yang berfokus pada wayang potehi yang berbasis di Jakarta Pusat. Didirikan pada Mei 2023, hingga kini Sanggar Wayang Potehi Siauw Pek San terus menerus menyebarluaskan dan mendekatkan pengetahuan wayang potehi ke masyarakat dengan pementasannya serta program edukasi seperti workshop “Sehari Bersama Wayang Potehi” dan “Mini Masterclass Membuat Wayang Potehi”. Melalui pementasannya serta program kolaborasi ruang publik seperti museum dan pameran, Siauw Pek San terus berupaya memperkenalkan kesenian tradisional Tionghoa ini kepada publik hingga sekarang ini`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2727,7 +2727,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `C.A.N.V.A.S. 2025 (Creative Art Narratives, Visual Aesthetic Showcase) adalah pameran karya desain dari siswa DKV SMKN 14 Jakarta yang akan diselenggarakan pada 24 Juni 2025 di Museum Kebangkitan Nasional. Mengangkat tema “Awal Mula Sejarah”, program ini menjadi ruang untuk menuangkan cerita dan estetika melalui desain visual. Selain pameran, akan ada sesi interaktif bersama pengunjung. Acara ini terbuka untuk umum.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2765,7 +2765,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `Yuk, datang dan saksikan langsung Pameran Seni Rupa "Whisper From the Past" dari SMA Labschool Jakarta di Museum Kebangkitan Nasional! Dari 15 hingga 19 Juli 2025, kamu akan diajak menyelami "A Glimpse into Indonesia’s Gentle Past" melalui karya-karya lukisan, fashion, dan instalasi 3D kreatif yang menyuarakan keindahan budaya Indonesia. Ini adalah kesempatan langka untuk mengapresiasi seni tradisional secara autentik di tengah era digital.  Jangan lewatkan pengalaman inspiratif ini di tempat bersejarah yang relevan dengan kebangkitan nasional kita!`,
-    image: '/src/assets/events/Poster SMA Labschool Jakarta.jpeg',
+    image_url: '/src/assets/events/Poster SMA Labschool Jakarta.jpeg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2803,7 +2803,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `Lions Club Jakarta adalah bagian dari Lions Clubs International, organisasi pelayanan sosial global. Lions Club Jakarta memiliki beberapa cabang atau klub yang aktif di berbagai wilayah Jakarta, seperti Lions Club Jakarta Nusantara, Lions Club Jakarta Selatan Metteyya, dan lainnya. Lions Club Jakarta melalui Lions Club Distrik Lions Club 307a1 mempersembahkan Pameran Lukisan 2 Negeri Indonesia & Jepang yang diadakan pada 26 - 30 April 2025. Lions Club 307a1 menghadirkan pelukis dari Indonesia dan Jepang serta mengadakan kegiatan lainnya dalam pameran tersebut seperti: cara melukis kaligrafi Jepang, fashion show kimono dan kebaya, workshop melukis ala Jepang untuk siswa SD, serta workshop Furoshiki (seni membungkus dengan kain).`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2841,7 +2841,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `Kelas Tari Bersama Belantara Budaya Indonesia adalah program pelatihan tari tradisional gratis yang diselenggarakan oleh Yayasan Belantara Budaya Indonesia (BBI). BBI bertujuan untuk mengembangkan karakter anak-anak dan remaja melalui pendidikan, kesenian, dan kebudayaan. Program ini menyediakan sekolah tari dan musik tradisional serta literasi bahasa asing gratis`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2879,7 +2879,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     address: 'Jalan Abdul Rachman Saleh No.26, Senen, Kec. Senen, Kota Jakarta Pusat, DKI Jakarta 10410',
     participants: 50,
     description: `Teater Anak Nusantara atau biasa disingkat Teras adalah sanggar teater anak yang berbasis di Jakarta. Teater ini merupakan wadah bagi siapapun yang tertarik belajar akting dan seni teater, khususnya untuk pemula. Komunitas ini bertujuan untuk memperkenalkan dan melestarikan cerita rakyat Indonesia melalui pementasan teater, serta membantu anggotanya mengembangkan potensi diri. Kelas ini terbuka untuk berbagai kalangan, mulai dari siswa SD hingga mahasiswa. `,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2919,7 +2919,7 @@ Sebagai penggiat Public Speaking di Toastmasters International, kami menyadari b
     description: `Outsider Art Jakarta adalah komunitas seni yang didirikan oleh Kak Toto (Timotius Toto Suwarsito) dengan tujuan untuk memberikan ruang bagi seniman dari berbagai latar belakang, termasuk untuk anak-anak berkebutuhan khusus, individu neurodiverse, penyandang disabilitas fisik, serta anak-anak non-ABK. Dalam rangka memperingati Hari Kebangkitan Nasional, Outsider Art Jakarta akan menghadirkan pameran lukisan “Bangkit dan Berdaya” di Museum Kebangkitan Nasional selama dua minggu. 
 Pameran ini bukan sekadar ajang seni, tetapi sebuah gerakan yang menegaskan bahwa keberagaman adalah kekuatan, inklusivitas adalah jalan, dan seni adalah medium untuk merayakan kebangkitan sebuah bangsa. Kegiatan yang akan diadakan bukan hanya pamera, Outsider Art Jakarta juga akan menghadirkan workshop dan webinar serta melukis bersama.
 `,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -2961,7 +2961,7 @@ Pameran ini bukan sekadar ajang seni, tetapi sebuah gerakan yang menegaskan bahw
 Pada 28 Juni 2025 telah dilaksanakan Walking Tour Kebangsaan dengan tema "Perjuangan dan Teladan Sang Bapak Pembangunan". Dengan ada program tur sejarah ini diharapkan peserta mendapat informasi terkait rekam jejak karir Presiden Soeharto hingga sisi humanisme ketika berada di dalam rumah tercinta.  Destinasi pertama dalam kegiatan ini adalah mengunjungi Markas Kostrad untuk mengulik kisah dan kiprah militer Presiden Soeharto. Selanjutnya dilanjutkan dengan mengunjungi Galeri Nasional untuk mengulik kisah seputar pandangan kebudayaan Presiden Soeharto. Destinasi terakhir adalah mengunjungi kediaman Presiden Soeharto di Jalan Cendana sekaligus bertemu dengan keluarga Presiden Soeharto.
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat. `,
-    image: '/src/assets/events/WTK 28 Juni 2025_1R2.png',
+    image_url: '/src/assets/events/WTK 28 Juni 2025_1R2.png',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3010,7 +3010,7 @@ c. Diskusi Buku Kartupos Bergambar dari Buitenzorg (Bogor) yang
 menampilkan penulis dan pembahas dengan latar belakang filatelis
 dan sejarah.
 d. Workshop`,
-    image: '/src/assets/events/E-FLYER PAMERAN FILATELI-IG FEED.jpg',
+    image_url: '/src/assets/events/E-FLYER PAMERAN FILATELI-IG FEED.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3052,7 +3052,7 @@ d. Workshop`,
 Pada 16 Maret 2025 telah dilaksanakan Walking Tour Kebangsaan dengan tema "Buitenzorg En Omstreken".  Destinasi pertama dalam kegiatan ini adalah mengunjungi Stasiun Bogor untuk mengulik kisah sejarah transportasi di Bogor (Buitenzorg). Perjalanan dilanjutkan dengan mengunjungi kediaman arsitek F. Silaban dan bertemu dengan keluarga besar F. Silaban. Tidak berhenti sampai disitu, perjalanan berlanjut ke Hotel Salak untuk mengilik kisah bangunan bersejarah era kolonial sekaligus kisah Konferensi Bogor. Destinasi terakhir adalah mengunjungi Museum Kepresidenan RI Balai Kirti sekaligus buka bersama dengan menu kesukaan para presiden dan wakil presiden Republik Indonesia.
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat. `,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3094,7 +3094,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 Pada tanggal 8 Februari telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Cita Rasa Pemimpin Bangsa". Destinasi pertama dalam kegiatan ini adalah pabrik roti Tan Ek Tjoan (salah satu roti kesukaan Wakil Presiden Moh. Hatta). Destinasi berikutnya adalah Vihara Dhanagun untuk mengulik kisah kuliner tradisional masyarakat Tionghoa. Perjalanan dilanjutkan dengan mengunjungi gedung Algemene Secretarie. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti dengan talkshow tentang kuliner kesukaan presiden sekaligus mencicipi sejumlah kudapan kesukaan para presiden dan wakil presiden Republik Indonesia. 
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3136,7 +3136,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 Pada tanggal 8 Desember 2025 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Dari Gubernur Jenderal ke Presiden". Destinasi pertama dalam kegiatan ini adalah Lapangan Sempur untuk mengulik kisah Bogor era kolonial dan kisah seputar Karsten Plan. Destinasi berikutnya adalah Markas Denpom Kota Bogor yang berkisah tentang militer era kolonial. Perjalanan dilanjutkan dengan mengunjungi gedung Bakorwil Bogor yang dahulu merupakan kantor asisten residen era kolonial. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti. 
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3174,7 +3174,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
     address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
     participants: 50,
     description: ``,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3212,7 +3212,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
     address: 'Jalan Ir. H. Juanda No.1, RT.04/RW.01, Paledang, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16122',
     participants: 50,
     description: ``,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3254,7 +3254,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 Pada tanggal 14 September 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan sebagai rangkaian kegiatan Balai Kirti Menyapa. Destinasi pertama dalam kegiatan ini adalah Museum Kepresidenan RI Balai Kirti. Perjalanan berlanjut ke Kantor Balaikota Bogor. Destinasi berikutnya adalah  gedung Bakorwil Bogor yang dahulu merupakan kantor asisten residen era kolonial. Tidak berhenti sampai disitu, perjalanan berlanjut ke salah satu sekolah berejarah di Kota Bogor yakni Regina Pacis. Kunjungan ditutup di Lapangan Sempur. 
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat."`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3296,7 +3296,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 Pada tanggal 15 Maret 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Kisah Keberagaman di Kota Bogor". Destinasi pertama dalam kegiatan ini adalah Vihara Dhanagun untuk mengulik kisah area pemukiman etnis Tionghoa di Bogor era kolonial. Perjalanan berlanjut ke Kantor Pos Bogor yang dulunya merupakan bangunan gereja tertua di Kota Bogor. Destinasi berikutnya adalah  Gereja Zebaouth yang telah berdiri sejak tahun 1920. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti sekaligus buka bersama menikmati kuliner kesukaan para presiden dan wakil presiden Republik Indonesia. 
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3338,7 +3338,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
 Pada tanggal 25 Agustus 2024 telah dilaksanakan kegiatan Walking Tour Kebangsaan yang mengusung tema "Bogor Bergerak" sekaligus memperingati bulan kemerdekaan. Destinasi pertama dalam kegiatan ini adalah Stasiun Bogor untuk mengulik kisah perjuangan Margonda. Perjalanan berlanjut ke gedung Balaikota Bogor. Destinasi berikutnya adalah  gedung Bakorwil yang dulunya merupakan kantor asisten residen era kolonial sekligus tempat pengibaran bendera merah putih pertama di Kota Bogor. Kunjungan ditutup di Museum Kepresidenan RI Balai Kirti. 
 
 Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal pemimpinnya. Selain itu juga dengan adanya program ini, dapat meningkatkan kerjasama antara museum dengan instansi lain dalam rangka layanan edukasi museum ke masyarakat.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3378,7 +3378,7 @@ Program ini juga diharapkan dapat meningkatkan minat masyarakat untuk mengenal p
     description: `Petualangan di Balai Kirti merupakan salah satu program publik Museum Kepresidenan RI Balai Kirti dengan sasaran anak-anak usia 5-10 tahun. Tujuan utama dari kegiatan ini adalah untuk mengenalkan figur presiden kepada anak-anak kecil melalui sejumlah kegiatan dan permainan seru didalamnya. Kegiatan permainan mencakup imajinasi, eksplorasi, sensori, dan kolaborasi. 
 
 Pada tanggal 26 Juli 2025 dilaksanakan Petualangan di Balai Kirti dengan sejumlah permainan seru didalamnya. Kegiatan dimulai dengan Kecil Bergerak yang mengajak peserta untuk menanam bibit strawberry sekaligus mengajarkan dasar-dasar berkebun untuk peserta. Kegiatan dilanjutkan dengan melukis kue sesuai dengan imajinasi dan kreativitas peserta. Kegiatan terakhir adalah Kecil-Kecil Jadi Presiden. Aksi kecil-kecil jadi presiden memberikan ruang bagi si kecil untuk terlibat dalam pesta demokrasi mini. Si Kecil akan memilih calon presiden (yang terdiri dari semua peserta kegiatan) melalui mekanisme pemilihan presiden di Indonesia. Tersedia juga kotak suara, bilik suara, dan surat suara. Setelah itu, Presiden Kecil akan membentuk kabinetnya sendiri. Para peserta yang tidak menjadi presiden akan mengisi kuisioner untuk posisi menteri kabinet kecil. Kegiatan diakhiri dengan pelantikan presiden kecil.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3418,7 +3418,7 @@ Pada tanggal 26 Juli 2025 dilaksanakan Petualangan di Balai Kirti dengan sejumla
     description: `Kegiatan "Night at the Museum/Jelajah Malam Sangiran" merupakan sebuah inisiatif yang bertujuan untuk memberikan pengalaman edukasi yang berbeda kepada masyarakat, khususnya generasi muda, tentang kekayaan sejarah dan prasejarah di Situs Sangiran.
 
 Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum yang unik dan mendapatkan pemahaman lebih mendalam mengenai koleksi serta penelitian yang dilakukan di Sangiran, dengan cara yang lebih seru dan menarik.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3456,7 +3456,7 @@ Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum 
     address: 'Jalan Sangiran No.Km. 4, Kebayanan II, Krikilan, Kec. Kalijambe, Kabupaten Sragen, Jawa Tengah 57275',
     participants: 50,
     description: `Forum ini bertujuan untuk membangun jejaring global dan mendorong pelestarian serta pengembangan kawasan Sangiran sebagai situs warisan dunia. Peserta forum, yang terdiri dari pemuda dari berbagai negara, terlibat dalam berbagai kegiatan, termasuk proyek kolaboratif dan diskusi tentang pelestarian warisan budaya`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3494,7 +3494,7 @@ Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum 
     address: 'Jalan Sangiran No.Km. 4, Kebayanan II, Krikilan, Kec. Kalijambe, Kabupaten Sragen, Jawa Tengah 57275',
     participants: 50,
     description: ``,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3532,7 +3532,7 @@ Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum 
     address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
     participants: 50,
     description: `Hitam - rona yang intens, sebuah suara formalitas, kemewahan, dan keanggunan, sekaligus menyiratkan misteri dan kontemplasi. The Black Room mencurahkan seluruh lapisan makna ini ke dalam The Soul Gallery, sebuah ruang renungan dimana abstraksi, memori, dan kontras berpadu, ketika artefak dari berbagai penjuru Indonesia berdialog dengan karya seni kontemporer. Tekstur dan simbolisme keduanya mengingatkan kita pada sulaman kain dan hiasan upacara ritual leluhur, menciptakan gesekan sunyi antar zaman yang memadukan minimalisme modern dengan akar tradisi yang dalam. Dalam ruang gelap dan intim ini, bayangan dan bentuk menjadi narator, mengizinkan budaya, kriya, dan emosi hadir berdampingan.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3570,7 +3570,7 @@ Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum 
     address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
     participants: 50,
     description: `Tenun Rosé Lounge terinspirasi oleh keindahan warisan budaya Indonesia yang tertenun dalam setiap helai kain songket - simbol kesabaran, cinta, dan kerja keras yang diwariskan turun-temurun. Di balik benang emas yang ditenun dengan tangan penuh ketelatenan, tersimpan kisah harapan dan kebahagiaan keluarga, menjadikan songket bukan sekadar kain, melainkan ungkapan rasa syukur dan sukacita yang tulus. Warna merah muda dipilih untuk melambangkan bonheur (kebahagiaan), yang mewakili kelembutan, kasih sayang, dan semangat hidup yang cerah. Melalui perpaduan nuansa merah muda dan makna mendalam di balik proses menenun songket, lounge ini menjadi ruang yang merayakan kekayaan tradisi dan kebahagiaan hidup dallam suasana modern yang penuh cinta.`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3608,7 +3608,7 @@ Melalui kegiatan malam hari, peserta diharapkan dapat merasakan atmosfer museum 
     address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
     participants: 50,
     description: `Program ini merupakan bentuk kerja sama Museum dan Cagar Budaya (MCB) Unit Museum Nasional Indonesia bersama Yayasan Belantara Budaya Indonesia dalam mempromosikan & melestarikan budaya Indonesia melalui program Museum & Publik.`,
-    image: '/src/assets/events/Sekolah Tari Tradisional Indonesia_YBBI.jpg',
+    image_url: '/src/assets/events/Sekolah Tari Tradisional Indonesia_YBBI.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3653,7 +3653,7 @@ Ayo ikuti kunjungan edukatif ke Lorong Sejarah Kementerian Pertahanan RI dan tem
 
 📍 Kementerian Pertahanan RI
 🎫 Khusus bagi pengunjung yang telah membeli tiket Museum Nasional`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3692,7 +3692,7 @@ Ayo ikuti kunjungan edukatif ke Lorong Sejarah Kementerian Pertahanan RI dan tem
     participants: 50,
     description: ` “Nglaras Gamelan” bersama Laras Kanita setiap Sabtu terakhir tiap bulan.
 Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan mencoba memainkan gamelan. ✨`,
-    image: '/src/assets/events/nglaras gamelan.jpg',
+    image_url: '/src/assets/events/nglaras gamelan.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3730,7 +3730,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Medan Merdeka Barat No.12, Gambir, Jakarta Pusat, DKI Jakarta 10110',
     participants: 50,
     description: `Belajar cara meracik kopi & tur seru keliling Museum Nasional Indonesia`,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3768,7 +3768,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Imam Bonjol No.1, RT.9/RW.4, Menteng, Kec. Menteng, Kota Jakarta Pusat, DKI Jakarta 10310',
     participants: 50,
     description: ``,
-    image: '',
+    image_url: '',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3806,7 +3806,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan "Soft Launching Museum Song Terus" dilakukan pada tanggal 12 Oktober 2022 dengan turut mengundang dari pihak pemerintah kabupaten pacitan dan stakeholder terkait seperti bpkw XI dan komunitas`,
-    image: '/src/assets/events/soft launching song terus.jpg',
+    image_url: '/src/assets/events/soft launching song terus.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3844,7 +3844,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan jelajah situs yang berada di kawasan museum song terus dengan peserta dari tingkat smp/mts kecamatan punung, donorojo dan pringkuku.`,
-    image: '/src/assets/events/Jelajah Terus 2023.JPG',
+    image_url: '/src/assets/events/Jelajah Terus 2023.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3882,7 +3882,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan yang dilakukan museum song terus dengan mempertemukan pihak museum song terus dengan para pelaku wisata di kabupaten pacitan`,
-    image: '/src/assets/events/Temu Public Song Terus.JPG',
+    image_url: '/src/assets/events/Temu Public Song Terus.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3920,7 +3920,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Pameran temporer yang dilakukan di museum benteng vredeburg dalam rangka kegiatan vredeburg fair #9`,
-    image: '/src/assets/events/vredeburg Fair 9.jpg',
+    image_url: '/src/assets/events/vredeburg Fair 9.jpg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3958,7 +3958,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Workshop pembuatan replika alat batu yang dilakukan di museum song terus, dengan mengundang narasumber peneliti dan dari bpkw XI untuk menjelaskan tentang proses pembuatan replika dan praktek pembuatan replika alat batu`,
-    image: '/src/assets/events/Workshop Replika Alat Batu.JPG',
+    image_url: '/src/assets/events/Workshop Replika Alat Batu.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -3996,7 +3996,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: ``,
-    image: '/src/assets/events/Song Terus Expo.JPG',
+    image_url: '/src/assets/events/Song Terus Expo.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4034,7 +4034,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan yang mempertemukan pihak museum song terus dengan pihak sekolah dari SD/MI, SMP/MTS, dan SMA/SMK/STM di kabupaten pacitan`,
-    image: '/src/assets/events/Temu Publik Vol2.JPG',
+    image_url: '/src/assets/events/Temu Publik Vol2.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4072,7 +4072,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan yang dilakukan museum song terus dengan mempertemukan pihak museum song terus dengan para pelaku wisata di kabupaten pacitan, kabupaten wonogiri dan propinsi daerah istimewa yogyakarta`,
-    image: '/src/assets/events/Temu Publik Vol3.JPG',
+    image_url: '/src/assets/events/Temu Publik Vol3.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4110,7 +4110,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan jelajah situs dengan melakukan penjelajahan situs sekitar museum song terus yang dilombakan di tingkat SMA/SMK`,
-    image: '/src/assets/events/Jelajah Terus 2024.JPG',
+    image_url: '/src/assets/events/Jelajah Terus 2024.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4148,7 +4148,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan menyaring aspirasi penggiat budaya di kabupaten pacitan dengan tema kegiatan seminar pemajuan kebudayaan pacitan`,
-    image: '/src/assets/events/Ruang Daya Desember.JPG',
+    image_url: '/src/assets/events/Ruang Daya Desember.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4186,7 +4186,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Pameran yang dilakukan di gedung kppn malang, dalam rangka harmusindo`,
-    image: '/src/assets/events/Pameran Malang Oktober.JPG',
+    image_url: '/src/assets/events/Pameran Malang Oktober.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4224,7 +4224,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Pameran yang dilakukan di museum daerah tulungagung`,
-    image: '/src/assets/events/Pameran Tulungagung Oktober.jpeg',
+    image_url: '/src/assets/events/Pameran Tulungagung Oktober.jpeg',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4262,7 +4262,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan lokakarya Lomba Karya Tulis Ilmiah dilakukan di museum song terus dengan mengundang peserta se karesidenan madiun`,
-    image: '/src/assets/events/Workshop LKTI 2024.JPG',
+    image_url: '/src/assets/events/Workshop LKTI 2024.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4300,7 +4300,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan kolaborasi dengan pihak ruang film pacitan dengan menggelar kegiatan nonton film bersama di amphiteater museum song terus`,
-    image: '/src/assets/events/Layanan Purba April 2025.JPG',
+    image_url: '/src/assets/events/Layanan Purba April 2025.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4338,7 +4338,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Kegiatan kolaborasi dengan pihak rumah wayang beber tawangalun donorojo dengan mengadakan lomba mewarnai tingkat SD/MI`,
-    image: '/src/assets/events/Rona Budaya.JPG',
+    image_url: '/src/assets/events/Rona Budaya.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',
@@ -4376,7 +4376,7 @@ Kamu bisa mendengarkan Laras Kanita berlatih lagu-lagu klasik gamelan Jawa dan m
     address: 'Jalan Gua Song Terus RT 1 RW 6, Dusun Weru, Desa Wareng, Kec. Punung, Kab. Pacitan, Jawa Timur 63553',
     participants: 50,
     description: `Pameran museum song terus yang dilakukan di pantai pancer door di kabupaten pacitan dalam rangka festival kuliner`,
-    image: '/src/assets/events/Festival Kuliner Juli 2025.JPG',
+    image_url: '/src/assets/events/Festival Kuliner Juli 2025.JPG',
     status: 'upcoming',
     highlights: [
       'Prasasti Kudadu asli dari tahun 1294',

@@ -1,4 +1,4 @@
-import { GraduationCap, Clock, MapPin, Users, FileText, Send, Upload, X } from 'lucide-react';
+import { GraduationCap, Clock, MapPin, FileText, Send, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -9,8 +9,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FileUploadPDF from '@/components/FileUploadPDF';
+import { useLocation } from 'react-router-dom';
 
 const registrationSchema = z.object({
   fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
@@ -32,6 +33,31 @@ type RegistrationFormData = z.infer<typeof registrationSchema>;
 const InternshipSection = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const { pathname } = useLocation();
+    
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
   
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -69,6 +95,7 @@ const InternshipSection = () => {
         description: "Gagal mengirim aplikasi. Silakan coba lagi.",
         variant: "destructive",
       });
+      console.error(error)
     }
   };
 
@@ -231,7 +258,7 @@ const InternshipSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
             Program Magang
           </h2>

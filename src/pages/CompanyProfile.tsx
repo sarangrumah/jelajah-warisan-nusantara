@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MapPin, Users, Building, Award, Target, Eye, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,35 @@ import { Separator } from '@/components/ui/separator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
+import { useLocation } from 'react-router-dom';
 
 const CompanyProfile = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   const companyStats = [
     { icon: Building, label: 'Museum Terkelola', value: '1,200+', color: 'text-blue-600' },
     { icon: Award, label: 'Cagar Budaya', value: '2,800+', color: 'text-green-600' },
@@ -70,13 +97,13 @@ const CompanyProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="py-20 min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary-glow/10 to-background overflow-hidden">
         <div className="absolute inset-0 bg-[url('/src/assets/heritage-sites.jpg')] bg-cover bg-center opacity-10" />
-        <div className="relative z-10 container mx-auto px-4 text-center">
+        <div className="relative z-10 container mx-auto px-4 text-center scroll-reveal">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-heritage-gradient mb-6">
               Profil Perusahaan
