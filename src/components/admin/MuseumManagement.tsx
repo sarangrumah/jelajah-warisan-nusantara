@@ -13,14 +13,75 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
+interface MuseumItem {
+  id?: string | null;
+  name: string;
+  type: string;
+  description: string;
+  location: string;
+  address: string;
+  image_url: string;
+  gallery_images: string[];
+  latitude: string; // Form handles as string for input
+  longitude: string; // Form handles as string for input
+  opening_hours: any; // JSON string in form
+  contact_info: {
+    phone: string;
+    email: string;
+    website: string;
+  };
+  is_published: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
 
 const MuseumManagement = () => {
-  const [museums, setMuseums] = useState<any[]>([]);
+  const [museums, setMuseums] = useState<MuseumItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingMuseum, setEditingMuseum] = useState<any>(null);
+  const [editingMuseum, setEditingMuseum] = useState<MuseumItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+
+  const emptyMuseum: MuseumItem = {
+    name: '',
+    type: 'museum',
+    description: '',
+    location: '',
+    address: '',
+    image_url: '',
+    gallery_images: [],
+    latitude: null,
+    longitude: null,
+    opening_hours: {},
+    contact_info: {
+      phone: '',
+      email: '',
+      website: ''
+    },
+    is_published: true
+  };
+
+  interface MuseumFormData {
+    name: string;
+    type: string;
+    description: string;
+    location: string;
+    address: string;
+    image_url: string;
+    gallery_images: string[]; // Stored as comma-separated string in form
+    gallery_images_array: string; // Used for GalleryUpload component
+    latitude: string; // Form handles as string for input
+    longitude: string; // Form handles as string for input
+    opening_hours: string; // JSON string in form
+    contact_info: {
+      phone: string;
+      email: string;
+      website: string;
+    };
+    is_published: boolean;
+  }
+
 
   useEffect(() => {
     fetchMuseums();
@@ -34,7 +95,7 @@ const MuseumManagement = () => {
         throw new Error(response.error);
       }
       
-      setMuseums(response.data || []);
+      setMuseums(response.data as MuseumItem[] || []);
     } catch (error) {
       console.error('Error fetching museums:', error);
       toast({
@@ -47,26 +108,23 @@ const MuseumManagement = () => {
     }
   };
 
-  const saveMuseum = async (formData: any) => {
+  const saveMuseum = async (formData: MuseumItem) => {
     setSaving(true);
+    let response 
     try {
-      const museumData = {
-        name: formData.name,
-        type: formData.type,
-        description: formData.description,
-        location: formData.location,
-        address: formData.address,
-        image_url: formData.image_url,
-        gallery_images: formData.gallery_images?.split(',').map((url: string) => url.trim()).filter(Boolean) || [],
-        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-        opening_hours: formData.opening_hours ? JSON.parse(formData.opening_hours) : {},
+      const museumData: MuseumItem = {
+        ...formData,
+        gallery_images: formData.gallery_images,
+        latitude: formData.latitude ,
+        longitude: formData.longitude,
+        opening_hours: typeof formData.opening_hours === 'string' 
+          ? JSON.parse(formData.opening_hours)
+          : formData.opening_hours,
         contact_info: {
-          phone: formData.phone,
-          email: formData.email,
-          website: formData.website,
-        },
-        is_published: formData.is_published,
+          phone: formData.contact_info.phone,
+          email: formData.contact_info.email,
+          website: formData.contact_info.website
+        }
       };
 
       if (editingMuseum?.id) {
@@ -85,7 +143,7 @@ const MuseumManagement = () => {
           description: 'Museum updated successfully',
         });
       } else {
-        const response = await museumService.create(museumData);
+        response = await museumService.create(museumData);
         
         if (response.error) {
           throw new Error(response.error);
@@ -139,35 +197,36 @@ const MuseumManagement = () => {
     }
   };
 
-  const MuseumForm = ({ museum, onSave, onCancel }: {
-    museum?: any;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
-    const contactInfo = museum?.contact_info || {};
-    
-    const [formData, setFormData] = useState({
-      name: museum?.name || '',
-      type: museum?.type || 'museum',
-      description: museum?.description || '',
-      location: museum?.location || '',
-      address: museum?.address || '',
-      image_url: museum?.image_url || '',
-      gallery_images: (museum?.gallery_images || []).join(', '),
-      gallery_images_array: museum?.gallery_images || [],
-      latitude: museum?.latitude?.toString() || '',
-      longitude: museum?.longitude?.toString() || '',
-      opening_hours: museum?.opening_hours ? JSON.stringify(museum.opening_hours, null, 2) : '{}',
-      phone: contactInfo.phone || '',
-      email: contactInfo.email || '',
-      website: contactInfo.website || '',
-      is_published: museum?.is_published ?? true,
-    });
+  const MuseumForm = ({ museum, onSave, onCancel, saving }: {
+  museum: MuseumItem;
+  onSave: (data: MuseumItem) => void;
+  onCancel: () => void;
+  saving: boolean;
+}) => {
+  const [formData, setFormData] = useState<MuseumItem>({
+    ...museum,
+    gallery_images: Array.isArray(museum.gallery_images) ? museum.gallery_images : []
+  });
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
+  // This ensures proper state updates
+  const handleImageUpload = async (url: string) => {
+    setEditingMuseum(prev => ({
+      ...prev,
+      image_url: url
+    }));
+  };
+
+  const handleGalleryUpload = async (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery_images: urls
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
       onSave(formData);
-    };
+  }
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -228,18 +287,14 @@ const MuseumManagement = () => {
         <ImageUpload
           label="Main Image"
           value={formData.image_url}
-          onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+          onChange={handleImageUpload}
           bucket="images"
         />
 
         <GalleryUpload
           label="Gallery Images"
-          value={formData.gallery_images_array || []}
-          onChange={(urls) => setFormData(prev => ({ 
-            ...prev, 
-            gallery_images_array: urls,
-            gallery_images: urls.join(',')
-          }))}
+          value={formData.gallery_images}
+          onChange={handleGalleryUpload}
           bucket="images"
           maxImages={8}
         />
@@ -285,7 +340,7 @@ const MuseumManagement = () => {
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
-              value={formData.phone}
+              value={formData.contact_info.phone}
               onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
             />
           </div>
@@ -294,7 +349,7 @@ const MuseumManagement = () => {
             <Input
               id="email"
               type="email"
-              value={formData.email}
+              value={formData.contact_info.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             />
           </div>
@@ -302,7 +357,7 @@ const MuseumManagement = () => {
             <Label htmlFor="website">Website</Label>
             <Input
               id="website"
-              value={formData.website}
+              value={formData.contact_info.website}
               onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
             />
           </div>
@@ -349,7 +404,7 @@ const MuseumManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingMuseum(null)}>
+            <Button onClick={() => setEditingMuseum(emptyMuseum)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Museum
             </Button>
@@ -366,8 +421,8 @@ const MuseumManagement = () => {
             <MuseumForm
               museum={editingMuseum}
               onSave={saveMuseum}
+              saving={saving}
               onCancel={() => {
-                setEditingMuseum(null);
                 setIsDialogOpen(false);
               }}
             />

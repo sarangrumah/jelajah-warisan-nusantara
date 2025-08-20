@@ -1,41 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, Calendar, Building } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { placeholder, defaultCollections } from '@/../database/default-data';
-import { collectionService } from '@/lib/api-services';
+import { da } from 'zod/v4/locales';
 
-const Collection = () => {
+const Sites = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const { pathname } = useLocation();
-    
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
 
-  const fetchCollections = async () => {
+  const getCollection = async () => {
     try {
-      const response = await collectionService.getAll();
-
-      if (response.error) {
-        console.error('Error fetching collections:', response.error);
-      }
-
-      setCollections(response.data || defaultCollections);
+      const response = await fetch('http://localhost:3001/api/collections');
+      const data = await response.json();
+      setCollections(data);
     } catch (error) {
       console.error('Error fetching collections:', error);
     }
   };
+
   useEffect(() => {
-    fetchCollections();
+    getCollection();
   }, []);
 
   const filteredCollections = collections.filter(item => {
@@ -93,13 +85,13 @@ const Collection = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCollections.map((item) => (
-            <Link key={item.id} to={`/collection/${item.id}`}>
+            <Link key={item.id} to={`/collection/${item.collection_id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url ? item.image_url : placeholder.image}
+                    src={`/src/assets/images/collections/${item.image}`}
                     alt={item.title}
-                    className="w-full h-full object-contain object-center"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <CardHeader>
@@ -143,4 +135,4 @@ const Collection = () => {
   );
 };
 
-export default Collection;
+export default Sites;

@@ -3,6 +3,7 @@ import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
+
 import { useLocation } from 'react-router-dom';
 
 const PPID = () => {
@@ -31,7 +32,7 @@ const PPID = () => {
 
     return () => observer.disconnect();
   }, []);
-
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />

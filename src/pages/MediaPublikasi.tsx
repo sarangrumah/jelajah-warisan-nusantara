@@ -32,6 +32,7 @@ const MediaPublikasi = () => {
 
     return () => observer.disconnect();
   }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

@@ -143,5 +143,5 @@ export const userService = {
     // Then create new role
     return apiClient.create('user_roles', { user_id: userId, role });
   },
-  getProfiles: () => apiClient.getAll('profiles'),
+  getProfiles: () => apiClient.getAllProfile(),
 };

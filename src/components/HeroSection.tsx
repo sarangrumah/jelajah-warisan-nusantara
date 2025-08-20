@@ -21,7 +21,7 @@ const HeroSection = () => {
   };
 
   useEffect(() => {
-    if (!isVideoPlaying) {
+    if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
       }, 5000);
@@ -34,11 +34,15 @@ const HeroSection = () => {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    if (slides.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    if (slides.length > 0) {
+      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    }
   };
 
   const fetchSlides = async () => {
@@ -85,13 +89,19 @@ const HeroSection = () => {
             }`}
           >
             <img
-              src={slide.image}
-              alt={slide.title}
+              // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
+              src={ slide.image_url }
+              alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
+        {/* {isLoading && (
+          <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        )} */}
       </div>
 
       {/* Content */}
@@ -104,7 +114,6 @@ const HeroSection = () => {
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
               {slides.length > 0 && t(slides[currentSlide].subtitle)}
             </p>
-            
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
                 <Button
@@ -145,19 +154,21 @@ const HeroSection = () => {
       </button>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-heritage ${
-              index === currentSlide
-                ? 'bg-primary heritage-glow'
-                : 'bg-foreground/30 hover:bg-foreground/50'
-            }`}
-          />
-        ))}
-      </div>
+      {slides.length > 0 && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-heritage ${
+                index === currentSlide
+                  ? 'bg-primary heritage-glow'
+                  : 'bg-foreground/30 hover:bg-foreground/50'
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Video Modal */}
       {isVideoPlaying && (
