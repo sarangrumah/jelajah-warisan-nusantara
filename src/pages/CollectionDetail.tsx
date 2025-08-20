@@ -15,7 +15,6 @@ const CollectionDetail = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const [collections, setCollections] = useState([]);
-
       
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -190,7 +189,8 @@ const CollectionDetail = () => {
                     <Badge key={index} variant="outline">
                       {artifact.trim()}
                     </Badge>
-                  )) : collection.related_artufacts.map((artifact, index) => (
+                  )) : collection.related_artifacts.map((artifact, index) => (
+
                     <Badge key={index} variant="outline">
                       {artifact}
                     </Badge>

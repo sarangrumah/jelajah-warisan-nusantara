@@ -1,14 +1,41 @@
-import { MapPin, Phone, Mail, Clock, MessageSquare, Send, HelpCircle, ChevronDown } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageSquare, Send, HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useLocation } from 'react-router-dom';
 
 const ContactSection = () => {
   const { toast } = useToast();
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -45,6 +72,7 @@ const ContactSection = () => {
         description: "Gagal mengirim pesan. Silakan coba lagi.",
         variant: "destructive"
       });
+      console.error(error)
     }
   };
 
@@ -132,7 +160,7 @@ const ContactSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">{/* removed scroll-reveal for testing */}
+        <div className="text-center mb-16 scroll-reveal">{/* removed scroll-reveal for testing */}
           <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
             Hubungi Kami
           </h2>

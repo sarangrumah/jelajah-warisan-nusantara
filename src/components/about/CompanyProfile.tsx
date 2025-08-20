@@ -4,9 +4,8 @@ import { DynamicComponent } from '../dynamic-components';
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
-  const [highlights, setHighlights] = useState([]);
   
-  const highlightsx = [
+  const highlights = [
     {
       icon: 'Building',
       title: t('about.companyProfile.highlights.institution.title'),
@@ -28,20 +27,6 @@ const CompanyProfile = () => {
       description: t('about.companyProfile.highlights.recognition.description')
     }
   ];
-
-  const getHighlights = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/highlights');
-      const data = await response.json();
-      setHighlights(data);
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    getHighlights();
-  }, []);
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">

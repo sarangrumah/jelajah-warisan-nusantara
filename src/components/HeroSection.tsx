@@ -9,6 +9,7 @@ import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
 const HeroSection = () => {
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
@@ -19,36 +20,17 @@ const HeroSection = () => {
   const handleVideoEnded = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
   };
-
-
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
   // const { t } = useTranslation();
-  const [slides, setSlides] = useState(defaultSlides);
   const [isLoading, setIsLoading] = useState(true);
 
-
-
-  const getHeroes = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('http://localhost:3001/api/heroes');
-      const data = await response.json();
-      if (data && Array.isArray(data) && data.length > 0) {
-        setSlides(data);
-      } else {
-        setSlides(defaultSlides);
-      }
-    } catch (error) {
-      console.error(error);
-      setSlides(defaultSlides);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);

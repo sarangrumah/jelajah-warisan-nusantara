@@ -37,7 +37,7 @@ const MuseumDetail = () => {
     fetchMuseums();
   }, []);
 
-  const filteredMuseum = museums.filter((m) => m.id === id);
+  const filteredMuseum = museums.filter((m) => m.id.toString() === id);
 
   if (filteredMuseum.length === 0) {
     return (

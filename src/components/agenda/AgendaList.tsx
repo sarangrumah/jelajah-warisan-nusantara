@@ -35,11 +35,6 @@ const AgendaList = () => {
     ? events 
     : events.filter(event => event.category === activeCategory);
 
-
-  const filteredEvents = activeCategory === 'semua' 
-    ? events 
-    : events.filter(event => event.category === activeCategory);
-
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('id-ID', {
       weekday: 'long',
@@ -53,25 +48,6 @@ const AgendaList = () => {
     if (!time) return '';
     return time.slice(0, 5);
   };
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'upcoming': return 'bg-blue-500';
-      case 'ongoing': return 'bg-green-500';
-      case 'registration': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'upcoming': return 'Akan Datang';
-      case 'ongoing': return 'Berlangsung';
-      case 'registration': return 'Pendaftaran';
-      default: return 'Selesai';
-    }
-  };
-
   
   const getStatusColor = (status: string) => {
     switch (status) {
