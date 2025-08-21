@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   
   return {
     server: {
+      base: './',      
       host: "::",
       port: 8080,
       // Security headers for development
