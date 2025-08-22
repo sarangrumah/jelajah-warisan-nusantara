@@ -39,7 +39,7 @@ const ManagementSection = () => {
     <section className="py-20 bg-gradient-to-b from-card to-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient pb-5">
             {t('management.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -130,7 +130,7 @@ const ManagementSection = () => {
         </div>
 
         {/* Integration highlight */}
-        <div className="mt-16 text-center scroll-reveal">
+        {/* <div className="mt-16 text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               Sistem Terintegrasi Nasional
@@ -147,7 +147,7 @@ const ManagementSection = () => {
               <ArrowRight size={20} className="ml-2" />
             </Button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

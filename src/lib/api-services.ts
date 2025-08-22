@@ -1,5 +1,38 @@
+import { get } from 'http';
 import { apiClient } from './api-client';
 
+// Hero Slides
+export const heroSlideService = {
+  getAll: () => apiClient.getAll('hero_slides'),
+  getById: (id: string) => apiClient.getById('hero_slides', id),
+  create: (data: any) => apiClient.create('hero_slides', data),
+  update: (id: string, data: any) => apiClient.update('hero_slides', id, data),
+  delete: (id: string) => apiClient.delete('hero_slides', id),
+}
+// Hero Videos
+export const heroVideoService = {
+  getAll: () => apiClient.getAll('hero_videos'),
+  getById: (id: string) => apiClient.getById('hero_videos', id),
+  create: (data: any) => apiClient.create('hero_videos', data),
+  update: (id: string, data: any) => apiClient.update('hero_videos', id, data),
+  delete: (id: string) => apiClient.delete('hero_videos', id),
+}
+// Collections
+export const collectionService = {
+  getAll: () => apiClient.getAll('collections'),
+  getById: (id: string) => apiClient.getById('collections', id),
+  create: (data: any) => apiClient.create('collections', data),
+  update: (id: string, data: any) => apiClient.update('collections', id, data),
+  delete: (id: string) => apiClient.delete('collections', id),
+}
+// Heitages
+export const heritageService = {
+  getAll: () => apiClient.getAll('heritages'),
+  getById: (id: string) => apiClient.getById('heritages', id),
+  create: (data: any) => apiClient.create('heritages', data),
+  update: (id: string, data: any) => apiClient.update('heritages', id, data),
+  delete: (id: string) => apiClient.delete('heritages', id),
+}
 // News Articles
 export const newsService = {
   getAll: () => apiClient.getAll('news_articles', { is_published: 'true' }),
@@ -110,5 +143,5 @@ export const userService = {
     // Then create new role
     return apiClient.create('user_roles', { user_id: userId, role });
   },
-  getProfiles: () => apiClient.getAll('profiles'),
+  getProfiles: () => apiClient.getAllProfile(),
 };

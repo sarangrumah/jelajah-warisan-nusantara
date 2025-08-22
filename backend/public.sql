@@ -125,6 +125,26 @@ CREATE TABLE "public"."content_sections" (
 )
 ;
 
+
+-- ----------------------------
+-- Table structure for heroes
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."heroes";
+CREATE TABLE "public"."heroes" (
+  "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+  "title" text COLLATE "pg_catalog"."default" NOT NULL,
+  "subtitle" text COLLATE "pg_catalog"."default",
+  "image" text COLLATE "pg_catalog"."default",
+  "cta" text COLLATE "pg_catalog"."default",
+  "link_to" text COLLATE "pg_catalog"."default",
+  "is_published" bool DEFAULT true,
+  "created_by" uuid,
+  "created_at" timestamptz(6) DEFAULT now(),
+  "updated_at" timestamptz(6) DEFAULT now(),
+  CONSTRAINT "heroes_pkey" PRIMARY KEY ("id")
+)
+;
+
 -- ----------------------------
 -- Table structure for faqs
 -- ----------------------------
@@ -292,6 +312,22 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
+
+
+CREATE INDEX "heroes_is_published_idx" ON "public"."heroes" ("is_published");
+
+CREATE OR REPLACE FUNCTION "public"."update_updated_at_column"()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW."updated_at" = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "update_heroes_updated_at"
+BEFORE UPDATE ON "public"."heroes"
+FOR EACH ROW
+EXECUTE PROCEDURE "public"."update_updated_at_column"();
 
 -- ----------------------------
 -- Indexes structure for table agenda_items

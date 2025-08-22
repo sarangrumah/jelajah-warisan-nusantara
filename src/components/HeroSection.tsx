@@ -1,68 +1,36 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
-// import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import heroBorobudur from '@/assets/hero-borobudur.jpg';
-import museumInterior from '@/assets/museum-interior.jpg';
-import heritageSites from '@/assets/heritage-sites.jpg';
+import { useTranslation } from 'react-i18next';
+import { heroSlideService } from '@/lib/api-services';
+import { heroVideoService } from '@/lib/api-services';
+import { defaultSlides } from '@/../database/default-data';
+import { defaultVideos } from '@/../database/default-data';
 
 const HeroSection = () => {
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
+  const [videoList, setVideoList] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  const handleVideoEnded = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
+  };
+  // const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
-
-  const defaultSlides = [
-    {
-      image: heroBorobudur,
-      title: 'Melestarikan Warisan Budaya Indonesia',
-      subtitle: 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang',
-      cta: 'Jelajahi Museum',
-      link_to: 'museum'
-    },
-    {
-      image: museumInterior,
-      title: 'Koleksi Bersejarah Nusantara',
-      subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
-      cta: 'Lihat Koleksi',
-      link_to: 'collection'
-    },
-    {
-      image: heritageSites,
-      title: 'Cagar Budaya Indonesia',
-      subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
-      cta: 'Temukan Situs',
-      link_to: 'heritage'
-    },
-  ];
-
-  const getHeroes = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('http://localhost:3001/api/heroes');
-      const data = await response.json();
-      if (data && Array.isArray(data) && data.length > 0) {
-        setSlides(data);
-      } else {
-        setSlides(defaultSlides);
-      }
-    } catch (error) {
-      console.error(error);
-      setSlides(defaultSlides);
-    } finally {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getHeroes();
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
-
   useEffect(() => {
+
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -87,11 +55,44 @@ const HeroSection = () => {
     }
   };
 
+  const fetchSlides = async () => {
+    try {
+      const response = await heroSlideService.getAll();
+      if (response.error) {
+        console.log('Error fetching slides:', response.error);
+      }
+      setSlides(response.data || defaultSlides);
+    } catch (error) {
+      console.error('Error fetching slides:', error);
+    }
+
+  };
+
+  useEffect(() => {
+    fetchSlides();
+  },[]);
+
+  const fetchVideos = async () => {
+    try {
+      const response = await heroVideoService.getAll();
+      if (response.error) {
+        console.log('Error fetching videos:', response.error)
+      }
+      setVideoList(response.data || defaultVideos);
+    } catch (error) {
+      console.error('Error fetching videos:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {!isLoading && slides.length > 0 && slides.map((slide, index) => (
+        {slides && slides.map((slide, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -99,8 +100,10 @@ const HeroSection = () => {
             }`}
           >
             <img
-              src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
-              alt={slide.title || 'Heritage Image'}
+
+              // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
+              src={ slide.image_url }
+              alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
             <div className="absolute inset-0 overlay-gradient" />
@@ -118,18 +121,19 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
-              {slides[currentSlide].title}
+              {slides.length > 0 && t(slides[currentSlide].title)}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].subtitle : 'Mengelola dan melindungi kekayaan budaya nusantara untuk generasi mendatang'}
+              {slides.length > 0 && t(slides[currentSlide].subtitle)}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={`/${!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].link_to : 'museum'}`}>
+              <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
-                  {!isLoading && slides.length > 0 && slides[currentSlide] ? slides[currentSlide].cta : 'Jelajahi Museum'}
+                  {slides.length > 0 && t(slides[currentSlide].cta)}
                 </Button>
               </Link>
               
@@ -140,7 +144,7 @@ const HeroSection = () => {
                 onClick={() => setIsVideoPlaying(true)}
               >
                 <Play size={24} className="mr-2" />
-                Tonton Video
+                {t('hero.watchVideo')}
               </Button>
             </div>
           </div>
@@ -191,8 +195,10 @@ const HeroSection = () => {
             </button>
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
-                {/* <p className="text-muted-foreground">Video player placeholder</p> */}
-                <video src="/src/assets/videos/heritage.mp4" controls className="w-full h-full object-cover" />
+                <video 
+                key={currentVideoIndex} 
+                src={videoList[currentVideoIndex].video}
+                onEnded={handleVideoEnded} controls autoPlay className="w-full" />
               </div>
             </div>
           </div>

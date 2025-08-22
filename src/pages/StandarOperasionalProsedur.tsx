@@ -4,6 +4,8 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import StandardOperatingProcedureSection from '@/components/sop/StandardOperatingProcedureSection';
+import PublicationSection from '@/components/media/PublicationSection';
 
 const StandarOperasionalProsedur = () => {
   const { pathname } = useLocation();
@@ -35,7 +37,8 @@ const StandarOperasionalProsedur = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <PPIDSection />
+      <StandardOperatingProcedureSection />
+      <PublicationSection />
       <Footer />
       <FloatingButtons />
     </div>

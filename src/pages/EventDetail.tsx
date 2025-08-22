@@ -5,13 +5,34 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { events, placeholder } from '@/../database/get-data';
+
+import { defaultEvents, placeholder } from '@/../database/default-data';
+import { agendaService } from '@/lib/api-services';
+import { useEffect, useState } from 'react';
+
 
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+  const [events, setEvents] = useState([]);
 
-  const filteredEvent = events.filter((event) => event.id === Number(id));
+  const fetchEvents = async () => {
+    try {
+      const response = await agendaService.getAll();
+      if (response.error) {
+        console.error('Error fetching events:', response.error);
+      }
+      setEvents(response.data || defaultEvents);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const filteredEvent = events.filter((event) => event.id.toString() === id);
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -30,6 +51,31 @@ const EventDetail = () => {
       default: return 'Selesai';
     }
   };
+
+  function parseSchedule(str: string) {
+    try {
+      let clean = str.trim();
+      clean = clean.replace(/^\{\{/, "[").replace(/\}\}$/, "]");
+      if (!clean.includes("{")) {
+        clean = clean.replace(/\[\s*'/, "[{ '");
+      } else {
+        clean = clean.replace(/\[\s*'/, "[{ '");
+      }
+      
+      if (!clean.includes("}")) {
+        clean = clean.replace(/}?\s*]$/, "}]");
+      } else {
+        clean = clean.replace(/}?\s*]$/, "}]");
+      }
+      clean = `[${clean}]`;
+      clean = clean.replace(/'/g, '"');
+      const parsed = JSON.parse(clean);
+      return Array.isArray(parsed[0]) ? parsed[0] : parsed;
+    } catch (e) {
+      console.error("Parsing error:", e);
+      return [];
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,7 +96,7 @@ const EventDetail = () => {
         {/* Hero Image */}
           <section className="relative h-96 overflow-hidden">
             <img
-              src={event.image ? event.image : placeholder.image}
+              src={event.image_url ? event.image_url : placeholder.image}
               alt={event.title}
               className="w-full h-full object-cover object-center"
             />
@@ -103,7 +149,18 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
                     <div className="space-y-4">
-                      {event.schedule.map((item, index) => (
+                      {typeof event.schedule === 'string' ? parseSchedule(event.schedule).map((item: any, index: number) => (
+                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
+                          <div className="text-sm font-semibold text-primary min-w-24">
+                            {item.time}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {item.activity}
+                          </div>
+                        </div>
+                      ))
+                      : 
+                      event.schedule.map((item, index) => (
                         <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
                           <div className="text-sm font-semibold text-primary min-w-24">
                             {item.time}

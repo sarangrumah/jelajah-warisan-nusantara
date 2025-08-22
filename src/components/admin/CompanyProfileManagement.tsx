@@ -12,11 +12,285 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
+interface CompanyProfileContent {
+  logo_url?: string;
+  company_name?: string;
+  description?: string;
+  vision?: string;
+  mission?: string;
+  history?: string;
+  contact_info?: {
+    address?: string;
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
+  services?: string[];
+  values?: string[];
+}
+
+interface CompanyProfile {
+  id : string;
+  section_key: 'company_profile';
+  title: string;
+  content: CompanyProfileContent;
+  is_published?: boolean;
+  updated_at: string;
+}
+
+const EmptyprofileData: CompanyProfile = {
+  id: "",
+  section_key: 'company_profile',
+  title: "",
+  content: {
+    logo_url:  "",
+    company_name:  "",
+    description:  "",
+    vision:  "",
+    mission:  "",
+    history: "",
+    contact_info: {
+      address:  "",
+      phone:  "",
+      email:  "",
+      website: "",
+    },
+    services:  [],
+    values:  []
+  },
+  is_published: true,
+  updated_at: ""
+};
+
+const ProfileForm = ({ profile, changing, onSave, onCancel,saving}: {
+  profile: CompanyProfile;
+  changing: (data: CompanyProfile) => void;
+  onSave: (data: CompanyProfile) => void;
+  onCancel: () => void;
+  saving: boolean; //
+}) => {
+  // Remove all the handleNestedChange, handleContactInfoChange, etc.
+  // And use direct inline functions instead
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();      
+    onSave(profile);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Profile Title</Label>
+          <Input
+            id="title"
+            value={profile.title}
+            onChange={(e) => changing(({ ...profile, title: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="company_name">Company Name</Label>
+          <Input
+            id="company_name"
+            value={profile.content.company_name}
+            onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              company_name : e.target.value
+              }}))}
+            required
+          />
+        </div>
+      </div>
+
+      <ImageUpload
+        label="Logo"
+        value={profile.content.logo_url}
+        onChange={(url) => changing(({...profile, content: {
+          ...profile.content,
+          logo_url: url
+        }}))}
+        bucket="logos"
+        maxSize={2}
+      />
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={profile.content.description}
+          onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              description : e.target.value
+              }}))}
+          rows={3}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="vision">Vision</Label>
+          <Textarea
+            id="vision"
+            value={profile.content.vision}
+            onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              vision : e.target.value
+              }}))}
+            rows={3}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="mission">Mission</Label>
+          <Textarea
+            id="mission"
+            value={profile.content.mission}
+            onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              mission : e.target.value
+              }}))}
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="history">Company History</Label>
+        <Textarea
+          id="history"
+          value={profile.content.history}
+          onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              history : e.target.value
+              }}))}
+          rows={4}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="address">Address</Label>
+          <Textarea
+            id="address"
+            value={profile.content.contact_info.address}
+            onChange={(e) => changing(({...profile,
+            content: {
+              ...profile.content,
+              contact_info: {
+                ...profile.content.contact_info, address: e.target.value }}}))}
+            rows={2}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="phone">Phone</Label>
+          <Input
+            id="phone"
+            value={profile.content.contact_info.phone}
+            onChange={(e) => changing(({  ...profile,
+            content: {
+              ...profile.content,
+              contact_info: {
+                ...profile.content.contact_info, phone: e.target.value }}}))}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={profile.content.contact_info.email}
+            onChange={(e) => changing(({  ...profile,
+            content: {
+              ...profile.content,
+              contact_info: {
+                ...profile.content.contact_info, email: e.target.value }}}))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            value={profile.content.contact_info.website}
+            onChange={(e) => changing(({  ...profile,
+            content: {
+              ...profile.content,
+              contact_info: {
+                ...profile.content.contact_info, website: e.target.value }}}))}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="services">Services (comma separated)</Label>
+        <Textarea
+          id="services"
+          value={profile.content.services?.join(', ') || ''} 
+          onChange={(e) => changing(({
+            ...profile,
+            content: {
+              ...profile.content,
+              services: e.target.value.split(',').map(s => s.trim())
+            }
+          }))}
+          placeholder="Museum Tours, Educational Programs, Research Services"
+          rows={2}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="values">Company Values (comma separated)</Label>
+        <Textarea
+          id="values"
+          value={profile.content.values?.join(', ') || ''} 
+          onChange={(e) => changing(({
+            ...profile,
+            content: {
+              ...profile.content,
+              values: e.target.value.split(',').map(s => s.trim())
+            }
+          }))}
+          placeholder="Heritage Preservation, Education, Cultural Awareness"
+          rows={2}
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_published"
+          checked={profile.is_published}
+          onCheckedChange={(checked) => changing(({ ...profile , is_published: checked }))}
+        />
+        <Label htmlFor="is_published">Publish Profile</Label>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saving}>
+          {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+      </div>
+    </form>
+  );
+};
+
 const CompanyProfileManagement = () => {
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<any>(null);
+  const [editingProfile, setEditingProfile] = useState<CompanyProfile>(EmptyprofileData);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
@@ -24,12 +298,13 @@ const CompanyProfileManagement = () => {
     fetchProfiles();
   }, []);
 
+
   const fetchProfiles = async () => {
     try {
       const response = await contentService.getAll();
       if (response.error) throw new Error(response.error);
       // Filter company profiles on the client side for now
-      const companyProfiles = (response.data || []).filter(
+      const companyProfiles = (response.data as CompanyProfile[]|| []).filter(
         (item: any) => item.section_key === 'company_profile'
       );
       setProfiles(companyProfiles);
@@ -45,56 +320,62 @@ const CompanyProfileManagement = () => {
     }
   };
 
-  const saveProfile = async (formData: any) => {
+  const saveProfile = async (formData: CompanyProfile) => {
     setSaving(true);
     try {
       const profileData = {
         section_key: 'company_profile',
         title: formData.title,
         content: {
-          logo_url: formData.logo_url,
-          company_name: formData.company_name,
-          description: formData.description,
-          vision: formData.vision,
-          mission: formData.mission,
-          history: formData.history,
+          logo_url: formData.content.logo_url || "",
+          company_name: formData.content.company_name || "",
+          description: formData.content.description || "",
+          vision: formData.content.vision || "",
+          mission: formData.content.mission || "",
+          history: formData.content.history || "",
           contact_info: {
-            address: formData.address,
-            phone: formData.phone,
-            email: formData.email,
-            website: formData.website,
+            address: formData.content.contact_info?.address || "",
+            phone: formData.content.contact_info?.phone || "",
+            email: formData.content.contact_info?.email || "",
+            website: formData.content.contact_info?.website || "",
           },
-          services: formData.services?.split(',').map((s: string) => s.trim()).filter(Boolean) || [],
-          values: formData.values?.split(',').map((v: string) => v.trim()).filter(Boolean) || [],
+          services: Array.isArray(formData.content.services) 
+            ? formData.content.services 
+            : [],
+          values: Array.isArray(formData.content.values) 
+            ? formData.content.values 
+            : []
         },
         is_published: formData.is_published,
       };
 
+      let response;
       if (editingProfile?.id) {
-        const response = await contentService.update(editingProfile.id, profileData);
+        response = await contentService.update(editingProfile.id, profileData);
         if (response.error) throw new Error(response.error);
         
-        setProfiles(prev => prev.map(p => 
-          p.id === editingProfile.id ? { ...p, ...profileData } : p
-        ));
-        
-        toast({
-          title: 'Success',
-          description: 'Company profile updated successfully',
-        });
+        setProfiles(prev => 
+          prev.map(profile => 
+            profile.id === editingProfile.id 
+              ? { ...profile, ...response.data, updated_at: new Date().toISOString() }
+              : profile
+          )
+        );
       } else {
-        const response = await contentService.create(profileData);
+        response = await contentService.create(profileData);
         if (response.error) throw new Error(response.error);
         
-        setProfiles(prev => [response.data, ...prev]);
-        
-        toast({
-          title: 'Success',
-          description: 'Company profile created successfully',
-        });
+       setProfiles(prev => [{ ...response.data, updated_at: new Date().toISOString() }, ...prev]);
       }
       
-      setEditingProfile(null);
+      toast({
+        title: 'Success',
+        description: editingProfile?.id 
+          ? 'Company profile updated successfully' 
+          : 'Company profile created successfully',
+      });
+      
+      setEditingProfile(EmptyprofileData);
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -131,193 +412,12 @@ const CompanyProfileManagement = () => {
     }
   };
 
-  const ProfileForm = ({ profile, onSave, onCancel }: {
-    profile?: any;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
-    const content = profile?.content || {};
-    const contactInfo = content.contact_info || {};
-    
-    const [formData, setFormData] = useState({
-      title: profile?.title || '',
-      logo_url: content.logo_url || '',
-      company_name: content.company_name || '',
-      description: content.description || '',
-      vision: content.vision || '',
-      mission: content.mission || '',
-      history: content.history || '',
-      address: contactInfo.address || '',
-      phone: contactInfo.phone || '',
-      email: contactInfo.email || '',
-      website: contactInfo.website || '',
-      services: (content.services || []).join(', '),
-      values: (content.values || []).join(', '),
-      is_published: profile?.is_published ?? true,
-    });
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave(formData);
-    };
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Profile Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="company_name">Company Name</Label>
-            <Input
-              id="company_name"
-              value={formData.company_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-              required
-            />
-          </div>
-        </div>
-
-        <ImageUpload
-          label="Logo"
-          value={formData.logo_url}
-          onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
-          bucket="logos"
-          maxSize={2}
-        />
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            rows={3}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="vision">Vision</Label>
-            <Textarea
-              id="vision"
-              value={formData.vision}
-              onChange={(e) => setFormData(prev => ({ ...prev, vision: e.target.value }))}
-              rows={3}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mission">Mission</Label>
-            <Textarea
-              id="mission"
-              value={formData.mission}
-              onChange={(e) => setFormData(prev => ({ ...prev, mission: e.target.value }))}
-              rows={3}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="history">Company History</Label>
-          <Textarea
-            id="history"
-            value={formData.history}
-            onChange={(e) => setFormData(prev => ({ ...prev, history: e.target.value }))}
-            rows={4}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Textarea
-              id="address"
-              value={formData.address}
-              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-              rows={2}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              value={formData.website}
-              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="services">Services (comma separated)</Label>
-          <Textarea
-            id="services"
-            value={formData.services}
-            onChange={(e) => setFormData(prev => ({ ...prev, services: e.target.value }))}
-            placeholder="Museum Tours, Educational Programs, Research Services"
-            rows={2}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="values">Company Values (comma separated)</Label>
-          <Textarea
-            id="values"
-            value={formData.values}
-            onChange={(e) => setFormData(prev => ({ ...prev, values: e.target.value }))}
-            placeholder="Heritage Preservation, Education, Cultural Awareness"
-            rows={2}
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_published"
-            checked={formData.is_published}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
-          />
-          <Label htmlFor="is_published">Publish Profile</Label>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
-        </div>
-      </form>
-    );
+  const handleProfileChange = (updatedProfile: CompanyProfile) => {
+    setEditingProfile(updatedProfile);
   };
+
+
+
 
   if (loading) {
     return (
@@ -336,7 +436,7 @@ const CompanyProfileManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingProfile(null)}>
+            <Button onClick={() => setEditingProfile(EmptyprofileData)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Profile
             </Button>
@@ -352,11 +452,13 @@ const CompanyProfileManagement = () => {
             </DialogHeader>
             <ProfileForm
               profile={editingProfile}
+              changing={handleProfileChange}
               onSave={saveProfile}
               onCancel={() => {
-                setEditingProfile(null);
+                setEditingProfile(EmptyprofileData);
                 setIsDialogOpen(false);
               }}
+              saving={saving}
             />
           </DialogContent>
         </Dialog>

@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import NewsListSection from '@/components/media/NewsListSection';
-import PublikationSection from '@/components/media/PublikationSection';
+import PublicationSection from '@/components/media/PublicationSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
@@ -37,7 +37,7 @@ const MediaPublikasi = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <NewsListSection />
-      <PublikationSection />
+      <PublicationSection />
       <Footer />
       <FloatingButtons />
     </div>

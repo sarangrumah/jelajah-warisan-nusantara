@@ -22,7 +22,7 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    this.baseUrl = import.meta.env.VITE_API_URL || '';
     this.token = localStorage.getItem('auth_token');
   }
 
@@ -92,6 +92,10 @@ class ApiClient {
 
   async getProfile(userId: string): Promise<ApiResponse<User>> {
     return this.request<User>(`/api/auth/profile/${userId}`);
+  }
+
+  async getAllProfile(): Promise<ApiResponse<User>> {
+    return this.request<User>(`/api/auth/profile`);
   }
 
   async getCurrentUserRoles(): Promise<ApiResponse<string[]>> {
