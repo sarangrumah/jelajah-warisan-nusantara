@@ -81,7 +81,7 @@ const PublicationSection = () => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
             Transparansi Anggaran
           </h3>
@@ -107,9 +107,9 @@ const PublicationSection = () => {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
 
-        <div className="mt-16 text-center scroll-reveal">
+        {/* <div className="mt-16 text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-4 mb-6">
               <Calendar size={32} className="text-primary" />
@@ -125,7 +125,7 @@ const PublicationSection = () => {
               Berlangganan Newsletter
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

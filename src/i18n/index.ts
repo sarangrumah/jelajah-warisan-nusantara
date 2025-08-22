@@ -440,7 +440,7 @@ const resources = {
         },
         watchVideo: "Tonton Video",
       },
-      // Profile Section
+      // Profile Sectionpa
       profile: {
         title: "Tentang Kami",
         description: "Direktorat Museum dan Cagar Budaya bertanggung jawab dalam pelestarian, pengelolaan, dan pengembangan warisan budaya Indonesia untuk kepentingan pendidikan, penelitian, dan pariwisata budaya.",

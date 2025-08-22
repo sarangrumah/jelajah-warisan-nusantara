@@ -129,8 +129,9 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
                   {slides.length > 0 && t(slides[currentSlide].cta)}
                 </Button>

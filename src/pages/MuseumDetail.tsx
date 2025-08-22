@@ -91,7 +91,7 @@ const MuseumDetail = () => {
                 </CardContent>
               </Card>
 
-              <Card className="mt-6">
+              {/* <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>{t('Collections & Highlights')}</CardTitle>
                 </CardHeader>
@@ -104,7 +104,7 @@ const MuseumDetail = () => {
                     ))}
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <Card className="mt-6">
                 <CardHeader>

@@ -142,7 +142,7 @@ const PPIDSection = () => {
           </div>
 
           <div className="scroll-reveal">
-            <Card className="heritage-glow mb-6">
+            {/* <Card className="heritage-glow mb-6">
               <CardHeader>
                 <CardTitle className="text-2xl">Dokumen & Formulir</CardTitle>
                 <p className="text-muted-foreground">
@@ -172,7 +172,7 @@ const PPIDSection = () => {
                   Ajukan Permohonan Informasi
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
 
             <Card className="heritage-glow">
               <CardHeader>
