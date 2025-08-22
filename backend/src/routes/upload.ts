@@ -108,7 +108,7 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   }
   
   const bucket = req.body.bucket || 'images';
-  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  const fileUrl = `${uploadDir}${bucket}/${req.file.filename}`;
   
   res.json({
     message: 'File uploaded successfully',
