@@ -145,7 +145,7 @@ const EventDetail = () => {
                 </Card>
 
                 {/* Schedule */}
-                <Card>
+                {/* <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
                     <div className="space-y-4">
@@ -172,7 +172,7 @@ const EventDetail = () => {
                       ))}
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
 
               {/* Sidebar */}
@@ -224,7 +224,7 @@ const EventDetail = () => {
                 </Card>
 
                 {/* Requirements */}
-                <Card>
+                {/* <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Requirements')}</h3>
                     <ul className="space-y-2">
@@ -236,15 +236,15 @@ const EventDetail = () => {
                       ))}
                     </ul>
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Actions */}
                 <Card>
                   <CardContent className="p-6 space-y-3">
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                    {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
                       {t('Register Now')}
-                    </Button>
-                    <Button variant="outline" className="w-full">
+                    </Button> */}
+                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce">
                       <Share2 size={16} className="mr-2" />
                       {t('Share Event')}
                     </Button>

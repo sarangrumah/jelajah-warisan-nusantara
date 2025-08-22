@@ -443,15 +443,17 @@ const resources = {
       // Profile Sectionpa
       profile: {
         title: "Tentang Kami",
-        description: "Direktorat Museum dan Cagar Budaya bertanggung jawab dalam pelestarian, pengelolaan, dan pengembangan warisan budaya Indonesia untuk kepentingan pendidikan, penelitian, dan pariwisata budaya.",
+        description: "Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 18 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. IHA Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. IHA memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
         vision: "Visi",
-        visionText: "Menjadi institusi terdepan dalam pelestarian dan pengelolaan warisan budaya Indonesia yang berkualitas dunia dan berkelanjutan.",
+        visionText: "“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”",
         mission: "Misi",
         missionItems: [
-          "• Mengelola dan melestarikan koleksi museum nasional",
-          "• Melindungi dan memelihara situs cagar budaya", 
-          "• Mengembangkan program edukasi dan penelitian",
-          "• Mempromosikan pariwisata budaya berkelanjutan"
+          "• Mewujudkan pengelolaan koleksi, cagar budaya, dan bangunan bersejarah yang berkelanjutan.",
+          "• Melaksanakan upaya pelayanan dan pelibatan masyarakat secara terpadu.", 
+          "• Mengedepankan transformasi pengembangan wawasan melalui praktik edukasi yang inovatif dan pembangunan komunitas.",
+          "• Menjalin kepercayaan kuat antara para pemangku kepentingan yang berbasis kemitraan.",
+          "• Mewujudkan ruang ekspresi dan interaksi budaya yang inklusif dan mudah diakses.",
+          "• Mewujudkan tata kelola kelembagaan dan pengelolaan sumber daya manusia yang tangkas dan berorientasi kepada dampak yang berkelanjutan."
         ],
         callToAction: "Mari Bersama Lestarikan Budaya Indonesia",
         callToActionText: "Bergabunglah dengan kami dalam upaya melestarikan kekayaan budaya nusantara untuk generasi mendatang.",
