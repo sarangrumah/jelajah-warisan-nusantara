@@ -27,30 +27,159 @@ interface MediaItem {
   tags: any;
 }
 
+const MediaForm = ({ media, onSave, onCancel, saving }: {
+  media: MediaItem;
+  onSave: (data: MediaItem) => void;
+  onCancel: () => void;
+  saving: boolean
+}) => {
+
+  const [formData, setFormData] = useState<MediaItem>({
+   ...media,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="type">Type</Label>
+          <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="news">News</SelectItem>
+              <SelectItem value="publication">Publication</SelectItem>
+              <SelectItem value="document">Document</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="excerpt">Excerpt</Label>
+        <Textarea
+          id="excerpt"
+          value={formData.excerpt}
+          onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+          rows={2}
+          placeholder="Brief summary of the content"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="content">Content</Label>
+        <Textarea
+          id="content"
+          value={formData.content}
+          onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+          rows={6}
+          placeholder="Full content of the article/publication"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Featured Image"
+          value={formData.image_url}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+          bucket="media"
+          maxSize={5}
+        />
+        <div className="space-y-2">
+          <Label htmlFor="file_url">File URL (for documents)</Label>
+          <Input
+            id="file_url"
+            value={formData.file_url}
+            onChange={(e) => setFormData(prev => ({ ...prev, file_url: e.target.value }))}
+            placeholder="https://example.com/document.pdf"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="category">Category</Label>
+          <Input
+            id="category"
+            value={formData.category}
+            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+            placeholder="e.g., Museum Events, Press Release"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="tags">Tags (comma separated)</Label>
+          <Input
+            id="tags"
+            value={formData.tags}
+            onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+            placeholder="heritage, museum, culture"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_published"
+          checked={formData.is_published}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+        />
+        <Label htmlFor="is_published">Publish Media Item</Label>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saving}>
+          {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 
+const emptyItem: MediaItem = {
+  title: '',
+  type: 'news',
+  category: '',
+  excerpt: '',
+  content: '',
+  image_url: '',
+  file_url: '',
+  tags: [],
+  is_published: true,
+};
 
 
 const MediaManagement = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingMedia, setEditingMedia] = useState<MediaItem>(null);
+  const [editingMedia, setEditingMedia] = useState<MediaItem>(emptyItem);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
 
-  const emptyItem: Partial<MediaItem> = {
-    title: '',
-    type: 'news',
-    category: '',
-    excerpt: '',
-    content: '',
-    image_url: '',
-    file_url: '',
-    tags: [],
-    is_published: true,
-  };
+
 
   useEffect(() => {
     fetchMediaItems();
@@ -123,7 +252,7 @@ const MediaManagement = () => {
       });
 
       setIsDialogOpen(false);
-      setEditingMedia(null);
+      setEditingMedia(emptyItem);
     } catch (error) {
       console.error('Error saving media item:', error);
       toast({
@@ -165,129 +294,7 @@ const MediaManagement = () => {
     }
   };
 
-  const MediaForm = ({ onclick, onSave, onCancel }: {
-    onclick: () => void;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave(editingMedia);
-    };
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={editingMedia.title}
-              onChange={(e) => setEditingMedia(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select value={editingMedia.type} onValueChange={(value) => setEditingMedia(prev => ({ ...prev, type: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="news">News</SelectItem>
-                <SelectItem value="publication">Publication</SelectItem>
-                <SelectItem value="document">Document</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="excerpt">Excerpt</Label>
-          <Textarea
-            id="excerpt"
-            value={editingMedia.excerpt}
-            onChange={(e) => setEditingMedia(prev => ({ ...prev, excerpt: e.target.value }))}
-            rows={2}
-            placeholder="Brief summary of the content"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="content">Content</Label>
-          <Textarea
-            id="content"
-            value={editingMedia.content}
-            onChange={(e) => setEditingMedia(prev => ({ ...prev, content: e.target.value }))}
-            rows={6}
-            placeholder="Full content of the article/publication"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ImageUpload
-            label="Featured Image"
-            value={editingMedia.image_url}
-            onChange={(url) => setEditingMedia(prev => ({ ...prev, image_url: url }))}
-            bucket="media"
-            maxSize={5}
-          />
-          <div className="space-y-2">
-            <Label htmlFor="file_url">File URL (for documents)</Label>
-            <Input
-              id="file_url"
-              value={editingMedia.file_url}
-              onChange={(e) => setEditingMedia(prev => ({ ...prev, file_url: e.target.value }))}
-              placeholder="https://example.com/document.pdf"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              value={editingMedia.category}
-              onChange={(e) => setEditingMedia(prev => ({ ...prev, category: e.target.value }))}
-              placeholder="e.g., Museum Events, Press Release"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags (comma separated)</Label>
-            <Input
-              id="tags"
-              value={editingMedia.tags}
-              onChange={(e) => setEditingMedia(prev => ({ ...prev, tags: e.target.value }))}
-              placeholder="heritage, museum, culture"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_published"
-            checked={editingMedia.is_published}
-            onCheckedChange={(checked) => setEditingMedia(prev => ({ ...prev, is_published: checked }))}
-          />
-          <Label htmlFor="is_published">Publish Media Item</Label>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
-        </div>
-      </form>
-    );
-  };
 
   if (loading) {
     return (
@@ -306,7 +313,7 @@ const MediaManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingMedia(null)}>
+            <Button onClick={() => setEditingMedia(emptyItem)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Media
             </Button>
@@ -321,12 +328,14 @@ const MediaManagement = () => {
               </DialogDescription>
             </DialogHeader>
             <MediaForm
-              onclick={() => setEditingMedia(emptyItem as MediaItem)}
+              media={editingMedia}
+              // onclick={() => setEditingMedia(emptyItem as MediaItem)}
               onSave={saveMediaItem}
               onCancel={() => {
-                setEditingMedia(null);
+                setEditingMedia(emptyItem);
                 setIsDialogOpen(false);
               }}
+              saving={saving}
             />
           </DialogContent>
         </Dialog>
