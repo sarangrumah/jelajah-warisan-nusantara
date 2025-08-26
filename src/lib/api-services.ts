@@ -63,12 +63,14 @@ export const museumService = {
 
 // Banners
 export const bannerService = {
-  getAll: () => apiClient.getAll('banners'), // Get all for admin, filtering happens in components
-  getPublished: () => apiClient.getAll('banners', { is_published: 'true' }),
-  getById: (id: string) => apiClient.getById('banners', id),
-  create: (data: any) => apiClient.create('banners', data),
-  update: (id: string, data: any) => apiClient.update('banners', id, data),
-  delete: (id: string) => apiClient.delete('banners', id),
+  approve: (id: string) => apiClient.approve('tb_banner', id),
+  getAll: () => apiClient.getAll('tb_banner'), // Get all for admin, filtering happens in components
+  getPublished: () => apiClient.getAll('tb_banner', { is_published: 'true' }),
+  getById: (id: string) => apiClient.getById('tb_banner', id),
+  create: (data: any) => apiClient.create('tb_banner', data),
+  update: (id: string, data: any) => apiClient.update('tb_banner', id, data),
+  delete: (id: string) => apiClient.delete('tb_banner', id),
+  
 };
 
 // Career Opportunities
