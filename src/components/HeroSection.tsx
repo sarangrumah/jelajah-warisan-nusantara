@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { heroSlideService } from '@/lib/api-services';
+import { bannerService, heroSlideService } from '@/lib/api-services';
 import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
@@ -54,12 +54,12 @@ const HeroSection = () => {
       setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     }
   };
-
+  
   const fetchSlides = async () => {
     try {
-      const response = await heroSlideService.getAll();
+      const response = await bannerService.getAll();
       if (response.error) {
-        console.log('Error fetching slides:', response.error);
+        console.log('Error fetching slides:', response);
       }
       setSlides(response.data || defaultSlides);
     } catch (error) {
@@ -129,8 +129,9 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="heritage-gradient text-primary-foreground px-8 py-6 text-lg font-semibold heritage-glow hover:scale-105 transition-bounce"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
                   {slides.length > 0 && t(slides[currentSlide].cta)}
                 </Button>

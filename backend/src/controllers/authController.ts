@@ -180,6 +180,7 @@ export const getProfile = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
 
+    
     const profileResult = await query(
       `SELECT p.*, u.email, 
               COALESCE(
@@ -239,7 +240,6 @@ export const getUserRoles = async (req: AuthRequest, res: Response) => {
 export const getAllProfile = async (req: AuthRequest, res: Response) => {
   try {
 
-    
     const profileResult = await query(
       `SELECT p.*, u.email, 
               COALESCE(
@@ -255,7 +255,7 @@ export const getAllProfile = async (req: AuthRequest, res: Response) => {
     );
 
     if (profileResult.rows.length === 0) {
-      return res.status(404).json({ error: 'No profiles found' });
+      return res.status(200).json({ data: 'No profiles found' });
     }
 
     // normalize roles for each profile

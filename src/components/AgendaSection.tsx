@@ -173,13 +173,13 @@ const AgendaSection = () => {
                   Lihat Semua Agenda
                 </Button>
               </Link>
-              <Button 
+              {/* <Button 
                 variant="outline"
                 size="lg"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 transition-heritage"
               >
                 Berlangganan Newsletter
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

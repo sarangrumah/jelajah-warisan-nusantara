@@ -23,8 +23,8 @@ const Footer = () => {
             <div className="flex items-center space-x-3 gap-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src='/src/assets/logo/LOGO V 4 - putih.png' className='w-[4.5rem]' />
-                <img src="/src/assets/MCB-Logo.png" alt="Logo" className='w-[2.1rem] h-[5rem]x' />
+                <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[10rem] h-[10rem]x' />
+
               </div>
               <div>
                 <h3 className="text-lg font-bold text-heritage-gradient">

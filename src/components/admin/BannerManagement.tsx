@@ -12,6 +12,113 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
+
+const BannerForm = ({ banner, onSave, onCancel, saving }: {
+  banner?: any;
+  onSave: (data: any) => void;
+  onCancel: () => void;
+  saving: boolean
+}) => {
+  const [formData, setFormData] = useState({
+    title: banner?.title || '',
+    subtitle: banner?.subtitle || '',
+    description: banner?.description || '',
+    image_url: banner?.image_url || '',
+    start_date: banner?.start_date || '',
+    end_date: banner?.end_date || '',
+    is_published: banner?.is_published ?? true,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Banner Title</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="subtitle">Subtitle</Label>
+          <Input
+            id="subtitle"
+            value={formData.subtitle}
+            onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          rows={3}
+        />
+      </div>
+
+      <ImageUpload
+        label="Banner Image"
+        value={formData.image_url}
+        onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+        bucket="images"
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="start_date">Start Date</Label>
+          <Input
+            id="start_date"
+            type="datetime-local"
+            value={formData.start_date}
+            onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="end_date">End Date</Label>
+          <Input
+            id="end_date"
+            type="datetime-local"
+            value={formData.end_date}
+            onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_published"
+          checked={formData.is_published}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+        />
+        <Label htmlFor="is_published">Publish Banner</Label>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saving}>
+          {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+      </div>
+    </form>
+  );
+};
+
 const BannerManagement = () => {
   const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,110 +212,7 @@ const BannerManagement = () => {
     }
   };
 
-  const BannerForm = ({ banner, onSave, onCancel }: {
-    banner?: any;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
-    const [formData, setFormData] = useState({
-      title: banner?.title || '',
-      subtitle: banner?.subtitle || '',
-      description: banner?.description || '',
-      image_url: banner?.image_url || '',
-      start_date: banner?.start_date || '',
-      end_date: banner?.end_date || '',
-      is_published: banner?.is_published ?? true,
-    });
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave(formData);
-    };
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Banner Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="subtitle">Subtitle</Label>
-            <Input
-              id="subtitle"
-              value={formData.subtitle}
-              onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            rows={3}
-          />
-        </div>
-
-        <ImageUpload
-          label="Banner Image"
-          value={formData.image_url}
-          onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-          bucket="images"
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="start_date">Start Date</Label>
-            <Input
-              id="start_date"
-              type="datetime-local"
-              value={formData.start_date}
-              onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="end_date">End Date</Label>
-            <Input
-              id="end_date"
-              type="datetime-local"
-              value={formData.end_date}
-              onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_published"
-            checked={formData.is_published}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
-          />
-          <Label htmlFor="is_published">Publish Banner</Label>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
-        </div>
-      </form>
-    );
-  };
 
   if (loading) {
     return (
@@ -248,6 +252,7 @@ const BannerManagement = () => {
                 setEditingBanner(null);
                 setIsDialogOpen(false);
               }}
+              saving={saving}
             />
           </DialogContent>
         </Dialog>

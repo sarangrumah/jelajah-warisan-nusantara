@@ -35,198 +35,36 @@ interface MuseumItem {
   updated_at?: string;
 }
 
-const MuseumManagement = () => {
-  const [museums, setMuseums] = useState<MuseumItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [editingMuseum, setEditingMuseum] = useState<MuseumItem | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
-
-  const emptyMuseum: MuseumItem = {
-    name: '',
-    type: 'museum',
-    description: '',
-    location: '',
-    address: '',
-    image_url: '',
-    gallery_images: [],
-    latitude: null,
-    longitude: null,
-    opening_hours: {},
-    contact_info: {
-      phone: '',
-      email: '',
-      website: ''
-    },
-    is_published: true
-  };
-
-  interface MuseumFormData {
-    name: string;
-    type: string;
-    description: string;
-    location: string;
-    address: string;
-    image_url: string;
-    gallery_images: string[]; // Stored as comma-separated string in form
-    gallery_images_array: string; // Used for GalleryUpload component
-    latitude: string; // Form handles as string for input
-    longitude: string; // Form handles as string for input
-    opening_hours: string; // JSON string in form
-    contact_info: {
-      phone: string;
-      email: string;
-      website: string;
-    };
-    is_published: boolean;
-  }
-
-
-  useEffect(() => {
-    fetchMuseums();
-  }, []);
-
-  const fetchMuseums = async () => {
-    try {
-      const response = await museumService.getAll();
-      
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      
-      setMuseums(response.data as MuseumItem[] || []);
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load museums',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveMuseum = async (formData: MuseumItem) => {
-    setSaving(true);
-    let response 
-    try {
-      const museumData: MuseumItem = {
-        ...formData,
-        gallery_images: formData.gallery_images,
-        latitude: formData.latitude ,
-        longitude: formData.longitude,
-        opening_hours: typeof formData.opening_hours === 'string' 
-          ? JSON.parse(formData.opening_hours)
-          : formData.opening_hours,
-        contact_info: {
-          phone: formData.contact_info.phone,
-          email: formData.contact_info.email,
-          website: formData.contact_info.website
-        }
-      };
-
-      if (editingMuseum?.id) {
-        const response = await museumService.update(editingMuseum.id, museumData);
-        
-        if (response.error) {
-          throw new Error(response.error);
-        }
-        
-        setMuseums(prev => prev.map(m => 
-          m.id === editingMuseum.id ? { ...m, ...museumData } : m
-        ));
-        
-        toast({
-          title: 'Success',
-          description: 'Museum updated successfully',
-        });
-      } else {
-        response = await museumService.create(museumData);
-        
-        if (response.error) {
-          throw new Error(response.error);
-        }
-        
-        setMuseums(prev => [response.data, ...prev]);
-        
-        toast({
-          title: 'Success',
-          description: 'Museum created successfully',
-        });
-      }
-      
-      setEditingMuseum(null);
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error('Error saving museum:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save museum',
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const togglePublished = async (id: string, isPublished: boolean) => {
-    try {
-      const response = await museumService.update(id, { is_published: isPublished });
-      
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      
-      setMuseums(prev => prev.map(museum => 
-        museum.id === id ? { ...museum, is_published: isPublished } : museum
-      ));
-      
-      toast({
-        title: 'Success',
-        description: `Museum ${isPublished ? 'published' : 'unpublished'}`,
-      });
-    } catch (error) {
-      console.error('Error toggling museum:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update museum status',
-        variant: 'destructive',
-      });
-    }
-  };
-
   const MuseumForm = ({ museum, onSave, onCancel, saving }: {
-  museum: MuseumItem;
-  onSave: (data: MuseumItem) => void;
-  onCancel: () => void;
-  saving: boolean;
-}) => {
-  const [formData, setFormData] = useState<MuseumItem>({
-    ...museum,
-    gallery_images: Array.isArray(museum.gallery_images) ? museum.gallery_images : []
-  });
+    museum: MuseumItem;
+    onSave: (data: MuseumItem) => void;
+    onCancel: () => void;
+    saving: boolean;
+  }) => {
+    const [formData, setFormData] = useState<MuseumItem>({
+      ...museum,
+      gallery_images: Array.isArray(museum.gallery_images) ? museum.gallery_images : []
+    });
 
-  // This ensures proper state updates
-  const handleImageUpload = async (url: string) => {
-    setEditingMuseum(prev => ({
-      ...prev,
-      image_url: url
-    }));
-  };
+    // This ensures proper state updates
+    const handleImageUpload = async (url: string) => {
+      setFormData(prev => ({
+        ...prev,
+        image_url: url
+      }));
+    };
 
-  const handleGalleryUpload = async (urls: string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      gallery_images: urls
-    }));
-  };
+    const handleGalleryUpload = async (urls: string[]) => {
+      setFormData(prev => ({
+        ...prev,
+        gallery_images: urls
+      }));
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-      onSave(formData);
-  }
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+        onSave(formData);
+    }
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -341,7 +179,10 @@ const MuseumManagement = () => {
             <Input
               id="phone"
               value={formData.contact_info.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+               onChange={(e) => setFormData(prev => ({ ...prev, contact_info: {
+                ...prev.contact_info,
+                phone: e.target.value
+              }}))}
             />
           </div>
           <div className="space-y-2">
@@ -350,7 +191,10 @@ const MuseumManagement = () => {
               id="email"
               type="email"
               value={formData.contact_info.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+               onChange={(e) => setFormData(prev => ({ ...prev, contact_info: {
+                ...prev.contact_info,
+                email: e.target.value
+              }}))}
             />
           </div>
           <div className="space-y-2">
@@ -358,7 +202,10 @@ const MuseumManagement = () => {
             <Input
               id="website"
               value={formData.contact_info.website}
-              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, contact_info: {
+                ...prev.contact_info,
+                website: e.target.value
+              }}))}
             />
           </div>
         </div>
@@ -386,6 +233,151 @@ const MuseumManagement = () => {
       </form>
     );
   };
+
+  const emptyMuseum: MuseumItem = {
+  name: '',
+  type: 'museum',
+  description: '',
+  location: '',
+  address: '',
+  image_url: '',
+  gallery_images: [],
+  latitude: null,
+  longitude: null,
+  opening_hours: "{}",
+  contact_info: {
+    phone: '',
+    email: '',
+    website: ''
+  },
+  is_published: true
+  };
+const MuseumManagement = () => {
+  const [museums, setMuseums] = useState<MuseumItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [editingMuseum, setEditingMuseum] = useState<MuseumItem>(emptyMuseum);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+
+
+
+  useEffect(() => {
+    fetchMuseums();
+  }, []);
+
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMuseums(response.data as MuseumItem[] || []);
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load museums',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveMuseum = async (formData: MuseumItem) => {
+    setSaving(true);
+    let response 
+    try {
+      const museumData: MuseumItem = {
+        ...formData,
+        gallery_images: formData.gallery_images,
+        latitude: formData.latitude ,
+        longitude: formData.longitude,
+        opening_hours: typeof formData.opening_hours === 'string' 
+          ? JSON.parse(formData.opening_hours)
+          : formData.opening_hours,
+        contact_info: {
+          phone: formData.contact_info.phone,
+          email: formData.contact_info.email,
+          website: formData.contact_info.website
+        }
+      };
+
+      if (editingMuseum?.id) {
+        const response = await museumService.update(editingMuseum.id, museumData);
+        
+        if (response.error) {
+          throw new Error(response.error);
+        }
+        
+        setMuseums(prev => prev.map(m => 
+          m.id === editingMuseum.id ? { ...m, ...museumData } : m
+        ));
+        
+        toast({
+          title: 'Success',
+          description: 'Museum updated successfully',
+        });
+      } else {
+        response = await museumService.create(museumData);
+        
+        if (response.error) {
+          throw new Error(response.error);
+        }
+        
+        setMuseums(prev => [response.data, ...prev]);
+        
+        toast({
+          title: 'Success',
+          description: 'Museum created successfully',
+        });
+      }
+      
+      setEditingMuseum(emptyMuseum);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error saving museum:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save museum',
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const togglePublished = async (id: string, isPublished: boolean) => {
+    try {
+      const response = await museumService.update(id, { is_published: isPublished });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMuseums(prev => prev.map(museum => 
+        museum.id === id ? { ...museum, is_published: isPublished } : museum
+      ));
+      
+      toast({
+        title: 'Success',
+        description: `Museum ${isPublished ? 'published' : 'unpublished'}`,
+      });
+    } catch (error) {
+      console.error('Error toggling museum:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update museum status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+
 
   if (loading) {
     return (
