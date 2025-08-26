@@ -40,7 +40,7 @@ const PublicationSection = () => {
           </h3>
           <div className="grid md:grid-cols-2 gap-6 px-3">
             {publications.map((pub, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -56,25 +56,29 @@ const PublicationSection = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">{pub.description}</p>
-                  <div className="grid grid-cols-3 gap-4 text-sm mb-4">
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
-                      <div className="text-muted-foreground">Halaman</div>
+                  <div className='pb-6'>
+                    <p className="text-muted-foreground mb-4">{pub.description}</p>
+                    <div className="grid grid-cols-3 gap-4 text-sm mb-8">
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
+                        <div className="text-muted-foreground">Halaman</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.size}</div>
+                        <div className="text-muted-foreground">Ukuran</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
+                        <div className="text-muted-foreground">Download</div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.size}</div>
-                      <div className="text-muted-foreground">Ukuran</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
-                      <div className="text-muted-foreground">Download</div>
+                    <div className='p-6 absolute left-0 bottom-0 right-0'>
+                      <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
+                        <Download size={16} className="mr-2" />
+                        Unduh Dokumen
+                      </Button>
                     </div>
                   </div>
-                  <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
-                    <Download size={16} className="mr-2" />
-                    Unduh Dokumen
-                  </Button>
                 </CardContent>
               </Card>
             ))}

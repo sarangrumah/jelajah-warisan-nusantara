@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
-import { defaultMuseums, defaultHeritages } from 'database/default-data';
 
 interface LocationData {
   id: string;
@@ -320,9 +320,6 @@ const IndonesiaMap = () => {
       `;
 
       marker.bindPopup(popupContent, {
-        autoPan: true,
-        // autoPanPadding: L.point(50, 50), // jarak aman dari tepi peta
-        keepInView: true,
         offset: [0, -16],
         closeButton: true,
         autoClose: false,
@@ -333,89 +330,48 @@ const IndonesiaMap = () => {
       // Add click event listeners after popup opens
       marker.on('popupopen', () => {
         const popup = marker.getPopup();
-        if (!map.current || !popup) return;
-
-        const popupEl = popup.getElement();
-        if (!popupEl) return;
-
-        // ✅ Cegah style berulang dalam satu siklus open
-        if ((popupEl as any)._styled) return;
-        (popupEl as any)._styled = true;
-
-        const mapSize = map.current.getSize();
-        const markerPoint = map.current.latLngToContainerPoint(marker.getLatLng());
-        const tip = popupEl.querySelector('.leaflet-popup-tip') as HTMLElement;
-        if (!tip) return;
-
-        // reset
-        ['top', 'bottom', 'left', 'right'].forEach((pos) => {
-          tip.style.removeProperty(pos);
-        });
-
-        // default: atas marker
-        popupEl.style.setProperty('transform-origin', 'bottom center');
-        tip.style.setProperty('bottom', '-12px');
-
-        // atur posisi sesuai lokasi marker di map
-        if (markerPoint.y < mapSize.y / 3) {
-          // bawah
-          popupEl.style.setProperty('transform-origin', 'top center');
-          tip.style.setProperty('top', '-12px');
-        } else if (markerPoint.x < mapSize.x / 3) {
-          // kanan
-          popupEl.style.setProperty('transform-origin', 'center left');
-          tip.style.setProperty('left', '-12px');
-        } else if (markerPoint.x > (mapSize.x * 2) / 3) {
-          // kiri
-          popupEl.style.setProperty('transform-origin', 'center right');
-          tip.style.setProperty('right', '-12px');
-        }
-
-        // Add event listener for detail button
-        const detailBtn = popupEl.querySelector('.popup-btn-detail');
-        if (detailBtn) {
-          detailBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = (detailBtn as HTMLElement).dataset.id;
-            const type = (detailBtn as HTMLElement).dataset.type;
-            if (type === 'museum') {
-              navigate(`/museum/${id}`);
-            } else {
-              navigate(`/heritage/${id}`);
-            }
-          });
-        }
-        
-        // Add event listener for list button
-        const listBtn = popupEl.querySelector('.popup-btn-list');
-        if (listBtn) {
-          listBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const region = (listBtn as HTMLElement).dataset.region;
-            const type = (listBtn as HTMLElement).dataset.type;
-            if (type === 'museum') {
-              navigate(`/museum?region=${region}`);
-            } else {
-              navigate(`/heritage?region=${region}`);
-            }
-          });
+        if (popup && popup.getElement()) {
+          const popupElement = popup.getElement();
+          
+          // Add event listener for detail button
+          const detailBtn = popupElement.querySelector('.popup-btn-detail');
+          if (detailBtn) {
+            detailBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = (detailBtn as HTMLElement).dataset.id;
+              const type = (detailBtn as HTMLElement).dataset.type;
+              if (type === 'museum') {
+                navigate(`/museum/${id}`);
+              } else {
+                navigate(`/heritage/${id}`);
+              }
+            });
+          }
+          
+          // Add event listener for list button
+          const listBtn = popupElement.querySelector('.popup-btn-list');
+          if (listBtn) {
+            listBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const region = (listBtn as HTMLElement).dataset.region;
+              const type = (listBtn as HTMLElement).dataset.type;
+              if (type === 'museum') {
+                navigate(`/museum?region=${region}`);
+              } else {
+                navigate(`/heritage?region=${region}`);
+              }
+            });
+          }
         }
       });
 
       // Add hover effects
       marker.on('mouseover', function() {
-        const el = this.getElement();
-        if (el) {
-          el.style.transition = 'transform 0.2s ease';
-          el.style.transform += 'scale(1.2)'; 
-        }
+        this.getElement()?.style.setProperty('transform', 'scale(1.2)');
       });
 
       marker.on('mouseout', function() {
-        const el = this.getElement();
-        if (el) {
-          el.style.transform = el.style.transform.replace(" scale(1.2)", ""); // balikin lagi
-        }
+        this.getElement()?.style.setProperty('transform', 'scale(1)');
       });
     });
 

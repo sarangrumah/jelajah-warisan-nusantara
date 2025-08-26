@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { defaultHeritages } from '@/../database/default-data';
 import { heritageService } from '@/lib/api-services';
 
-
 const Heritage = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,6 +37,25 @@ const Heritage = () => {
     fetchHeritages();
   }, []);
 
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
 
   const filteredHeritages = heritages.filter(heritage => {
     const matchesSearch = heritage.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,7 +70,7 @@ const Heritage = () => {
       
       {/* Hero Banner */}
       <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
-        <div className="text-center text-white">
+        <div className="text-center text-white scroll-reveal">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             {t('Heritage Sites')}
           </h1>

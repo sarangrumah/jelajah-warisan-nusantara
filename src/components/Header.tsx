@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import logo from '@/assets/MCB-Logo.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,22 +35,15 @@ const Header = () => {
       subItems: [
         { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
-        { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+        // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
         { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+        { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/career' },
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
-    { 
-      name: t('nav.peraturan'), 
-      href: '/tentang-kami',
-      subItems: [
-        { name: t('nav.peraturan'), href: '/peraturan' },
-        { name: t('nav.sop'), href: '/prosedur-operasional-standar' },
-      ]
-    },
     { name: t('nav.admin'), href: '/admin' },
   ];
 
@@ -69,10 +61,10 @@ const Header = () => {
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12x w-[5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+              <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">
                 </span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih.png" alt="Logo" />
+                <img src="/src/assets/MCB-logo.png" alt="Logo" />
 
               </div>
               <div>

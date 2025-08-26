@@ -15,7 +15,7 @@ const DistributionSection = () => {
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">
+        <div className="text-center mb-16 scroll-reveal hidden">
           <h2 className="text-4xl md:text-5xl font-bold pb-3 text-heritage-gradient">
             Sebaran Museum & Cagar Budaya
           </h2>
@@ -25,7 +25,7 @@ const DistributionSection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 hidden">
           {regions.map((region, index) => (
             <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>

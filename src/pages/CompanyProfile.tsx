@@ -8,8 +8,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CompanyProfile = () => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -243,6 +245,35 @@ const CompanyProfile = () => {
           </div>
         </div>
       </section>
+
+      <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="scroll-reveal">
+          <img 
+            src="/src/assets/museum-interior.jpg" 
+            alt="Museum Interior"
+            className="w-full rounded-lg shadow-lg"
+          />
+        </div>
+        
+        <div className="space-y-6 scroll-reveal">
+          <h3 className="text-3xl font-bold text-foreground">
+            {t('about.companyProfile.historyTitle')}
+          </h3>
+          <p className="text-muted-foreground leading-relaxed">
+            {t('about.companyProfile.historyText1')}
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            {t('about.companyProfile.historyText2')}
+          </p>
+          
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+            <h4 className="text-xl font-semibold text-primary mb-3">{t('about.companyProfile.commitmentTitle')}</h4>
+            <p className="text-muted-foreground">
+              {t('about.companyProfile.commitmentText')}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Leadership Section */}
       <section className="py-16">

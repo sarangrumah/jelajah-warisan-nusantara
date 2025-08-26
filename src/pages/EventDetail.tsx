@@ -82,9 +82,9 @@ const EventDetail = () => {
       <Header />
       
       {/* Back Button */}
-      <div className="container mx-auto px-4 pt-8 hidden">
+      <div className="container mx-auto px-4 pt-8x py-10">
         <Link to="/agenda">
-          <Button variant="outline" className="mb-6">
+          <Button variant="outline" className="mb-6 hidden">
             <ArrowLeft size={16} className="mr-2" />
             {t('Back to Agenda')}
           </Button>
@@ -94,7 +94,7 @@ const EventDetail = () => {
       {filteredEvent && filteredEvent.map((event) => (
         <div key={event.id}>
         {/* Hero Image */}
-          <section className="relative h-96 overflow-hidden">
+          <section className="relative h-96x overflow-hidden h-[86vh]">
             <img
               src={event.image_url ? event.image_url : placeholder.image}
               alt={event.title}
@@ -102,7 +102,7 @@ const EventDetail = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(event.status)}`}>
                 {getStatusLabel(event.status)}
               </span>
             </div>
@@ -198,10 +198,6 @@ const EventDetail = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center">
-                        <Users size={16} className="mr-3 text-primary" />
-                        <span className="text-sm">{event.participants} peserta terdaftar</span>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -241,13 +237,19 @@ const EventDetail = () => {
                 {/* Actions */}
                 <Card>
                   <CardContent className="p-6 space-y-3">
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
-                      {t('Register Now')}
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Share2 size={16} className="mr-2" />
-                      {t('Share Event')}
-                    </Button>
+                    <div>
+                      <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                        {t('Register Now')}
+                      </Button>
+                    </div>
+                    <div>
+                      <Link to={`/museum/${id}`} className="w-full">
+                        <Button variant="outline" className="w-full">
+                          <Share2 size={16} className="mr-2" />
+                          {t('Share Event')}
+                        </Button>
+                      </Link>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

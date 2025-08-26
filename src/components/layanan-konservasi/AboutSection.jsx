@@ -1,13 +1,16 @@
 
 const AboutSection = () => {
   return (
-    <section className='py-20 bg-background'>
-      <div className="text-center scroll-reveal">
-        <h2 className="text-4xl md:text-5xl font-bold py-6 text-heritage-gradient">
-          Tentang IHA
-        </h2>
+    <section className='py-20 bg-gradient-to-b from-background to-card'>
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16x scroll-reveal">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6x text-heritage-gradient p-5">
+            Tentang IHA
+          </h2>
+        </div>
       </div>
-      <article className='text-2xl text-muted-foreground leading-10x my-10 max-md:max-w-full max-md:text-lg p-5'>
+      {/* <article className='text-2xl text-muted-foreground leading-10x my-10 max-md:max-w-full max-md:text-lg p-5'> */}
+      <div className="space-y-6 text-xl text-muted-foreground mx-autox leading-relaxed p-5">
         <p>
           Museum & Cagar Budaya (IHA / Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan
           Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 18 museum dan
@@ -20,7 +23,8 @@ const AboutSection = () => {
           kreativitas dan mengusung semangat kolaborasi yang inklusif, IHA secara kolektif berkontribusi untuk membuka
           wawasan apresiasi mendalam terhadap warisan budaya Indonesia yang beragam.
         </p>
-      </article>
+      </div>
+      {/* </article> */}
     </section>
   )
 }

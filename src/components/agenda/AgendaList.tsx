@@ -14,7 +14,6 @@ const AgendaList = () => {
 
   const [events, setEvents] = useState([]);
 
-
   const fetchEvents = async () => {
     try {
       const response = await agendaService.getAll();
@@ -99,11 +98,11 @@ const AgendaList = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event) => (
-            <Card key={event.id} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
+            <Card key={event.id} className="relative overflow-hidden heritage-glow hover:scale-105 transition-bounce">
                 <div className="aspect-video relative overflow-hidden">
                   <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                    <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                       {getStatusLabel(event.status)}
                     </div>
                     <img 
@@ -121,7 +120,7 @@ const AgendaList = () => {
                   {event.description}
                 </p>
                 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-[4rem]">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-primary" />
                     {/* <span>{formatDate(event.date)}</span> */}
@@ -144,11 +143,13 @@ const AgendaList = () => {
                   )}
                 </div>
                 
+                <div className='p-6 absolute left-0 bottom-0 right-0'>
                 <Link to={`/event/${event.id}`}>
                   <Button className="w-full">
                     Detail Event
                   </Button>
                 </Link>
+                </div>
               </CardContent>
             </Card>
           ))}

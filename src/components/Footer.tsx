@@ -1,14 +1,12 @@
-import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Youtube } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import logo from '@/assets/MCB-Logo.png';
 
 const Footer = () => {
   const { t } = useTranslation();
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
+    { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube' },
   ];
 
   const quickLinks = [
@@ -22,11 +20,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
           {/* Logo and Ministry Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 gap-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih.png" alt="Logo" className='w-[7rem] h-[5rem]x' />
-
+                <img src='/src/assets/logo/LOGO V 4 - putih.png' className='w-[4.5rem]' />
+                <img src="/src/assets/MCB-Logo.png" alt="Logo" className='w-[2.1rem] h-[5rem]x' />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-heritage-gradient">
