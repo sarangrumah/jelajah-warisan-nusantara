@@ -18,19 +18,27 @@
     --popover-foreground: 43 15% 85%;
 
     /* Primary: Rich heritage gold */
-    --primary: 43 75% 58%;
+    /* --primary: 43 75% 58%;
     --primary-foreground: 20 8% 8%;
-    --primary-glow: 43 85% 65%;
+    --primary-glow: 43 85% 65%; */
+
+    --primary: 175 84% 35%;
+    --primary-foreground: 173 33% 96%;
+    --primary-glow: 175 80% 45%;
 
     /* Secondary: Deep heritage brown */
-    --secondary: 25 25% 25%;
-    --secondary-foreground: 43 15% 85%;
+    /* --secondary: 25 25% 25%;
+    --secondary-foreground: 43 15% 85%; */
+    --secondary: 240 4% 30%;
+    --secondary-foreground: 210 20% 95%;
 
     /* Muted tones */
     --muted: 25 15% 18%;
     --muted-foreground: 43 10% 60%;
 
     /* Accent: Traditional green */
+    /* --accent: 150 30% 35%;
+    --accent-foreground: 43 15% 85%; */
     --accent: 150 30% 35%;
     --accent-foreground: 43 15% 85%;
 
@@ -39,16 +47,16 @@
 
     --border: 25 20% 20%;
     --input: 25 20% 20%;
-    --ring: 43 75% 58%;
+    --ring: 175 84% 58%;
 
     /* Heritage gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(43 75% 58%) 0%, hsl(43 85% 65%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(175 84% 35%) 0%, hsl(175 84% 65%) 100%);
     --gradient-heritage: linear-gradient(135deg, hsl(25 25% 25%) 0%, hsl(20 8% 8%) 100%);
     --gradient-cultural: linear-gradient(180deg, hsl(150 30% 35%) 0%, hsl(25 25% 25%) 100%);
     --gradient-overlay: linear-gradient(180deg, hsla(20 8% 8% / 0.8) 0%, hsla(20 8% 8% / 0.4) 100%);
 
     /* Shadows with heritage warmth */
-    --shadow-heritage: 0 10px 30px -10px hsl(43 75% 58% / 0.3);
+    --shadow-heritage: 0 10px 30px -10px hsl(175 84% 58% / 0.3);
     --shadow-deep: 0 20px 60px -15px hsl(20 8% 8% / 0.5);
     --shadow-cultural: 0 8px 25px -8px hsl(150 30% 35% / 0.4);
 
