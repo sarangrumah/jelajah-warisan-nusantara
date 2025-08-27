@@ -53,7 +53,7 @@ const AdminDashboard = () => {
   };
 
   const isAdmin = userRole === 'admin';
-  const canEdit = userRole === 'admin' || userRole === 'editor';
+  const canEdit = userRole === 'admin' || userRole === 'editor' || userRole == 'approver';
 
   if (loading) {
     return (
@@ -214,7 +214,7 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="banner">
-            <BannerManagement />
+            <BannerManagement userRole={userRole}/>
           </TabsContent>
 
           <TabsContent value="company">

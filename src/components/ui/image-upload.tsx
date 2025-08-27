@@ -115,9 +115,7 @@ export const ImageUpload = ({
     setDragOver(false);
   };
 
-  const clearImage = () => {
-    console.log("masuk sini emang");
-    
+  const clearImage = () => {    
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
