@@ -104,11 +104,11 @@ export const faqService = {
 
 // Content Sections
 export const contentService = {
-  getAll: () => apiClient.getAll('content_sections'),
-  getById: (id: string) => apiClient.getById('content_sections', id),
-  create: (data: any) => apiClient.create('content_sections', data),
-  update: (id: string, data: any) => apiClient.update('content_sections', id, data),
-  delete: (id: string) => apiClient.delete('content_sections', id),
+  getAll: () => apiClient.getAll('tb_company'),
+  getById: (id: string) => apiClient.getById('tb_company', id),
+  create: (data: any) => apiClient.create('tb_company', data),
+  update: (id: string, data: any) => apiClient.update('tb_company', id, data),
+  delete: (id: string) => apiClient.delete('tb_company', id),
 };
 
 // File Upload

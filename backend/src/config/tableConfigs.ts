@@ -1,5 +1,7 @@
 
 import { FieldConfigs, RelationshipConfig } from '../helper/types'; // Optional: define types
+
+
 export const tableConfigs = {
   banners: ['id', 'title', 'subtitle', 'description', 'image_url', 'start_date', 'end_date', 'is_published', 'created_by', 'created_at', 'updated_at'],
   news_articles: ['id', 'title', 'slug', 'excerpt', 'content', 'featured_image_url', 'is_published', 'published_at', 'created_by', 'created_at', 'updated_at'],
@@ -22,10 +24,13 @@ export const tableConfigs = {
   collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image_url', 'description', 'material', 'dimensions', 'origin', 'discoverdYear', 'condition', 'significance', 'culturalContext', 'relatedArtifacts', 'created_at', 'updated_at'],
   heritages: ['id', 'title', 'subtitle', 'type', 'location', 'period', 'image_url', 'description', 'full_description', 'details', 'visit_info', 'created_at', 'updated_at'],
   tb_company: ['id','name','brand','address','phone','whatsapp','email',
-    'website','aboutus','vision','mission','latitude','latitude','longitude',
-    'created_by','created_by','updated_by','updated_by'],
-  tb_company_leadership: ['id', 'name','position','is_active','company_id','created_by','created_by','updated_by','updated_by'],
-  tb_company_visitior: ['id','visitor_count','year','is_active','company_id','created_by','created_by','updated_by','updated_by'],
+    'website','aboutus','vision','mission','latitude','longitude',
+    'created_by','created_at','updated_by','updated_at'],
+  tb_company_leadership: ['id', 'name','position','is_active','company_id','created_by','created_at','updated_by','updated_at'],
+  tb_company_visitor: [  // ✅ Fixed: "visitior" → "visitor"
+    'id', 'visitor_count', 'year', 'is_active', 'company_id',
+    'created_by', 'updated_by'
+  ],
   tb_sites:['id','name','type','category','subtitle','description','address','opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price','latitude','longitude','is_active', 'is_approved','created_at','created_by','updated_at','updated_by'],
   tb_events:['id','name','category','subtitle','description','id_site','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_image','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by']
 };
@@ -36,7 +41,7 @@ export const tableRelationships = {
       table: 'tb_sites',
       localKey: 'id_site',
       foreignKey: 'id',
-      type: 'inner',
+      type: 'left', 
       fields: ['id', 'name', 'address', 'phone', 'website', 'latitude', 'longitude', 'img_banner'] // only these are joined
     }
   },
@@ -45,7 +50,7 @@ export const tableRelationships = {
       table: 'tb_company',
       localKey: 'id_company',
       foreignKey: 'id',
-      type: 'left',
+       type: 'left', 
       fields: ['id', 'name', 'brand', 'email', 'website']
     }
   },
@@ -54,22 +59,23 @@ export const tableRelationships = {
       table: 'tb_company_leadership',
       localKey: 'company_id',
       foreignKey: 'id',
-      type: 'left',
-      // fields: ['id', 'name', 'brand', 'email', 'website']
+      type: 'has_many',  // ← not 'left' or 'inner'
+      fields: ['id', 'name', 'position', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     },
-    company_visitor : {
+    company_visitor: {
       table: 'tb_company_visitor',
       localKey: 'company_id',
       foreignKey: 'id',
-      type: 'left',
+      type: 'has_many',
+      fields: ['id', 'visitor_count', 'year', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     }
   }
 };
 
 export const autoJoinRelations = {
-  tb_events: ['site'],                    // array, even if one
+  tb_events: ['site'],
   tb_sites: ['company'],
-  tb_company: ['company_leadership', 'company_visitor']  // ✅ now both!
+  tb_company: ['company_leadership', 'company_visitor']
 } as const;
 
 
@@ -87,3 +93,8 @@ export const approvalConfig = {
     autoActivateOnApprove: true
   }
 } as const;
+
+type AutoJoinRelations = typeof autoJoinRelations;
+type RelationKey<T extends string> = T extends keyof AutoJoinRelations
+  ? (typeof autoJoinRelations)[T][number]
+  : never;
