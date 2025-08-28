@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src="@/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[10rem] h-[10rem]x' />
+                <img src={logo} alt="Logo" className='w-[10rem] h-[10rem]x' />
 
               </div>
               <div>
