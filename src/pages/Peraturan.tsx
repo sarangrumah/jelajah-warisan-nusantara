@@ -1,12 +1,10 @@
 import Header from '@/components/Header';
-import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PeraturanSection from '@/components/peraturan/PeraturanSection';
 import PublicationSection from '@/components/media/PublicationSection';
-
 
 const Peraturan = () => {
   const { pathname } = useLocation();

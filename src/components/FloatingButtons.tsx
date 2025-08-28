@@ -1,12 +1,10 @@
-import { MessageCircle, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { MessageCircle, Instagram, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FloatingButtons = () => {
   const socialMedia = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
+    { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube' },
   ];
 
   return (
@@ -23,7 +21,7 @@ const FloatingButtons = () => {
       </div>
 
       {/* Social Media Buttons - Vertical Stack */}
-      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4">
+      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4 max-md:hidden">
         {socialMedia.map((social, index) => (
           <Button
             key={social.label}

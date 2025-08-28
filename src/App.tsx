@@ -24,7 +24,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
-import StrukturOrganisasi from "./pages/StrukturOrganisasi";
+// import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";
 import Peraturan from "./pages/Peraturan";
 
@@ -42,7 +42,7 @@ const App = () => (
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
           <Route path="/tentang-kami" element={<TentangKami />} />
-          <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
+          {/* <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} /> */}
           <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
           <Route path="/media-publikasi" element={<MediaPublikasi />} />
           <Route path="/hubungi-kami" element={<HubungiKami />} />

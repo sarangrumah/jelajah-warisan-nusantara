@@ -49,7 +49,7 @@ const CompanyProfile = () => {
             />
           </div>
           
-          <div className="space-y-6 scroll-revealx">
+          <div className="space-y-6 scroll-reveal">
             <h3 className="text-3xl font-bold text-foreground">
               {t('about.companyProfile.historyTitle')}
             </h3>

@@ -88,9 +88,11 @@ const NewsSection = () => {
         </div>
 
         <div className="text-center scroll-reveal">
-          <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-            Lihat Semua Berita
-          </button>
+          <Link to={'/media-publikasi'}>
+            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
+              Lihat Semua Berita
+            </button>
+          </Link>
         </div>
       </div>
     </section>

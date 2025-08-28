@@ -9,6 +9,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Home",
+        museum: "Museum",
         agenda: "Agenda",
         tentangKami: "About Us",
         strukturOrganisasi: "Organizational structure",
@@ -409,6 +410,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Beranda",
+        museum: "Museum",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
         strukturOrganisasi: "Struktur Organisasi",

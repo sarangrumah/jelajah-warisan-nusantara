@@ -29,6 +29,7 @@ const Header = () => {
 
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
+    { name: t('nav.museum'), href: '/museum' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 
@@ -36,22 +37,15 @@ const Header = () => {
       subItems: [
         { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
-        { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+        // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
         { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+        { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/career' },
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
-    { 
-      name: t('nav.peraturan'), 
-      href: '/tentang-kami',
-      subItems: [
-        { name: t('nav.peraturan'), href: '/peraturan' },
-        { name: t('nav.sop'), href: '/prosedur-operasional-standar' },
-      ]
-    },
     { name: t('nav.admin'), href: '/admin' },
   ];
 
@@ -69,7 +63,7 @@ const Header = () => {
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12x w-[5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+              <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">
                 </span> */}
                 <img src={logo} alt="Logo" className='w-[3rem] h-[2rem]x'/>
