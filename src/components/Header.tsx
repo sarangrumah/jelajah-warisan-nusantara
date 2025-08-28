@@ -28,6 +28,7 @@ const Header = () => {
 
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
+    { name: t('nav.museum'), href: '/museum' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 
@@ -61,7 +62,7 @@ const Header = () => {
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+              <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">
                 </span> */}
                 <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[3rem] h-[2rem]x'/>

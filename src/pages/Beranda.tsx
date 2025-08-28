@@ -9,6 +9,7 @@ import NewsSection from '@/components/NewsSection';
 import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
+import BannerManagement from '@/components/admin/BannerManagement';
 
 const Beranda = () => {
   const { pathname } = useLocation();

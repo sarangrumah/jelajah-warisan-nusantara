@@ -30,9 +30,17 @@ const AgendaList = () => {
     fetchEvents();
   }, []);
 
-  const filteredEvents = activeCategory === 'semua' 
-    ? events 
-    : events.filter(event => event.category === activeCategory);
+  const filteredEvents = events.filter(event => {
+    if(activeCategory === 'semua') {
+      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    } else {
+      const matchesSearch = event.category.toLowerCase() === activeCategory.toLowerCase() && (event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSearch && event.category === activeCategory;
+    }
+  });
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('id-ID', {
@@ -106,7 +114,7 @@ const AgendaList = () => {
                       {getStatusLabel(event.status)}
                     </div>
                     <img 
-                      src={event.image_url ? event.image_url : placeholder.image} 
+                      src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png'} 
                       alt={event.title}
                       className="w-full h-full object-contain object-center"
                     />

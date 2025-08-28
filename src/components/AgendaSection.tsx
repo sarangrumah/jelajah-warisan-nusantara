@@ -114,7 +114,7 @@ const AgendaSection = () => {
                 <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                <img src={event.image_url ? event.image_url : placeholder.image } alt={event.title} className="w-full h-full object-contain object-center" />
+                <img src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png' } alt={event.title} className="w-full h-full object-contain object-center" />
               </div>
 
               {/* Event Content */}

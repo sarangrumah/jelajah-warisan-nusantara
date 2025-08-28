@@ -24,7 +24,7 @@ const PublicationSection = () => {
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">
+        <div className="text-center mb-16 scroll-reveal hidden">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
             Publikasi & Dokumen
           </h2>
@@ -35,9 +35,11 @@ const PublicationSection = () => {
         </div>
 
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
-            Dokumen Publikasi
-          </h3>
+          <div className="text-center mb-16 scroll-reveal">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
+              Dokumen Publikasi
+            </h2>
+          </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
             {publications.map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">

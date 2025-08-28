@@ -1,9 +1,24 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Proza+Libre:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap'); */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Museum dan Cagar Budaya Design System - Indonesian Heritage Theme */
+@font-face {
+  font-family: 'Proza Libre';
+  src: url('../src/assets/fonts/Proza_Libre/ProzaLibre-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Optional: controls font loading behavior */
+}
 
+@font-face {
+  font-family: 'Inter';
+  src: url('../src/assets/fonts/Inter/Inter-VariableFont_opsz_wght.ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+/* Museum dan Cagar Budaya Design System - Indonesian Heritage Theme */
 @layer base {
   :root {
     /* Heritage Color Palette */
@@ -18,9 +33,13 @@
     --popover-foreground: 43 15% 85%;
 
     /* Primary: Rich heritage gold */
-    --primary: 43 75% 58%;
+    /* --primary: 43 75% 58%;
     --primary-foreground: 20 8% 8%;
-    --primary-glow: 43 85% 65%;
+    --primary-glow: 43 85% 65%; */
+
+    --primary: 175 84% 35%;
+    --primary-foreground: 173 33% 96%;
+    --primary-glow: 175 80% 45%;
 
     /* Secondary: Deep heritage brown */
     --secondary: 25 25% 25%;
@@ -39,16 +58,16 @@
 
     --border: 25 20% 20%;
     --input: 25 20% 20%;
-    --ring: 43 75% 58%;
+    --ring: 175 84% 58%;
 
     /* Heritage gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(43 75% 58%) 0%, hsl(43 85% 65%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(175 84% 35%) 0%, hsl(175 84% 65%) 100%);
     --gradient-heritage: linear-gradient(135deg, hsl(25 25% 25%) 0%, hsl(20 8% 8%) 100%);
     --gradient-cultural: linear-gradient(180deg, hsl(150 30% 35%) 0%, hsl(25 25% 25%) 100%);
     --gradient-overlay: linear-gradient(180deg, hsla(20 8% 8% / 0.8) 0%, hsla(20 8% 8% / 0.4) 100%);
 
     /* Shadows with heritage warmth */
-    --shadow-heritage: 0 10px 30px -10px hsl(43 75% 58% / 0.3);
+    --shadow-heritage: 0 10px 30px -10px hsl(175 84% 58% / 0.3);
     --shadow-deep: 0 20px 60px -15px hsl(20 8% 8% / 0.5);
     --shadow-cultural: 0 8px 25px -8px hsl(150 30% 35% / 0.4);
 
@@ -94,8 +113,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-prozaLibre antialiased;
     scroll-behavior: smooth;
+  }
+
+  h2 {
+    @apply font-inter;
   }
 
   /* Heritage animations */

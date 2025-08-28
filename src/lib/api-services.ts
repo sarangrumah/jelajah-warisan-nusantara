@@ -63,7 +63,7 @@ export const museumService = {
 
 // Banners
 export const bannerService = {
-  getAll: () => apiClient.getAll('banners'), // Get all for admin, filtering happens in components
+  getAll: () => apiClient.getAll('tb_banner'), // Get all for admin, filtering happens in components
   getPublished: () => apiClient.getAll('banners', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('banners', id),
   create: (data: any) => apiClient.create('banners', data),

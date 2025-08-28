@@ -10,7 +10,6 @@ import { defaultEvents, placeholder } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 
-
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -32,7 +31,6 @@ const EventDetail = () => {
   }, []);
 
   const filteredEvent = events.filter((event) => event.id.toString() === id);
-
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,6 +75,17 @@ const EventDetail = () => {
     }
   }
 
+  const shareEventHandler = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -96,9 +105,9 @@ const EventDetail = () => {
         {/* Hero Image */}
           <section className="relative h-96x overflow-hidden h-[86vh]">
             <img
-              src={event.image_url ? event.image_url : placeholder.image}
+              src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png'}
               alt={event.title}
-              className="w-full h-full object-cover object-center"
+              className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">
@@ -106,7 +115,7 @@ const EventDetail = () => {
                 {getStatusLabel(event.status)}
               </span>
             </div>
-            <div className="absolute bottom-8 left-8 text-white">
+            <div className="absolute bottom-4 left-8 w-[70%] text-white">
               <h1 className="text-4xl md:text-5xl font-bold mb-2">{event.title}</h1>
               {/* <p className="text-xl">{event.description}</p> */}
             </div>
@@ -127,10 +136,6 @@ const EventDetail = () => {
                       ))}
                     </div>
                   </CardContent>
-                </Card>
-
-                {/* Highlights */}
-                <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
                     <ul className="space-y-2">
@@ -143,6 +148,21 @@ const EventDetail = () => {
                     </ul>
                   </CardContent>
                 </Card>
+
+                {/* Highlights */}
+                {/* <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
+                    <ul className="space-y-2">
+                      {event.highlights.map((highlight, index) => (
+                        <li key={index} className="flex items-start">
+                          <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
+                          <span className="text-muted-foreground">{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card> */}
 
                 {/* Schedule */}
                 {/* <Card>
@@ -240,7 +260,11 @@ const EventDetail = () => {
                     {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
                       {t('Register Now')}
                     </Button> */}
-                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce">
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >
                       <Share2 size={16} className="mr-2" />
                       {t('Share Event')}
                     </Button>
