@@ -26,6 +26,7 @@ const tableConfigs = {
   hero_videos: ['id', 'title', 'video', 'created_at', 'updated_at'],
   collections: ['id', 'title', 'subtitle', 'category', 'museum', 'period', 'image_url', 'description', 'material', 'dimensions', 'origin', 'discoverdYear', 'condition', 'significance', 'culturalContext', 'relatedArtifacts', 'created_at', 'updated_at'],
   heritages: ['id', 'title', 'subtitle', 'type', 'location', 'period', 'image_url', 'description', 'full_description', 'details', 'visit_info', 'created_at', 'updated_at'],
+  tb_banner: ['id', 'title', 'subtitle', 'image', 'button_url_1', 'button_url_2', 'start_publish_date', 'end_publish_date', 'is_active', 'is_approved', 'created_by', 'created_at', 'updated_at', 'updated_by'],
 };
 
 // Create CRUD routes for each table
