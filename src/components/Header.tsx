@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -65,7 +66,7 @@ const Header = () => {
               <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">
                 </span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[3rem] h-[2rem]x'/>
+                <img src={logo} alt="Logo" className='w-[3rem] h-[2rem]x'/>
 
               </div>
               <div>

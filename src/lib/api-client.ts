@@ -142,6 +142,12 @@ class ApiClient {
     });
   }
 
+  async approve<T>(endpoint: string, id: string): Promise<ApiResponse<T>> {
+    return this.request<T>(`/api/${endpoint}/${id}/approve`, {
+      method: 'POST',
+    });
+  }
+
   // File upload
   async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; name: string; originalName: string; size: number; type: string }>> {
     const formData = new FormData();

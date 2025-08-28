@@ -22,11 +22,13 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
   const [formData, setFormData] = useState({
     title: banner?.title || '',
     subtitle: banner?.subtitle || '',
-    description: banner?.description || '',
-    image_url: banner?.image_url || '',
-    start_date: banner?.start_date || '',
-    end_date: banner?.end_date || '',
-    is_published: banner?.is_published ?? true,
+    image: banner?.image || '',
+    start_publish_date: banner?.start_publish_date || '',
+    end_publish_date: banner?.end_publish_date || '',
+    is_active: banner?.is_active ?? true,
+    is_approved:  banner?.is_approved,
+    button_url_1: banner?.button_url_1,
+    button_url_2: banner?.button_url_2
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,7 +59,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
@@ -65,43 +67,66 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           rows={3}
         />
+      </div> */}
+
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="button_url_1">Button Url 1</Label>
+          <Input
+            id="button_url_1"
+            value={formData.button_url_1}
+            onChange={(e) => setFormData(prev => ({ ...prev, button_url_1: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="button_url_2">Button Url 2</Label>
+          <Input
+            id="button_url_2"
+            value={formData.button_url_2}
+            onChange={(e) => setFormData(prev => ({ ...prev, button_url_2: e.target.value }))}
+            required
+          />
+        </div>
       </div>
+
 
       <ImageUpload
         label="Banner Image"
-        value={formData.image_url}
-        onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+        value={formData.image}
+        onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
         bucket="images"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="start_date">Start Date</Label>
+          <Label htmlFor="start_publish_date">Start Date</Label>
           <Input
-            id="start_date"
+            id="start_publish_date"
             type="datetime-local"
-            value={formData.start_date}
-            onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+            value={formData.start_publish_date}
+            onChange={(e) => setFormData(prev => ({ ...prev, start_publish_date: e.target.value }))}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="end_date">End Date</Label>
+          <Label htmlFor="end_publish_date">End Date</Label>
           <Input
-            id="end_date"
+            id="end_publish_date"
             type="datetime-local"
-            value={formData.end_date}
-            onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
+            value={formData.end_publish_date}
+            onChange={(e) => setFormData(prev => ({ ...prev, end_publish_date: e.target.value }))}
           />
         </div>
       </div>
 
       <div className="flex items-center space-x-2">
         <Switch
-          id="is_published"
-          checked={formData.is_published}
-          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+          id="is_active"
+          checked={formData.is_active}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
         />
-        <Label htmlFor="is_published">Publish Banner</Label>
+        <Label htmlFor="is_active">Publish Banner</Label>
       </div>
 
       <div className="flex justify-end space-x-2">
@@ -119,7 +144,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
   );
 };
 
-const BannerManagement = () => {
+const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -191,17 +216,42 @@ const BannerManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const response = await bannerService.update(id, { is_published: isPublished });
+      const response = await bannerService.update(id, { is_active: isPublished });
       if (response.error) throw new Error(response.error);
       
       setBanners(prev => prev.map(banner => 
-        banner.id === id ? { ...banner, is_published: isPublished } : banner
+        banner.id === id ? { ...banner, is_active: isPublished } : banner
       ));
       
       toast({
         title: 'Success',
         description: `Banner ${isPublished ? 'published' : 'unpublished'}`,
       });
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update banner status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+
+  const toggleApproved = async (id: string) => {
+    try {
+      const response = await bannerService.approve(id);
+      if (response.error) throw new Error(response.error);
+      
+      setBanners(prev => prev.map(banner => 
+        banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Approved`,
+      });
+      fetchBanners();
     } catch (error) {
       console.error('Error toggling banner:', error);
       toast({
@@ -231,10 +281,10 @@ const BannerManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingBanner(null)}>
+            {userRole == "admin" ?<Button onClick={() => setEditingBanner(null)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Banner
-            </Button>
+            </Button> : <></> }
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
@@ -277,19 +327,23 @@ const BannerManagement = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {banner.title}
-                      <Badge variant={banner.is_published ? 'default' : 'secondary'}>
-                        {banner.is_published ? 'Published' : 'Draft'}
+                      <Badge variant={banner.is_active ? 'default' : 'secondary'}>
+                        {banner.is_active ? 'Published' : 'Draft'}
+                      </Badge>
+                      <Badge variant={banner.is_approved ? 'success' : 'secondary'}>
+                        {banner.is_approved ? 'Approved' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{banner.subtitle}</CardDescription>
                   </div>
-                  <div className="flex items-center space-x-2">
+                 { 
+                 userRole == "admin" ? <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => togglePublished(banner.id, !banner.is_published)}
+                      onClick={() => togglePublished(banner.id, !banner.is_active)}
                     >
-                      {banner.is_published ? (
+                      {banner.is_active ? (
                         <EyeOff className="w-4 h-4" />
                       ) : (
                         <Eye className="w-4 h-4" />
@@ -305,7 +359,16 @@ const BannerManagement = () => {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                  </div>
+                    </div> : userRole == "approver" && !banner.is_approved? <div className="flex items-center space-x-2">
+                        <Button
+                          variant="success"
+                          className="w-full"
+                          onClick={() => toggleApproved(banner.id)}
+                        >
+                          Approve
+                        </Button>
+                    </div> : <div></div>
+                  }
                 </div>
               </CardHeader>
               <CardContent>
@@ -313,8 +376,8 @@ const BannerManagement = () => {
                   <div>
                     <span className="font-medium">Period:</span>
                     <p className="text-muted-foreground">
-                      {banner.start_date && banner.end_date
-                        ? `${new Date(banner.start_date).toLocaleDateString()} - ${new Date(banner.end_date).toLocaleDateString()}`
+                      {banner.start_publish_date && banner.end_publish_date
+                        ? `${new Date(banner.start_publish_date).toLocaleDateString()} - ${new Date(banner.end_publish_date).toLocaleDateString()}`
                         : 'Unlimited'}
                     </p>
                   </div>
@@ -325,11 +388,25 @@ const BannerManagement = () => {
                     </p>
                   </div>
                 </div>
-                {banner.description && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium">Button Url 1:</span>
+                    <p className="text-muted-foreground">
+                      {banner.button_url_1}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Button Url 1:</span>
+                    <p className="text-muted-foreground">
+                      {banner.button_url_1}
+                    </p>
+                  </div>
+                </div>
+                {/* {banner.description && (
                   <div className="mt-4">
                     <p className="text-sm text-muted-foreground">{banner.description}</p>
                   </div>
-                )}
+                )} */}
               </CardContent>
             </Card>
           ))}

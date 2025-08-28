@@ -23,7 +23,7 @@ pool.connect()
   });
 
 export const query = (text: string, params?: any[]) => {
-  console.log('🔎 Database Query:', text.substring(0, 100) + (text.length > 100 ? '...' : ''));
+  console.log('🔎 Database Query:', text);
   console.log('🔎 Query Params:', params);
   return pool.query(text, params);
 };

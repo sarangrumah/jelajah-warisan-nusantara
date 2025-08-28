@@ -1,6 +1,6 @@
 import { Phone, Mail, MapPin, Instagram, Youtube } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import logo from '@/assets/MCB-Logo.png';
+import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3 gap-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[10rem] h-[10rem]x' />
+                <img src={logo} alt="Logo" className='w-[10rem] h-[10rem]x' />
 
               </div>
               <div>
