@@ -10,7 +10,7 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    'Beranda', 'Agenda', 'Profil Perusahaan', 'Tentang Kami', 'Struktur Organisasi', 'Layanan Konservasi', 'Media & Publikasi', 
+    'Beranda', 'Agenda', 'Tentang Kami', 'Struktur Organisasi', 'Laboratorium Konservasi', 'Berita & Publikasi', 
     'Hubungi Kami', 'Career', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
   ];
 
@@ -23,7 +23,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3 gap-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src={logo} alt="Logo" className='w-[10rem] h-[10rem]x' />
+                <img src={logo} alt="Logo" className='w-[5rem] h-[5rem]x' />
 
               </div>
               <div>
@@ -31,13 +31,13 @@ const Footer = () => {
                   {t('footer.orgName')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Republik Indonesia
+                  Kementerian Kebudayaan Republik Indonesia
                 </p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Kementerian Pendidikan, Kebudayaan, Riset dan Teknologi
-            </p>
+            {/* <p className="text-sm text-muted-foreground leading-relaxed">
+              Kementerian Kebudayaan
+            </p> */}
           </div>
 
           {/* Contact Information */}

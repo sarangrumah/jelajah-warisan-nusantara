@@ -5,9 +5,9 @@ const ConservationSection = () => {
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-6 pt-6 scroll-reveal">
         <div className="text-center mb-16x">
-          <h2 className="text-4xl md:text-5xl font-bold text-heritage-gradient pb-3">Konservasi</h2>
+          <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">Laboratorium Konservasi</h2>
           <p className="text-xl text-muted-foreground max-w-8xl mx-autox px-6 pt-5 leading-relaxed">
-            Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) berkomitmen untuk terus melestarikan sejarah dan kekayaan bangsa dengan melakukan perawatan berstandar internasional, yang didukung para tenaga ahli, pecinta museum dan sejarah, serta masyarakat. IHA melakukan konservasi koleksi dan cagar budaya dengan pendekatan keilmuan terpadu terhadap koleksi baik secara preventif maupun kuratif. Langkah yang telah dilaksanakan dengan melakukan pembenahan sistem data dan penyimpanan koleksi distorage, melakukan peningkatan keahlian tenaga pengelola, serta dukungan fasilitas dan teknologilaboratorium konservasi terkini.
+            Lab Konservasi Cagar Budaya Borobudur adalah pusat riset dan pelestarian yang didedikasikan untuk menjaga dan merawat warisan budaya dunia, Borobudur. Dengan menggabungkan teknologi modern dan teknik konservasi tradisional, kami berkomitmen untuk memastikan kelestarian candi ini untuk generasi yang akan datang. Kami terdiri dari tim ahli yang bekerja secara kolaboratif untuk melaksanakan penelitian, pemulihan, dan pelestarian struktur serta artefak yang ada di situs yang memiliki nilai sejarah dan budaya yang tinggi. Melalui kolaborasi ini, kami berusaha untuk menerapkan praktik terbaik dalam pelestarian warisan budaya. Kami juga berfokus pada inovasi dan penggunaan teknologi digital untuk mendokumentasikan dan memetakan situs sehingga informasi dan pengetahuan tentang Borobudur dapat diakses oleh generasi mendatang.
           </p>
         </div>
       </div>

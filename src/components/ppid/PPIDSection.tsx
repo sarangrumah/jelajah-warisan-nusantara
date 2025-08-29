@@ -64,7 +64,7 @@ const PPIDSection = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4 py-10">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
             PPID - Pejabat Pengelola Informasi dan Dokumentasi
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">

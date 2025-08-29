@@ -114,7 +114,7 @@ const resources = {
         email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Quick Links",
         socialMedia: "Social Media",
-        copyright: "© 2024 Museum and Cultural Heritage. All Rights Reserved.",
+        copyright: "© 2025 Museum and Cultural Heritage. All Rights Reserved.",
         privacy: "Privacy Policy",
         terms: "Terms & Conditions",
         sitemap: "Sitemap"
@@ -414,8 +414,8 @@ const resources = {
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
         strukturOrganisasi: "Struktur Organisasi",
-        layananKonservasi: "Layanan Konservasi",
-        mediaPublikasi: "Media & Publikasi",
+        layananKonservasi: "Laboratorium Konservasi",
+        mediaPublikasi: "Berita & Publikasi",
         hubungiKami: "Hubungi Kami",
         career: "Career",
         ppid: "PPID",
@@ -445,7 +445,7 @@ const resources = {
       // Profile Sectionpa
       profile: {
         title: "Tentang Kami",
-        description: "Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 18 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. IHA Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. IHA memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
+        description: "Museum & Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 18 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum & Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
         vision: "Visi",
         visionText: "“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”",
         mission: "Misi",
@@ -512,12 +512,12 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum dan Cagar Budaya",
-        address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
-        phone: "+62 21 5725019",
-        email: "info@kebudayaan.kemdikbud.go.id",
+        address: "Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110",
+        phone: "+62 21 3868172",
+        email: "museumcb@kemenbud.go.id ",
         quickLinks: "Tautan Cepat",
         socialMedia: "Media Sosial",
-        copyright: "© 2024 Museum dan Cagar Budaya. Hak Cipta Dilindungi.",
+        copyright: "© 2025 Museum dan Cagar Budaya. Hak Cipta Dilindungi.",
         privacy: "Kebijakan Privasi",
         terms: "Syarat & Ketentuan",
         sitemap: "Peta Situs"
@@ -525,13 +525,13 @@ const resources = {
       // About Us sections
       about: {
         companyProfile: {
-          title: "Profil Institusi",
-          subtitle: "Direktorat Museum dan Cagar Budaya merupakan unit eselon II di bawah Direktorat Jenderal Kebudayaan, Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi Republik Indonesia.",
+          title: "Museum dan Cagar Budaya",
+          subtitle: "Merupakan unit eselon II di bawah Direktorat Jenderal Kebudayaan, Kementerian Kebudayaan Republik Indonesia.",
           historyTitle: "Sejarah & Perkembangan",
           historyText1: "Didirikan dengan tujuan untuk mengelola, melestarikan, dan mengembangkan museum serta situs cagar budaya di seluruh Indonesia. Sejak berdiri, kami telah berperan aktif dalam pelestarian warisan budaya bangsa.",
-          historyText2: "Dengan pengalaman lebih dari 50 tahun, kami terus berinovasi dalam menghadapi tantangan modern sambil mempertahankan nilai-nilai tradisional dalam pelestarian budaya.",
+          historyText2: "Terbentuk pada tahun 2022 berdasarkan Permendikbudristek Nomor 28 Tahun 2022 tentang OTK Museum dan Cagar Budaya, dan diresmikan menjadi badan layanan umum per 1 September 2023, Museum & Cagar Budaya mempunyai visi menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
           commitmentTitle: "Komitmen Kami",
-          commitmentText: "Menjaga dan melestarikan kekayaan budaya Indonesia melalui pengelolaan museum yang profesional, pelestarian situs bersejarah, dan pengembangan program edukasi yang berkelanjutan.",
+          commitmentText: "Museum dan Cagar Budaya mengedepankan peningkatan pelayanan yang berbasis perlindungan sebagai prioritas utama. Dengan merangkul kreativitas dan mengusung semangat kolaborasi yang inklusif. Museum dan Cagar Budaya secara kolektif berkontribusi untuk membuka wawasan apresiasi mendalam terhadap warisan budaya Indonesia yang beragam.",
           highlights: {
             institution: {
               title: "Institusi Terpercaya",
@@ -557,32 +557,32 @@ const resources = {
           heritage: {
             title: "Pelestarian Cagar Budaya",
             description: "Konservasi dan restorasi situs bersejarah serta artefak budaya",
-            features: ["Konservasi preventif", "Restorasi struktural", "Monitoring kondisi", "Dokumentasi digital"]
+            features: ["Konservasi preventif, Restorasi struktural, Monitoring kondisi, Dokumentasi digital"]
           },
           museum: {
-            title: "Pengelolaan Museum",
-            description: "Pengelolaan komprehensif koleksi museum, operasional, dan layanan publik",
-            features: ["Kurasi koleksi", "Manajemen penyimpanan", "Program pameran", "Layanan pengunjung"]
+            title: "Pengelolaan Museum & Cagar Budaya",
+            description: "Pengelolaan komprehensif koleksi museum & cagar budaya, operasional, dan layanan publik",
+            features: ["Kurasi koleksi, Manajemen penyimpanan, Program pameran, Layanan pengunjung"]
           },
           research: {
             title: "Penelitian & Pengembangan",
             description: "Riset ilmiah untuk pengembangan metode pelestarian modern",
-            features: ["Penelitian arkeologi", "Studi konservasi", "Inovasi teknologi", "Publikasi ilmiah"]
+            features: ["Penelitian arkeologi, Studi konservasi, Inovasi teknologi, Publikasi ilmiah"]
           },
           international: {
             title: "Kerjasama Internasional",
             description: "Kolaborasi dengan lembaga internasional dalam pelestarian budaya",
-            features: ["Program pertukaran", "Standar internasional", "Capacity building", "Best practices"]
+            features: ["Program pertukaran, Standar internasional, Capacity building, Best practices"]
           },
           digitization: {
             title: "Digitalisasi Warisan",
             description: "Transformasi digital koleksi untuk preservasi dan akses publik",
-            features: ["3D scanning", "Virtual reality", "Database digital", "Platform online"]
+            features: ["3D scanning, Virtual reality, Database digital, Platform online"]
           },
           education: {
             title: "Edukasi & Outreach",
             description: "Program pendidikan dan sosialisasi kepada masyarakat",
-            features: ["Workshop komunitas", "Program sekolah", "Pelatihan SDM", "Kampanye awareness"]
+            features: ["Workshop komunitas, Program sekolah, Pelatihan SDM, Kampanye awareness"]
           },
           consultationTitle: "Butuh Layanan Khusus?",
           consultationText: "Tim ahli kami siap membantu Anda dengan kebutuhan khusus dalam pelestarian dan pengelolaan warisan budaya.",

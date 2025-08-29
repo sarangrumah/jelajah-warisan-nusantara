@@ -7,19 +7,19 @@ const BannerSection = () => {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const defaultSlides = [
     {
-      title: 'Koleksi & Kuratorial',
-      subtitle: 'Museum & Cagar Budaya ( IHA / Indonesia Heritage Agent ) berupaya untuk dapat menyajikan beragam koleksi benda & tak benda yang melengkapi sejarah peradaban Indonesia, dengan kajian Kuratorial yang berkualitas, Koleksi dari Masa Prasejarah, Masa Kolonial, Masa Kemerdekaan hingga Kontemporer tersebar dan tersaji elok di 18 Unit Museum.',
-      image: '/src/assets/conservation/koleksi_kuratorial1.jpg',
+      title: 'Laboratorium Uji Sampel',
+      subtitle: 'Museum & Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
+      image: '/src/assets/conservation/berita1.jpg',
     },
     {
-      title: 'Edukasi & Program Publik',
-      subtitle: 'Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) sepakat bahwa ilmu peradaban harus dapat disajikan dengan relevan dan inovatif sehingga muatan-muatan edukasi tersebut mampu melebur bersama kurikulum pendidikan formal.',
-      image: '/src/assets/conservation/koleksi_kuratorial3.jpg',
+      title: 'Penyewaan Alat',
+      subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
+      image: '/src/assets/conservation/berita3.jpeg',
     },
     {
-      title: 'Kemitraan',
-      subtitle: 'Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
-      image: '/src/assets/conservation/partnership1.png',
+      title: 'Edukasi',
+      subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
+      image: '/src/assets/conservation/berita2.jpg',
     }
   ]
 
