@@ -302,27 +302,6 @@ const ContactSection = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* <div>
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Lokasi Kantor</CardTitle>
-              <p className="text-muted-foreground text-center">
-                Kunjungi kantor pusat kami di Jakarta
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin size={48} className="text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">
-                    Peta lokasi akan ditampilkan di sini
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div> */}
       </div>
     </section>
   );
