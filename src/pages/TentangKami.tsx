@@ -46,28 +46,11 @@ const TentangKami = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
-      {/* Company Stats */}
-      {/* <section className="py-16 bg-gradient-subtle">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {companyStats.map((stat, index) => (
-              <Card key={index} className="text-center border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="flex justify-center mb-4">
-                    <stat.icon className={`h-12 w-12 ${stat.color}`} />
-                  </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-2">{stat.value}</h3>
-                  <p className="text-muted-foreground">{stat.label}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section> */}
-      <CompanyProfile />
-      <Services />
-      {/* <RulesAndSOP /> */}
+      <div className='py-10 px-5 bg-background'>
+        <CompanyProfile />
+        <Services />
+        <RulesAndSOP />
+      </div>
       <Footer />
       <FloatingButtons />
     </div>
