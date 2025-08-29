@@ -110,7 +110,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 lg:grid-cols-5 xl:grid-cols-9 mb-8">
+          <TabsList className="flex overflow-x-auto scrollbar-hide gap-2 p-2 mb-8 relative z-10 scroll-smooth bg-muted/50 backdrop-blur-sm border border-border/50 shadow-lg">
             <TabsTrigger value="overview">
               <BarChart3 className="w-4 h-4 mr-2" />
               Overview
