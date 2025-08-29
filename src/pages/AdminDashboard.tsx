@@ -17,7 +17,10 @@ import {
 import { Navigate, useNavigate } from 'react-router-dom';
 import BannerManagement from '@/components/admin/BannerManagement';
 import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
-import MuseumManagement from '@/components/admin/MuseumManagement';
+import SitesManagement from '@/components/admin/SiteManagement';
+import EventManagement from '@/components/admin/EventManagement';
+
+// import MuseumManagement from '@/components/admin/MuseumManagement';
 import AgendaManagement from '@/components/admin/AgendaManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';
@@ -222,11 +225,11 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="museum">
-            <MuseumManagement />
+            <SitesManagement userRole={userRole}/>
           </TabsContent>
 
           <TabsContent value="agenda">
-            <AgendaManagement />
+            <EventManagement userRole={userRole} />
           </TabsContent>
 
           <TabsContent value="media">
