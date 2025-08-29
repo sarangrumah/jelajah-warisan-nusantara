@@ -35,7 +35,7 @@ const Header = () => {
       name: t('nav.tentangKami'), 
       href: '/tentang-kami',
       subItems: [
-        { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
+        // { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
         // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
         { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },

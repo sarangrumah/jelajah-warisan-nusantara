@@ -16,7 +16,7 @@ const DistributionSection = () => {
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal hidden">
-          <h2 className="text-4xl md:text-5xl font-bold pb-3 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-3 text-heritage-gradient">
             Sebaran Museum & Cagar Budaya
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

@@ -45,15 +45,15 @@ const CompanyProfile = () => {
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
 
-  const milestones = [
-    { year: '1945', event: 'Pembentukan Departemen Pendidikan dan Kebudayaan' },
-    { year: '1950', event: 'Pendirian Museum Nasional Indonesia' },
-    { year: '1975', event: 'Pembentukan Direktorat Permuseuman' },
-    { year: '1992', event: 'UU No. 5 tentang Benda Cagar Budaya' },
-    { year: '2010', event: 'UU No. 11 tentang Cagar Budaya' },
-    { year: '2019', event: 'Pembentukan Direktorat Jenderal Kebudayaan' },
-    { year: '2024', event: 'Digitalisasi dan Modernisasi Sistem Informasi' },
-  ];
+  // const milestones = [
+  //   { year: '1945', event: 'Pembentukan Departemen Pendidikan dan Kebudayaan' },
+  //   { year: '1950', event: 'Pendirian Museum Nasional Indonesia' },
+  //   { year: '1975', event: 'Pembentukan Direktorat Permuseuman' },
+  //   { year: '1992', event: 'UU No. 5 tentang Benda Cagar Budaya' },
+  //   { year: '2010', event: 'UU No. 11 tentang Cagar Budaya' },
+  //   { year: '2019', event: 'Pembentukan Direktorat Jenderal Kebudayaan' },
+  //   { year: '2024', event: 'Digitalisasi dan Modernisasi Sistem Informasi' },
+  // ];
 
   const leadership = [
     {
@@ -70,28 +70,28 @@ const CompanyProfile = () => {
     }
   ];
 
-  const departments = [
-    {
-      name: 'Direktorat Pelestarian Cagar Budaya',
-      description: 'Bertanggung jawab atas pelestarian, perlindungan, dan pemanfaatan cagar budaya di seluruh Indonesia.',
-      functions: ['Identifikasi dan Penetapan', 'Pelestarian dan Pemeliharaan', 'Pengawasan dan Pengendalian']
-    },
-    {
-      name: 'Direktorat Permuseuman',
-      description: 'Mengelola dan mengembangkan museum-museum di Indonesia serta koleksi budaya nasional.',
-      functions: ['Pengembangan Museum', 'Manajemen Koleksi', 'Program Edukasi']
-    },
-    {
-      name: 'Direktorat Sejarah',
-      description: 'Mengkaji, mendokumentasikan, dan menyosialisasikan sejarah bangsa Indonesia.',
-      functions: ['Penelitian Sejarah', 'Dokumentasi', 'Publikasi dan Diseminasi']
-    },
-    {
-      name: 'Direktorat Nilai Budaya, Seni dan Film',
-      description: 'Mengembangkan dan melestarikan nilai-nilai budaya, seni, dan perfilman Indonesia.',
-      functions: ['Pengembangan Seni', 'Nilai Budaya', 'Industri Film']
-    }
-  ];
+  // const departments = [
+  //   {
+  //     name: 'Direktorat Pelestarian Cagar Budaya',
+  //     description: 'Bertanggung jawab atas pelestarian, perlindungan, dan pemanfaatan cagar budaya di seluruh Indonesia.',
+  //     functions: ['Identifikasi dan Penetapan', 'Pelestarian dan Pemeliharaan', 'Pengawasan dan Pengendalian']
+  //   },
+  //   {
+  //     name: 'Direktorat Permuseuman',
+  //     description: 'Mengelola dan mengembangkan museum-museum di Indonesia serta koleksi budaya nasional.',
+  //     functions: ['Pengembangan Museum', 'Manajemen Koleksi', 'Program Edukasi']
+  //   },
+  //   {
+  //     name: 'Direktorat Sejarah',
+  //     description: 'Mengkaji, mendokumentasikan, dan menyosialisasikan sejarah bangsa Indonesia.',
+  //     functions: ['Penelitian Sejarah', 'Dokumentasi', 'Publikasi dan Diseminasi']
+  //   },
+  //   {
+  //     name: 'Direktorat Nilai Budaya, Seni dan Film',
+  //     description: 'Mengembangkan dan melestarikan nilai-nilai budaya, seni, dan perfilman Indonesia.',
+  //     functions: ['Pengembangan Seni', 'Nilai Budaya', 'Industri Film']
+  //   }
+  // ];
 
   return (
     <div className="py-20 min-h-screen bg-background">
@@ -136,9 +136,9 @@ const CompanyProfile = () => {
 
       {/* About Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 pt-6 scroll-reveal">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
+            <h2 className="text-4xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
             <div className="space-y-8">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
@@ -148,7 +148,7 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
                     "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
                     yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat."
                   </p>
@@ -240,7 +240,7 @@ const CompanyProfile = () => {
         </div>
       </section> */}
 
-      <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+      <div className="container grid md:grid-cols-2 gap-12 items-center mb-16">
         <div className="scroll-reveal">
           <img 
             src="/src/assets/museum-interior.jpg" 
@@ -249,20 +249,30 @@ const CompanyProfile = () => {
           />
         </div>
         
-        <div className="space-y-6 scroll-reveal">
+        <div className="container mx-auto px-6 pt-6 space-y-6 scroll-reveal">
           <h3 className="text-3xl font-bold text-foreground">
             {t('about.companyProfile.historyTitle')}
           </h3>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             {t('about.companyProfile.historyText1')}
           </p>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             {t('about.companyProfile.historyText2')}
           </p>
           
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+          {/* <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
             <h4 className="text-xl font-semibold text-primary mb-3">{t('about.companyProfile.commitmentTitle')}</h4>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-justify">
+              {t('about.companyProfile.commitmentText')}
+            </p>
+          </div> */}
+        </div>
+      </div>
+      <div className="container gap-12 items-center mb-16">        
+        <div className="container mx-auto px-6 pt-6 space-y-6 scroll-reveal">          
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+            <h4 className="text-xl font-semibold text-primary mb-3 text-center">{t('about.companyProfile.commitmentTitle')}</h4>
+            <p className="text-muted-foreground text-justify">
               {t('about.companyProfile.commitmentText')}
             </p>
           </div>

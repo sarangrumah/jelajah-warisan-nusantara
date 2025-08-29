@@ -16,7 +16,7 @@ const CollectionSection = () => {
                             Koleksi & Kuratorial
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5">
-                            Museum & Cagar Budaya ( IHA / Indonesia Heritage Agent ) berupaya untuk dapat menyajikan beragam koleksi
+                            Museum & Cagar Budaya (Indonesia Heritage Agency) berupaya untuk dapat menyajikan beragam koleksi
                             benda & tak benda yang melengkapi sejarah peradaban Indonesia, dengan kajian Kuratorial yang
                             berkualitas, Koleksi dari Masa Prasejarah, Masa Kolonial, Masa Kemerdekaan hingga Kontemporer tersebar
                             dan tersaji elok di 18 Unit Museum.
@@ -44,7 +44,7 @@ const CollectionSection = () => {
           <div className='w-[52%] ml-5 max-md:w-full max-md:ml-0'>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Selain itu, terdapat pula 34 situs cagar budaya nasional dengan keindahan yang tersebar dari Sabang hingga
-              Merauke. Kekayaan repertoar koleksi ini akan terus dijaga kualitasnya, dengan harapan IHA dapat
+              Merauke. Kekayaan repertoar koleksi ini akan terus dijaga kualitasnya, dengan harapan dapat
               memaksimalkan pengalaman pengunjung melalui narasi, tata pamer, dan infrastrukturnya.
             </p>
           </div>

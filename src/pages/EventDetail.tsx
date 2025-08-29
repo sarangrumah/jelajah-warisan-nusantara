@@ -116,7 +116,7 @@ const EventDetail = () => {
               </span>
             </div>
             <div className="absolute bottom-4 left-8 w-[70%] text-white">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">{event.title}</h1>
+              <h1 className="text-4xl md:text-4xl font-bold mb-2">{event.title}</h1>
               {/* <p className="text-xl">{event.description}</p> */}
             </div>
           </section>

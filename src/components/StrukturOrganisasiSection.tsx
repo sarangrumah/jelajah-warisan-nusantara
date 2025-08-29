@@ -5,7 +5,7 @@ const StrukturOrganisasiSection = () => {
     <main className='py-20 w-full flex flex-col items-center'>
         <div className="container mx-auto px-4 scroll-reveal">
             <div className="text-center scroll-reveal">
-                <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
+                <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
                     Struktur Organisasi
                 </h2>
             </div>

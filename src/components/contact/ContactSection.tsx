@@ -125,18 +125,15 @@ const ContactSection = () => {
       icon: Phone,
       title: 'Telepon',
       details: [
-        '+62 21 3811551',
-        '+62 21 3447777',
-        'Fax: +62 21 3810350'
+        '+62 21 3868172',
+        '+6281295953929 (WhatsApp)'
       ]
     },
     {
       icon: Mail,
       title: 'Email',
       details: [
-        'info@museumcagarbudaya.go.id',
-        'humas@museumcagarbudaya.go.id',
-        'admin@museumcagarbudaya.go.id'
+        'museumcb@kemenbud.go.id'
       ]
     },
     {
@@ -151,17 +148,15 @@ const ContactSection = () => {
   ];
 
   const socialMedia = [
-    { name: 'Instagram', handle: '@museumcagarbudaya', url: '#' },
-    { name: 'Facebook', handle: 'Museum Cagar Budaya Indonesia', url: '#' },
-    { name: 'Twitter', handle: '@museumcagarbudaya', url: '#' },
-    { name: 'YouTube', handle: 'Museum Cagar Budaya Indonesia', url: '#' },
+    { name: 'Instagram', handle: '@indonesianheritageagency', url: 'https://www.instagram.com/indonesianheritageagency/' },
+    { name: 'YouTube', handle: 'Museum Cagar Budaya Indonesia', url: 'https://www.youtube.com/@IndonesianHeritageAgency' },
   ];
 
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">{/* removed scroll-reveal for testing */}
-          <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
             Hubungi Kami
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -308,7 +303,7 @@ const ContactSection = () => {
           </Card>
         </div>
 
-        <div>
+        {/* <div>
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle className="text-2xl text-center">Lokasi Kantor</CardTitle>
@@ -327,7 +322,7 @@ const ContactSection = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </section>
   );
