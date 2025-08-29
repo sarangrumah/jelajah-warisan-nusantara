@@ -37,9 +37,11 @@ const TentangKami = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <CompanyProfile />
-      <Services />
-      <RulesAndSOP />
+      <div className='py-10 px-5 bg-background'>
+        <CompanyProfile />
+        <Services />
+        <RulesAndSOP />
+      </div>
       <Footer />
       <FloatingButtons />
     </div>

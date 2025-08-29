@@ -78,7 +78,7 @@ const CompanyProfile = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-center text-sm">
-                  {t(`about.companyProfile.highlights.${item.description}`)}
+                  {item.description}
                 </p>
               </CardContent>
             </Card>

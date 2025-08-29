@@ -4,11 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 
 const ContactSection = () => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<L.Map | null>(null);
   const { toast } = useToast();
   const { pathname } = useLocation();
   
@@ -319,10 +321,13 @@ const ContactSection = () => {
             <CardContent>
               <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                 <div className="text-center">
-                  <MapPin size={48} className="text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">
+                  {/* <MapPin size={48} className="text-primary mx-auto mb-4" /> */}
+                  {/* <p className="text-muted-foreground">
                     Peta lokasi akan ditampilkan di sini
-                  </p>
+                  </p> */}
+                  <div className="relative w-full h-[500px] rounded-lg overflow-hidden shadow-lg">
+                    <div ref={mapContainer} className="absolute inset-0" />
+                  </div>
                 </div>
               </div>
             </CardContent>
