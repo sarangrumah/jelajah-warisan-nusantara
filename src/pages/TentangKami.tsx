@@ -49,7 +49,7 @@ const TentangKami = () => {
       <div className='py-10 px-5 bg-background'>
         <CompanyProfile />
         <Services />
-        <RulesAndSOP />
+        {/* <RulesAndSOP /> */}
       </div>
       <Footer />
       <FloatingButtons />
