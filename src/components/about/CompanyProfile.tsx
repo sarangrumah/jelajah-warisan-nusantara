@@ -10,22 +10,22 @@ const CompanyProfile = () => {
     {
       icon: 'Building',
       title: t('about.companyProfile.highlights.institution.title'),
-      description: t('institution.description')
+      description: t('about.companyProfile.highlights.institution.description')
     },
     {
       icon: 'Users',
       title: t('about.companyProfile.highlights.team.title'),
-      description: t('team.description')
+      description: t('about.companyProfile.highlights.team.description')
     },
     {
       icon: 'Target',
       title: t('about.companyProfile.highlights.mission.title'),
-      description: t('mission.description')
+      description: t('about.companyProfile.highlights.mission.description')
     },
     {
       icon: 'Award',
       title: t('about.companyProfile.highlights.recognition.title'),
-      description: t('recognition.description')
+      description: t('about.companyProfile.highlights.recognition.description')
     }
   ];
 
@@ -163,7 +163,7 @@ const CompanyProfile = () => {
           ))}
         </div>
       </div>
-              <div className="gap-12 mb-16 mx-auto px-4 pt-6 ">
+              {/* <div className="gap-12 mb-16 mx-auto px-4 pt-6 ">
                 <div className="max-w-4xl mx-auto text-center">
                   <h2 className="text-3xl font-bold mb-8 text-heritage-gradient">Informasi Kontak</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -179,13 +179,13 @@ const CompanyProfile = () => {
                             <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
                           </div>
                         </div>
-                        {/* <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-3">
                           <Building className="h-5 w-5 text-primary mt-1" />
                           <div>
                             <p className="font-medium">Gedung</p>
                             <p className="text-muted-foreground">Gedung E, Kompleks Kemendikbudristek</p>
                           </div>
-                        </div> */}
+                        </div>
                       </CardContent>
                     </Card>
       
@@ -210,7 +210,7 @@ const CompanyProfile = () => {
                     </Card>
                   </div>
                 </div>
-              </div>
+              </div> */}
     </section>
   );
 };

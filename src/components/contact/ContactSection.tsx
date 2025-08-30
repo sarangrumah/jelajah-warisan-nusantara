@@ -142,16 +142,16 @@ const ContactSection = () => {
       icon: Clock,
       title: 'Jam Operasional',
       details: [
-        'Senin - Jumat: 08:00 - 16:00 WIB',
-        'Sabtu: 08:00 - 12:00 WIB',
-        'Minggu & Libur: Tutup'
+        'Senin - Kamis: 07:30 - 16:00 WIB',
+        'Jumat: 07:30 - 16:30 WIB',
+        'Sabtu, Minggu & Hari Libur Nasional: Tutup'
       ]
     }
   ];
 
   const socialMedia = [
     { name: 'Instagram', handle: '@indonesianheritageagency', url: 'https://www.instagram.com/indonesianheritageagency/' },
-    { name: 'YouTube', handle: 'Museum Cagar Budaya Indonesia', url: 'https://www.youtube.com/@IndonesianHeritageAgency' },
+    { name: 'YouTube', handle: 'Indonesian Heritage Agency', url: 'https://www.youtube.com/@IndonesianHeritageAgency' },
   ];
 
   return (

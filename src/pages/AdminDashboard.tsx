@@ -1,20 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
   FileText, 
   Calendar, 
-  Settings, 
-  LogOut, 
-  Shield,
-  Home,
   BarChart3
 } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import BannerManagement from '@/components/admin/BannerManagement';
 import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
 import MuseumManagement from '@/components/admin/MuseumManagement';
@@ -65,186 +60,93 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">M</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-heritage-gradient">Admin Panel</h1>
-                <p className="text-sm text-muted-foreground">
-                  Museum dan Cagar Budaya
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Badge variant={isAdmin ? 'default' : 'secondary'}>
-                <Shield className="w-3 h-3 mr-1" />
-                {userRole}
-              </Badge>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/')}
-              >
-                <Home className="w-4 h-4 mr-2" />
-                Lihat Website
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleSignOut}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Keluar
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        userRole={userRole}
+        isAdmin={isAdmin}
+        canEdit={canEdit}
+        onSignOut={handleSignOut}
+      />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 lg:grid-cols-5 xl:grid-cols-9 mb-8">
-            <TabsTrigger value="overview">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="banner" disabled={!canEdit}>
-              <FileText className="w-4 h-4 mr-2" />
-              Banner
-            </TabsTrigger>
-            <TabsTrigger value="company" disabled={!canEdit}>
-              <Settings className="w-4 h-4 mr-2" />
-              Profil
-            </TabsTrigger>
-            <TabsTrigger value="museum" disabled={!canEdit}>
-              <Settings className="w-4 h-4 mr-2" />
-              Museum
-            </TabsTrigger>
-            <TabsTrigger value="agenda" disabled={!canEdit}>
-              <Calendar className="w-4 h-4 mr-2" />
-              Agenda
-            </TabsTrigger>
-            <TabsTrigger value="media" disabled={!canEdit}>
-              <FileText className="w-4 h-4 mr-2" />
-              Media
-            </TabsTrigger>
-            <TabsTrigger value="faq" disabled={!canEdit}>
-              <Settings className="w-4 h-4 mr-2" />
-              FAQ
-            </TabsTrigger>
-            <TabsTrigger value="career" disabled={!canEdit}>
-              <Users className="w-4 h-4 mr-2" />
-              Karir
-            </TabsTrigger>
-            <TabsTrigger value="users" disabled={!isAdmin}>
-              <Shield className="w-4 h-4 mr-2" />
-              Users
-            </TabsTrigger>
-          </TabsList>
+      <main className="lg:ml-64 min-h-screen">
+        <div className="p-4 lg:p-8 pt-16 lg:pt-8">
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Konten</CardTitle>
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">12</div>
+                    <p className="text-xs text-muted-foreground">+2 dari bulan lalu</p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Agenda Aktif</CardTitle>
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">8</div>
+                    <p className="text-xs text-muted-foreground">+4 minggu ini</p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Pengguna</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">5</div>
+                    <p className="text-xs text-muted-foreground">+1 bulan ini</p>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Visitor Bulanan</CardTitle>
+                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">1,234</div>
+                    <p className="text-xs text-muted-foreground">+12% dari bulan lalu</p>
+                  </CardContent>
+                </Card>
+              </div>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Konten</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                <CardHeader>
+                  <CardTitle>Selamat Datang di Admin Panel</CardTitle>
+                  <CardDescription>
+                    Kelola konten website Museum dan Cagar Budaya dengan mudah
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">12</div>
-                  <p className="text-xs text-muted-foreground">+2 dari bulan lalu</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Agenda Aktif</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">8</div>
-                  <p className="text-xs text-muted-foreground">+4 minggu ini</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Pengguna</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">5</div>
-                  <p className="text-xs text-muted-foreground">+1 bulan ini</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Visitor Bulanan</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">1,234</div>
-                  <p className="text-xs text-muted-foreground">+12% dari bulan lalu</p>
+                  <p className="text-muted-foreground">
+                    Anda login sebagai <Badge variant="secondary">{userRole}</Badge>. 
+                    {canEdit ? ' Anda dapat mengelola konten dan agenda.' : ' Anda memiliki akses view-only.'}
+                    {isAdmin && ' Sebagai admin, Anda memiliki akses penuh untuk mengelola pengguna dan pengaturan sistem.'}
+                  </p>
                 </CardContent>
               </Card>
             </div>
+          )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Selamat Datang di Admin Panel</CardTitle>
-                <CardDescription>
-                  Kelola konten website Museum dan Cagar Budaya dengan mudah
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Anda login sebagai <Badge variant="secondary">{userRole}</Badge>. 
-                  {canEdit ? ' Anda dapat mengelola konten dan agenda.' : ' Anda memiliki akses view-only.'}
-                  {isAdmin && ' Sebagai admin, Anda memiliki akses penuh untuk mengelola pengguna dan pengaturan sistem.'}
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="banner">
-            <BannerManagement userRole={userRole}/>
-          </TabsContent>
-
-          <TabsContent value="company">
-            <CompanyProfileManagement />
-          </TabsContent>
-
-          <TabsContent value="museum">
-            <MuseumManagement />
-          </TabsContent>
-
-          <TabsContent value="agenda">
-            <AgendaManagement />
-          </TabsContent>
-
-          <TabsContent value="media">
-            <MediaManagement />
-          </TabsContent>
-
-          <TabsContent value="faq">
-            <FAQManagement />
-          </TabsContent>
-
-          <TabsContent value="career">
-            <CareerManagement />
-          </TabsContent>
-
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
-        </Tabs>
+          {activeTab === 'banner' && <BannerManagement userRole={userRole}/>}
+          {activeTab === 'company' && <CompanyProfileManagement />}
+          {activeTab === 'museum' && <MuseumManagement />}
+          {activeTab === 'agenda' && <AgendaManagement />}
+          {activeTab === 'media' && <MediaManagement />}
+          {activeTab === 'faq' && <FAQManagement />}
+          {activeTab === 'career' && <CareerManagement />}
+          {activeTab === 'users' && <UserManagement />}
+        </div>
       </main>
     </div>
   );
