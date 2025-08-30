@@ -30,6 +30,7 @@ const Header = () => {
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
     { name: t('nav.museum'), href: '/museum' },
+    { name: t('nav.koleksi'), href: '/collection' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 
@@ -73,7 +74,7 @@ const Header = () => {
                 <h1 className="text-xl font-bold text-heritage-gradient">
                   Museum dan Cagar Budaya
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground hidden">
                   Republik Indonesia
                 </p>
               </div>

@@ -10,6 +10,7 @@ const resources = {
       nav: {
         beranda: "Home",
         museum: "Museum",
+        koleksi: "Collection",
         agenda: "Agenda",
         tentangKami: "About Us",
         strukturOrganisasi: "Organizational structure",
@@ -110,7 +111,7 @@ const resources = {
       footer: {
         orgName: "Museum and Cultural Heritage",
         address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
-        phone: "+62 21 5725019",
+        phone: "",
         email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Quick Links",
         socialMedia: "Social Media",
@@ -411,6 +412,7 @@ const resources = {
       nav: {
         beranda: "Beranda",
         museum: "Museum",
+        koleksi: "Koleksi",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
         strukturOrganisasi: "Struktur Organisasi",
@@ -513,7 +515,7 @@ const resources = {
       footer: {
         orgName: "Museum dan Cagar Budaya",
         address: "Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110",
-        phone: "+62 21 3868172",
+        phone: "",
         email: "museumcb@kemenbud.go.id ",
         quickLinks: "Tautan Cepat",
         socialMedia: "Media Sosial",

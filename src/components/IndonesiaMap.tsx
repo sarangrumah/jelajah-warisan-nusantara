@@ -175,7 +175,7 @@ const IndonesiaMap = () => {
   },[])
 
   // Filter locations based on current filter
-  const filteredLocations = filter === 'all' ? locations : locations.filter(loc => loc.type === filter);
+  const filteredLocations = filter === 'all' ? locations : (filter === 'museum' ? locations.filter(loc => loc.type === 'museum') : locations.filter(loc => loc.type !== 'museum'));
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
@@ -466,7 +466,7 @@ const IndonesiaMap = () => {
               🏛️ Museum: {locations.filter(l => l.type === 'museum').length}
             </Badge>
             <Badge variant="outline" className="bg-green-500/20 text-green-600 border-green-500/30">
-              🏛️ Cagar Budaya: {locations.filter(l => l.type === 'heritage').length}
+              🏛️ Cagar Budaya: {locations.filter(l => l.type !== 'museum').length}
             </Badge>
           </div>
           <Select value={filter} onValueChange={(value) => setFilter(value as 'all' | 'museum' | 'heritage')}>
