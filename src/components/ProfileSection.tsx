@@ -20,7 +20,7 @@ const ProfileSection = () => {
           <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
             {t('profile.description')}
           </p>
         </div>

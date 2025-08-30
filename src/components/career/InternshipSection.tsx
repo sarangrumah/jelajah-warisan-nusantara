@@ -17,10 +17,10 @@ const registrationSchema = z.object({
   fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
   email: z.string().email('Email tidak valid'),
   phone: z.string().min(10, 'Nomor telepon minimal 10 digit'),
-  university: z.string().min(2, 'Nama universitas harus diisi'),
+  university: z.string().min(2, 'Nama Sekolah / Universitas harus diisi'),
   major: z.string().min(2, 'Program studi harus diisi'),
   semester: z.string().min(1, 'Semester harus diisi'),
-  gpa: z.string().min(1, 'IPK harus diisi'),
+  gpa: z.string().optional(),
   internshipProgram: z.string().min(1, 'Program magang harus dipilih'),
   motivation: z.string().min(50, 'Motivasi minimal 50 karakter'),
   cv: z.string().url('URL CV tidak valid').min(1, 'CV harus diupload'),
@@ -415,9 +415,9 @@ const InternshipSection = () => {
                             name="university"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Universitas *</FormLabel>
+                                <FormLabel>Sekolah / Universitas *</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Nama universitas" {...field} />
+                                  <Input placeholder="Nama Sekolah / Universitas" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -459,7 +459,7 @@ const InternshipSection = () => {
                             name="gpa"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>IPK *</FormLabel>
+                                <FormLabel>IPK</FormLabel>
                                 <FormControl>
                                   <Input placeholder="3.50" {...field} />
                                 </FormControl>

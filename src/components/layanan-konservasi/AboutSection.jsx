@@ -13,7 +13,7 @@ const AboutSection = () => {
       <div className="space-y-6 text-xl text-muted-foreground mx-autox leading-relaxed p-5">
         <p>
           Museum & Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan
-          Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 18 museum dan
+          Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan
           galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi
           BLU per tanggal 1 September 2023. Museum & Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan
           mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.

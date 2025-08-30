@@ -11,7 +11,7 @@ const Footer = () => {
 
   const quickLinks = [
     'Beranda', 'Agenda', 'Tentang Kami', 'Struktur Organisasi', 'Laboratorium Konservasi', 'Berita & Publikasi', 
-    'Hubungi Kami', 'Career', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
+    'Hubungi Kami', 'Karir', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
   ];
 
   return (

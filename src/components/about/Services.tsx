@@ -81,7 +81,7 @@ const Services = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center scroll-reveal">
+        {/* <div className="mt-16 text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               {t('about.services.consultationTitle')}
@@ -93,7 +93,7 @@ const Services = () => {
               {t('about.services.consultationButton')}
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -40,7 +40,7 @@ const Header = () => {
         // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
         { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
-        { name: t('nav.peraturan'), href: '/peraturan' },
+        // { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/career' },
       ]
@@ -73,9 +73,9 @@ const Header = () => {
                 <h1 className="text-xl font-bold text-heritage-gradient">
                   Museum dan Cagar Budaya
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   Republik Indonesia
-                </p>
+                </p> */}
               </div>
             </div>
 
