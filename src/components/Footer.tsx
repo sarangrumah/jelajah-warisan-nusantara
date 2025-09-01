@@ -1,19 +1,17 @@
-import { Phone, Mail, MapPin, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Youtube } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import logo from '@/assets/MCB-Logo.png';
+import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Footer = () => {
   const { t } = useTranslation();
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
+    { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube' },
   ];
 
   const quickLinks = [
-    'Beranda', 'Agenda', 'Profil Perusahaan', 'Tentang Kami', 'Struktur Organisasi', 'Layanan Konservasi', 'Media & Publikasi', 
-    'Hubungi Kami', 'Career', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
+    'Beranda', 'Agenda', 'Tentang Kami', 'Struktur Organisasi', 'Laboratorium Konservasi', 'Berita & Publikasi', 
+    'Hubungi Kami', 'Karir', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
   ];
 
   return (
@@ -22,10 +20,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
           {/* Logo and Ministry Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 gap-3">
               <div className="w-12x h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">M</span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[10rem] h-[10rem]x' />
+                <img src={logo} alt="Logo" className='w-[5rem] h-[5rem]x' />
 
               </div>
               <div>
@@ -33,13 +31,13 @@ const Footer = () => {
                   {t('footer.orgName')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Republik Indonesia
+                  Kementerian Kebudayaan Republik Indonesia
                 </p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Kementerian Pendidikan, Kebudayaan, Riset dan Teknologi
-            </p>
+            {/* <p className="text-sm text-muted-foreground leading-relaxed">
+              Kementerian Kebudayaan
+            </p> */}
           </div>
 
           {/* Contact Information */}

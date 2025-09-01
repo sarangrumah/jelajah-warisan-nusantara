@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
+import { heritageService, museumService } from '@/lib/api-services';
+import { use } from 'i18next';
 
 interface LocationData {
   id: string;
@@ -25,8 +26,9 @@ const IndonesiaMap = () => {
   const map = useRef<L.Map | null>(null);
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'museum' | 'heritage'>('all');
+  const [locations, setLocations] = useState([]);
 
-  const locations: LocationData[] = [
+  const locationsx: LocationData[] = [
     // Museums
     {
       id: '1',
@@ -152,6 +154,26 @@ const IndonesiaMap = () => {
     }
   ];
 
+  const fetchLocations = async () => {
+    try {
+      const museum = await museumService.getAll();
+      const heritage = await heritageService.getAll();
+      if (museum.error) {
+        throw new Error('Error fetching museums: ' + museum.error);
+      }
+      if (heritage.error) {
+        throw new Error('Error fetching heritages: ' + heritage.error);
+      }
+      setLocations(museum.data.concat(heritage.data)); // Concatenate museums and heritages heritage.data);
+      // setLocations(heritage.data);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  }
+  useEffect(() => {
+    fetchLocations();
+  },[])
+
   // Filter locations based on current filter
   const filteredLocations = filter === 'all' ? locations : locations.filter(loc => loc.type === filter);
 
@@ -232,10 +254,19 @@ const IndonesiaMap = () => {
         iconAnchor: [16, 16],
       });
     };
-
     // Add markers for filtered locations
     filteredLocations.forEach((location) => {
-      const marker = L.marker(location.coordinates, {
+      // const marker = L.marker(location.coordinates, {
+      //   icon: createCustomIcon(location),
+      // }).addTo(map.current!);
+      if (!location.coordinates) return;
+      let coords: [number, number];
+      try {
+        coords = JSON.parse(location.coordinates);
+      } catch {
+        return;
+      }
+      const marker = L.marker(coords, {
         icon: createCustomIcon(location),
       }).addTo(map.current!);
 
@@ -243,15 +274,15 @@ const IndonesiaMap = () => {
       const popupContent = `
         <div style="padding: 16px; min-width: 280px; max-width: 320px;">
           <div style="margin-bottom: 12px;">
-            <img src="${location.image}" alt="${location.name}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
-            <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name}</h3>
+            <img src="${location.image_url}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
+            <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name || location.title}</h3>
             <span style="background-color: ${location.type === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${location.type}</span>
           </div>
           <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${location.description}</p>
           <div style="margin-bottom: 12px;">
             <div style="margin-bottom: 6px;">
               <strong style="color: #374151; font-size: 12px;">📍 Alamat:</strong>
-              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${location.address}</p>
+              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${location.location}</p>
             </div>
             ${location.openingHours ? `
               <div style="margin-bottom: 6px;">
@@ -320,6 +351,9 @@ const IndonesiaMap = () => {
       `;
 
       marker.bindPopup(popupContent, {
+        autoPan: true,
+        // autoPanPadding: L.point(50, 50), // jarak aman dari tepi peta
+        keepInView: true,
         offset: [0, -16],
         closeButton: true,
         autoClose: false,
@@ -330,48 +364,91 @@ const IndonesiaMap = () => {
       // Add click event listeners after popup opens
       marker.on('popupopen', () => {
         const popup = marker.getPopup();
-        if (popup && popup.getElement()) {
-          const popupElement = popup.getElement();
-          
-          // Add event listener for detail button
-          const detailBtn = popupElement.querySelector('.popup-btn-detail');
-          if (detailBtn) {
-            detailBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const id = (detailBtn as HTMLElement).dataset.id;
-              const type = (detailBtn as HTMLElement).dataset.type;
-              if (type === 'museum') {
-                navigate(`/museum/${id}`);
-              } else {
-                navigate(`/heritage/${id}`);
-              }
-            });
-          }
-          
-          // Add event listener for list button
-          const listBtn = popupElement.querySelector('.popup-btn-list');
-          if (listBtn) {
-            listBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const region = (listBtn as HTMLElement).dataset.region;
-              const type = (listBtn as HTMLElement).dataset.type;
-              if (type === 'museum') {
-                navigate(`/museum?region=${region}`);
-              } else {
-                navigate(`/heritage?region=${region}`);
-              }
-            });
-          }
+        if (!map.current || !popup) return;
+
+        const popupEl = popup.getElement();
+        if (!popupEl) return;
+
+        // ✅ Cegah style berulang dalam satu siklus open
+        if ((popupEl as any)._styled) return;
+        (popupEl as any)._styled = true;
+
+        const mapSize = map.current.getSize();
+        const markerPoint = map.current.latLngToContainerPoint(marker.getLatLng());
+        const tip = popupEl.querySelector('.leaflet-popup-tip') as HTMLElement;
+        if (!tip) return;
+
+        // reset
+        ['top', 'bottom', 'left', 'right'].forEach((pos) => {
+          tip.style.removeProperty(pos);
+        });
+
+        // default: atas marker
+        popupEl.style.setProperty('transform-origin', 'bottom center');
+        tip.style.setProperty('bottom', '-12px');
+
+        // atur posisi sesuai lokasi marker di map
+        if (markerPoint.y < mapSize.y / 3) {
+          // bawah
+          popupEl.style.setProperty('transform-origin', 'top center');
+          tip.style.setProperty('top', '-12px');
+        } else if (markerPoint.x < mapSize.x / 3) {
+          // kanan
+          popupEl.style.setProperty('transform-origin', 'center left');
+          tip.style.setProperty('left', '-12px');
+        } else if (markerPoint.x > (mapSize.x * 2) / 3) {
+          // kiri
+          popupEl.style.setProperty('transform-origin', 'center right');
+          tip.style.setProperty('right', '-12px');
+        }
+
+        // Add event listener for detail button
+        const detailBtn = popupEl.querySelector('.popup-btn-detail');
+        if (detailBtn) {
+          detailBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = (detailBtn as HTMLElement).dataset.id;
+            const type = (detailBtn as HTMLElement).dataset.type;
+            if (type === 'museum') {
+              navigate(`/museum/${id}`);
+            } else {
+              navigate(`/heritage/${id}`);
+            }
+          });
+        }
+        
+        // Add event listener for list button
+        const listBtn = popupEl.querySelector('.popup-btn-list');
+        if (listBtn) {
+          listBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const region = (listBtn as HTMLElement).dataset.region;
+            const type = (listBtn as HTMLElement).dataset.type;
+            if (type === 'museum') {
+              // navigate(`/museum?region=${region}`);
+              navigate(`/museum`);
+            } else {
+              // navigate(`/heritage?region=${region}`);
+              navigate(`/heritage`);
+            }
+          });
         }
       });
 
       // Add hover effects
       marker.on('mouseover', function() {
-        this.getElement()?.style.setProperty('transform', 'scale(1.2)');
+        const el = this.getElement();
+        if (el) {
+          el.style.transition = 'transform 0.2s ease';
+          el.style.transform += 'scale(1.2)'; 
+        }
       });
 
       marker.on('mouseout', function() {
-        this.getElement()?.style.setProperty('transform', 'scale(1)');
+        const el = this.getElement();
+        if (el) {
+          el.style.transform = el.style.transform.replace(" scale(1.2)", ""); // balikin lagi
+        }
       });
     });
 

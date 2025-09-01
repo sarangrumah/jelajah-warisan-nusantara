@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { newsService } from '@/lib/api-services';
+import { publications } from '@/../database/get-data';
 
 const NewsListSection = () => {
   const [articles, setArticles] = useState([]);
@@ -28,27 +29,47 @@ const NewsListSection = () => {
 
       if (response.error) {
         console.error('Error fetching articles:', response.error);
-        return;
       }
 
-      setArticles(response.data || []);
+      if(response.data.length === 0) {
+        setArticles(publications);
+      } else {
+        setArticles(response.data);
+      }
+      // setArticles(response.data || publications);
     } catch (error) {
       console.error('Error fetching articles:', error);
     }
   };
 
   const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    if (activeCategory === 'semua') {
+      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    } else {
+      const matchesSearch = article.category.toLowerCase() === activeCategory.toLowerCase() && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSearch && article.category === activeCategory;
+    }
   });
+
+  const handleReadMoreClick = (article) => {
+    const link = document.createElement('a');
+    link.href = article;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
-            Media & Publikasi
+          <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
+            Berita & Publikasi
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Temukan berita terbaru, artikel, dan publikasi resmi tentang museum 
@@ -84,8 +105,8 @@ const NewsListSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.map((article) => (
-            <Card key={article.id} className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+          {filteredArticles.map((article, index) => (
+            <Card key={index} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
               {article.featured_image_url && (
                 <div className="aspect-video relative overflow-hidden">
                   <img 
@@ -117,10 +138,10 @@ const NewsListSection = () => {
                     <span>Admin</span>
                   </div>
                 </div>
-                <button className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-                  Baca Selengkapnya
-                  <ArrowRight size={16} />
-                </button>
+                  <button onClick={() => handleReadMoreClick(article.url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+                    Baca Selengkapnya
+                    <ArrowRight size={16} />
+                  </button>
               </CardContent>
             </Card>
           ))}

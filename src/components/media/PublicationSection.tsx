@@ -24,8 +24,8 @@ const PublicationSection = () => {
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
+        <div className="text-center mb-16 scroll-reveal hidden">
+          <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             Publikasi & Dokumen
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -35,12 +35,14 @@ const PublicationSection = () => {
         </div>
 
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
-            Dokumen Publikasi
-          </h3>
+          <div className="text-center mb-16 scroll-reveal">
+            <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
+              Dokumen Publikasi
+            </h2>
+          </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
             {publications.map((pub, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -56,25 +58,29 @@ const PublicationSection = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">{pub.description}</p>
-                  <div className="grid grid-cols-3 gap-4 text-sm mb-4">
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
-                      <div className="text-muted-foreground">Halaman</div>
+                  <div className='pb-6'>
+                    <p className="text-muted-foreground mb-4">{pub.description}</p>
+                    <div className="grid grid-cols-3 gap-4 text-sm mb-8">
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
+                        <div className="text-muted-foreground">Halaman</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.size}</div>
+                        <div className="text-muted-foreground">Ukuran</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
+                        <div className="text-muted-foreground">Download</div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.size}</div>
-                      <div className="text-muted-foreground">Ukuran</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
-                      <div className="text-muted-foreground">Download</div>
+                    <div className='p-6 absolute left-0 bottom-0 right-0'>
+                      <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
+                        <Download size={16} className="mr-2" />
+                        Unduh Dokumen
+                      </Button>
                     </div>
                   </div>
-                  <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
-                    <Download size={16} className="mr-2" />
-                    Unduh Dokumen
-                  </Button>
                 </CardContent>
               </Card>
             ))}

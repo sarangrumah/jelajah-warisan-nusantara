@@ -4,11 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 
 const ContactSection = () => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<L.Map | null>(null);
   const { toast } = useToast();
   const { pathname } = useLocation();
   
@@ -125,43 +127,38 @@ const ContactSection = () => {
       icon: Phone,
       title: 'Telepon',
       details: [
-        '+62 21 3811551',
-        '+62 21 3447777',
-        'Fax: +62 21 3810350'
+        '+62 21 3868172',
+        '+6281295953929 (WhatsApp)'
       ]
     },
     {
       icon: Mail,
       title: 'Email',
       details: [
-        'info@museumcagarbudaya.go.id',
-        'humas@museumcagarbudaya.go.id',
-        'admin@museumcagarbudaya.go.id'
+        'museumcb@kemenbud.go.id'
       ]
     },
     {
       icon: Clock,
       title: 'Jam Operasional',
       details: [
-        'Senin - Jumat: 08:00 - 16:00 WIB',
-        'Sabtu: 08:00 - 12:00 WIB',
-        'Minggu & Libur: Tutup'
+        'Senin - Kamis: 07:30 - 16:00 WIB',
+        'Jumat: 07:30 - 16:30 WIB',
+        'Sabtu, Minggu & Hari Libur Nasional: Tutup'
       ]
     }
   ];
 
   const socialMedia = [
-    { name: 'Instagram', handle: '@museumcagarbudaya', url: '#' },
-    { name: 'Facebook', handle: 'Museum Cagar Budaya Indonesia', url: '#' },
-    { name: 'Twitter', handle: '@museumcagarbudaya', url: '#' },
-    { name: 'YouTube', handle: 'Museum Cagar Budaya Indonesia', url: '#' },
+    { name: 'Instagram', handle: '@indonesianheritageagency', url: 'https://www.instagram.com/indonesianheritageagency/' },
+    { name: 'YouTube', handle: 'Indonesian Heritage Agency', url: 'https://www.youtube.com/@IndonesianHeritageAgency' },
   ];
 
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">{/* removed scroll-reveal for testing */}
-          <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
             Hubungi Kami
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -304,27 +301,6 @@ const ContactSection = () => {
                   </AccordionItem>
                 ))}
               </Accordion>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Lokasi Kantor</CardTitle>
-              <p className="text-muted-foreground text-center">
-                Kunjungi kantor pusat kami di Jakarta
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin size={48} className="text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">
-                    Peta lokasi akan ditampilkan di sini
-                  </p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

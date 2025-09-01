@@ -48,18 +48,18 @@ const Museum = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="py-20 min-h-screen bg-background">
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative h-64 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
+      <section className="relative h-72 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {t('Museum & Heritage Sites')}
+          <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
+            {t('Museum & Cagar Budaya')}
           </h1>
-          <p className="text-xl">
+          {/* <p className="text-xl">
             {t('Explore Indonesia\'s rich cultural heritage')}
-          </p>
+          </p> */}
         </div>
       </section>
 

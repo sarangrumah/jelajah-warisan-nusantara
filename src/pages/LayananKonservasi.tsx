@@ -2,12 +2,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
-import AboutSection from '@/components/layanan-konservasi/AboutSection';
-import CollectionSection from '@/components/layanan-konservasi/CollectionSection';
 import ConservationSection from '@/components/layanan-konservasi/ConservationSection';
-import EducationSection from '@/components/layanan-konservasi/EducationSection';
-import PartnershipSection from '@/components/layanan-konservasi/PartnershipSection';
 import { useLocation } from 'react-router-dom';
+import ContactSection from '@/components/contact/ContactSection';
+import BannerSection from '@/components/layanan-konservasi/BannerSection';
 
 const LayananKonservasi = () => {
   const { pathname } = useLocation();
@@ -37,11 +35,13 @@ const LayananKonservasi = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <AboutSection />
-      <CollectionSection />
+      {/* <AboutSection />
+      <CollectionSection /> */}
+      <BannerSection />
       <ConservationSection />
-      <EducationSection />
-      <PartnershipSection />
+      {/* <EducationSection />
+      <PartnershipSection /> */}
+      <ContactSection />
       <Footer />
       <FloatingButtons />
     </div>

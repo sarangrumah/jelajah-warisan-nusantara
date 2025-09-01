@@ -7,7 +7,7 @@ const PartnershipSection = () => {
             <h2 className='lg:text-4xl font-bold text-center max-md:max-w-full max-md:text-3xl'>Kemitraan</h2>
             <div className='leading-7x w-full max-md:max-w-full px-5'>
               <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5'>
-                Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung
+                Museum & Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung
                 dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai
                 komitmen utama.
               </p>
@@ -27,10 +27,10 @@ const PartnershipSection = () => {
               className='aspect-[1] object-contain self-center max-w-fullx'
             />
             <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5'>
-              Guna mentransformasi mutu layanan, IHA mengelola, mengembangkan, dan mengoptimalkan kekayaan / aset secara
+              Guna mentransformasi mutu layanan, Museum & Cagar Budaya mengelola, mengembangkan, dan mengoptimalkan kekayaan / aset secara
               profesional dengan prinsip pelestarian dan keberlanjutan. Kami turut membuka ruang kolaborasi melalui
               berbagai program studi & lokakarya serta inisiatif terobosan lainnya, hingga pembentukan sistem donasi.
-              Mari berkolaborasi dengan IHA untuk menjadi bagian dari pelestari budaya bangsa.
+              Mari berkolaborasi dengan Museum & Cagar Budaya untuk menjadi bagian dari pelestari budaya bangsa.
             </p>
           </div>
         </div>

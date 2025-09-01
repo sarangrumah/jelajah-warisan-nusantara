@@ -2,39 +2,13 @@ import React from 'react'
 
 const ConservationSection = () => {
   return (
-    <section className='pt-20 w-full max-md:max-w-full max-md:px-5'>
-      <div className='flex gap-5 max-md:flex-col max-md:items-stretch'>
-        <div className='w-[62%] max-md:w-full max-md:ml-0'>
-          <article className='flex flex-col items-stretch font-bold max-md:max-w-full'>
-            <h2 className='lg:text-4xl font-bold text-center max-md:max-w-full max-md:text-3xl'>Konservasi</h2>
-            <div className='leading-7x max-md:max-w-full p-5'>
-              <span className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5">
-                Museum & Cagar Budaya (IHA/Indonesian Heritage Agency) berkomitmen untuk terus melestarikan sejarah
-                dan kekayaan bangsa dengan melakukan perawatan berstandar internasional, yang didukung para tenaga
-                ahli, pecinta museum dan sejarah, serta masyarakat. IHA melakukan konservasi koleksi dan cagar budaya
-                dengan pendekatan keilmuan terpadu terhadap koleksi baik secara preventif maupun kuratif. Langkah yang
-                telah dilaksanakan dengan melakukan pembenahan sistem data dan penyimpanan koleksi distorage,
-                melakukan peningkatan keahlian tenaga pengelola, serta dukungan fasilitas dan teknologilaboratorium
-                konservasi terkini.
-              </span>
-            </div>
-          </article>
-        </div>
-        <div className='w-[38%] ml-5 max-md:w-full max-md:ml-0'>
-          <div className='grow max-md:max-w-full p-5'>
-            <img
-              src='/src/assets/conservation/profil_lembaga3.png'
-              alt='Conservation work in progress'
-              className='aspect-[1.25] object-contain w-full max-md:max-w-full'
-            />
-            <div className='max-md:max-w-full'>
-              <img
-                src='/src/assets/conservation/profil_lembaga4.png'
-                alt='Conservation laboratory'
-                className='aspect-[1.25] object-contain w-full max-w-2xlx'
-              />
-            </div>
-          </div>
+    <section className="py-20 bg-gradient-to-b from-background to-card">
+      <div className="container mx-auto px-6 pt-6 scroll-reveal">
+        <div className="text-center mb-16x">
+          <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">Laboratorium Konservasi</h2>
+          <p className="text-xl text-muted-foreground max-w-8xl mx-autox px-6 pt-5 leading-relaxed">
+            Lab Konservasi Cagar Budaya Borobudur adalah pusat riset dan pelestarian yang didedikasikan untuk menjaga dan merawat warisan budaya dunia, Borobudur. Dengan menggabungkan teknologi modern dan teknik konservasi tradisional, kami berkomitmen untuk memastikan kelestarian candi ini untuk generasi yang akan datang. Kami terdiri dari tim ahli yang bekerja secara kolaboratif untuk melaksanakan penelitian, pemulihan, dan pelestarian struktur serta artefak yang ada di situs yang memiliki nilai sejarah dan budaya yang tinggi. Melalui kolaborasi ini, kami berusaha untuk menerapkan praktik terbaik dalam pelestarian warisan budaya. Kami juga berfokus pada inovasi dan penggunaan teknologi digital untuk mendokumentasikan dan memetakan situs sehingga informasi dan pengetahuan tentang Borobudur dapat diakses oleh generasi mendatang.
+          </p>
         </div>
       </div>
     </section>

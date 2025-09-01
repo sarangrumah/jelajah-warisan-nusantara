@@ -49,7 +49,6 @@ const AgendaSection = () => {
   //   return () => observer.disconnect();
   // }, [activeCategory]);
 
-
   const filteredEvents = activeCategory === 'semua' 
     ? events.slice(0, 6) 
     : events.filter(event => event.category === activeCategory).slice(0, 6);
@@ -76,7 +75,7 @@ const AgendaSection = () => {
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold pb-3 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-3 text-heritage-gradient">
             {t('agenda.title', 'Agenda & Event')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -106,22 +105,20 @@ const AgendaSection = () => {
           {filteredEvents.map((event, index) => (
             <div
               key={event.id}
-              className="bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group"
+              className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Event Image */}
               <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                <img src={event.image_url ? event.image_url : placeholder.image } alt={event.title} className="w-full h-full object-contain object-center" />
-              </div>
-              <div>
+                <img src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png' } alt={event.title} className="w-full h-full object-contain object-center" />
               </div>
 
               {/* Event Content */}
-              <div className="p-6">
+              <div className="p-6 mb-9">
                 <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
                   {event.title}
                 </h3>
@@ -143,12 +140,10 @@ const AgendaSection = () => {
                     <MapPin size={16} className="mr-3 text-primary" />
                     {event.location}
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Users size={16} className="mr-3 text-primary" />
-                    {event.participants} peserta
-                  </div>
                 </div>
 
+              </div>
+              <div className='p-6 absolute left-0 bottom-0 right-0'>
                 <Link to={`/event/${event.id}`}>
                   <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
                     Detail Event
@@ -156,7 +151,7 @@ const AgendaSection = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
+              </div>
           ))}
         </div>
 

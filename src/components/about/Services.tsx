@@ -48,7 +48,7 @@ const Services = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold pb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
             {t('about.services.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -68,7 +68,7 @@ const Services = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-sm text-primary">Key Features:</h4>
+                  <h4 className="font-semibold text-sm text-primary">Detil Layanan:</h4>
                   <ul className="space-y-1">
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
@@ -81,7 +81,7 @@ const Services = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center scroll-reveal">
+        {/* <div className="mt-16 text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               {t('about.services.consultationTitle')}
@@ -93,7 +93,7 @@ const Services = () => {
               {t('about.services.consultationButton')}
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

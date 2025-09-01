@@ -8,8 +8,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CompanyProfile = () => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -37,65 +39,59 @@ const CompanyProfile = () => {
   }, []);
 
   const companyStats = [
-    { icon: Building, label: 'Museum Terkelola', value: '1,200+', color: 'text-blue-600' },
-    { icon: Award, label: 'Cagar Budaya', value: '2,800+', color: 'text-green-600' },
+    { icon: Building, label: 'Museum Terkelola', value: '19', color: 'text-blue-600' },
+    { icon: Award, label: 'Cagar Budaya', value: '34', color: 'text-green-600' },
     { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
 
-  const milestones = [
-    { year: '1945', event: 'Pembentukan Departemen Pendidikan dan Kebudayaan' },
-    { year: '1950', event: 'Pendirian Museum Nasional Indonesia' },
-    { year: '1975', event: 'Pembentukan Direktorat Permuseuman' },
-    { year: '1992', event: 'UU No. 5 tentang Benda Cagar Budaya' },
-    { year: '2010', event: 'UU No. 11 tentang Cagar Budaya' },
-    { year: '2019', event: 'Pembentukan Direktorat Jenderal Kebudayaan' },
-    { year: '2024', event: 'Digitalisasi dan Modernisasi Sistem Informasi' },
-  ];
+  // const milestones = [
+  //   { year: '1945', event: 'Pembentukan Departemen Pendidikan dan Kebudayaan' },
+  //   { year: '1950', event: 'Pendirian Museum Nasional Indonesia' },
+  //   { year: '1975', event: 'Pembentukan Direktorat Permuseuman' },
+  //   { year: '1992', event: 'UU No. 5 tentang Benda Cagar Budaya' },
+  //   { year: '2010', event: 'UU No. 11 tentang Cagar Budaya' },
+  //   { year: '2019', event: 'Pembentukan Direktorat Jenderal Kebudayaan' },
+  //   { year: '2024', event: 'Digitalisasi dan Modernisasi Sistem Informasi' },
+  // ];
 
   const leadership = [
     {
-      name: 'Dr. Hilmar Farid',
-      position: 'Direktur Jenderal Kebudayaan',
+      name: 'Abi Kusno, S.Hum., M.E.M',
+      position: 'Kepala Museum dan Cagar Budaya',
       education: 'Ph.D. Sejarah, Universitas Amsterdam',
       experience: '20+ tahun di bidang kebudayaan dan sejarah'
     },
     {
-      name: 'Prof. Dr. Wiendu Nuryanti',
-      position: 'Direktur Pelestarian Cagar Budaya',
+      name: 'Muhammad Ikbal, S.Hum',
+      position: 'Kepala Bagian Umum',
       education: 'Ph.D. Urban Planning, University of Cambridge',
       experience: '25+ tahun dalam pelestarian warisan budaya'
-    },
-    {
-      name: 'Dr. Nadjamuddin Ramly',
-      position: 'Direktur Permuseuman',
-      education: 'Ph.D. Arkeologi, Universitas Indonesia',
-      experience: '18+ tahun dalam manajemen museum'
     }
   ];
 
-  const departments = [
-    {
-      name: 'Direktorat Pelestarian Cagar Budaya',
-      description: 'Bertanggung jawab atas pelestarian, perlindungan, dan pemanfaatan cagar budaya di seluruh Indonesia.',
-      functions: ['Identifikasi dan Penetapan', 'Pelestarian dan Pemeliharaan', 'Pengawasan dan Pengendalian']
-    },
-    {
-      name: 'Direktorat Permuseuman',
-      description: 'Mengelola dan mengembangkan museum-museum di Indonesia serta koleksi budaya nasional.',
-      functions: ['Pengembangan Museum', 'Manajemen Koleksi', 'Program Edukasi']
-    },
-    {
-      name: 'Direktorat Sejarah',
-      description: 'Mengkaji, mendokumentasikan, dan menyosialisasikan sejarah bangsa Indonesia.',
-      functions: ['Penelitian Sejarah', 'Dokumentasi', 'Publikasi dan Diseminasi']
-    },
-    {
-      name: 'Direktorat Nilai Budaya, Seni dan Film',
-      description: 'Mengembangkan dan melestarikan nilai-nilai budaya, seni, dan perfilman Indonesia.',
-      functions: ['Pengembangan Seni', 'Nilai Budaya', 'Industri Film']
-    }
-  ];
+  // const departments = [
+  //   {
+  //     name: 'Direktorat Pelestarian Cagar Budaya',
+  //     description: 'Bertanggung jawab atas pelestarian, perlindungan, dan pemanfaatan cagar budaya di seluruh Indonesia.',
+  //     functions: ['Identifikasi dan Penetapan', 'Pelestarian dan Pemeliharaan', 'Pengawasan dan Pengendalian']
+  //   },
+  //   {
+  //     name: 'Direktorat Permuseuman',
+  //     description: 'Mengelola dan mengembangkan museum-museum di Indonesia serta koleksi budaya nasional.',
+  //     functions: ['Pengembangan Museum', 'Manajemen Koleksi', 'Program Edukasi']
+  //   },
+  //   {
+  //     name: 'Direktorat Sejarah',
+  //     description: 'Mengkaji, mendokumentasikan, dan menyosialisasikan sejarah bangsa Indonesia.',
+  //     functions: ['Penelitian Sejarah', 'Dokumentasi', 'Publikasi dan Diseminasi']
+  //   },
+  //   {
+  //     name: 'Direktorat Nilai Budaya, Seni dan Film',
+  //     description: 'Mengembangkan dan melestarikan nilai-nilai budaya, seni, dan perfilman Indonesia.',
+  //     functions: ['Pengembangan Seni', 'Nilai Budaya', 'Industri Film']
+  //   }
+  // ];
 
   return (
     <div className="py-20 min-h-screen bg-background">
@@ -107,13 +103,13 @@ const CompanyProfile = () => {
         <div className="relative z-10 container mx-auto px-4 text-center scroll-reveal">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-heritage-gradient mb-6">
-              Profil Perusahaan
+              Profil Institusi
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Direktorat Jenderal Kebudayaan
-            </p>
+            {/* <p className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Museum dan Cagar Budaya
+            </p> */}
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Memimpin pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia untuk generasi masa depan
+              Museum dan Cagar Budaya merupakan unit eselon II di bawah Direktorat Jenderal Kebudayaan, Kementerian Kebudayaan Republik Indonesia.
             </p>
           </div>
         </div>
@@ -140,9 +136,9 @@ const CompanyProfile = () => {
 
       {/* About Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 pt-6 scroll-reveal">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
+            <h2 className="text-4xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
             <div className="space-y-8">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
@@ -152,7 +148,7 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
                     "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
                     yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat."
                   </p>
@@ -188,7 +184,7 @@ const CompanyProfile = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              {/* <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Heart className="h-6 w-6 text-primary" />
@@ -215,14 +211,14 @@ const CompanyProfile = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
           </div>
         </div>
       </section>
 
       {/* Timeline Section */}
-      <section className="py-16 bg-gradient-subtle">
+      {/* <section className="py-16 bg-gradient-subtle">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-heritage-gradient">Sejarah dan Pencapaian</h2>
           <div className="max-w-4xl mx-auto">
@@ -242,30 +238,69 @@ const CompanyProfile = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      <div className="container grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="scroll-reveal">
+          <img 
+            src="/src/assets/museum-interior.jpg" 
+            alt="Museum Interior"
+            className="w-full rounded-lg shadow-lg"
+          />
+        </div>
+        
+        <div className="container mx-auto px-6 pt-6 space-y-6 scroll-reveal">
+          <h3 className="text-3xl font-bold text-foreground">
+            {t('about.companyProfile.historyTitle')}
+          </h3>
+          <p className="text-muted-foreground leading-relaxed text-justify">
+            {t('about.companyProfile.historyText1')}
+          </p>
+          <p className="text-muted-foreground leading-relaxed text-justify">
+            {t('about.companyProfile.historyText2')}
+          </p>
+          
+          {/* <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+            <h4 className="text-xl font-semibold text-primary mb-3">{t('about.companyProfile.commitmentTitle')}</h4>
+            <p className="text-muted-foreground text-justify">
+              {t('about.companyProfile.commitmentText')}
+            </p>
+          </div> */}
+        </div>
+      </div>
+      <div className="container gap-12 items-center mb-16">        
+        <div className="container mx-auto px-6 pt-6 space-y-6 scroll-reveal">          
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+            <h4 className="text-xl font-semibold text-primary mb-3 text-center">{t('about.companyProfile.commitmentTitle')}</h4>
+            <p className="text-muted-foreground text-justify">
+              {t('about.companyProfile.commitmentText')}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Leadership Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-heritage-gradient">Kepemimpinan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {leadership.map((leader, index) => (
               <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300">
                 <CardHeader>
                   <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-glow rounded-full mx-auto mb-4 flex items-center justify-center">
                     <span className="text-primary-foreground text-2xl font-bold">
-                      {leader.name.split(' ').map(n => n[0]).join('')}
+                      {leader.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                     </span>
                   </div>
                   <CardTitle className="text-center">{leader.name}</CardTitle>
                   <p className="text-center text-primary font-medium">{leader.position}</p>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <p><strong>Pendidikan:</strong> {leader.education}</p>
                     <p><strong>Pengalaman:</strong> {leader.experience}</p>
                   </div>
-                </CardContent>
+                </CardContent> */}
               </Card>
             ))}
           </div>
@@ -273,7 +308,7 @@ const CompanyProfile = () => {
       </section>
 
       {/* Organizational Structure */}
-      <section className="py-16 bg-gradient-subtle">
+      {/* <section className="py-16 bg-gradient-subtle">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center pb-12 text-heritage-gradient">Struktur Organisasi</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -301,7 +336,7 @@ const CompanyProfile = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Contact Information */}
       <section className="py-16">
@@ -321,13 +356,13 @@ const CompanyProfile = () => {
                       <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
+                  {/* <div className="flex items-start gap-3">
                     <Building className="h-5 w-5 text-primary mt-1" />
                     <div>
                       <p className="font-medium">Gedung</p>
                       <p className="text-muted-foreground">Gedung E, Kompleks Kemendikbudristek</p>
                     </div>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
 

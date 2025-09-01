@@ -36,15 +36,15 @@ const ManagementSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-card to-background">
+    <section className="bg-gradient-to-b from-card to-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient pb-5">
+          {/* <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient pb-5">
             {t('management.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {t('management.description')}
-          </p>
+          </p> */}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">

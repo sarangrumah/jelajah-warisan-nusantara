@@ -37,7 +37,7 @@ const NewsSection = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient">
+          <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             Berita & Artikel
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -88,9 +88,11 @@ const NewsSection = () => {
         </div>
 
         <div className="text-center scroll-reveal">
-          <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-            Lihat Semua Berita
-          </button>
+          <Link to={'/media-publikasi'}>
+            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
+              Lihat Semua Berita
+            </button>
+          </Link>
         </div>
       </div>
     </section>

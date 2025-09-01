@@ -10,7 +10,6 @@ import { defaultEvents, placeholder } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 
-
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -32,7 +31,6 @@ const EventDetail = () => {
   }, []);
 
   const filteredEvent = events.filter((event) => event.id.toString() === id);
-
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,14 +75,25 @@ const EventDetail = () => {
     }
   }
 
+  const shareEventHandler = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       {/* Back Button */}
-      <div className="container mx-auto px-4 pt-8 hidden">
+      <div className="container mx-auto px-4 pt-8x py-10">
         <Link to="/agenda">
-          <Button variant="outline" className="mb-6">
+          <Button variant="outline" className="mb-6 hidden">
             <ArrowLeft size={16} className="mr-2" />
             {t('Back to Agenda')}
           </Button>
@@ -94,20 +103,20 @@ const EventDetail = () => {
       {filteredEvent && filteredEvent.map((event) => (
         <div key={event.id}>
         {/* Hero Image */}
-          <section className="relative h-96 overflow-hidden">
+          <section className="relative h-96x overflow-hidden h-[86vh]">
             <img
-              src={event.image_url ? event.image_url : placeholder.image}
+              src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png'}
               alt={event.title}
-              className="w-full h-full object-cover object-center"
+              className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(event.status)}`}>
                 {getStatusLabel(event.status)}
               </span>
             </div>
-            <div className="absolute bottom-8 left-8 text-white">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">{event.title}</h1>
+            <div className="absolute bottom-4 left-8 w-[70%] text-white">
+              <h1 className="text-4xl md:text-4xl font-bold mb-2">{event.title}</h1>
               {/* <p className="text-xl">{event.description}</p> */}
             </div>
           </section>
@@ -127,10 +136,6 @@ const EventDetail = () => {
                       ))}
                     </div>
                   </CardContent>
-                </Card>
-
-                {/* Highlights */}
-                <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
                     <ul className="space-y-2">
@@ -144,8 +149,23 @@ const EventDetail = () => {
                   </CardContent>
                 </Card>
 
+                {/* Highlights */}
+                {/* <Card>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
+                    <ul className="space-y-2">
+                      {event.highlights.map((highlight, index) => (
+                        <li key={index} className="flex items-start">
+                          <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
+                          <span className="text-muted-foreground">{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card> */}
+
                 {/* Schedule */}
-                <Card>
+                {/* <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
                     <div className="space-y-4">
@@ -172,7 +192,7 @@ const EventDetail = () => {
                       ))}
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
 
               {/* Sidebar */}
@@ -198,10 +218,6 @@ const EventDetail = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center">
-                        <Users size={16} className="mr-3 text-primary" />
-                        <span className="text-sm">{event.participants} peserta terdaftar</span>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -224,7 +240,7 @@ const EventDetail = () => {
                 </Card>
 
                 {/* Requirements */}
-                <Card>
+                {/* <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Requirements')}</h3>
                     <ul className="space-y-2">
@@ -236,15 +252,19 @@ const EventDetail = () => {
                       ))}
                     </ul>
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Actions */}
                 <Card>
                   <CardContent className="p-6 space-y-3">
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                    {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
                       {t('Register Now')}
-                    </Button>
-                    <Button variant="outline" className="w-full">
+                    </Button> */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >
                       <Share2 size={16} className="mr-2" />
                       {t('Share Event')}
                     </Button>

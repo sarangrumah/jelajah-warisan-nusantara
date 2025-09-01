@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import logo from '@/assets/MCB-Logo.png';
+import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,29 +29,23 @@ const Header = () => {
 
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
+    { name: t('nav.museum'), href: '/museum' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 
       href: '/tentang-kami',
       subItems: [
-        { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
+        // { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
-        { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+        // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
         { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+        // { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/career' },
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
-    { 
-      name: t('nav.peraturan'), 
-      href: '/tentang-kami',
-      subItems: [
-        { name: t('nav.peraturan'), href: '/peraturan' },
-        { name: t('nav.sop'), href: '/prosedur-operasional-standar' },
-      ]
-    },
     { name: t('nav.admin'), href: '/admin' },
   ];
 
@@ -69,19 +63,19 @@ const Header = () => {
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12x w-[5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
+              <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 {/* <span className="text-primary-foreground font-bold text-xl">
                 </span> */}
-                <img src="/src/assets/images/logo/MCB Logo_Putih_notext.png" alt="Logo" className='w-[3rem] h-[2rem]x'/>
+                <img src={logo} alt="Logo" className='w-[3rem] h-[2rem]x'/>
 
               </div>
               <div>
                 <h1 className="text-xl font-bold text-heritage-gradient">
                   Museum dan Cagar Budaya
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   Republik Indonesia
-                </p>
+                </p> */}
               </div>
             </div>
 

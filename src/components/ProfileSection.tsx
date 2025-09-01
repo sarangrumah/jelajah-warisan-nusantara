@@ -15,23 +15,23 @@ const ProfileSection = () => {
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-5xl font-bold text-heritage-gradient pb-3">
+          <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
             {t('profile.description')}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid gap-12 items-center mb-16">
           <div className="space-y-6 scroll-reveal">
-            <h3 className="text-3xl font-bold text-foreground">
+            {/* <h3 className="text-3xl font-bold text-foreground">
               Visi & Misi Kami
-            </h3>
+            </h3> */}
             
-            <div className="space-y-4">
+            <div className="space-y-4 items-center">
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                 <p className="text-muted-foreground">
@@ -48,24 +48,6 @@ const ProfileSection = () => {
                 </ul>
               </div>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6 scroll-reveal">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="bg-card border border-border rounded-lg p-6 text-center heritage-glow hover:scale-105 transition-bounce"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {/* {<stat.icon size={32} className="text-primary mx-auto mb-4" />} */}
-                <DynamicComponent componentName={stat.icon} size={32} className="text-primary mx-auto mb-4" />
-                <div className="text-3xl font-bold text-heritage-gradient mb-2">
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {t(`profile.stats.${stat.label}`)}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 

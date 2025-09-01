@@ -6,6 +6,8 @@ import ManagementSection from '@/components/ManagementSection';
 import AgendaSection from '@/components/AgendaSection';
 import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
+import DistributionSection from '@/components/DistributionSection';
+import NewsSection from '@/components/NewsSection';
 
 const Index = () => {
   useEffect(() => {
@@ -36,6 +38,8 @@ const Index = () => {
       <ProfileSection />
       <ManagementSection />
       <AgendaSection />
+      <DistributionSection />
+      <NewsSection />
       <Footer />
       <FloatingButtons />
     </div>

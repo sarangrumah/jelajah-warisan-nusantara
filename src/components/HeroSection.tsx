@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { heroSlideService } from '@/lib/api-services';
+import { bannerService } from '@/lib/api-services';
 import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
@@ -29,8 +29,8 @@ const HeroSection = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-  useEffect(() => {
 
+  useEffect(() => {
     if (!isVideoPlaying && slides.length > 0) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -54,10 +54,10 @@ const HeroSection = () => {
       setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     }
   };
-
+  
   const fetchSlides = async () => {
     try {
-      const response = await heroSlideService.getAll();
+      const response = await bannerService.getAll();
       if (response.error) {
         console.log('Error fetching slides:', response.error);
       }
@@ -102,7 +102,7 @@ const HeroSection = () => {
             <img
 
               // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
-              src={ slide.image_url }
+              src={ slide.image }
               alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
@@ -133,7 +133,7 @@ const HeroSection = () => {
                   size="lg"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
-                  {slides.length > 0 && t(slides[currentSlide].cta)}
+                  {slides.length > 0 && t(slides[currentSlide].button_url_1)}
                 </Button>
               </Link>
               
