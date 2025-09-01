@@ -29,24 +29,35 @@ export const createCrudController = (tableName: string, fields: string[]) => {
   });
 
   // Helper: Build SELECT clause for flat join
-  const buildFlatJoinSelect = (relName: string, relConfig: JoinConfig): string => {
-    if (!relConfig) return '';
+  // const buildFlatJoinSelect = (relName: string, relConfig: JoinConfig): string => {
+  //   if (!relConfig) return '';
 
-    const allFields = tableConfigs[relConfig.table];
-    if (!allFields) {
-      throw new Error(`No field config for table: ${relConfig.table}`);
-    }
+  //   const allFields = tableConfigs[relConfig.table];
+  //   if (!allFields) {
+  //     throw new Error(`No field config for table: ${relConfig.table}`);
+  //   }
 
-    const selectedFields = relConfig.fields ? relConfig.fields : allFields;
+  //   const selectedFields = relConfig.fields ? relConfig.fields : allFields;
 
-    return selectedFields
-      .map(field => {
-        const alias = field === 'id'
-          ? `${relName}_id`
-          : `${relName}_${field}`;
-        return `${relConfig.table}.${field} AS ${alias}`;
-      })
+  //   return selectedFields
+  //     .map(field => {
+  //       const alias = field === 'id'
+  //         ? `${relName}_id`
+  //         : `${relName}_${field}`;
+  //       return `${relConfig.table}.${field} AS ${alias}`;
+  //     })
+  //     .join(', ');
+  // };
+
+  const buildBelongsToSelect = (relName: string, relConfig: JoinConfig): string => {
+    const { table: childTable, fields } = relConfig;
+    const allFields = fields || tableConfigs[childTable] || [];
+
+    const jsonFields = allFields
+      .map(f => `'${f}', ${childTable}.${f}`)
       .join(', ');
+
+    return `json_build_object(${jsonFields}) AS ${relName}`;
   };
 
   return {
@@ -61,33 +72,34 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         // Add flat joins (belongs-to)
         const joins: string[] = [];
         for (const { name: relName, config: rel } of flatJoins) {
-          const joinSelect = buildFlatJoinSelect(relName, rel);
-          if (joinSelect) selectFields += `, ${joinSelect}`;
+          if (rel.type === 'left' || rel.type === 'inner') {
+            const joinSelect = buildBelongsToSelect(relName, rel);
+            selectFields += `, ${joinSelect}`;
 
-          const joinType = rel.type === 'left' ? 'LEFT JOIN' : 'INNER JOIN';
-          joins.push(
-            `${joinType} ${rel.table} ON ${tableName}.${rel.localKey} = ${rel.table}.${rel.foreignKey}`
-          );
+            const joinType = rel.type === 'left' ? 'LEFT JOIN' : 'INNER JOIN';
+            joins.push(
+              `${joinType} ${rel.table} ON ${tableName}.${rel.localKey} = ${rel.table}.${rel.foreignKey}`
+            );
+          }
         }
 
         // Add has-many subqueries (e.g., company_leadership[])
         const relations = tableRelationships[tableName];
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
-            // Only include if foreignKey is 'id' (parent PK) → indicates "has many"
-            if (relConfig.foreignKey === 'id') {
+            if (relConfig.type === 'has_many') {
               const { table: childTable, localKey, fields: relFields } = relConfig;
-              const childFields = relFields || Object.keys(tableConfigs[childTable] || {});
+              const childFields = relFields || tableConfigs[childTable] || [];
 
               const jsonFields = childFields
-                .filter(f => f !== localKey) // don't include foreignKey
+                .filter(f => f !== localKey) // exclude foreignKey
                 .map(f => `'${f}', ${childTable}.${f}`)
                 .join(', ');
 
               selectFields += `,
                 (SELECT json_agg(json_build_object(${jsonFields}))
-                 FROM ${childTable}
-                 WHERE ${childTable}.${localKey} = ${tableName}.id
+                FROM ${childTable}
+                WHERE ${childTable}.${localKey} = ${tableName}.id
                 ) AS ${relKey}`;
             }
           }
@@ -158,7 +170,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         // Add flat joins (belongs-to)
         for (const { name: relName, config: rel } of flatJoins) {
-          const joinSelect = buildFlatJoinSelect(relName, rel);
+          const joinSelect = buildBelongsToSelect(relName, rel);
           if (joinSelect) {
             const joinResult = await query(
               `SELECT ${joinSelect}
@@ -225,6 +237,24 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           ({ companyLeadership = [], companyVisitor = [], ...insertData } = data);
         }
 
+        if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string' ) {
+          try {
+            insertData.opening_hours = JSON.parse(insertData.opening_hours);
+          } catch (e) {
+            return res.status(400).json({
+              error: 'Invalid JSON in opening_hours'
+            });
+          }
+        } else if (tableName === 'tb_sites' && typeof insertData.facilities === 'string') {
+          try {
+            insertData.facilities = JSON.parse(insertData.facilities);
+          } catch (e) {
+            return res.status(400).json({
+              error: 'Invalid JSON in opening_hours'
+            });
+          }
+        }
+
         insertData.id = id;
         insertData.created_at = new Date();
         insertData.updated_at = new Date();
@@ -241,16 +271,26 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           }
         }
 
-        const validFields = fields.filter(f => f !== 'id' && insertData[f] !== undefined);
+        const excludedOnCreate = ['updated_by', 'updated_at'];
+        const validFields = fields
+          .filter(f => 
+            insertData[f] !== undefined && 
+            !excludedOnCreate.includes(f)
+          );
+
         const values = validFields.map(f => insertData[f]);
         const placeholders = validFields.map((_, i) => `$${i + 1}`).join(', ');
 
         await client.query('BEGIN');
 
+
         await client.query(
           `INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`,
           values
         );
+
+        // console.log(`INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`)
+        
 
         // Insert nested (unchanged)
         if (tableName === 'tb_company' && companyLeadership.length > 0) {
@@ -279,7 +319,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           const createdBy = insertData.created_by || 'system';
           for (const img of images) {
             await client.query(
-              `INSERT INTO tb_images (id, path, id_site, created_by, updated_by, created_at)
+              `INSERT INTO tb_images (id, path, sites_id, created_by, updated_by, created_at)
                VALUES ($1, $2, $3, $4, $4, $5)`,
               [uuidv4(), img.path, id, createdBy, new Date()]
             );
@@ -345,8 +385,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             });
           }
         }
-
-        console.log(input)
 
         // Validate there's something to update
         const validFields = fields.filter(
@@ -481,7 +519,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             if (img.is_deleted && img.id) {
               // 🚫 DELETE
               await client.query(
-                `DELETE FROM tb_images WHERE id = $1 AND id_site = $2`,
+                `DELETE FROM tb_images WHERE id = $1 AND sites_id = $2`,
                 [img.id, id]
               );
             } else if (img.id) {
@@ -489,13 +527,13 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               await client.query(
                 `UPDATE tb_images
                 SET path = $1, updated_by = $2, updated_at = $3
-                WHERE id = $4 AND id_site = $5`,
+                WHERE id = $4 AND sites_id = $5`,
                 [img.path, updatedBy, new Date(), img.id, id]
               );
             } else {
               // ➕ INSERT
               await client.query(
-                `INSERT INTO tb_images (id, path, id_site, created_by, updated_by, created_at)
+                `INSERT INTO tb_images (id, path, sites_id, created_by, updated_by, created_at)
                 VALUES ($1, $2, $3, $4, $4, $5)`,
                 [uuidv4(), img.path, id, updatedBy, new Date()]
               );
@@ -568,6 +606,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
       try {
         const { id } = req.params;
         const userName = req.user?.email;
+        const idUser = req.user?.id
 
         // Check if table requires approval
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
@@ -611,7 +650,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           WHERE id = $1
           RETURNING *
           `,
-          [id, autoActivate, userName, now]
+          [id, autoActivate, idUser, now]
         );
 
         res.json({

@@ -31,27 +31,56 @@ export const tableConfigs = {
     'id', 'visitor_count', 'year', 'is_active', 'company_id',
     'created_by', 'updated_by'
   ],
-  tb_sites:['id','name','type','category','subtitle','description','address','opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price','latitude','longitude','is_active', 'is_approved','created_at','created_by','updated_at','updated_by'],
-  tb_events:['id','name','category','subtitle','description','id_site','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_image','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by']
+  tb_images: ['id','path','sites_id'],
+  tb_type_sites: ['id', 'name'],
+  tb_categories_sites: ['id','name','type_id'],
+  tb_categories_event: ['id','name'],
+  tb_sites:['id','name','type','category','subtitle','description','address',
+    'opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price',
+    'latitude','longitude','is_active', 'is_approved','created_at','created_by','updated_at','updated_by'],
+  tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by']
 };
 
 export const tableRelationships = {
   tb_events: {
     site: {
       table: 'tb_sites',
-      localKey: 'id_site',
+      localKey: 'sites_id',
       foreignKey: 'id',
       type: 'left', 
-      fields: ['id', 'name', 'address', 'phone', 'website', 'latitude', 'longitude', 'img_banner'] // only these are joined
+      fields: ['id', 'name', 'address'] // only these are joined
+    },
+    categories : {
+      site: {
+        table: 'tb_categories_event',
+        localKey: 'category',
+        foreignKey: 'id',
+        type: 'left', 
+        fields: ['id', 'name', 'address'] // only these are joined
+      },
     }
   },
   tb_sites: {
-    company: {
-      table: 'tb_company',
-      localKey: 'id_company',
+    images: {
+      table: 'tb_images',
+      localKey: 'sites_id',
       foreignKey: 'id',
-       type: 'left', 
-      fields: ['id', 'name', 'brand', 'email', 'website']
+      type: 'has_many', 
+      fields: ['id', 'path']
+    },
+    type_relation : {
+      table: 'tb_type_sites',
+      localKey: 'type',
+      foreignKey: 'id',
+      type: 'left', 
+      fields: ['id', 'name']
+    },
+    categories_relation : {
+      table: 'tb_categories_sites',
+      localKey: 'category',
+      foreignKey: 'id',
+      type: 'left', 
+      fields: ['id', 'name']
     }
   },
   tb_company: {
@@ -74,7 +103,7 @@ export const tableRelationships = {
 
 export const autoJoinRelations = {
   tb_events: ['site'],
-  tb_sites: ['company'],
+  tb_sites: ['images','type','categories'],
   tb_company: ['company_leadership', 'company_visitor']
 } as const;
 

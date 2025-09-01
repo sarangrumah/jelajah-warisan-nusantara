@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
+
 interface MuseumItem {
   id?: string | null;
   name: string;
@@ -260,9 +261,6 @@ const MuseumManagement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-
-
-
   useEffect(() => {
     fetchMuseums();
   }, []);
@@ -376,8 +374,6 @@ const MuseumManagement = () => {
       });
     }
   };
-
-
 
   if (loading) {
     return (

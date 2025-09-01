@@ -54,11 +54,23 @@ export const agendaService = {
 
 // Museums
 export const museumService = {
-  getAll: () => apiClient.getAll('museums', { is_published: 'true' }),
-  getById: (id: string) => apiClient.getById('museums', id),
-  create: (data: any) => apiClient.create('museums', data),
-  update: (id: string, data: any) => apiClient.update('museums', id, data),
-  delete: (id: string) => apiClient.delete('museums', id),
+    approve: (id: string) => apiClient.approve('tb_sites', id),
+  getAll: () => apiClient.getAll('tb_sites', { is_published: 'true' }),
+  getById: (id: string) => apiClient.getById('tb_sites', id),
+  create: (data: any) => apiClient.create('tb_sites', data),
+  update: (id: string, data: any) => apiClient.update('tb_sites', id, data),
+  delete: (id: string) => apiClient.delete('tb_sites', id),
+};
+
+
+export const TypesAndCategoriesSites = {
+  getAllTypes: () => apiClient.getAll('tb_type_sites'),
+  getAllCategories: (id : string) => apiClient.getAll('tb_categories_sites', {type_id: id}),
+};
+
+export const TypesAndCategoriesEvent = {
+  getAllTypes: () => apiClient.getAll('tb_sites'),
+  getAllCategories: () => apiClient.getAll('tb_categories_event'),
 };
 
 // Banners
@@ -70,7 +82,16 @@ export const bannerService = {
   create: (data: any) => apiClient.create('tb_banner', data),
   update: (id: string, data: any) => apiClient.update('tb_banner', id, data),
   delete: (id: string) => apiClient.delete('tb_banner', id),
-  
+};
+
+export const EventsService = {
+  approve: (id: string) => apiClient.approve('tb_events', id),
+  getAll: () => apiClient.getAll('tb_events'), // Get all for admin, filtering happens in components
+  getPublished: () => apiClient.getAll('tb_events', { is_published: 'true' }),
+  getById: (id: string) => apiClient.getById('tb_events', id),
+  create: (data: any) => apiClient.create('tb_events', data),
+  update: (id: string, data: any) => apiClient.update('tb_events', id, data),
+  delete: (id: string) => apiClient.delete('tb_events', id),
 };
 
 // Career Opportunities
