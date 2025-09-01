@@ -12,10 +12,11 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import BannerManagement from '@/components/admin/BannerManagement';
 import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
-import SitesManagement from '@/components/admin/SiteManagement';
-import EventManagement from '@/components/admin/EventManagement';
+/*
+// import EventManagement from '@/components/admin/EventManagement';
+*/
 
-// import MuseumManagement from '@/components/admin/MuseumManagement';
+import MuseumManagement from '@/components/admin/MuseumManagement';
 import AgendaManagement from '@/components/admin/AgendaManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';
@@ -51,7 +52,7 @@ const AdminDashboard = () => {
   };
 
   const isAdmin = userRole === 'admin';
-  const canEdit = userRole === 'admin' || userRole === 'editor' || userRole == 'approver';
+  const canEdit = userRole === 'admin' || userRole === 'editor' || userRole === 'approver';
 
   if (loading) {
     return (
@@ -139,6 +140,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          )}
 
           {activeTab === 'banner' && <BannerManagement userRole={userRole}/>}
           {activeTab === 'company' && <CompanyProfileManagement />}
