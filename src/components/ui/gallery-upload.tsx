@@ -7,10 +7,15 @@ import { Upload, X, Image, Loader2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
 
+interface ImageItem {
+  path: string;  // URL or path to image
+  sites: string; // Possibly metadata – adjust as needed
+}
+
 interface GalleryUploadProps {
   label: string;
-  value: string[];
-  onChange: (urls: string[]) => void;
+  value: ImageItem[];
+  onChange: (images: ImageItem[]) => void;
   bucket?: string;
   maxImages?: number;
   maxSize?: number; // in MB
@@ -19,22 +24,24 @@ interface GalleryUploadProps {
 
 export const GalleryUpload = ({
   label,
-  value = [],
+  value = [], // ✅ Fixed: default to empty array
   onChange,
   bucket = 'images',
   maxImages = 10,
   maxSize = 5,
-  className = ''
+  className = '',
 }: GalleryUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+
+  console.log(value === null || value.length < maxImages)
   const handleFileSelect = async (files: FileList) => {
     if (!files.length) return;
 
-    // Check if adding these files would exceed the limit
+    // Check limit
     if (value.length + files.length > maxImages) {
       toast({
         title: 'Error',
@@ -45,13 +52,13 @@ export const GalleryUpload = ({
     }
 
     setUploading(true);
-    const newUrls: string[] = [];
+    const newImages: ImageItem[] = []; // ✅ Will store objects
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        // Validate file type
+        // Validate type
         if (!file.type.startsWith('image/')) {
           toast({
             title: 'Error',
@@ -61,32 +68,37 @@ export const GalleryUpload = ({
           continue;
         }
 
-        // Validate file size
+        // Validate size
         if (file.size > maxSize * 1024 * 1024) {
           toast({
             title: 'Error',
-            description: `${file.name} is larger than ${maxSize}MB`,
+            description: `${file.name} exceeds ${maxSize}MB`,
             variant: 'destructive',
           });
           continue;
         }
 
         const response = await uploadService.uploadFile(file, bucket);
-        
+
         if (response.error) {
           throw new Error(response.error);
         }
 
         if (response.data?.url) {
-          newUrls.push(response.data.url);
+          // ✅ Push object matching ImageItem interface
+          // ⚠️ You need to define what "sites" means — placeholder used here
+          newImages.push({
+            path: response.data.url,
+            sites: '', // TODO: Replace with actual logic if needed
+          });
         }
       }
 
-      if (newUrls.length > 0) {
-        onChange([...value, ...newUrls]);
+      if (newImages.length > 0) {
+        onChange([...value, ...newImages]);
         toast({
           title: 'Success',
-          description: `${newUrls.length} image(s) uploaded successfully`,
+          description: `${newImages.length} image(s) uploaded successfully`,
         });
       }
     } catch (error) {
@@ -98,7 +110,6 @@ export const GalleryUpload = ({
       });
     } finally {
       setUploading(false);
-      // Clear the file input to prevent issues
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -107,19 +118,14 @@ export const GalleryUpload = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      handleFileSelect(files);
-    }
+    if (files) handleFileSelect(files);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    
     const files = e.dataTransfer.files;
-    if (files) {
-      handleFileSelect(files);
-    }
+    if (files) handleFileSelect(files);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -133,8 +139,8 @@ export const GalleryUpload = ({
   };
 
   const removeImage = (indexToRemove: number) => {
-    const newUrls = value.filter((_, index) => index !== indexToRemove);
-    onChange(newUrls);
+    const newImages = value.filter((_, index) => index !== indexToRemove);
+    onChange(newImages);
   };
 
   const openFileDialog = () => {
@@ -144,14 +150,14 @@ export const GalleryUpload = ({
   return (
     <div className={`space-y-4 ${className}`}>
       <Label>{label}</Label>
-      
+
       {/* Existing images grid */}
-      {value.length > 0 && (
+      {value !== null && value.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {value.map((url, index) => (
+          {value.map((image, index) => (
             <div key={index} className="relative group">
               <img
-                src={url}
+                src={image.path}
                 alt={`Gallery image ${index + 1}`}
                 className="w-full h-24 object-cover rounded-md"
               />
@@ -170,11 +176,11 @@ export const GalleryUpload = ({
       )}
 
       {/* Upload area */}
-      {value.length < maxImages && (
+      {value === null || value.length < maxImages && (
         <Card
           className={`border-2 border-dashed cursor-pointer transition-colors ${
-            dragOver 
-              ? 'border-primary bg-primary/5' 
+            dragOver
+              ? 'border-primary bg-primary/5'
               : 'border-border hover:border-primary/50'
           }`}
           onDrop={handleDrop}
