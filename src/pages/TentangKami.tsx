@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 
-import { MapPin, Users, Building, Award} from 'lucide-react';
+// import { MapPin, Users, Building, Award} from 'lucide-react';
 // import { Card, CardContent} from '@/components/ui/card';
 import { useLocation } from 'react-router-dom';
 
@@ -30,13 +30,6 @@ const TentangKami = () => {
       });
     }, observerOptions);
 
-    const companyStats = [
-      { icon: Building, label: 'Museum Terkelola', value: '19', color: 'text-blue-600' },
-      { icon: Award, label: 'Cagar Budaya', value: '34', color: 'text-green-600' },
-      { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
-      { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
-    ];
-
     const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
     scrollRevealElements.forEach((el) => observer.observe(el));
 
@@ -49,7 +42,6 @@ const TentangKami = () => {
       <div className='py-10 px-5 bg-background'>
         <CompanyProfile />
         <Services />
-        {/* <RulesAndSOP /> */}
       </div>
       <Footer />
       <FloatingButtons />

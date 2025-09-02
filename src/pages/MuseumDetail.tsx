@@ -6,9 +6,9 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { defaultMuseums } from '@/../database/default-data';
-// import { museums } from '@/../database/get-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
+import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const MuseumDetail = () => {
   const { id } = useParams();
@@ -69,7 +69,7 @@ const MuseumDetail = () => {
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute bottom-8 left-8 text-white">
             <Badge className="mb-2">
-              {museum.type === 'museum' ? t('Museum') : t('Heritage Site')}
+              {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.name}</h1>
             <p className="text-xl">{museum.subtitle}</p>
@@ -82,7 +82,7 @@ const MuseumDetail = () => {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('About')}</CardTitle>
+                  <CardTitle>{t('museumDetail.about')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
@@ -108,7 +108,7 @@ const MuseumDetail = () => {
 
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>{t('Facilities')}</CardTitle>
+                  <CardTitle>{t('museumDetail.facilities')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
@@ -122,15 +122,11 @@ const MuseumDetail = () => {
               </Card>
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>{t('Gallery Collections')}</CardTitle>
+                  <CardTitle>{t('museumDetail.galleryCollection')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {museum.facilities.map((facility, index) => (
-                      <Badge key={index} variant="outline">
-                        {facility}
-                      </Badge>
-                    ))}
+                    <GalleryCollection museumName={museum.name} />
                   </div>
                 </CardContent>
               </Card>
@@ -140,13 +136,13 @@ const MuseumDetail = () => {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('Visit Information')}</CardTitle>
+                  <CardTitle>{t('museumDetail.visitInformation')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">{t('Location')}</p>
+                      <p className="font-semibold">{t('museumDetail.location')}</p>
                       <p className="text-sm text-muted-foreground">{museum.location}</p>
                     </div>
                   </div>
@@ -154,7 +150,7 @@ const MuseumDetail = () => {
                   <div className="flex items-start gap-3">
                     <Clock className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">{t('Opening Hours')}</p>
+                      <p className="font-semibold">{t('museumDetail.openingHours')}</p>
                       <p className="text-sm text-muted-foreground">{museum.openingHours}</p>
                     </div>
                   </div>
@@ -162,7 +158,7 @@ const MuseumDetail = () => {
                   <div className="flex items-start gap-3">
                     <Phone className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">{t('Contact')}</p>
+                      <p className="font-semibold">{t('museumDetail.contact')}</p>
                       <p className="text-sm text-muted-foreground">{museum.phone}</p>
                     </div>
                   </div>
@@ -170,18 +166,27 @@ const MuseumDetail = () => {
                   <div className="flex items-start gap-3">
                     <Globe className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">{t('Website')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.website}</p>
+                      <p className="font-semibold hidden">{t('button.visitWebsite')}</p>
+                      <p className="text-sm text-muted-foreground hidden">{museum.website}</p>
+                      <button 
+                        onClick={() => window.open(`https://${museum.website}`, '_blank')} 
+                        className="bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-2 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
+                        Kunjungi Situs
+                      </button>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <Calendar className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">{t('Ticket Price')}</p>
+                      <p className="font-semibold">{t('museumDetail.ticketPrice')}</p>
                       <p className="text-sm text-muted-foreground">{museum.ticketPrice}</p>
                     </div>
                   </div>
+                  <button 
+                    className="w-full bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
+                    Beli Tiket
+                  </button>
                 </CardContent>
               </Card>
             </div>

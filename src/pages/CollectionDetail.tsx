@@ -7,9 +7,11 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { placeholder, defaultCollections } from '@/../database/default-data';
+import { defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { collectionService } from '@/lib/api-services';
+import logo from '@/assets/MCB-Logo.png';
+
 const CollectionDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -78,9 +80,9 @@ const CollectionDetail = () => {
               <div className="space-y-4">
                 <div className="aspect-square overflow-hidden rounded-lg border">
                   <img
-                    src={collection.image_url ? collection.image_url : placeholder.image}
+                    src={collection.image_url ? collection.image_url : logo}
                     alt={collection.title}
-                    className="w-full h-full object-cover"
+                    className={collection.image_url ? "w-full h-full object-cover" : "w-full h-full object-contain"}
                   />
                 </div>
               </div>

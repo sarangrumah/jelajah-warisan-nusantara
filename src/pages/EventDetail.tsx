@@ -1,14 +1,15 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Calendar, MapPin, Users, Phone, Mail, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Phone, Mail, Share2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { defaultEvents, placeholder } from '@/../database/default-data';
+import { defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
+import logo from '@/assets/MCB-Logo.png';
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -50,30 +51,30 @@ const EventDetail = () => {
     }
   };
 
-  function parseSchedule(str: string) {
-    try {
-      let clean = str.trim();
-      clean = clean.replace(/^\{\{/, "[").replace(/\}\}$/, "]");
-      if (!clean.includes("{")) {
-        clean = clean.replace(/\[\s*'/, "[{ '");
-      } else {
-        clean = clean.replace(/\[\s*'/, "[{ '");
-      }
+  // function parseSchedule(str: string) {
+  //   try {
+  //     let clean = str.trim();
+  //     clean = clean.replace(/^\{\{/, "[").replace(/\}\}$/, "]");
+  //     if (!clean.includes("{")) {
+  //       clean = clean.replace(/\[\s*'/, "[{ '");
+  //     } else {
+  //       clean = clean.replace(/\[\s*'/, "[{ '");
+  //     }
       
-      if (!clean.includes("}")) {
-        clean = clean.replace(/}?\s*]$/, "}]");
-      } else {
-        clean = clean.replace(/}?\s*]$/, "}]");
-      }
-      clean = `[${clean}]`;
-      clean = clean.replace(/'/g, '"');
-      const parsed = JSON.parse(clean);
-      return Array.isArray(parsed[0]) ? parsed[0] : parsed;
-    } catch (e) {
-      console.error("Parsing error:", e);
-      return [];
-    }
-  }
+  //     if (!clean.includes("}")) {
+  //       clean = clean.replace(/}?\s*]$/, "}]");
+  //     } else {
+  //       clean = clean.replace(/}?\s*]$/, "}]");
+  //     }
+  //     clean = `[${clean}]`;
+  //     clean = clean.replace(/'/g, '"');
+  //     const parsed = JSON.parse(clean);
+  //     return Array.isArray(parsed[0]) ? parsed[0] : parsed;
+  //   } catch (e) {
+  //     console.error("Parsing error:", e);
+  //     return [];
+  //   }
+  // }
 
   const shareEventHandler = (url) => {
     const link = document.createElement("a");
@@ -105,7 +106,7 @@ const EventDetail = () => {
         {/* Hero Image */}
           <section className="relative h-96x overflow-hidden h-[86vh]">
             <img
-              src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png'}
+              src={event.image_url ? event.image_url : logo}
               alt={event.title}
               className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
@@ -226,7 +227,7 @@ const EventDetail = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Contact Information')}</h3>
-                    <div className="space-y-3">
+                    <div className="space-y-3 pb-5">
                       <div className="flex items-center">
                         <Phone size={16} className="mr-3 text-primary" />
                         <span className="text-sm">{event.contact.phone}</span>
@@ -236,6 +237,10 @@ const EventDetail = () => {
                         <span className="text-sm">{event.contact.email}</span>
                       </div>
                     </div>
+                    <button 
+                      className="bg-gradient-to-r w-full from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
+                      Beli Tiket
+                    </button>
                   </CardContent>
                 </Card>
 

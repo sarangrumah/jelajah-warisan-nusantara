@@ -35,12 +35,8 @@ const LayananKonservasi = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      {/* <AboutSection />
-      <CollectionSection /> */}
       <BannerSection />
       <ConservationSection />
-      {/* <EducationSection />
-      <PartnershipSection /> */}
       <ContactSection />
       <Footer />
       <FloatingButtons />

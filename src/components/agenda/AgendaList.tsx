@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { agendaService } from '@/lib/api-services';
-import { eventCategories, placeholder, defaultEvents } from '@/../database/default-data';
+import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
+import logo from '@/assets/MCB-Logo.png';
 
 const AgendaList = () => {
   // const [events, setEvents] = useState([]);
@@ -42,19 +43,19 @@ const AgendaList = () => {
     }
   });
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('id-ID', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // const formatDate = (date) => {
+  //   return new Date(date).toLocaleDateString('id-ID', {
+  //     weekday: 'long',
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
+  // };
 
-  const formatTime = (time) => {
-    if (!time) return '';
-    return time.slice(0, 5);
-  };
+  // const formatTime = (time) => {
+  //   if (!time) return '';
+  //   return time.slice(0, 5);
+  // };
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -114,7 +115,7 @@ const AgendaList = () => {
                       {getStatusLabel(event.status)}
                     </div>
                     <img 
-                      src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png'} 
+                      src={event.image_url ? event.image_url : logo} 
                       alt={event.title}
                       className="w-full h-full object-contain object-center"
                     />

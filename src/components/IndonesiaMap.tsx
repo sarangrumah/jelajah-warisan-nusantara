@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { heritageService, museumService } from '@/lib/api-services';
-import { use } from 'i18next';
 
 interface LocationData {
   id: string;
@@ -27,132 +26,6 @@ const IndonesiaMap = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'museum' | 'heritage'>('all');
   const [locations, setLocations] = useState([]);
-
-  const locationsx: LocationData[] = [
-    // Museums
-    {
-      id: '1',
-      name: 'Museum Nasional',
-      type: 'museum',
-      coordinates: [-6.1751, 106.8200],
-      region: 'Jawa',
-      address: 'Jl. Medan Merdeka Barat No.12, Jakarta Pusat',
-      description: 'Museum sejarah dan budaya Indonesia terlengkap',
-      image: '/src/assets/museum-interior.jpg',
-      openingHours: '08:00 - 16:00',
-      ticketPrice: 'Rp 10.000',
-      contact: '(021) 3868172'
-    },
-    {
-      id: '2',
-      name: 'Museum Geology',
-      type: 'museum',
-      coordinates: [-6.9002, 107.6186],
-      region: 'Jawa',
-      address: 'Jl. Diponegoro No.57, Bandung',
-      description: 'Museum geologi dengan koleksi batuan dan fosil',
-      image: '/src/assets/museum-interior.jpg',
-      openingHours: '08:00 - 15:30',
-      ticketPrice: 'Rp 5.000'
-    },
-    {
-      id: '3',
-      name: 'Museum Sangiran',
-      type: 'museum',
-      coordinates: [-7.4167, 110.8333],
-      region: 'Jawa',
-      address: 'Krikilan, Kalijambe, Sragen',
-      description: 'Museum arkeologi dengan fosil manusia purba',
-      image: '/src/assets/museum-interior.jpg',
-      openingHours: '08:00 - 16:00',
-      ticketPrice: 'Rp 7.500'
-    },
-    {
-      id: '4',
-      name: 'Museum Aceh',
-      type: 'museum',
-      coordinates: [5.5480, 95.3238],
-      region: 'Sumatera',
-      address: 'Jl. Sultan Alaiddin Mahmudsyah No.10, Banda Aceh',
-      description: 'Museum budaya dan sejarah Aceh',
-      image: '/src/assets/museum-interior.jpg',
-      openingHours: '08:30 - 12:00, 14:00 - 17:00',
-      ticketPrice: 'Gratis'
-    },
-    {
-      id: '5',
-      name: 'Museum Balanga',
-      type: 'museum',
-      coordinates: [-2.2088, 113.9213],
-      region: 'Kalimantan',
-      address: 'Jl. Tjilik Riwut Km.2.5, Palangka Raya',
-      description: 'Museum budaya Dayak Kalimantan Tengah',
-      image: '/src/assets/museum-interior.jpg',
-      openingHours: '08:00 - 15:00',
-      ticketPrice: 'Rp 3.000'
-    },
-    // Heritage Sites
-    {
-      id: 'h1',
-      name: 'Candi Borobudur',
-      type: 'heritage',
-      coordinates: [-7.6079, 110.2038],
-      region: 'Jawa',
-      address: 'Borobudur, Magelang, Jawa Tengah',
-      description: 'Candi Buddha terbesar di dunia dari abad ke-8',
-      image: '/src/assets/hero-borobudur.jpg',
-      openingHours: '06:00 - 17:00',
-      ticketPrice: 'Rp 50.000'
-    },
-    {
-      id: 'h2',
-      name: 'Candi Prambanan',
-      type: 'heritage',
-      coordinates: [-7.7520, 110.4915],
-      region: 'Jawa',
-      address: 'Prambanan, Klaten, Jawa Tengah',
-      description: 'Kompleks candi Hindu terbesar di Indonesia',
-      image: '/src/assets/heritage-sites.jpg',
-      openingHours: '06:00 - 18:00',
-      ticketPrice: 'Rp 40.000'
-    },
-    {
-      id: 'h3',
-      name: 'Benteng Rotterdam',
-      type: 'heritage',
-      coordinates: [-5.1332, 119.4069],
-      region: 'Sulawesi',
-      address: 'Jl. Ujung Pandang, Makassar',
-      description: 'Benteng peninggalan Belanda abad ke-17',
-      image: '/src/assets/heritage-sites.jpg',
-      openingHours: '08:00 - 18:00',
-      ticketPrice: 'Rp 10.000'
-    },
-    {
-      id: 'h4',
-      name: 'Istana Maimun',
-      type: 'heritage',
-      coordinates: [3.5738, 98.6820],
-      region: 'Sumatera',
-      address: 'Jl. Brigadir Jenderal Katamso, Medan',
-      description: 'Istana Kesultanan Deli berarsitektur Melayu-Islam',
-      image: '/src/assets/heritage-sites.jpg',
-      openingHours: '08:00 - 17:00',
-      ticketPrice: 'Rp 5.000'
-    },
-    {
-      id: 'h5',
-      name: 'Taman Sari',
-      type: 'heritage',
-      coordinates: [-7.8075, 110.3644],
-      region: 'Jawa',
-      address: 'Patehan, Kraton, Yogyakarta',
-      description: 'Kompleks taman air Keraton Yogyakarta',
-      image: '/src/assets/heritage-sites.jpg',
-      openingHours: '09:00 - 15:00',
-      ticketPrice: 'Rp 7.000'
-    }
-  ];
 
   const fetchLocations = async () => {
     try {
@@ -178,7 +51,7 @@ const IndonesiaMap = () => {
   const filteredLocations = filter === 'all' ? locations : (filter === 'museum' ? locations.filter(loc => loc.type === 'museum') : locations.filter(loc => loc.type !== 'museum'));
 
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
+    if (!mapContainer.current || map.current) { return };
 
     // Initialize map
     map.current = L.map(mapContainer.current, {
@@ -217,7 +90,7 @@ const IndonesiaMap = () => {
 
   // Update markers when filter changes
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current) { return };
 
     // Clear existing markers
     map.current.eachLayer((layer) => {
@@ -259,7 +132,7 @@ const IndonesiaMap = () => {
       // const marker = L.marker(location.coordinates, {
       //   icon: createCustomIcon(location),
       // }).addTo(map.current!);
-      if (!location.coordinates) return;
+      if (!location.coordinates) { return };
       let coords: [number, number];
       try {
         coords = JSON.parse(location.coordinates);
@@ -364,19 +237,18 @@ const IndonesiaMap = () => {
       // Add click event listeners after popup opens
       marker.on('popupopen', () => {
         const popup = marker.getPopup();
-        if (!map.current || !popup) return;
+        if (!map.current || !popup) { return };
 
         const popupEl = popup.getElement();
-        if (!popupEl) return;
+        if (!popupEl) { return };
 
-        // ✅ Cegah style berulang dalam satu siklus open
-        if ((popupEl as any)._styled) return;
+        if ((popupEl as any)._styled) { return };
         (popupEl as any)._styled = true;
 
         const mapSize = map.current.getSize();
         const markerPoint = map.current.latLngToContainerPoint(marker.getLatLng());
         const tip = popupEl.querySelector('.leaflet-popup-tip') as HTMLElement;
-        if (!tip) return;
+        if (!tip) { return };
 
         // reset
         ['top', 'bottom', 'left', 'right'].forEach((pos) => {
@@ -422,7 +294,7 @@ const IndonesiaMap = () => {
         if (listBtn) {
           listBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const region = (listBtn as HTMLElement).dataset.region;
+            // const region = (listBtn as HTMLElement).dataset.region;
             const type = (listBtn as HTMLElement).dataset.type;
             if (type === 'museum') {
               // navigate(`/museum?region=${region}`);

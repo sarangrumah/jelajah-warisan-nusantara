@@ -1,3 +1,7 @@
+import koleksiKuratorial1 from '@/assets/conservation/koleksi_kuratorial1.jpg'
+import koleksiKuratorial2 from '@/assets/conservation/koleksi_kuratorial2.jpg'
+import koleksiKuratorial3 from '@/assets/conservation/koleksi_kuratorial3.jpg'
+
 const CollectionSection = () => {
   return (
     <section className="pt-10 bg-background">
@@ -5,7 +9,7 @@ const CollectionSection = () => {
             <div className='gap-5 flex max-md:flex-col max-md:items-stretch'>
                 <div className='w-2/5 ps-5 max-md:w-full max-md:ml-0'>
                     <img
-                    src='/src/assets/conservation/koleksi_kuratorial1.jpg'
+                    src={koleksiKuratorial1}
                     alt='Museum collection display'
                     className='aspect-[1.33] object-contain w-full grow max-md:max-w-full max-md:mt-5'
                     />
@@ -29,14 +33,14 @@ const CollectionSection = () => {
             <div className='gap-3 flex max-md:flex-col max-md:items-stretch mx-auto px-5'>
                 <div className='w-[24%] max-md:w-full max-md:ml-0'>
                     <img
-                    src='/src/assets/conservation/koleksi_kuratorial2.jpg'
+                    src={koleksiKuratorial2}
                     alt='Heritage site 1'
                     className='aspect-[0.75] object-contain shrink-0 max-w-full grow max-md:mt-5'
                     />
                 </div>
                 <div className='w-[24%] ml-5 max-md:w-full max-md:ml-0'>
                     <img
-                    src='/src/assets/conservation/koleksi_kuratorial3.jpg'
+                    src={koleksiKuratorial3}
                     alt='Heritage site 2'
                     className='aspect-[0.75] object-contain shrink-0 max-w-full grow max-md:mt-5'
                     />
