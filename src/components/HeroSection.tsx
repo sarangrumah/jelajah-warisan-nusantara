@@ -60,8 +60,13 @@ const HeroSection = () => {
       const response = await bannerService.getAll();
       if (response.error) {
         console.log('Error fetching slides:', response.error);
+        setSlides(defaultSlides);
       }
-      setSlides(response.data || defaultSlides);
+      if(response.data.length === 0) {
+        setSlides(defaultSlides);
+      } else {
+        setSlides(response.data);
+      }
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
@@ -100,8 +105,6 @@ const HeroSection = () => {
             }`}
           >
             <img
-
-              // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
               src={ slide.image }
               alt={t(slide.title)}
               className="w-full h-full object-cover parallax"

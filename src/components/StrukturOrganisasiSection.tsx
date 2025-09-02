@@ -1,4 +1,5 @@
 import React from 'react'
+import strukturOrganisasi from '@/assets/struktur-organisasi/struktur_organisasi.jpg'
 
 const StrukturOrganisasiSection = () => {
   return (
@@ -11,7 +12,7 @@ const StrukturOrganisasiSection = () => {
             </div>
             <section className='w-full flex justify-center mt-5x max-md:mt-10' aria-label='Organizational chart'>
                 <img
-                src='/src/assets/struktur-organisasi/struktur_organisasi.jpg'
+                src={strukturOrganisasi}
                 alt='Struktur Organisasi MBC - Organizational chart showing the complete hierarchy and structure of the organization'
                 className='object-contain w-full self-stretch max-md:max-w-full mt-5'
                 />

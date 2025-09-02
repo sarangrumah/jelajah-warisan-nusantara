@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { newsService } from '@/lib/api-services';
-import { publications } from '@/../database/get-data';
+import { publications } from '@/../database/default-data';
 
 const NewsListSection = () => {
   const [articles, setArticles] = useState([]);
@@ -29,6 +29,7 @@ const NewsListSection = () => {
 
       if (response.error) {
         console.error('Error fetching articles:', response.error);
+        setArticles(publications);
       }
 
       if(response.data.length === 0) {
@@ -36,7 +37,6 @@ const NewsListSection = () => {
       } else {
         setArticles(response.data);
       }
-      // setArticles(response.data || publications);
     } catch (error) {
       console.error('Error fetching articles:', error);
     }

@@ -1,16 +1,16 @@
-import { FileText, Download, Calendar, BarChart3 } from 'lucide-react';
+import { FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { publications } from '@/../database/get-data';
+import { publications } from '@/../database/default-data';
 
 const PublicationSection = () => {
-  const budgetData = [
-    { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
-    { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
-    { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
-  ];
+  // const budgetData = [
+  //   { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
+  //   { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
+  //   { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
+  // ];
 
-  const downloadFromUrl = (url, filename) => {
+  const downloadFromUrl = (url) => {
     const link = document.createElement("a");
     link.href = url;
     // link.download = filename || "download";
@@ -75,7 +75,7 @@ const PublicationSection = () => {
                       </div>
                     </div>
                     <div className='p-6 absolute left-0 bottom-0 right-0'>
-                      <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.title)}>
+                      <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
                         <Download size={16} className="mr-2" />
                         Unduh Dokumen
                       </Button>
@@ -86,52 +86,6 @@ const PublicationSection = () => {
             ))}
           </div>
         </div>
-
-        {/* <div>
-          <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
-            Transparansi Anggaran
-          </h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            {budgetData.map((budget, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <BarChart3 size={24} className="text-primary" />
-                    <div>
-                      <CardTitle className="text-lg">Anggaran {budget.year}</CardTitle>
-                      <p className="text-2xl font-bold text-heritage-gradient">{budget.budget}</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{budget.allocation}</p>
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Download size={16} className="mr-2" />
-                    Detail Anggaran
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div> */}
-
-        {/* <div className="mt-16 text-center scroll-reveal">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Calendar size={32} className="text-primary" />
-              <h3 className="text-2xl font-bold text-foreground">
-                Berlangganan Update
-              </h3>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              Dapatkan notifikasi ketika publikasi baru tersedia atau update 
-              penting lainnya dari Direktorat Museum dan Cagar Budaya.
-            </p>
-            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              Berlangganan Newsletter
-            </button>
-          </div>
-        </div> */}
       </div>
     </section>
   );

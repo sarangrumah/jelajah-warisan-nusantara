@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Calendar, MapPin, Clock, Users, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { placeholder, eventCategories, defaultEvents } from '@/../database/default-data';
+import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
-
+import logo from '@/assets/MCB-Logo.png';
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -28,26 +28,6 @@ const AgendaSection = () => {
   useEffect(() => {
     fetchEvents();
   }, []);
-  
-  // useEffect(() => {
-  //   const observerOptions = {
-  //     threshold: 0.1,
-  //     rootMargin: '0px 0px -50px 0px'
-  //   };
-
-  //   const observer = new IntersectionObserver((entries) => {
-  //     entries.forEach((entry) => {
-  //       if (entry.isIntersecting) {
-  //         entry.target.classList.add('revealed');
-  //       }
-  //     });
-  //   }, observerOptions);
-
-  //   const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-  //   scrollRevealElements.forEach((el) => observer.observe(el));
-
-  //   return () => observer.disconnect();
-  // }, [activeCategory]);
 
   const filteredEvents = activeCategory === 'semua' 
     ? events.slice(0, 6) 
@@ -114,7 +94,7 @@ const AgendaSection = () => {
                 <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                <img src={event.image_url ? event.image_url : '/src/assets/MCB-Logo.png' } alt={event.title} className="w-full h-full object-contain object-center" />
+                <img src={event.image_url ? event.image_url : logo } alt={event.title} className="w-full h-full object-contain object-center" />
               </div>
 
               {/* Event Content */}

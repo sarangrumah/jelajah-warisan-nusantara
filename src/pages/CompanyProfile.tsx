@@ -1,14 +1,14 @@
 
 import React, { useEffect } from 'react';
-import { MapPin, Users, Building, Award, Target, Eye, Heart } from 'lucide-react';
+import { MapPin, Users, Building, Award, Target, Eye } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import heritageSites from '@/assets/heritage-sites.jpg';
+import museumInterior from '@/assets/museum-interior.jpg';
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
@@ -45,16 +45,6 @@ const CompanyProfile = () => {
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
 
-  // const milestones = [
-  //   { year: '1945', event: 'Pembentukan Departemen Pendidikan dan Kebudayaan' },
-  //   { year: '1950', event: 'Pendirian Museum Nasional Indonesia' },
-  //   { year: '1975', event: 'Pembentukan Direktorat Permuseuman' },
-  //   { year: '1992', event: 'UU No. 5 tentang Benda Cagar Budaya' },
-  //   { year: '2010', event: 'UU No. 11 tentang Cagar Budaya' },
-  //   { year: '2019', event: 'Pembentukan Direktorat Jenderal Kebudayaan' },
-  //   { year: '2024', event: 'Digitalisasi dan Modernisasi Sistem Informasi' },
-  // ];
-
   const leadership = [
     {
       name: 'Abi Kusno, S.Hum., M.E.M',
@@ -70,36 +60,13 @@ const CompanyProfile = () => {
     }
   ];
 
-  // const departments = [
-  //   {
-  //     name: 'Direktorat Pelestarian Cagar Budaya',
-  //     description: 'Bertanggung jawab atas pelestarian, perlindungan, dan pemanfaatan cagar budaya di seluruh Indonesia.',
-  //     functions: ['Identifikasi dan Penetapan', 'Pelestarian dan Pemeliharaan', 'Pengawasan dan Pengendalian']
-  //   },
-  //   {
-  //     name: 'Direktorat Permuseuman',
-  //     description: 'Mengelola dan mengembangkan museum-museum di Indonesia serta koleksi budaya nasional.',
-  //     functions: ['Pengembangan Museum', 'Manajemen Koleksi', 'Program Edukasi']
-  //   },
-  //   {
-  //     name: 'Direktorat Sejarah',
-  //     description: 'Mengkaji, mendokumentasikan, dan menyosialisasikan sejarah bangsa Indonesia.',
-  //     functions: ['Penelitian Sejarah', 'Dokumentasi', 'Publikasi dan Diseminasi']
-  //   },
-  //   {
-  //     name: 'Direktorat Nilai Budaya, Seni dan Film',
-  //     description: 'Mengembangkan dan melestarikan nilai-nilai budaya, seni, dan perfilman Indonesia.',
-  //     functions: ['Pengembangan Seni', 'Nilai Budaya', 'Industri Film']
-  //   }
-  // ];
-
   return (
     <div className="py-20 min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary-glow/10 to-background overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/src/assets/heritage-sites.jpg')] bg-cover bg-center opacity-10" />
+        <div className={`bg-[url(${heritageSites})] absolute inset-0 bg-cover bg-center opacity-10`} />
         <div className="relative z-10 container mx-auto px-4 text-center scroll-reveal">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-heritage-gradient mb-6">
@@ -183,67 +150,15 @@ const CompanyProfile = () => {
                   </ul>
                 </CardContent>
               </Card>
-
-              {/* <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Heart className="h-6 w-6 text-primary" />
-                    Nilai-Nilai Perusahaan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Integritas</h4>
-                      <p className="text-sm text-muted-foreground">Menjunjung tinggi kejujuran dan transparansi dalam setiap tindakan</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Profesionalitas</h4>
-                      <p className="text-sm text-muted-foreground">Melaksanakan tugas dengan kompetensi dan dedikasi tinggi</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Inovasi</h4>
-                      <p className="text-sm text-muted-foreground">Mengembangkan solusi kreatif untuk tantangan pelestarian budaya</p>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Kolaborasi</h4>
-                      <p className="text-sm text-muted-foreground">Bekerja sama dengan berbagai pihak untuk tujuan bersama</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card> */}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Timeline Section */}
-      {/* <section className="py-16 bg-gradient-subtle">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-heritage-gradient">Sejarah dan Pencapaian</h2>
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-6">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
-                      {milestone.year}
-                    </Badge>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-muted-foreground">{milestone.event}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       <div className="container grid md:grid-cols-2 gap-12 items-center mb-16">
         <div className="scroll-reveal">
           <img 
-            src="/src/assets/museum-interior.jpg" 
+            src={museumInterior} 
             alt="Museum Interior"
             className="w-full rounded-lg shadow-lg"
           />
@@ -259,13 +174,6 @@ const CompanyProfile = () => {
           <p className="text-muted-foreground leading-relaxed text-justify">
             {t('about.companyProfile.historyText2')}
           </p>
-          
-          {/* <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-            <h4 className="text-xl font-semibold text-primary mb-3">{t('about.companyProfile.commitmentTitle')}</h4>
-            <p className="text-muted-foreground text-justify">
-              {t('about.companyProfile.commitmentText')}
-            </p>
-          </div> */}
         </div>
       </div>
       <div className="container gap-12 items-center mb-16">        
@@ -295,48 +203,11 @@ const CompanyProfile = () => {
                   <CardTitle className="text-center">{leader.name}</CardTitle>
                   <p className="text-center text-primary font-medium">{leader.position}</p>
                 </CardHeader>
-                {/* <CardContent>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <p><strong>Pendidikan:</strong> {leader.education}</p>
-                    <p><strong>Pengalaman:</strong> {leader.experience}</p>
-                  </div>
-                </CardContent> */}
               </Card>
             ))}
           </div>
         </div>
       </section>
-
-      {/* Organizational Structure */}
-      {/* <section className="py-16 bg-gradient-subtle">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center pb-12 text-heritage-gradient">Struktur Organisasi</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {departments.map((dept, index) => (
-              <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-lg">{dept.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">{dept.description}</p>
-                  <Separator className="my-4" />
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Fungsi Utama:</h4>
-                    <ul className="space-y-1">
-                      {dept.functions.map((func, funcIndex) => (
-                        <li key={funcIndex} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="w-1.5 h-1.5 bg-primary rounded-full" />
-                          {func}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section> */}
 
       {/* Contact Information */}
       <section className="py-16">
@@ -356,13 +227,6 @@ const CompanyProfile = () => {
                       <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
                     </div>
                   </div>
-                  {/* <div className="flex items-start gap-3">
-                    <Building className="h-5 w-5 text-primary mt-1" />
-                    <div>
-                      <p className="font-medium">Gedung</p>
-                      <p className="text-muted-foreground">Gedung E, Kompleks Kemendikbudristek</p>
-                    </div>
-                  </div> */}
                 </CardContent>
               </Card>
 

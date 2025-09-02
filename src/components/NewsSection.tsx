@@ -1,38 +1,9 @@
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { news } from '@/../database/default-data';
 
 const NewsSection = () => {
-  const news = [
-    {
-      id: 1,
-      title: 'Peluncuran Program Digitalisasi Koleksi Museum Nasional',
-      excerpt: 'Program ambisius untuk mendigitalkan seluruh koleksi museum nasional dimulai tahun ini.',
-      image: '/src/assets/museum-interior.jpg',
-      date: '2024-01-15',
-      author: 'Tim Redaksi',
-      category: 'Berita'
-    },
-    {
-      id: 2,
-      title: 'Kerjasama Internasional Pelestarian Cagar Budaya',
-      excerpt: 'Indonesia menandatangani MoU dengan UNESCO untuk program pelestarian.',
-      image: '/src/assets/heritage-sites.jpg',
-      date: '2024-01-12',
-      author: 'Tim Redaksi',
-      category: 'Kemitraan'
-    },
-    {
-      id: 3,
-      title: 'Workshop Konservasi Artefak untuk Kurator Museum',
-      excerpt: 'Pelatihan teknik konservasi modern untuk meningkatkan kualitas perawatan koleksi.',
-      image: '/src/assets/hero-borobudur.jpg',
-      date: '2024-01-10',
-      author: 'Tim Redaksi',
-      category: 'Artikel'
-    }
-  ];
-
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -47,7 +18,7 @@ const NewsSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {news.map((article, index) => (
+          {news.map((article) => (
             <Card key={article.id} className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <div className="aspect-video relative overflow-hidden">
                 <img 

@@ -10,6 +10,7 @@ const resources = {
       nav: {
         beranda: "Home",
         museum: "Museum",
+        koleksi: "Collection",
         agenda: "Agenda",
         tentangKami: "About Us",
         strukturOrganisasi: "Organizational structure",
@@ -110,7 +111,7 @@ const resources = {
       footer: {
         orgName: "Museum and Cultural Heritage",
         address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
-        phone: "+62 21 5725019",
+        phone: "",
         email: "info@kebudayaan.kemdikbud.go.id",
         quickLinks: "Quick Links",
         socialMedia: "Social Media",
@@ -401,7 +402,58 @@ const resources = {
         submit: "Submit",
         downloadDocument: "Download Document",
         viewDetails: "View Details",
-        freeConsultation: "Free Consultation"
+        freeConsultation: "Free Consultation",
+        visitWebsite: "Visit Website",
+        buyTicket: "Buy Ticket",
+      },
+      // Collection Section
+      collection: {
+        title: "Masterpiece Collections",
+        subtitle: "Discover Indonesia's most precious cultural artifacts",
+      },
+      // Heritage Section
+      heritage: {
+        title: "Heritage Sites",
+        subtitle: "Discover Indonesia's precious cultural heritage sites",
+      },
+      // Museum Detail
+      museumDetail: {
+        about: "About",
+        facilities: "Facilities",
+        galleryCollection: "Gallery Collection",
+        visitInformation: "Visit Information",
+        location: "Location",
+        openingHours: "Opening Hours",
+        contact: "Contact",
+        ticketPrice: "Ticket Price",
+        museum: "Museum",
+        heritage: "Heritage Site",
+      },
+      // Filter
+      filter: {
+        museum: {
+          search: "Search museums and heritage sites...",
+          categoryAll: "All",
+          categoryMuseum: "Museums",
+          categoryHeritage: "Heritage Sites",
+        },
+        collection: {
+          search: "Search collections...",
+          categoryAll: "All Categories",
+          categoryWeapon: "Weapons",
+          categorySculpture: "Sculptures",
+          categoryManuscript: "Manuscripts",
+          categoryTextile: "Textiles",
+          categoryJewelry: "Jewelry",
+          categoryCeramic: "Ceramics",
+        },
+        heritage: {
+          search: "Search heritage sites...",
+          categoryAll: "All Types",
+          categoryTemple: "Temples",
+          categoryArcheological: "Archeological Sites",
+          categoryFortress: "Fortresses",
+        }
       }
     }
   },
@@ -411,6 +463,7 @@ const resources = {
       nav: {
         beranda: "Beranda",
         museum: "Museum",
+        koleksi: "Koleksi",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
         strukturOrganisasi: "Struktur Organisasi",
@@ -513,7 +566,7 @@ const resources = {
       footer: {
         orgName: "Museum dan Cagar Budaya",
         address: "Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110",
-        phone: "+62 21 3868172",
+        phone: "",
         email: "museumcb@kemenbud.go.id ",
         quickLinks: "Tautan Cepat",
         socialMedia: "Media Sosial",
@@ -804,7 +857,58 @@ const resources = {
         submit: "Kirim",
         downloadDocument: "Unduh Dokumen",
         viewDetails: "Lihat Detail SOP",
-        freeConsultation: "Konsultasi Gratis"
+        freeConsultation: "Konsultasi Gratis",
+        visitWebsite: "Kunjungi Situs",
+        buyTicket: "Beli Tiket",
+      },
+      // Collection Section
+      collection: {
+        title: "Koleksi Mahakarya",
+        subtitle: "Temukan artefak budaya Indonesia yang paling berharga",
+      },
+      // Heritage Section
+      heritage: {
+        title: "Cagar Budaya",
+        subtitle: "Temukan situs warisan budaya Indonesia yang berharga",
+      },
+      // Museum Detail
+      museumDetail: {
+        about: "Tentang Museum",
+        facilities: "Fasilitas",
+        galleryCollection: "Koleksi Galeri",
+        visitInformation: "Informasi Kunjungan",
+        location: "Lokasi",
+        openingHours: "Jam Buka",
+        contact: "Kontak",
+        ticketPrice: "Harga Tiket",
+        museum: "Museum",
+        heritage: "Cagar Budaya",
+      },
+      // Filter
+      filter: {
+        museum: {
+          search: "Cari Museum dan Cagar Budaya...",
+          categoryAll: "Semua",
+          categoryMuseum: "Museum",
+          categoryHeritage: "Cagar Budaya",
+        },
+        collection: {
+          search: "Cari Koleksi...",
+          categoryAll: "Semua Kategori",
+          categoryWeapon: "Senjata",
+          categorySculpture: "Patung",
+          categoryManuscript: "Manuskrip",
+          categoryTextile: "Tekstil",
+          categoryJewelry: "Perhiasan",
+          categoryCeramic: "Keramik",
+        },
+        heritage: {
+          search: "Cari Situs Warisan...",
+          categoryAll: "Semua Tipe",
+          categoryTemple: "Candi",
+          categoryArcheological: "Situs Arkeologi",
+          categoryFortress: "Benteng"
+        }
       }
     }
   }

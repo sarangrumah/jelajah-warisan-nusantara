@@ -1,5 +1,8 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect } from 'react'
+import berita1 from '@/assets/conservation/berita1.jpg'
+import berita2 from '@/assets/conservation/berita2.jpg'
+import berita3 from '@/assets/conservation/berita3.jpeg'
 
 const BannerSection = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -9,17 +12,17 @@ const BannerSection = () => {
     {
       title: 'Laboratorium Uji Sampel',
       subtitle: 'Museum & Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
-      image: '/src/assets/conservation/berita1.jpg',
+      image: berita1,
     },
     {
       title: 'Penyewaan Alat',
       subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
-      image: '/src/assets/conservation/berita3.jpeg',
+      image: berita3,
     },
     {
       title: 'Edukasi',
       subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
-      image: '/src/assets/conservation/berita2.jpg',
+      image: berita2,
     }
   ]
 
@@ -67,7 +70,6 @@ const BannerSection = () => {
             }`}
           >
             <img
-              // src={slide.image?.startsWith('http') ? slide.image : `/src/assets/images/hero-section/${slide.image}` || slide.image}
               src={ slide.image }
               alt={slide.title}
               className="w-full h-full object-cover parallax"

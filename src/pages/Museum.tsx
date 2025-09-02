@@ -69,7 +69,7 @@ const Museum = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={t('Search museums and heritage sites...')}
+              placeholder={t('filter.museum.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -81,9 +81,9 @@ const Museum = () => {
               <SelectValue placeholder={t('Filter by type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('All')}</SelectItem>
-              <SelectItem value="museum">{t('Museums')}</SelectItem>
-              <SelectItem value="heritage">{t('Heritage Sites')}</SelectItem>
+              <SelectItem value="all">{t('filter.museum.categoryAll')}</SelectItem>
+              <SelectItem value="museum">{t('filter.museum.categoryMuseum')}</SelectItem>
+              <SelectItem value="heritage">{t('filter.museum.categoryHeritage')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

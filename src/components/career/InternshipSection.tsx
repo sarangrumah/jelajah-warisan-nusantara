@@ -691,11 +691,14 @@ const InternshipSection = () => {
               tentang program magang dan proses pendaftaran.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="outline">
+              <Button variant="outline" className='bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow'>
                 <MapPin size={16} className="mr-2" />
                 Lokasi Kantor
               </Button>
-              <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
+              <Button variant="outline" className='bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow'>
+                Hubungi HR
+              </Button>
+              <button className="hidden bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3x rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
                 Hubungi HR
               </button>
             </div>

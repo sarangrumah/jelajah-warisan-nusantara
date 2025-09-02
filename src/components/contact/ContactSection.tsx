@@ -127,7 +127,6 @@ const ContactSection = () => {
       icon: Phone,
       title: 'Telepon',
       details: [
-        '+62 21 3868172',
         '+6281295953929 (WhatsApp)'
       ]
     },

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Users, Building, Award, Target, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DynamicComponent } from '../dynamic-components';
+import compProfile from '@/assets/museum-interior.jpg'
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ const CompanyProfile = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
           <div className="scroll-reveal">
             <img 
-              src="/src/assets/museum-interior.jpg" 
+              src={compProfile}
               alt="Museum Interior"
               className="w-full rounded-lg shadow-lg"
             />

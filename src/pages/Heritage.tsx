@@ -72,10 +72,10 @@ const Heritage = () => {
       <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white scroll-reveal">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {t('Heritage Sites')}
+            {t('heritage.title')}
           </h1>
           <p className="text-xl">
-            {t('Discover Indonesia\'s precious cultural heritage sites')}
+            {t('heritage.subtitle')}
           </p>
         </div>
       </section>
@@ -86,7 +86,7 @@ const Heritage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={t('Search heritage sites...')}
+              placeholder={t('filter.heritage.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -98,10 +98,10 @@ const Heritage = () => {
               <SelectValue placeholder={t('Filter by type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('All Types')}</SelectItem>
-              <SelectItem value="temple">{t('Temples')}</SelectItem>
-              <SelectItem value="archaeological">{t('Archaeological Sites')}</SelectItem>
-              <SelectItem value="fortress">{t('Fortresses')}</SelectItem>
+              <SelectItem value="all">{t('filter.heritage.categoryAll')}</SelectItem>
+              <SelectItem value="temple">{t('filter.heritage.categoryTemple')}</SelectItem>
+              <SelectItem value="archaeological">{t('filter.heritage.categoryArcheological')}</SelectItem>
+              <SelectItem value="fortress">{t('filter.heritage.categoryFortress')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
