@@ -106,14 +106,20 @@ export const careerService = {
 };
 
 // Media Items
+// export const mediaService = {
+//   getAll: () => apiClient.getAll('media_items', { is_published: 'true' }),
+//   getById: (id: string) => apiClient.getById('media_items', id),
+//   create: (data: any) => apiClient.create('media_items', data),
+//   update: (id: string, data: any) => apiClient.update('media_items', id, data),
+//   delete: (id: string) => apiClient.delete('media_items', id),
+// };
 export const mediaService = {
-  getAll: () => apiClient.getAll('media_items', { is_published: 'true' }),
-  getById: (id: string) => apiClient.getById('media_items', id),
-  create: (data: any) => apiClient.create('media_items', data),
-  update: (id: string, data: any) => apiClient.update('media_items', id, data),
-  delete: (id: string) => apiClient.delete('media_items', id),
+  getAll: () => apiClient.getAll('tb_media', { is_published: 'true' }),
+  getById: (id: string) => apiClient.getById('tb_media', id),
+  create: (data: any) => apiClient.create('tb_media', data),
+  update: (id: string, data: any) => apiClient.update('tb_media', id, data),
+  delete: (id: string) => apiClient.delete('tb_media', id),
 };
-
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('faqs', { is_published: 'true' }),
