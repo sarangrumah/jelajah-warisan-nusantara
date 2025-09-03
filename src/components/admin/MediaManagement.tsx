@@ -169,7 +169,6 @@ const emptyItem: MediaItem = {
   is_published: true,
 };
 
-
 const MediaManagement = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -177,9 +176,6 @@ const MediaManagement = () => {
   const [editingMedia, setEditingMedia] = useState<MediaItem>(emptyItem);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-
-
-
 
   useEffect(() => {
     fetchMediaItems();
