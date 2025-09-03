@@ -1,5 +1,6 @@
 // Vite config with assetsInclude for uppercase/lowercase image extensions
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
   // Add all relevant image extensions here
@@ -14,4 +15,9 @@ export default defineConfig({
     '**/*.webp'
   ],
   // ...other config options if needed
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
 });
