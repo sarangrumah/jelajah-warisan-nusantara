@@ -22,15 +22,33 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  const images = import.meta.glob(`@/assets/images/*`, { 
+    eager: true,
+    import: 'default'
+   }) as Record<string, string>;
+
+  const getImage = (name: string) => {
+    for(const path in images) {
+      if(path.includes(name)) {
+        return images[path];
+      }
+    }
+    return null;
+  }
+
   const fetchMuseums = async () => {
     try {
       const response = await museumService.getAll();
 
       if (response.error) {
         console.error('Error fetching museums:', response.error);
+        setMuseums(defaultMuseums);
       }
-
-      setMuseums(response.data || defaultMuseums);
+      if(response.data.length === 0) {
+        setMuseums(defaultMuseums);
+      } else {
+        setMuseums(response.data);
+      }
     } catch (error) {
       console.error('Error fetching museums:', error);
     }
@@ -95,7 +113,7 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url}
+                    src={getImage(item.img_banner)}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />
@@ -107,13 +125,13 @@ const Museum = () => {
                 <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <MapPin size={16} className="mr-1" />
-                    {item.location}
+                    {item.address}
                   </div>
                   <p className="text-sm">{item.description}</p>
                   <div className="mt-4">
                     <span className={`inline-block px-2 py-1 rounded-full text-xs ${
                       item.type === 'museum' 
-                        ? 'bg-primary/10 text-primary' 
+                        ? 'bg-primary/10 text-primary'
                         : 'bg-secondary/10 text-secondary'
                     }`}>
                       {item.type === 'museum' ? t('Museum') : t('Heritage Site')}

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService } from '@/lib/api-services';
-import { heroVideoService } from '@/lib/api-services';
+// import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
@@ -16,6 +16,34 @@ const HeroSection = () => {
   const [slides, setSlides] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  const images = import.meta.glob(`@/assets/images/*`, { 
+    eager: true,
+    import: 'default'
+   }) as Record<string, string>;
+
+  const getImage = (name: string) => {
+    for(const path in images) {
+      if(path.includes(name)) {
+        return images[path];
+      }
+    }
+    return null;
+  }
+
+  const videos = import.meta.glob(`@/assets/hero-sections/*`, { 
+    eager: true,
+    import: 'default'
+   }) as Record<string, string>;
+
+  const getVideo = (name: string) => {
+    for(const path in videos) {
+      if(path.includes(name)) {
+        return videos[path];
+      }
+    }
+    return null;
+  }
 
   const handleVideoEnded = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
@@ -58,19 +86,20 @@ const HeroSection = () => {
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
+      const filteredResponse = response.data.filter((slide: any) => slide.media_type === 'image');
+      const sortedResponse = filteredResponse.sort((a: any, b: any) => b.id.localeCompare(a.id));
       if (response.error) {
-        console.log('Error fetching slides:', response.error);
+        console.error('Error fetching slides:', response.error);
         setSlides(defaultSlides);
       }
       if(response.data.length === 0) {
         setSlides(defaultSlides);
       } else {
-        setSlides(response.data);
+        setSlides(sortedResponse);
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
-
   };
 
   useEffect(() => {
@@ -79,11 +108,18 @@ const HeroSection = () => {
 
   const fetchVideos = async () => {
     try {
-      const response = await heroVideoService.getAll();
+      const response = await bannerService.getAll();
+      const filteredResponse = response.data.filter((slide: any) => slide.media_type === 'video');
+      const sortedResponse = filteredResponse.sort((a: any, b: any) => b.id.localeCompare(a.id));
       if (response.error) {
-        console.log('Error fetching videos:', response.error)
+        console.error('Error fetching videos:', response.error)
+        setVideoList(defaultVideos);
       }
-      setVideoList(response.data || defaultVideos);
+      if(response.data.length === 0) {
+        setVideoList(defaultVideos);
+      } else {
+        setVideoList(sortedResponse);
+      }
     } catch (error) {
       console.error('Error fetching videos:', error)
     }
@@ -92,6 +128,7 @@ const HeroSection = () => {
   useEffect(() => {
     fetchVideos();
   }, []);
+  console.log(videoList)
 
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
@@ -105,7 +142,7 @@ const HeroSection = () => {
             }`}
           >
             <img
-              src={ slide.image }
+              src={ getImage(slide.image) }
               alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
@@ -130,7 +167,8 @@ const HeroSection = () => {
               {slides.length > 0 && t(slides[currentSlide].subtitle)}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
+              {/* <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}> */}
+              <Link to={slides.length > 0 ? `/${slides[currentSlide].button_url_1.split('.')[1]}` : "/"}>
                 <Button
                   variant="outline"
                   size="lg"
@@ -200,7 +238,8 @@ const HeroSection = () => {
               <div className="w-full h-full flex items-center justify-center">
                 <video 
                 key={currentVideoIndex} 
-                src={videoList[currentVideoIndex].video}
+                // src={videoList[currentVideoIndex].image}
+                src={getVideo(videoList[currentVideoIndex].image)}
                 onEnded={handleVideoEnded} controls autoPlay className="w-full" />
               </div>
             </div>

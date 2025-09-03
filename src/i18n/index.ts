@@ -35,7 +35,7 @@ const resources = {
           subtitle: "Storing and exhibiting valuable artifacts from all over Indonesia",
           cta: "View Collections"
         },
-        sites: {
+        heritage: {
           title: "Indonesian Cultural Heritage",
           subtitle: "Protecting historical sites that are the pride of the nation",
           cta: "Discover Sites"
@@ -488,7 +488,7 @@ const resources = {
           subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
           cta: 'Lihat Koleksi',
         },
-        sites: {
+        heritage: {
           title: 'Cagar Budaya Indonesia',
           subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
           cta: 'Temukan Situs',
