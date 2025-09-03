@@ -9,7 +9,7 @@ import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 /* --- Vite Dynamic Image Import Solution for Agenda Images --- */
-const agendaImages = import.meta.glob('../assets/images/agenda/*', { eager: true });
+const agendaImages = import.meta.glob('../assets/events/*', { eager: true });
 function getAgendaImageUrl(filename: string) {
   if (!filename) { return undefined; }
   const match = Object.entries(agendaImages).find(([path]) => path.endsWith(filename));
