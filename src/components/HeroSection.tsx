@@ -23,7 +23,8 @@ function getImageOrVideoUrl(filename: string) {
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
-    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image),
+    asset: slide.image?.split('/').pop() || slide.image, // keep original filename
+    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
   }));
 
 const HeroSection = () => {
@@ -137,16 +138,16 @@ const HeroSection = () => {
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* --- Improved: Render image or video based on file type --- */}
-            {isImage(slide.image) ? (
+            {/* --- Improved: Render image or video based on original filename (asset) --- */}
+            {isImage(slide.asset) ? (
               <img
-                src={getImageOrVideoUrl(slide.image)}
+                src={slide.image}
                 alt={t(slide.title)}
                 className="w-full h-full object-cover parallax"
               />
-            ) : isVideo(slide.image) ? (
+            ) : isVideo(slide.asset) ? (
               <video
-                src={getImageOrVideoUrl(slide.image)}
+                src={slide.image}
                 controls
                 className="w-full h-full object-cover parallax"
               />
