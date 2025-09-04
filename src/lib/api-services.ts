@@ -106,6 +106,14 @@ export const careerService = {
 };
 
 // Media Items
+// export const mediaService = {
+//   getAll: () => apiClient.getAll('media_items', { is_published: 'true' }),
+//   getById: (id: string) => apiClient.getById('media_items', id),
+//   create: (data: any) => apiClient.create('media_items', data),
+//   update: (id: string, data: any) => apiClient.update('media_items', id, data),
+//   delete: (id: string) => apiClient.delete('media_items', id),
+// };
+// Media Items
 export const mediaService = {
   getAll: () => apiClient.getAll('tb_media'),
   getById: (id: string) => apiClient.getById('tb_media', id),
@@ -114,7 +122,6 @@ export const mediaService = {
   delete: (id: string) => apiClient.delete('tb_media', id),
   approve: (id: string) => apiClient.approve('tb_events', id),
 };
-
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('tb_faqs'),

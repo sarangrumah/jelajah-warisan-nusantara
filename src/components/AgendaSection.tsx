@@ -7,6 +7,18 @@ import { Link } from 'react-router-dom';
 import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
+<<<<<<< HEAD
+=======
+
+/* --- Vite Dynamic Image Import Solution for Agenda Images --- */
+const agendaImages = import.meta.glob('../assets/events/*', { eager: true });
+function getAgendaImageUrl(filename: string) {
+  if (!filename) { return undefined; }
+  const match = Object.entries(agendaImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : undefined;
+}
+/* --- END Vite Dynamic Image Import Solution --- */
+>>>>>>> origin/main
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -56,7 +68,7 @@ const AgendaSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold pb-3 text-heritage-gradient">
-            {t('agenda.title', 'Agenda & Event')}
+            {t('agenda.title', 'Agenda')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {t('agenda.subtitle', 'Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia')}
@@ -94,7 +106,25 @@ const AgendaSection = () => {
                 <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
+<<<<<<< HEAD
                 <img src={event.image_url ? event.image_url : logo } alt={event.title} className="w-full h-full object-contain object-center" />
+=======
+                {/* --- Vite Dynamic Image Import Solution for Agenda Images --- */}
+                <img
+                  src={
+                    getAgendaImageUrl(event.image_url?.split('/').pop())
+                      || event.image_url
+                      || logo
+                  }
+                  alt={event.title}
+                  className="w-full h-full object-contain object-center"
+                />
+                {/*
+                --- BACKUP: Original image rendering logic ---
+                <img src={event.image_url ? event.image_url : logo } alt={event.title} className="w-full h-full object-contain object-center" />
+                --- END BACKUP ---
+                */}
+>>>>>>> origin/main
               </div>
 
               {/* Event Content */}
