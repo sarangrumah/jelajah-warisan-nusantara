@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, CircleCheck, CircleX, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -42,7 +42,6 @@ interface SitesItem {
   type_relation? : Types
   categories_relation? : Categories
 }
-
 
 interface Image {
   path :string;
@@ -181,7 +180,8 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
             <div className="flex items-center justify-center p-8">
               <Loader2 className="h-8 w-8 animate-spin" />
             </div>
-          ) : <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+          ) : 
+          <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
@@ -415,14 +415,13 @@ const emptySites: SitesItem = {
 
 const SitesManagement = ({ userRole }: { userRole: string }) => {
   const [museums, setSitess] = useState<SitesItem[]>([]);
+    const [museum, setSite] = useState<SitesItem>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingSites, setEditingSites] = useState<SitesItem>(emptySites);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-
-
-
+  const [isDialogDelete, setIsDialogDelete] = useState(false);
 
   useEffect(() => {
     fetchSites();
@@ -549,8 +548,30 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-
-
+  const toggleDelete = async (id: string) => {
+    try {
+      setIsDialogDelete(false)
+      const response = await museumService.delete(id);
+      if (response.error) throw new Error(response.error);
+      
+      // setBanners(prev => prev.map(banner => 
+      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      // ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Deleted`,
+      });
+      fetchSites()
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete banner',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -569,10 +590,17 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingSites(emptySites)}>
+            {/* <Button onClick={() => setEditingSites(emptySites)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Sites
-            </Button>
+            </Button> */}
+            { userRole != "approver" ?             
+              <Button onClick={() => setEditingSites(emptySites)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Sites
+              </Button> : 
+              <div></div>
+            }
           </DialogTrigger>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
@@ -594,6 +622,33 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           </DialogContent>
         </Dialog>
       </div>
+
+      <div className="flex justify-between items-center">
+        {museum != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + museum.name + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + museum.name + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(museum.id)}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                  </Button>
+              </div>
+          </DialogContent>
+        </Dialog > : <div></div>}
+      </div>
+      
 
       {museums.length === 0 ? (
         <Card>
@@ -623,37 +678,54 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                     </CardTitle>
                     <CardDescription>{museum.location}</CardDescription>
                   </div>
-                { userRole == "admin" ? <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => togglePublished(museum.id, !museum.is_active)}
-                  >
-                    {museum.is_active ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditingSites(museum);
-                      setIsDialogOpen(true);
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
+                  { 
+                    userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
                       <Button
-                        variant="success"
-                        className="w-full"
-                        onClick={() => toggleApproved(museum.id)}
+                        variant={museum.is_active ? "destructive" : "success"}
+                        size="sm"
+                        onClick={() => togglePublished(museum.id, !museum.is_active)}
                       >
-                        Approve
+                        {!museum.is_active ? (
+                          <CircleCheck className="w-4 h-4" />
+                        ) : (
+                          <CircleX className="w-4 h-4" />
+                        )}
                       </Button>
-                  </div> : <div></div>}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingSites(museum);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        // setEditingBanner(banner);
+                        setSite(museum)
+                        setIsDialogDelete(true);
+                      }}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                      </div> : 
+                      userRole == "approver" && !museum.is_approved? 
+                      <div className="flex items-center space-x-2">
+                          <Button
+                            variant="success"
+                            className="w-full"
+                            onClick={() => toggleApproved(museum.id)}
+                          >
+                            Approve
+                        </Button>
+                      </div> 
+                    : <div></div>
+                      
+                  }
                 </div>
                 <CardDescription className="flex items-center gap-2">
                   <Badge variant={'secondary'}>

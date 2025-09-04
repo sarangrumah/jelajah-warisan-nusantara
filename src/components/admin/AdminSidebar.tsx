@@ -33,8 +33,11 @@ const menuItems = [
   { id: 'museum', label: 'Museum', icon: Settings },
   { id: 'agenda', label: 'Agenda', icon: Calendar },
   { id: 'media', label: 'Media', icon: FileText },
+  { id: 'sop', label: 'SOP', icon: FileText },
+  { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
+  { id: 'career-submissions', label: 'Submissions', icon: Users },
   { id: 'faq', label: 'FAQ', icon: Settings },
-  { id: 'career', label: 'Karir', icon: Users },
+  // { id: 'career', label: 'Karir', icon: Users },
   { id: 'users', label: 'Users', icon: Shield },
 ];
 

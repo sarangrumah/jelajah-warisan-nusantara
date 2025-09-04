@@ -12,16 +12,15 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import BannerManagement from '@/components/admin/BannerManagement';
 import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
-/*
-// import EventManagement from '@/components/admin/EventManagement';
-*/
-
-import MuseumManagement from '@/components/admin/MuseumManagement';
-import AgendaManagement from '@/components/admin/AgendaManagement';
+import SitesManagement from '@/components/admin/SiteManagement';
+import AgendaManagement from '@/components/admin/EventManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';
 import CareerManagement from '@/components/admin/CareerManagement';
 import UserManagement from '@/components/admin/UserManagement';
+import CareerPostingManagement from '@/components/admin/CareerPostingManagement';
+import CareerSubmissionManagement from '@/components/admin/CareerSubmissionManagement';
+import SOPManagement from '@/components/admin/SOPManagement';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -143,12 +142,15 @@ const AdminDashboard = () => {
           )}
 
           {activeTab === 'banner' && <BannerManagement userRole={userRole}/>}
-          {activeTab === 'company' && <CompanyProfileManagement />}
-          {activeTab === 'museum' && <MuseumManagement />}
-          {activeTab === 'agenda' && <AgendaManagement />}
-          {activeTab === 'media' && <MediaManagement />}
-          {activeTab === 'faq' && <FAQManagement />}
-          {activeTab === 'career' && <CareerManagement />}
+          {activeTab === 'company' && <CompanyProfileManagement userRole={userRole} />}
+          {activeTab === 'museum' && <SitesManagement userRole={userRole}/>}
+          {activeTab === 'agenda' && <AgendaManagement userRole={userRole}/>}
+          {activeTab === 'media' && <MediaManagement userRole={userRole}/>}
+          {activeTab === 'faq' && <FAQManagement userRole={userRole}/>}
+          {activeTab === 'sop' && <SOPManagement userRole={userRole} />}
+          {activeTab === 'career-mgmt' && <CareerPostingManagement userRole={userRole} />}
+          {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
+          {/* {activeTab === 'career' && <CareerManagement />} */}
           {activeTab === 'users' && <UserManagement />}
         </div>
       </main>
