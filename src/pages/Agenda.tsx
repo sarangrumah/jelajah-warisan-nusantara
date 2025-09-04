@@ -41,9 +41,9 @@ const AdminDashboard = () => {
   }, [user]);
 
   // Redirect if not authenticated
-  // if (!user && !loading) {
-  //   return <Navigate to="/auth" replace />;
-  // }
+  if (!user && !loading) {
+    return <Navigate to="/auth" replace />;
+  }
 
   const handleSignOut = async () => {
     await signOut();
