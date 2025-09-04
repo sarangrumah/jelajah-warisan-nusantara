@@ -10,14 +10,20 @@ import { defaultVideos } from '@/../database/default-data';
 
 // --- Vite Dynamic Image Import Solution ---
 const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
-function getImageUrl(filename: string) {
+function isImage(filename: string) {
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+}
+function isVideo(filename: string) {
+  return /\.(mp4|webm|ogg)$/i.test(filename);
+}
+function getImageOrVideoUrl(filename: string) {
   const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as any).default : filename;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
-    image: getImageUrl(slide.image?.split('/').pop() || slide.image),
+    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image),
   }));
 
 const HeroSection = () => {
@@ -131,21 +137,26 @@ const HeroSection = () => {
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* --- Vite Dynamic Image Import Solution --- */}
-            <img
-              src={ slide.image }
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
-            {/*
-            --- BACKUP: Original image rendering logic ---
-            <img
-              src={slide.image}
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
-            --- END BACKUP ---
-            */}
+            {/* --- Improved: Render image or video based on file type --- */}
+            {isImage(slide.image) ? (
+              <img
+                src={getImageOrVideoUrl(slide.image)}
+                alt={t(slide.title)}
+                className="w-full h-full object-cover parallax"
+              />
+            ) : isVideo(slide.image) ? (
+              <video
+                src={getImageOrVideoUrl(slide.image)}
+                controls
+                className="w-full h-full object-cover parallax"
+              />
+            ) : (
+              <img
+                src="/public/placeholder.svg"
+                alt="Not found"
+                className="w-full h-full object-cover parallax"
+              />
+            )}
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
