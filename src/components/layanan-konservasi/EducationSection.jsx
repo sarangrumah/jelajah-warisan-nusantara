@@ -1,4 +1,6 @@
 import React from 'react'
+import education1 from '@/assets/conservation/education1.png'
+import education2 from '@/assets/conservation/education2.png'
 
 const EducationSection = () => {
   return (
@@ -7,12 +9,12 @@ const EducationSection = () => {
         <div className='w-[38%] max-md:w-full max-md:ml-0'>
           <div className='grow max-md:max-w-full'>
             <img
-              src='/src/assets/conservation/education1.png'
+              src={education1}
               alt='Educational program activities'
               className='aspect-[1.25] object-contain w-full max-md:max-w-full'
             />
             <img
-              src='/src/assets/conservation/education2.png'
+              src={education2}
               alt='Public program engagement'
               className='aspect-[1.26] object-contain w-full mt-9 max-md:max-w-full'
             />

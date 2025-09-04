@@ -7,8 +7,9 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { placeholder, defaultCollections } from '@/../database/default-data';
+import { defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
+import logo from '@/assets/MCB-Logo.png';
 
 const Collection = () => {
   const { t } = useTranslation();
@@ -51,13 +52,13 @@ const Collection = () => {
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
+      <section className="relative py-20 h-80 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {t('Masterpiece Collections')}
+            {t('collection.title')}
           </h1>
           <p className="text-xl">
-            {t('Discover Indonesia\'s most precious cultural artifacts')}
+            {t('collection.subtitle')}
           </p>
         </div>
       </section>
@@ -68,7 +69,7 @@ const Collection = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={t('Search collections...')}
+              placeholder={t('filter.collection.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -80,13 +81,13 @@ const Collection = () => {
               <SelectValue placeholder={t('Filter by category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('All Categories')}</SelectItem>
-              <SelectItem value="weapons">{t('Weapons')}</SelectItem>
-              <SelectItem value="sculpture">{t('Sculptures')}</SelectItem>
-              <SelectItem value="manuscript">{t('Manuscripts')}</SelectItem>
-              <SelectItem value="textile">{t('Textiles')}</SelectItem>
-              <SelectItem value="jewelry">{t('Jewelry')}</SelectItem>
-              <SelectItem value="ceramic">{t('Ceramics')}</SelectItem>
+              <SelectItem value="all">{t('filter.collection.categoryAll')}</SelectItem>
+              <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
+              <SelectItem value="sculpture">{t('filter.collection.categorySculpture')}</SelectItem>
+              <SelectItem value="manuscript">{t('filter.collection.categoryManuscript')}</SelectItem>
+              <SelectItem value="textile">{t('filter.collection.categoryTextile')}</SelectItem>
+              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>
+              <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -98,7 +99,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url ? item.image_url : placeholder.image}
+                    src={item.image_url ? item.image_url : logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />

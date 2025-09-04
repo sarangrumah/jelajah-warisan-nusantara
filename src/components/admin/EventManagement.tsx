@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Eye, EyeOff,CircleCheck, CircleX, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -80,8 +80,6 @@ interface Categories {
   name: string;
 }
 
-
-
 const EventForm = ({ museum, onSave, onCancel, saving }: {
   museum: EventItem;
   onSave: (data: EventItem) => void;
@@ -128,10 +126,10 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       
       setSites(response.data as SitesItem[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -149,10 +147,10 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       
       setCategories(response.data as Categories[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -490,12 +488,14 @@ const emptyEvent: EventItem = {
 };
 
 const EventManagement = ({ userRole }: { userRole: string }) => {
-  const [event, setEvents] = useState<EventItem[]>([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [event, setEvent] = useState<EventItem>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem>(emptyEvent);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const [isDialogDelete, setIsDialogDelete] = useState(false);
 
 
   useEffect(() => {
@@ -511,10 +511,10 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       }
       setEvents(response.data as EventItem[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -623,7 +623,32 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const toggleDelete = async (id: string) => {
+    try {
+      setIsDialogDelete(false)
+      const response = await EventsService.delete(id);
+      if (response.error) throw new Error(response.error);
+      
+      // setBanners(prev => prev.map(banner => 
+      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      // ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Deleted`,
+      });
 
+      fetchEvents()
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete banner',
+        variant: 'destructive',
+      });
+    }
+  };
+  
 
   if (loading) {
     return (
@@ -638,14 +663,17 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Event & Heritage Management</h2>
-          <p className="text-muted-foreground">Manage event and heritage sites</p>
+          <p className="text-muted-foreground">Manage events and heritage sites</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingEvent(emptyEvent)}>
+            { userRole != "approver" ?             
+              <Button onClick={() => setEditingEvent(emptyEvent)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Event
-            </Button>
+              </Button> : 
+              <div></div>
+            }
           </DialogTrigger>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
@@ -668,10 +696,37 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </Dialog>
       </div>
 
-      {event.length === 0 ? (
+      
+      <div className="flex justify-between items-center">
+        {event != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + event.name + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + event.name + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(event.id)}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                  </Button>
+              </div>
+          </DialogContent>
+        </Dialog > : <div></div>}
+      </div>
+
+      {events.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-muted-foreground mb-4">No event created yet</p>
+            <p className="text-muted-foreground mb-4">No events created yet</p>
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create First Event
@@ -680,7 +735,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {event.map((museum) => (
+          {events.map((museum) => (
             <Card key={museum.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -697,37 +752,50 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     <CardDescription>{museum.subtitle}</CardDescription>                    
                     <CardDescription>{museum.location}</CardDescription>
                   </div>
-                { userRole == "admin" ? <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => togglePublished(museum.id, !museum.is_active)}
-                  >
-                    {museum.is_active ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditingEvent(museum);
-                      setIsDialogOpen(true);
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
-                      <Button
-                        variant="success"
-                        className="w-full"
-                        onClick={() => toggleApproved(museum.id)}
-                      >
-                        Approve
-                      </Button>
-                  </div> : <div></div>}
+                { 
+                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                    <Button
+                      variant={museum.is_active ? "destructive" : "success"}
+                      size="sm"
+                      onClick={() => togglePublished(museum.id, !museum.is_active)}
+                    >
+                      {!museum.is_active ? (
+                        <CircleCheck className="w-4 h-4" />
+                      ) : (
+                        <CircleX className="w-4 h-4" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingEvent(museum);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        // setEditingBanner(banner);
+                        setEvent(museum)
+                        setIsDialogDelete(true);
+                      }}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                    </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
+                        <Button
+                          variant="success"
+                          className="w-full"
+                          onClick={() => toggleApproved(museum.id)}
+                        >
+                          Approve
+                        </Button>
+                    </div> : <div></div>
+                }
                 </div>
               </CardHeader>
               <CardContent>

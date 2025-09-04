@@ -1,9 +1,10 @@
 import { Calendar, MapPin, Clock } from 'lucide-react';
+import heroBorobudur from '@/assets/hero-borobudur.jpg';
 
 const AgendaBanner = () => {
   const slides = [
     {
-      image: '/src/assets/hero-borobudur.jpg',
+      image: heroBorobudur,
       title: 'Agenda Kegiatan Museum & Cagar Budaya',
       subtitle: 'Ikuti berbagai kegiatan menarik yang diselenggarakan oleh museum dan situs cagar budaya di seluruh Indonesia',
     }

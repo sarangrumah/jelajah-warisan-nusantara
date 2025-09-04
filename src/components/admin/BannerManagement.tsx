@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, CircleCheck, CircleX, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -101,22 +101,46 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="start_publish_date">Start Date</Label>
+          <Label htmlFor="start_publish_date">Start Publish Date</Label>
           <Input
-            id="start_publish_date"
-            type="datetime-local"
-            value={formData.start_publish_date}
-            onChange={(e) => setFormData(prev => ({ ...prev, start_publish_date: e.target.value }))}
-          />
+          id="start_published_date"
+          type="datetime-local"
+          value={formData.start_publish_date || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            const isValid = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+            if (isValid || value === '') {
+              setFormData(prev => ({
+                ...prev,
+                start_publish_date: value
+              }));
+            }
+          }}
+          min="2020-01-01T00:00"
+          max="2030-12-31T23:59"
+          required
+        />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="end_publish_date">End Date</Label>
+          <Label htmlFor="end_publish_date">End Publish Date</Label>
           <Input
-            id="end_publish_date"
-            type="datetime-local"
-            value={formData.end_publish_date}
-            onChange={(e) => setFormData(prev => ({ ...prev, end_publish_date: e.target.value }))}
-          />
+              id="end_publish_date"
+              type="datetime-local"
+              value={formData.end_publish_date || ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                const isValid = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+                if (isValid || value === '') {
+                  setFormData(prev => ({
+                    ...prev,
+                    end_publish_date: value
+                  }));
+                }
+              }}
+              min="2020-01-01T00:00"
+              max="2030-12-31T23:59"
+              required
+            />
         </div>
       </div>
 
@@ -146,10 +170,12 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 
 const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const [banners, setBanners] = useState<any[]>([]);
+  const [banner, setBanner] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogDelete, setIsDialogDelete] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -237,7 +263,6 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
-
   const toggleApproved = async (id: string) => {
     try {
       const response = await bannerService.approve(id);
@@ -262,7 +287,31 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const toggleDelete = async (id: string) => {
+    try {
+      setIsDialogDelete(false)
+      const response = await bannerService.delete(id);
+      if (response.error) throw new Error(response.error);
+      
+      // setBanners(prev => prev.map(banner => 
+      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      // ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Deleted`,
+      });
 
+      fetchBanners()
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete banner',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -308,6 +357,33 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         </Dialog>
       </div>
 
+      <div className="flex justify-between items-center">
+        {banner != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + banner.title + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + banner.title + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(banner.id)}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                  </Button>
+              </div>
+          </DialogContent>
+        </Dialog > : <div></div>}
+      </div>
+      
+
       {banners.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -321,6 +397,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
       ) : (
         <div className="grid gap-4">
           {banners.map((banner) => (
+            
             <Card key={banner.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -336,17 +413,17 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     </CardTitle>
                     <CardDescription>{banner.subtitle}</CardDescription>
                   </div>
-                 { 
-                 userRole == "admin" ? <div className="flex items-center space-x-2">
+                { 
+                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
                     <Button
-                      variant="outline"
+                      variant={banner.is_active ? "destructive" : "success"}
                       size="sm"
                       onClick={() => togglePublished(banner.id, !banner.is_active)}
                     >
-                      {banner.is_active ? (
-                        <EyeOff className="w-4 h-4" />
+                      {!banner.is_active ? (
+                        <CircleCheck className="w-4 h-4" />
                       ) : (
-                        <Eye className="w-4 h-4" />
+                        <CircleX className="w-4 h-4" />
                       )}
                     </Button>
                     <Button
@@ -359,6 +436,17 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        // setEditingBanner(banner);
+                        setBanner(banner)
+                        setIsDialogDelete(true);
+                      }}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
                     </div> : userRole == "approver" && !banner.is_approved? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
@@ -368,7 +456,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                           Approve
                         </Button>
                     </div> : <div></div>
-                  }
+                }
                 </div>
               </CardHeader>
               <CardContent>

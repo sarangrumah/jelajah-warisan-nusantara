@@ -34,7 +34,7 @@ interface User {
 interface UserRole {
   id: string;
   user_id: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'approver' | 'viewer' | 'super-admin';
 }
 
 const UserManagement = () => {
@@ -137,7 +137,9 @@ const UserManagement = () => {
     switch (role) {
       case 'admin':
         return 'default';
-      case 'editor':
+      case 'super-admin':
+        return 'default';
+      case 'approver':
         return 'secondary';
       default:
         return 'outline';
@@ -148,8 +150,10 @@ const UserManagement = () => {
     switch (role) {
       case 'admin':
         return 'Administrator';
-      case 'editor':
-        return 'Editor';
+      case 'super-admin':
+        return 'Super Administrator';
+      case 'approver':
+        return 'Approved';
       default:
         return 'Viewer';
     }
@@ -268,13 +272,19 @@ const UserManagement = () => {
                   <SelectItem value="admin">
                     <div className="flex items-center">
                       <Shield className="w-4 h-4 mr-2" />
-                      Administrator - Akses penuh
+                      Administrator - Akses penuh mengelola kontent
                     </div>
                   </SelectItem>
-                  <SelectItem value="editor">
+                  <SelectItem value="super-admin">
+                    <div className="flex items-center">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Super Administrator - Akses penuh
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Approver">
                     <div className="flex items-center">
                       <Edit3 className="w-4 h-4 mr-2" />
-                      Editor - Dapat mengelola konten
+                      Approver - Dapat mengelola approver kontent
                     </div>
                   </SelectItem>
                   <SelectItem value="viewer">

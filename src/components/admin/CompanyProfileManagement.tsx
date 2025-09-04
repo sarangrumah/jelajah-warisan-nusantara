@@ -11,6 +11,14 @@ import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
+import RichTextEditor from '../ui/rich-text-editor';
+import QuillEditor from '@/components/ui/quill-editor';
+
+// Helper to render a plain text preview from potential HTML input
+function stripHtml(input?: string): string {
+  if (!input) return '';
+  return input.replace(/<[^>]*>/g, '').trim();
+}
 
 export interface Company {
   id?: string;
@@ -385,10 +393,11 @@ const ProfileForm = ({
 
       <div className="space-y-2">
         <Label>Vision</Label>
-        <Textarea
+        <QuillEditor
           value={profile.vision || ''}
-          onChange={(e) => handleFieldChange('vision', e.target.value)}
-          rows={4}
+          onChange={(html) => handleFieldChange('vision', html)}
+          height={200}
+          placeholder="Write vision…"
         />
       </div>
 
@@ -460,7 +469,7 @@ const ProfileForm = ({
   );
 };
 
-const CompanyProfileManagement = () => {
+const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
   const [profiles, setProfiles] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -587,8 +596,6 @@ const CompanyProfileManagement = () => {
   };
 
 
-
-
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -599,10 +606,15 @@ const CompanyProfileManagement = () => {
 
   return (
     <div className="space-y-6">
+      <style>{`
+        .rich-content ol { list-style: decimal; margin-left: 1.25rem; padding-left: 1rem; }
+        .rich-content ul { list-style: disc; margin-left: 1.25rem; padding-left: 1rem; }
+        .rich-content li { margin-left: 0.25rem; }
+      `}</style>
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Company Profile Management</h2>
-          <p className="text-muted-foreground">Manage company information and content</p>
+          <h2 className="text-2xl font-bold">Company Profile</h2>
+          <p className="text-muted-foreground">company information and content</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -666,10 +678,18 @@ const CompanyProfileManagement = () => {
                       {/* <Badge variant={profile.is_published ? 'default' : 'secondary'}>
                         {profile.is_published ? 'Published' : 'Draft'}
                       </Badge> */}
+                       <div className="flex justify-between items-start">
+                        <Badge>
+                          {profile.brand}
+                        </Badge>
+                       </div>
                     </CardTitle>
-                    <CardDescription>{profile.brand}</CardDescription>
+                    {/* <CardDescription>
+
+                    </CardDescription> */}
                   </div>
-                  <div className="flex items-center space-x-2">
+                  {userRole != "approver" ?                   
+                    <div className="flex items-center space-x-2">
                     {/* <Button
                       variant="outline"
                       size="sm"
@@ -691,22 +711,150 @@ const CompanyProfileManagement = () => {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                  </div>
+                  </div> : <div></div>}
+
+
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium">Description:</span>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {profile.aboutus || 'No description'}
-                    </p>
+                {/* About Us */}
+                <div className='pb-2'>
+                  <div className='pb-2'>
+                    <span className="font-medium">About Us</span>
                   </div>
-                  <div>
-                    <span className="font-medium">Last updated:</span>
-                    <p className="text-muted-foreground">
-                      {new Date(profile.updated_at).toLocaleDateString()}
-                    </p>
+                  <div className="border p-4 rounded-lg space-y-3 relative">
+                    <div className='pb-2'>
+                      <p className="text-muted-foreground line-clamp-2">
+                        {stripHtml(profile.aboutus) || 'No description'}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className='pb-2'>
+                        <span className="font-medium">Vision</span>
+                        <div
+                          className="rich-content text-muted-foreground"
+                          dangerouslySetInnerHTML={{ __html: profile.vision || 'No description' }}
+                        />
+                      </div>
+                      <div className='pb-2'>
+                        <span className="font-medium">Mission</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {stripHtml(profile.mission) || 'No description'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Location */}
+                <div className='pb-2'>
+                  <div className='pb-2'>
+                    <span className="font-medium">Information Location</span>
+                  </div>
+                  <div className="border p-4 rounded-lg space-y-3 relative">
+                    <div>
+                      <span className="font-medium">Address:</span>
+                      <p className="text-muted-foreground line-clamp-2">
+                        {profile.address || 'No longitude'}
+                      </p>
+                    </div>
+                    <div className="flex gap-4 text-m">
+                      <div>
+                        <span className="font-medium">Latitude:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.latitude || 'No latitude'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium">Longitude:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.longitude || 'No longitude'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Contact */}
+                <div className='pb-2'>
+                  <div className='pb-2'>
+                    <span className="font-medium">Information Contact</span>
+                  </div>
+                  <div className="border p-4 rounded-lg space-y-3 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-m">
+                      <div>
+                        <span className="font-medium">Phone:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.phone || 'No Email'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium">Whatsapp:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.whatsapp || 'No Whatsapp'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-m">
+                      <div>
+                        <span className="font-medium">Email:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.email || 'No Email'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium">website:</span>
+                        <p className="text-muted-foreground line-clamp-2">
+                          {profile.website || 'No Whatsapp'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Leader */}
+                <div className='pb-2'>
+                  <div className='pb-2'>
+                    <span className="font-medium">Leader</span>
+                  </div>
+                  <div className="border p-4 rounded-lg space-y-3 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {profile.company_leadership?.map((e) => (
+                        <div className='flex gap-4'>
+                          <div className='pb-2'>
+                            <span className="font-medium">Name</span>
+                            <p className="text-muted-foreground line-clamp-2">
+                              {e.name || 'No name'}
+                            </p>
+                            <span className="font-medium">Position</span>
+                            <p className="text-muted-foreground line-clamp-2">
+                              {e.position || 'No position'}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                {/* Visitor */}
+                <div className='pb-2'>
+                  <div className='pb-2'>
+                    <span className="font-medium">Visitor</span>
+                  </div>
+                  <div className="border p-4 rounded-lg space-y-3 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {profile.company_visitor?.map((e) => (
+                        <div className='flex gap-4'>
+                          <div className='pb-2'>
+                            <span className="font-medium">Year</span>
+                            <p className="text-muted-foreground line-clamp-2">
+                              {e.year || 'No name'}
+                            </p>
+                            <span className="font-medium">Count</span>
+                            <p className="text-muted-foreground line-clamp-2">
+                              {e.visitor_count || 'No position'}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </CardContent>

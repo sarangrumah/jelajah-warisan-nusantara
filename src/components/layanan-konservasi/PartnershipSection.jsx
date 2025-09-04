@@ -1,3 +1,6 @@
+import partnership1 from '@/assets/conservation/partnership1.png'
+import partnership2 from '@/assets/conservation/partnership2.png'
+
 const PartnershipSection = () => {
   return (
     <section className='py-20 pr-px max-md:max-w-full max-md:p-5'>
@@ -13,7 +16,7 @@ const PartnershipSection = () => {
               </p>
             </div>
             <img
-              src='/src/assets/conservation/partnership1.png'
+              src={partnership1}
               alt='Partnership collaboration'
               className='aspect-[1.22] object-contain w-full ps-5 pt-5 max-md:max-w-full max-md:ml-0'
             />
@@ -22,7 +25,7 @@ const PartnershipSection = () => {
         <div className='w-3/5 ml-5 max-md:w-full max-md:ml-0 px-5'>
           <div className='flex flex-col font-normal leading-7 max-md:max-w-full'>
             <img
-              src='/src/assets/conservation/partnership2.png'
+              src={partnership2}
               alt='Partnership activities'
               className='aspect-[1] object-contain self-center max-w-fullx'
             />

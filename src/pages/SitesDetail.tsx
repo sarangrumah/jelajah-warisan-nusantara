@@ -7,6 +7,8 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import heritageSites from '@/assets/heritage-sites.jpg';
+import museumInterior from '@/assets/museum-interior.jpg';
 
 const SitesDetail = () => {
   const { id } = useParams();
@@ -20,7 +22,7 @@ const SitesDetail = () => {
       category: 'weapons',
       museum: 'Museum Nasional Indonesia',
       period: 'Abad ke-14',
-      image: '/src/assets/heritage-sites.jpg',
+      image: heritageSites,
       description: 'Keris pusaka yang ditemukan di situs Majapahit dengan ukiran detail yang menawan. Keris ini merupakan salah satu contoh terbaik dari seni pandai besi Jawa kuno yang menggabungkan fungsi praktis dengan nilai spiritual dan estetika tinggi.',
       material: 'Baja dengan pamor, gagang kayu, sarung kayu',
       dimensions: 'Panjang total: 45 cm, Panjang bilah: 32 cm',
@@ -41,7 +43,7 @@ const SitesDetail = () => {
       category: 'sculpture',
       museum: 'Museum Fatahillah',
       period: 'Abad ke-9',
-      image: '/src/assets/museum-interior.jpg',
+      image: museumInterior,
       description: 'Arca Ganesha yang terbuat dari batu andesit dengan detail yang sangat halus. Patung ini menggambarkan Ganesha dalam posisi duduk dengan empat lengan, menunjukkan pengaruh seni Hindu-Jawa yang khas.',
       material: 'Batu andesit',
       dimensions: 'Tinggi: 85 cm, Lebar: 60 cm, Tebal: 45 cm',
