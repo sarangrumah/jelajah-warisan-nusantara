@@ -58,7 +58,7 @@ const uploadPDF = createMulterConfig('documents', pdfFileFilter, 10 * 1024 * 102
 const uploadCV = createMulterConfig('cv-uploads', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadTranscript = createMulterConfig('transcripts', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadCoverLetter = createMulterConfig('cover-letters', pdfFileFilter, 5 * 1024 * 1024); // 5MB
-const uploadImage = createMulterConfig('images', imageFileFilter, 5 * 1024 * 1024); // 5MB
+const uploadImage = createMulterConfig('../../src/assets/hero-sections', imageFileFilter, 5 * 1024 * 1024); // 5MB
 
 // Generic upload endpoint that handles different buckets
 const uploadMulter = multer({
@@ -200,7 +200,8 @@ router.post('/images', authenticateToken, uploadImage.single('file'), (req, res)
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `/uploads/images/${req.file.filename}`;
+  // Return the path relative to frontend src/assets/hero-sections
+  const fileUrl = `/src/assets/hero-sections/${req.file.filename}`;
   res.json({
     message: 'Image uploaded successfully',
     file: {

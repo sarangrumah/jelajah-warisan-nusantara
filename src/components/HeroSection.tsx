@@ -9,7 +9,7 @@ import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
 // --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
+const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 }
@@ -79,12 +79,12 @@ const HeroSection = () => {
       const response = await bannerService.getAll();
       if (response.error) {
         console.log('Error fetching slides:', response.error);
-        setSlides(defaultSlides);
+        setSlides(mapSlidesWithImageUrl(defaultSlides));
       }
       if(response.data.length === 0) {
         setSlides(defaultSlides);
       } else {
-        setSlides(response.data);
+        setSlides(mapSlidesWithImageUrl(response.data));
         console.log('[HeroSection] Slides fetched from API:', response.data);
       }
     } catch (error) {
