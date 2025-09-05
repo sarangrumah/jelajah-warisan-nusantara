@@ -85,6 +85,7 @@ const HeroSection = () => {
         setSlides(defaultSlides);
       } else {
         setSlides(response.data);
+        console.log('[HeroSection] Slides fetched from API:', response.data);
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
@@ -116,36 +117,44 @@ const HeroSection = () => {
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {slides && slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            {/* --- Improved: Render image or video based on original filename (asset) --- */}
-            {isImage(slide.asset) ? (
-              <img
-                src={slide.image}
-                alt={t(slide.title)}
-                className="w-full h-full object-cover parallax"
-              />
-            ) : isVideo(slide.asset) ? (
-              <video
-                src={slide.image}
-                controls
-                className="w-full h-full object-cover parallax"
-              />
-            ) : (
-              <img
-                src="/public/placeholder.svg"
-                alt="Not found"
-                className="w-full h-full object-cover parallax"
-              />
-            )}
-            <div className="absolute inset-0 overlay-gradient" />
-          </div>
-        ))}
+        {slides && slides.map((slide, index) => {
+          console.log('[HeroSection] Rendering slide:', {
+            index,
+            asset: slide.asset,
+            image: slide.image,
+            slide
+          });
+          return (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {/* --- Improved: Render image or video based on original filename (asset) --- */}
+              {isImage(slide.asset) ? (
+                <img
+                  src={slide.image}
+                  alt={t(slide.title)}
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : isVideo(slide.asset) ? (
+                <video
+                  src={slide.image}
+                  controls
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : (
+                <img
+                  src="/public/placeholder.svg"
+                  alt="Not found"
+                  className="w-full h-full object-cover parallax"
+                />
+              )}
+              <div className="absolute inset-0 overlay-gradient" />
+            </div>
+          );
+        })}
         {isLoading && (
           <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
