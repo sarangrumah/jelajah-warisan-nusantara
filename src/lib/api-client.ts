@@ -151,8 +151,9 @@ class ApiClient {
   // File upload
   async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; name: string; originalName: string; size: number; type: string }>> {
     const formData = new FormData();
-    formData.append('file', file);
+    // Append bucket first so multer's fileFilter can read it before handling the file
     formData.append('bucket', bucket);
+    formData.append('file', file);
 
     try {
       const response = await fetch(`${this.baseUrl}/api/upload`, {

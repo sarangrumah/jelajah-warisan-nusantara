@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff,CircleCheck, CircleX, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -21,7 +22,7 @@ interface EventItem {
   category: string;
   subtitle?: string;
   description?: string;
-  sites_id: string;                 // Foreign key to tb_sites
+  sites_id?: string;                 // Foreign key to tb_sites
   location?: string;
   address?: string;
   start_published_date: string;    // ISO date string
@@ -86,9 +87,45 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   onCancel: () => void;
   saving: boolean;
 }) => {
+  // Helpers to normalize date values for inputs
+  const toDateInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const toDateTimeInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+  };
+
   const [formData, setFormData] = useState<EventItem>({
     ...museum,
+    start_published_date: toDateTimeInput(museum.start_published_date),
+    end_published_date: toDateTimeInput(museum.end_published_date),
+    start_date: toDateInput(museum.start_date),
+    end_date: toDateInput(museum.end_date),
   });
+
+  // Keep inputs in sync when switching edited event
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...museum,
+      start_published_date: toDateTimeInput(museum.start_published_date),
+      end_published_date: toDateTimeInput(museum.end_published_date),
+      start_date: toDateInput(museum.start_date),
+      end_date: toDateInput(museum.end_date),
+    }));
+  }, [museum]);
 
   const [sites, setSites] = useState<SitesItem[]>()
   const [categories, setCategories] = useState<Categories[]>()
@@ -96,6 +133,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   const [loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
   const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+  const [useSites, setUseSites] = useState<boolean>(false)
 
   useEffect(() => {
       fetchSites();    
@@ -103,16 +141,49 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   }, []);
 
   useEffect(() => {
-    
-    if (sites != undefined) {
+
+    if (formData.sites_id != null && !useSites) {
+      setUseSites(true)
+    }
+
+    if (sites != undefined && useSites) {
       sites.filter((e, index) => {
         if (formData.sites_id == e.id) {
           formData.address = e.address
         }
       })
     }
+
+
   }, [formData.sites_id]);
 
+
+  useEffect(() => {
+    if (!useSites && formData.sites_id != null) {
+       formData.address = ''
+       formData.sites_id = null
+    } else {
+      if (sites != undefined) {
+      sites.filter((e, index) => {
+          if (formData.sites_id == e.id) {
+            formData.address = e.address
+          }
+        })
+      }
+    }
+  }, [useSites])
+
+  // Ensure address follows useSites toggle and selected site
+  useEffect(() => {
+    if (!useSites) {
+      setFormData(prev => ({ ...prev, address: '' }));
+      return;
+    }
+    if (sites && formData.sites_id) {
+      const selected = sites.find((e) => e.id === formData.sites_id);
+      setFormData(prev => ({ ...prev, address: selected?.address ?? '' }));
+    }
+  }, [useSites, formData.sites_id, sites])
 
 
 
@@ -195,7 +266,19 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className='space-y-3'>
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id="use-sites"
+            checked={useSites}
+            onCheckedChange={(checked) => setUseSites(!!checked)}
+          />
+          <Label htmlFor="use-sites">Use Sites</Label>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+       {useSites ? 
         <div className="space-y-3">
           <Label htmlFor="sites">Sites</Label>
           {loading ? (
@@ -212,7 +295,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
               ))}
             </SelectContent>
           </Select>}
-        </div>
+        </div> : 
+        null}
         <div className="space-y-3">
           <Label htmlFor="category">Category</Label>
           {loadingCat ? (
@@ -269,7 +353,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="start_publish_date">Start Publish Date</Label>
+          <Label htmlFor="start_published_date">Start Publish Date</Label>
           <Input
           id="start_published_date"
           type="datetime-local"
@@ -467,7 +551,7 @@ const emptyEvent: EventItem = {
   category: '',
   subtitle: '',
   description: '',
-  sites_id: '',                     // Will be set when selecting a site
+  sites_id: null,                     // Will be set when selecting a site
   location: '',
   address: '',
   start_published_date: new Date().toISOString(),        // e.g., new Date().toISOString()
@@ -667,7 +751,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            { userRole != "approver" ?             
+            { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingEvent(emptyEvent)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Event
@@ -678,10 +762,10 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingEvent ? 'Edit Event' : 'Add New Event'}
+                {editingEvent.id ? 'Edit Event' : 'Add New Event'}
               </DialogTitle>
               <DialogDescription>
-                {editingEvent ? 'Update museum information' : 'Create a new museum or heritage site'}
+                {editingEvent.id ? 'Update event information' : 'Create a new Manage event'}
               </DialogDescription>
             </DialogHeader>
             <EventForm
@@ -754,17 +838,22 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                 { 
                   userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
-                    <Button
-                      variant={museum.is_active ? "destructive" : "success"}
-                      size="sm"
-                      onClick={() => togglePublished(museum.id, !museum.is_active)}
-                    >
-                      {!museum.is_active ? (
-                        <CircleCheck className="w-4 h-4" />
-                      ) : (
-                        <CircleX className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_active"
+                        checked={museum.is_active}
+                        onCheckedChange={(checked) => togglePublished(museum.id, checked)}
+                      />
+                    </div>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => toggleApproved(museum.id)}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"
@@ -786,7 +875,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !museum.is_approved ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"

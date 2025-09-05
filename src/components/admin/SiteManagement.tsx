@@ -4,16 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, CircleCheck, CircleX, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { map, string } from 'zod';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 interface SitesItem {
   id?: string;
   name: string;
@@ -31,6 +33,7 @@ interface SitesItem {
   whatsapp:string;
   website:string;
   facilities:string;
+  collection: string;
   img_banner: string;
   ticket_price:string;
   is_approved: boolean;
@@ -74,6 +77,59 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
   const [loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
   const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+
+  // Opening hours (Senin..Minggu) state and helpers
+  const DAYS = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'] as const;
+  type DayName = typeof DAYS[number];
+  type DayEntry = { enabled: boolean; value: string };
+
+  const initOpenHours = (): Record<DayName, DayEntry> => {
+    const base: Record<DayName, DayEntry> = {
+      Senin: { enabled: false, value: '' },
+      Selasa: { enabled: false, value: '' },
+      Rabu: { enabled: false, value: '' },
+      Kamis: { enabled: false, value: '' },
+      Jumat: { enabled: false, value: '' },
+      Sabtu: { enabled: false, value: '' },
+      Minggu: { enabled: false, value: '' },
+    };
+    try {
+      if (formData.opening_hours) {
+        const parsed = typeof formData.opening_hours === 'string'
+          ? JSON.parse(formData.opening_hours)
+          : formData.opening_hours;
+        if (Array.isArray(parsed)) {
+          parsed.forEach((obj: any) => {
+            if (obj && typeof obj === 'object') {
+              const day = Object.keys(obj)[0] as DayName;
+              const val = obj[day];
+              if (day && day in base && typeof val === 'string') {
+                base[day] = { enabled: true, value: val };
+              }
+            }
+          });
+        }
+      }
+    } catch (_) {
+      // ignore parse errors, keep defaults
+    }
+    return base;
+  };
+
+  const [openHours, setOpenHours] = useState<Record<DayName, DayEntry>>(initOpenHours);
+
+  // Reinitialize opening hours when switching the edited site item
+  useEffect(() => {
+    setOpenHours(initOpenHours());
+  }, [museum.id]);
+
+  // Reflect openHours into formData.opening_hours as JSON array of objects
+  useEffect(() => {
+    const arr = DAYS
+      .filter((d) => openHours[d].enabled && openHours[d].value.trim() !== '')
+      .map((d) => ({ [d]: openHours[d].value.trim() }));
+    setFormData((prev) => ({ ...prev, opening_hours: JSON.stringify(arr) }));
+  }, [openHours]);
 
   useEffect(() => {
       fetchTypes();      
@@ -225,7 +281,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="latitude">Latitude</Label>
           <Input
@@ -246,7 +302,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
             placeholder="106.8456"
           />
         </div>
-      </div>
+      </div> */}
 
 
       <div className="space-y-2">
@@ -277,25 +333,37 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
 
 
       <div className="space-y-2">
-        <Label htmlFor="opening_hours">Opening Hours (JSON format)</Label>
-        <Textarea
-          id="opening_hours"
-          value={JSON.stringify(formData.opening_hours, null, 1)}
-          onChange={(e) => {
-            const value = e.target.value;
-            setFormData(prev => ({ ...prev, opening_hours: value }));
-
-            try {
-              const parsed = JSON.parse(value);
-              // Only update as object if valid
-              setFormData(prev => ({ ...prev, opening_hours: parsed }));
-            } catch (e) {
-              // Invalid JSON → keep as string (temporary)
-            }
-          }}
-          placeholder='{"monday": "09:00-17:00", "tuesday": "09:00-17:00"}'
-          rows={3}
-        />
+        <Label>Opening Hours</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {DAYS.map((day) => (
+            <div key={day} className="flex items-center gap-3">
+              <Checkbox
+                id={`oh_${day}`}
+                checked={openHours[day].enabled}
+                onCheckedChange={(checked) =>
+                  setOpenHours((prev) => ({
+                    ...prev,
+                    [day]: { ...prev[day], enabled: !!checked },
+                  }))
+                }
+              />
+              <Label htmlFor={`oh_${day}`} className="w-20">
+                {day}
+              </Label>
+              <Input
+                placeholder="08.00-17.00"
+                value={openHours[day].value}
+                onChange={(e) =>
+                  setOpenHours((prev) => ({
+                    ...prev,
+                    [day]: { ...prev[day], value: e.target.value },
+                  }))
+                }
+                disabled={!openHours[day].enabled}
+              />
+            </div>
+          ))}
+        </div>
         {errors.opening_hours && (
           <p className="text-sm text-red-500">{errors.opening_hours}</p>
         )}
@@ -335,6 +403,60 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="ticket_price">Ticket Price</Label>
+        <Input
+          id="ticket_price"
+          value={formData.ticket_price}
+          onChange={(e) => setFormData(prev => ({ ...prev,
+            ticket_price: e.target.value
+          }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Label htmlFor="facilities">Facilities</Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              Gunakan koma untuk memisahkan. Contoh: Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <Textarea
+          id="facilities"
+          value={formData.facilities}
+          // placeholder=''
+          placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
+           onChange={(e) => setFormData(prev => ({ ...prev,
+            facilities: e.target.value
+          }))}
+          rows={3}
+        />
+        {errors.opening_hours && (
+          <p className="text-sm text-red-500">{errors.opening_hours}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="collection">Collection</Label>
+        <Textarea
+          id="collection"
+          value={formData.collection}
+          // placeholder=''
+          onChange={(e) => setFormData(prev => ({ ...prev,
+            collection: e.target.value
+          }))}
+          rows={3}
+        />
+        {errors.opening_hours && (
+          <p className="text-sm text-red-500">{errors.opening_hours}</p>
+        )}
+      </div>
+
       <div className="flex items-center space-x-2">
         <Switch
           id="is_active"
@@ -342,38 +464,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
         />
         <Label htmlFor="is_active">Publish Sites</Label>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="facilities">Facilities (JSON format)</Label>
-        <Textarea
-          id="facilities"
-          value={JSON.stringify(formData.facilities, null, 1)}
-          onChange={(e) => {
-            const value = e.target.value;
-            setFormData(prev => ({ ...prev, facilities: value }));
-
-            try {
-              const parsed = JSON.parse(value);
-              // Only update as object if valid
-              setFormData(prev => ({ ...prev, facilities: parsed }));
-            } catch (e) {
-              // Invalid JSON → keep as string (temporary)
-            }
-          }}
-          placeholder='{
-            "parking": true,
-            "wheelchair_access": true,
-            "restrooms": true,
-            "cafe": false,
-            "gift_shop": true,
-            "wifi": true
-          }'
-          rows={3}
-        />
-        {errors.opening_hours && (
-          <p className="text-sm text-red-500">{errors.opening_hours}</p>
-        )}
       </div>
 
       <div className="flex justify-end space-x-2">
@@ -407,6 +497,7 @@ const emptySites: SitesItem = {
   whatsapp: '',
   website: '',
   facilities: '',
+  collection: '',
   img_banner: '',
   ticket_price: '',
   is_approved: false, // reasonable default
@@ -477,12 +568,14 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         }
         
         setSitess(prev => [response.data, ...prev]);
-        
         toast({
           title: 'Success',
           description: 'Sites created successfully',
         });
       }
+
+        fetchSites()
+
       
       setEditingSites(emptySites);
       setIsDialogOpen(false);
@@ -594,7 +687,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
               <Plus className="w-4 h-4 mr-2" />
               Add Sites
             </Button> */}
-            { userRole != "approver" ?             
+            { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingSites(emptySites)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Sites
@@ -605,10 +698,10 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingSites ? 'Edit Sites' : 'Add New Sites'}
+                {editingSites.id ? 'Edit Sites' : 'Add New Sites'}
               </DialogTitle>
               <DialogDescription>
-                {editingSites ? 'Update museum information' : 'Create a new museum or heritage site'}
+                {editingSites.id ? 'Update museum information' : 'Create a new museum or heritage site'}
               </DialogDescription>
             </DialogHeader>
             <SitesForm
@@ -676,21 +769,25 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                         {museum.is_approved ? 'Approved' : 'Draft'}
                       </Badge>
                     </CardTitle>
-                    <CardDescription>{museum.location}</CardDescription>
                   </div>
                   { 
                     userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
-                      <Button
-                        variant={museum.is_active ? "destructive" : "success"}
-                        size="sm"
-                        onClick={() => togglePublished(museum.id, !museum.is_active)}
-                      >
-                        {!museum.is_active ? (
-                          <CircleCheck className="w-4 h-4" />
-                        ) : (
-                          <CircleX className="w-4 h-4" />
-                        )}
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="is_active"
+                          checked={museum.is_active}
+                          onCheckedChange={(checked) => togglePublished(museum.id, checked)}
+                        />
+                      </div>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => toggleApproved(museum.id)}
+                        >
+                          Approve
+                        </Button>
+                      ) : null}
                       <Button
                         variant="outline"
                         size="sm"
@@ -713,7 +810,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                       <Trash className="w-4 h-4" />
                     </Button>
                       </div> : 
-                      userRole == "approver" && !museum.is_approved? 
+                      userRole === "approver" && !museum.is_approved ? 
                       <div className="flex items-center space-x-2">
                           <Button
                             variant="success"
@@ -728,11 +825,12 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                   }
                 </div>
                 <CardDescription className="flex items-center gap-2">
+                  {museum.subtitle}
                   <Badge variant={'secondary'}>
-                    {museum.type_relation.name}
+                    {museum.type_relation?.name}
                   </Badge>
                   <Badge variant={'secondary'}>
-                    {museum.categories_relation.name}
+                    {museum.categories_relation?.name}
                   </Badge>
                 </CardDescription>
               </CardHeader>

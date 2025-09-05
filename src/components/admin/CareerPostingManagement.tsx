@@ -9,8 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Edit, Save, X, Plus, CircleCheck, CircleX, Trash, UserPlus } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, UserPlus } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface CareerPosting {
   id?: string;
@@ -53,7 +54,41 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
   onCancel: () => void;
   saving: boolean;
 }) => {
-  const [formData, setFormData] = useState<CareerPosting>(data || emptyPosting);
+  // Convert various date formats to input[type=datetime-local] friendly (YYYY-MM-DDTHH:MM)
+  const toDateTimeLocal = (value?: string) => {
+    if (!value) return '';
+    let d = new Date(value);
+    if (isNaN(d.getTime())) {
+      // Try common "YYYY-MM-DD HH:MM:SS" format
+      d = new Date(value.replace(' ', 'T'));
+    }
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mi = String(d.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  };
+
+  const [formData, setFormData] = useState<CareerPosting>(() => {
+    const b = data || emptyPosting;
+    return {
+      ...b,
+      publish_date: toDateTimeLocal(b.publish_date),
+      end_publish_date: toDateTimeLocal(b.end_publish_date),
+    };
+  });
+
+  // Keep form in sync when switching edited item
+  useEffect(() => {
+    const b = data || emptyPosting;
+    setFormData({
+      ...b,
+      publish_date: toDateTimeLocal(b.publish_date),
+      end_publish_date: toDateTimeLocal(b.end_publish_date),
+    });
+  }, [data]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,11 +123,21 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="requirement">Requirement</Label>
-          <Textarea id="requirement" rows={3} value={formData.requirement} onChange={(e) => setFormData(p => ({...p, requirement: e.target.value}))} />
+          <QuillEditor
+            value={formData.requirement || ''}
+            onChange={(html) => setFormData(p => ({ ...p, requirement: html }))}
+            height={180}
+            placeholder="Write requirements…"
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="responsibility">Responsibility</Label>
-          <Textarea id="responsibility" rows={3} value={formData.responsibility} onChange={(e) => setFormData(p => ({...p, responsibility: e.target.value}))} />
+          <QuillEditor
+            value={formData.responsibility || ''}
+            onChange={(html) => setFormData(p => ({ ...p, responsibility: html }))}
+            height={180}
+            placeholder="Write responsibilities…"
+          />
         </div>
       </div>
 
@@ -408,9 +453,18 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                       <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
                         <UserPlus className="w-4 h-4" />
                       </Button>
-                      <Button variant={item.is_active ? 'destructive' : 'success'} size="sm" onClick={() => toggleActive(item.id!, !item.is_active)}>
-                        {!item.is_active ? <CircleCheck className="w-4 h-4" /> : <CircleX className="w-4 h-4" />}
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="is_active"
+                          checked={!!item.is_active}
+                          onCheckedChange={(checked) => toggleActive(item.id!, checked)}
+                        />
+                      </div>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
+                        <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
+                          Approve
+                        </Button>
+                      ) : null}
                       <Button variant="outline" size="sm" onClick={() => { setEditingItem(item); setIsDialogOpen(true); }}>
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -461,11 +515,11 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-medium">Requirements:</span>
-                      <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{item.requirement}</p>
+                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.requirement || '' }} />
                     </div>
                     <div>
                       <span className="font-medium">Responsibilities:</span>
-                      <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{item.responsibility}</p>
+                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.responsibility || '' }} />
                     </div>
                   </div>
                 )}

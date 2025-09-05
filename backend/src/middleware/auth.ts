@@ -82,4 +82,5 @@ export const requireRole = (roles: string[]) => {
   };
 };
 
-export const requireAdminOrEditor = requireRole(['admin', 'approver']);
+// Allow super-admin to perform all admin/editor actions as well
+export const requireAdminOrEditor = requireRole(['admin', 'approver', 'super-admin']);

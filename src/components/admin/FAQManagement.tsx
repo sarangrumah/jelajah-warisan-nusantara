@@ -359,7 +359,7 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            { userRole != "approver" ?             
+            { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingFaq(emptyFaq)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add FAQ
@@ -371,10 +371,10 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingFaq ? 'Edit FAQ' : 'Add New FAQ'}
+                {editingFaq.id ? 'Edit FAQ' : 'Add New FAQ'}
               </DialogTitle>
               <DialogDescription>
-                {editingFaq ? 'Update FAQ information' : 'Create a new frequently asked question'}
+                {editingFaq.id ? 'Update FAQ information' : 'Create a new frequently asked question'}
               </DialogDescription>
             </DialogHeader>
             <FaqForm

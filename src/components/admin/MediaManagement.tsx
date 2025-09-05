@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, Trash, CircleCheck, CircleX } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -36,13 +36,39 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
   onCancel: () => void;
   saving: boolean
 }) => {
+  // Normalize published_date for input[type=datetime-local]
+  const toDateTimeInput = (value?: string) => {
+    if (!value) return '' as any;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '' as any;
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16) as any; // YYYY-MM-DDTHH:mm
+  };
 
-  const [formData, setFormData] = useState<Media>(media);
+  const [formData, setFormData] = useState<Media>({
+    ...media,
+    published_date: toDateTimeInput(media.published_date) as any,
+  });
+  const [authorInput, setAuthorInput] = useState<string>(
+    Array.isArray(media.author) ? media.author.join(', ') : ''
+  );
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      ...media,
+      published_date: toDateTimeInput(media.published_date) as any,
+    }));
+    setAuthorInput(Array.isArray(media.author) ? media.author.join(', ') : '');
+  }, [media]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
   };
+
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -150,15 +176,19 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
           <Label htmlFor="author">Author(s)</Label>
           <Input
             id="author"
-            value={formData.author.join(", ")} // Convert array to comma-separated string for display
+            value={authorInput}
             onChange={(e) => {
-              const value = e.target.value;
-              // Split by comma and trim whitespace; filter out empty entries
-              const authors = value
-                .split(",")
-                .map(name => name.trim())
-                .filter(name => name.length > 0);
-              setFormData(prev => ({ ...prev, author: authors }));
+              const raw = e.target.value;
+              setAuthorInput(raw);
+              const parsed = raw
+                .split(',')
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0);
+              setFormData((prev) => ({ ...prev, author: parsed }));
+            }}
+            onBlur={() => {
+              const normalized = (formData.author || []).join(', ');
+              setAuthorInput(normalized);
             }}
             placeholder="e.g., John Doe, Jane Smith"
           />
@@ -303,19 +333,15 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const response = await mediaService.update(id, { 
-       is_active: isPublished,
-        published_at: isPublished ? new Date().toISOString() : null
-      });
+      const response = await mediaService.update(id, { is_active: isPublished });
       
       if (response.error) {
         throw new Error(response.error);
       }
       
       setMediaItems(prev => prev.map(item => 
-        item.id === id ? { ...item, is_published: isPublished } : item
+        item.id === id ? { ...item, is_active: isPublished } : item
       ));
-      fetchMediaItems()
       toast({
         title: 'Success',
         description: `Media item ${isPublished ? 'published' : 'unpublished'}`,
@@ -397,7 +423,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            { userRole != "approver" ? <Button onClick={() => setEditingMedia(emptyMedia)}>
+            { userRole !== "approver" && userRole !== "viewer" ? <Button onClick={() => setEditingMedia(emptyMedia)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Media
             </Button> : <div></div>}
@@ -480,17 +506,22 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                 { 
                   userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
-                    <Button
-                      variant={item.is_active ? "destructive" : "success"}
-                      size="sm"
-                      onClick={() => togglePublished(item.id, !item.is_active)}
-                    >
-                      {!item.is_active ? (
-                        <CircleCheck className="w-4 h-4" />
-                      ) : (
-                        <CircleX className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_active"
+                        checked={item.is_active}
+                        onCheckedChange={(checked) => togglePublished(item.id, checked)}
+                      />
+                    </div>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => toggleApproved(item.id)}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"
@@ -512,7 +543,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole == "approver" && !item.is_approved? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !item.is_approved ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"

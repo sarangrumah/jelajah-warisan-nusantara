@@ -22,7 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ImageUpload } from '@/components/ui/image-upload';
 
 interface AgendaItem {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   event_date: string;
@@ -33,14 +33,6 @@ interface AgendaItem {
   created_at: string;
 }
 
-const AgendaManagement = () => {
-  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [editingItem, setEditingItem] = useState<AgendaItem | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
-  const { toast } = useToast();
-
   const emptyItem: Partial<AgendaItem> = {
     title: '',
     description: '',
@@ -50,6 +42,16 @@ const AgendaManagement = () => {
     image_url: '',
     is_published: true,
   };
+
+const AgendaManagement = () => {
+  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [editingItem, setEditingItem] = useState<AgendaItem | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const { toast } = useToast();
+
+
 
   useEffect(() => {
     fetchAgendaItems();
@@ -205,7 +207,7 @@ const AgendaManagement = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingItem?.id ? 'Edit Agenda' : 'Tambah Agenda Baru'}
+                {editingItem == null ? 'Edit Agenda' : 'Tambah Agenda Baru'}
               </DialogTitle>
               <DialogDescription>
                 Isi informasi agenda kegiatan museum

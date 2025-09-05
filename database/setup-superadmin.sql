@@ -58,11 +58,11 @@ ON CONFLICT (user_id) DO UPDATE SET
     display_name = EXCLUDED.display_name,
     updated_at = NOW();
 
--- Ensure admin role is assigned
+-- Ensure super-admin role is assigned
 INSERT INTO user_roles (user_id, role, created_at) 
 VALUES (
     '00000000-0000-0000-0000-000000000001',
-    'admin',
+    'super-admin',
     NOW()
 ) 
 ON CONFLICT (user_id, role) DO NOTHING;
@@ -86,5 +86,5 @@ BEGIN
     RAISE NOTICE 'Super Admin user created successfully!';
     RAISE NOTICE 'Email: superadmin@admin.com';
     RAISE NOTICE 'Password: SuperAdmin123!';
-    RAISE NOTICE 'Role: admin';
+    RAISE NOTICE 'Role: super-admin';
 END $$;

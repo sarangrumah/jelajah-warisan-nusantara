@@ -241,7 +241,7 @@ export const getAllProfile = async (req: AuthRequest, res: Response) => {
   try {
 
     const profileResult = await query(
-      `SELECT p.*, u.email, 
+      `SELECT p.*, u.email,u.email_verified,
               COALESCE(
                 array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
                 ARRAY[]::app_role[]
@@ -250,7 +250,7 @@ export const getAllProfile = async (req: AuthRequest, res: Response) => {
       JOIN users u ON p.user_id = u.id
       LEFT JOIN user_roles ur ON p.user_id = ur.user_id
       WHERE p.user_id != $1
-      GROUP BY p.id, p.user_id, p.display_name, p.avatar_url, p.created_at, p.updated_at, u.email`,
+      GROUP BY p.id, p.user_id, p.display_name, p.avatar_url, p.created_at, p.updated_at, u.email, u.email_verified`,
       [req.user?.id]
     );
 

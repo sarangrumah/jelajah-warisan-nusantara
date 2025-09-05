@@ -74,21 +74,6 @@ const HeroSection = () => {
     }
   };
   
-  // --- Vite-compatible fetchSlides with image mapping ---
-  const fetchSlides = async () => {
-    try {
-      const response = await bannerService.getAll();
-      if (response.error || response.data.length === 0) {
-        setSlides(mapSlidesWithImageUrl(defaultSlides));
-      } else {
-        setSlides(mapSlidesWithImageUrl(response.data));
-      }
-    } catch (error) {
-      setSlides(mapSlidesWithImageUrl(defaultSlides));
-    }
-  };
-
-  /* --- BACKUP: Original fetchSlides logic ---
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
@@ -104,8 +89,8 @@ const HeroSection = () => {
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
+
   };
-  --- END BACKUP --- */
 
   useEffect(() => {
     fetchSlides();
