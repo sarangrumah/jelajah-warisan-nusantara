@@ -8,6 +8,25 @@ import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
+// --- Vite Dynamic Image Import Solution ---
+const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
+function isImage(filename: string) {
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+}
+function isVideo(filename: string) {
+  return /\.(mp4|webm|ogg)$/i.test(filename);
+}
+function getImageOrVideoUrl(filename: string) {
+  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
+}
+const mapSlidesWithImageUrl = (slidesArr: any[]) =>
+  slidesArr.map(slide => ({
+    ...slide,
+    asset: slide.image?.split('/').pop() || slide.image, // keep original filename
+    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
+  }));
+
 const HeroSection = () => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -104,11 +123,26 @@ const HeroSection = () => {
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <img
-              src={ slide.image }
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
+            {/* --- Improved: Render image or video based on original filename (asset) --- */}
+            {isImage(slide.asset) ? (
+              <img
+                src={slide.image}
+                alt={t(slide.title)}
+                className="w-full h-full object-cover parallax"
+              />
+            ) : isVideo(slide.asset) ? (
+              <video
+                src={slide.image}
+                controls
+                className="w-full h-full object-cover parallax"
+              />
+            ) : (
+              <img
+                src="/public/placeholder.svg"
+                alt="Not found"
+                className="w-full h-full object-cover parallax"
+              />
+            )}
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
