@@ -278,8 +278,23 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             !excludedOnCreate.includes(f)
           );
 
-        const values = validFields.map(f => insertData[f]);
-        const placeholders = validFields.map((_, i) => `$${i + 1}`).join(', ');
+        // Handle JSON/JSONB fields by stringifying values and casting placeholders
+        const JSON_FIELDS: Record<string, string[]> = {
+          tb_sites: ['opening_hours'],
+        };
+        const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
+
+        const values = validFields.map((f) => {
+          const v = insertData[f];
+          if (jsonFieldsForTable.includes(f) && typeof v !== 'string') {
+            return JSON.stringify(v);
+          }
+          return v;
+        });
+
+        const placeholders = validFields
+          .map((f, i) => (jsonFieldsForTable.includes(f) ? `$${i + 1}::jsonb` : `$${i + 1}`))
+          .join(', ');
 
         await client.query('BEGIN');
 
@@ -375,14 +390,14 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           data.updated_by = req.user.id;
         }
 
-        // Approval logic
+        // Approval logic: only approver/admin (and super-admin) may change is_approved
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
-        if (approvalSettings?.requiresApproval && data.is_approved !== undefined) {
+        if (approvalSettings?.requiresApproval) {
           const userRoles = req.user?.roles || [];
-          if (!userRoles.includes('approver') && !userRoles.includes('admin')) {
-            return res.status(403).json({
-              error: 'Only approvers or admins can update approval status.'
-            });
+          const canChangeApproval = userRoles.includes('approver') || userRoles.includes('admin') || userRoles.includes('super-admin');
+          if (!canChangeApproval && Object.prototype.hasOwnProperty.call(data, 'is_approved')) {
+            // Strip attempted changes from non-approver/admin edits so regular updates don't fail
+            delete (data as any).is_approved;
           }
         }
 
@@ -406,8 +421,23 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         // 🔹 1. Update main record (if there are fields)
         if (hasMainUpdates) {
-          const setClause = validFields.map((f, i) => `${f} = $${i + 2}`).join(', ');
-          const values = [id, ...validFields.map(f => data[f])];
+          const JSON_FIELDS: Record<string, string[]> = {
+            tb_sites: ['opening_hours'],
+          };
+          const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
+
+          const setClause = validFields
+            .map((f, i) => `${f} = $${i + 2}${jsonFieldsForTable.includes(f) ? '::jsonb' : ''}`)
+            .join(', ');
+
+          const values = [
+            id,
+            ...validFields.map((f) =>
+              jsonFieldsForTable.includes(f) && typeof data[f] !== 'string'
+                ? JSON.stringify(data[f])
+                : data[f]
+            ),
+          ];
 
           const result = await client.query(
             `UPDATE ${tableName} SET ${setClause} WHERE id = $1 RETURNING id`,

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Edit, Save, X, Plus, CircleCheck, CircleX, Trash, UserPlus } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, UserPlus } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 
 interface CareerPosting {
@@ -408,9 +408,13 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                       <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
                         <UserPlus className="w-4 h-4" />
                       </Button>
-                      <Button variant={item.is_active ? 'destructive' : 'success'} size="sm" onClick={() => toggleActive(item.id!, !item.is_active)}>
-                        {!item.is_active ? <CircleCheck className="w-4 h-4" /> : <CircleX className="w-4 h-4" />}
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="is_active"
+                          checked={!!item.is_active}
+                          onCheckedChange={(checked) => toggleActive(item.id!, checked)}
+                        />
+                      </div>
                       <Button variant="outline" size="sm" onClick={() => { setEditingItem(item); setIsDialogOpen(true); }}>
                         <Edit className="w-4 h-4" />
                       </Button>

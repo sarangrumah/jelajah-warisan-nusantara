@@ -50,8 +50,8 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
-  const isAdmin = userRole === 'admin';
-  const canEdit = userRole === 'admin' || userRole === 'editor' || userRole === 'approver';
+  const isAdmin = userRole === 'super-admin';
+  const canEdit = userRole === 'admin' || userRole === 'approver' || userRole === 'super-admin';
 
   if (loading) {
     return (

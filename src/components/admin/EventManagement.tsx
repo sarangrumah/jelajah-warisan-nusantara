@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff,CircleCheck, CircleX, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -86,9 +86,45 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   onCancel: () => void;
   saving: boolean;
 }) => {
+  // Helpers to normalize date values for inputs
+  const toDateInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const toDateTimeInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+  };
+
   const [formData, setFormData] = useState<EventItem>({
     ...museum,
+    start_published_date: toDateTimeInput(museum.start_published_date),
+    end_published_date: toDateTimeInput(museum.end_published_date),
+    start_date: toDateInput(museum.start_date),
+    end_date: toDateInput(museum.end_date),
   });
+
+  // Keep inputs in sync when switching edited event
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...museum,
+      start_published_date: toDateTimeInput(museum.start_published_date),
+      end_published_date: toDateTimeInput(museum.end_published_date),
+      start_date: toDateInput(museum.start_date),
+      end_date: toDateInput(museum.end_date),
+    }));
+  }, [museum]);
 
   const [sites, setSites] = useState<SitesItem[]>()
   const [categories, setCategories] = useState<Categories[]>()
@@ -269,7 +305,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="start_publish_date">Start Publish Date</Label>
+          <Label htmlFor="start_published_date">Start Publish Date</Label>
           <Input
           id="start_published_date"
           type="datetime-local"
@@ -667,7 +703,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            { userRole != "approver" ?             
+            { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingEvent(emptyEvent)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Event
@@ -678,10 +714,10 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingEvent ? 'Edit Event' : 'Add New Event'}
+                {editingEvent.id ? 'Edit Event' : 'Add New Event'}
               </DialogTitle>
               <DialogDescription>
-                {editingEvent ? 'Update museum information' : 'Create a new museum or heritage site'}
+                {editingEvent.id ? 'Update event information' : 'Create a new Manage event'}
               </DialogDescription>
             </DialogHeader>
             <EventForm
@@ -754,17 +790,13 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                 { 
                   userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
-                    <Button
-                      variant={museum.is_active ? "destructive" : "success"}
-                      size="sm"
-                      onClick={() => togglePublished(museum.id, !museum.is_active)}
-                    >
-                      {!museum.is_active ? (
-                        <CircleCheck className="w-4 h-4" />
-                      ) : (
-                        <CircleX className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_active"
+                        checked={museum.is_active}
+                        onCheckedChange={(checked) => togglePublished(museum.id, checked)}
+                      />
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"

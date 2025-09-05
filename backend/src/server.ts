@@ -9,6 +9,7 @@ import path from 'path';
 import authRoutes from './routes/auth';
 import apiRoutes from './routes/api';
 import uploadRoutes from './routes/upload';
+import usersRoutes from './routes/users';
 
 // Load environment variables
 dotenv.config();
@@ -23,26 +24,19 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
- origin: [
-   'http://localhost:5173',
-   'http://localhost:8080',
-   'http://localhost:8081',
-   'http://127.0.0.1:5173',
-    'http://127.0.0.1:8080',
-   'http://10.24.26.75'
- ],
-  // Set to your frontend's actual URL for credentials support
-  // origin: 'http://10.24.26.75',
+//  origin: [
+//    'http://localhost:5173',
+//    'http://localhost:8080',
+//    'http://localhost:8081',
+//    'http://127.0.0.1:5173',
+//    'http://127.0.0.1:8080'
+//  ],
+  origin: '*',  
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 }));
-// /*
-//   // Previous config (for reference):
-//   // origin: '*',
-//   // credentials: true,
-// */
 
 // Rate limiting
 // const limiter = rateLimit({
@@ -68,7 +62,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/assets', express.static(path.join(__dirname, '../../src/assets')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -83,6 +76,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/users', usersRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -8,18 +8,6 @@ import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
-// --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
-function getImageUrl(filename: string) {
-  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
-}
-const mapSlidesWithImageUrl = (slidesArr: any[]) =>
-  slidesArr.map(slide => ({
-    ...slide,
-    image: getImageUrl(slide.image?.split('/').pop() || slide.image),
-  }));
-
 const HeroSection = () => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -67,21 +55,6 @@ const HeroSection = () => {
     }
   };
   
-  // --- Vite-compatible fetchSlides with image mapping ---
-  const fetchSlides = async () => {
-    try {
-      const response = await bannerService.getAll();
-      if (response.error || response.data.length === 0) {
-        setSlides(mapSlidesWithImageUrl(defaultSlides));
-      } else {
-        setSlides(mapSlidesWithImageUrl(response.data));
-      }
-    } catch (error) {
-      setSlides(mapSlidesWithImageUrl(defaultSlides));
-    }
-  };
-
-  /* --- BACKUP: Original fetchSlides logic ---
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
@@ -97,8 +70,8 @@ const HeroSection = () => {
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
+
   };
-  --- END BACKUP --- */
 
   useEffect(() => {
     fetchSlides();
@@ -131,21 +104,11 @@ const HeroSection = () => {
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            {/* --- Vite Dynamic Image Import Solution --- */}
             <img
               src={ slide.image }
               alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
-            {/*
-            --- BACKUP: Original image rendering logic ---
-            <img
-              src={slide.image}
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
-            --- END BACKUP ---
-            */}
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}

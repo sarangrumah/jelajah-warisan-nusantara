@@ -202,7 +202,6 @@ const VisitorForm = ({
         <div className="space-y-2">
           <Label>Year</Label>
           <Input
-            type="number"
             value={visitor.year}
             onChange={(e) =>
               onChange({ ...visitor, year: e.target.value })
@@ -688,7 +687,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
 
                     </CardDescription> */}
                   </div>
-                  {userRole != "approver" ?                   
+                  {userRole !== "approver" && userRole !== "viewer" ?                   
                     <div className="flex items-center space-x-2">
                     {/* <Button
                       variant="outline"
@@ -816,8 +815,8 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                   </div>
                   <div className="border p-4 rounded-lg space-y-3 relative">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {profile.company_leadership?.map((e) => (
-                        <div className='flex gap-4'>
+                      {profile.company_leadership?.map((e, idx) => (
+                        <div key={e.id ?? `leader-view-${idx}`} className='flex gap-4'>
                           <div className='pb-2'>
                             <span className="font-medium">Name</span>
                             <p className="text-muted-foreground line-clamp-2">
@@ -840,8 +839,8 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                   </div>
                   <div className="border p-4 rounded-lg space-y-3 relative">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {profile.company_visitor?.map((e) => (
-                        <div className='flex gap-4'>
+                      {profile.company_visitor?.map((e, idx) => (
+                        <div key={e.id ?? `visitor-view-${idx}`} className='flex gap-4'>
                           <div className='pb-2'>
                             <span className="font-medium">Year</span>
                             <p className="text-muted-foreground line-clamp-2">

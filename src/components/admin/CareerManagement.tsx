@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, Users } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
@@ -370,17 +370,13 @@ const CareerManagement = () => {
                         <CardDescription>{opportunity.location} • {opportunity.duration}</CardDescription>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => togglePublished(opportunity.id, !opportunity.is_published)}
-                        >
-                          {opportunity.is_published ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </Button>
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="is_published"
+                            checked={opportunity.is_published}
+                            onCheckedChange={(checked) => togglePublished(opportunity.id, checked)}
+                          />
+                        </div>
                         <Button
                           variant="outline"
                           size="sm"

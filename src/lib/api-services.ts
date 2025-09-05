@@ -55,7 +55,7 @@ export const agendaService = {
 // Museums
 export const museumService = {
     approve: (id: string) => apiClient.approve('tb_sites', id),
-  getAll: () => apiClient.getAll('tb_sites', { is_published: 'true' }),
+  getAll: () => apiClient.getAll('tb_sites'),
   getById: (id: string) => apiClient.getById('tb_sites', id),
   create: (data: any) => apiClient.create('tb_sites', data),
   update: (id: string, data: any) => apiClient.update('tb_sites', id, data),
@@ -77,7 +77,7 @@ export const TypesAndCategoriesEvent = {
 export const bannerService = {
   approve: (id: string) => apiClient.approve('tb_banner', id),
   getAll: () => apiClient.getAll('tb_banner'), // Get all for admin, filtering happens in components
-  getPublished: () => apiClient.getAll('tb_banner', { is_published: 'true' }),
+  getPublished: () => apiClient.getAll('tb_banner'),
   getById: (id: string) => apiClient.getById('tb_banner', id),
   create: (data: any) => apiClient.create('tb_banner', data),
   update: (id: string, data: any) => apiClient.update('tb_banner', id, data),
@@ -87,7 +87,7 @@ export const bannerService = {
 export const EventsService = {
   approve: (id: string) => apiClient.approve('tb_events', id),
   getAll: () => apiClient.getAll('tb_events'), // Get all for admin, filtering happens in components
-  getPublished: () => apiClient.getAll('tb_events', { is_published: 'true' }),
+  getPublished: () => apiClient.getAll('tb_events'),
   getById: (id: string) => apiClient.getById('tb_events', id),
   create: (data: any) => apiClient.create('tb_events', data),
   update: (id: string, data: any) => apiClient.update('tb_events', id, data),
@@ -97,7 +97,7 @@ export const EventsService = {
 // Career Opportunities
 export const careerService = {
   getAll: () => apiClient.getAll('career_opportunities'), // Get all for admin, filtering happens in components
-  getPublished: () => apiClient.getAll('career_opportunities', { is_published: 'true' }),
+  getPublished: () => apiClient.getAll('career_opportunities'),
   getById: (id: string) => apiClient.getById('career_opportunities', id),
   create: (data: any) => apiClient.create('career_opportunities', data),
   update: (id: string, data: any) => apiClient.update('career_opportunities', id, data),
@@ -105,14 +105,6 @@ export const careerService = {
   applyToOpportunity: (data: any) => apiClient.create('career_applications/public', data),
 };
 
-// Media Items
-// export const mediaService = {
-//   getAll: () => apiClient.getAll('media_items', { is_published: 'true' }),
-//   getById: (id: string) => apiClient.getById('media_items', id),
-//   create: (data: any) => apiClient.create('media_items', data),
-//   update: (id: string, data: any) => apiClient.update('media_items', id, data),
-//   delete: (id: string) => apiClient.delete('media_items', id),
-// };
 // Media Items
 export const mediaService = {
   getAll: () => apiClient.getAll('tb_media'),
@@ -122,6 +114,7 @@ export const mediaService = {
   delete: (id: string) => apiClient.delete('tb_media', id),
   approve: (id: string) => apiClient.approve('tb_events', id),
 };
+
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('tb_faqs'),
@@ -187,6 +180,11 @@ export const careerApplicationService = {
 export const userService = {
   getAll: () => apiClient.getAll('users'),
   getById: (id: string) => apiClient.getById('users', id),
+  create: (data: { email: string; password: string; display_name?: string }) =>
+    apiClient.create('users', data),
+  delete: (id: string) => apiClient.delete('users', id),
+  update: (id: string, data: { email?: string; display_name?: string }) => apiClient.update('users', id, data),
+  setActive: (id: string, active: boolean) => apiClient.create(`users/${id}/active`, { active }),
   updateRole: async (userId: string, role: string) => {
     // First delete existing roles for this user
     try {

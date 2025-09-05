@@ -7,29 +7,75 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, CircleCheck, CircleX, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 
+// Banner data shape used in this module
+interface Banner {
+  id?: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  start_publish_date?: string;
+  end_publish_date?: string;
+  is_active: boolean;
+  is_approved?: boolean;
+  button_url_1?: string;
+  button_url_2?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 
 const BannerForm = ({ banner, onSave, onCancel, saving }: {
-  banner?: any;
-  onSave: (data: any) => void;
+  banner?: Banner | null;
+  onSave: (data: Banner) => void;
   onCancel: () => void;
   saving: boolean
 }) => {
-  const [formData, setFormData] = useState({
-    title: banner?.title || '',
-    subtitle: banner?.subtitle || '',
-    image: banner?.image || '',
-    start_publish_date: banner?.start_publish_date || '',
-    end_publish_date: banner?.end_publish_date || '',
-    is_active: banner?.is_active ?? true,
-    is_approved:  banner?.is_approved,
-    button_url_1: banner?.button_url_1,
-    button_url_2: banner?.button_url_2
+  const emptyBanner: Banner = {
+    title: '',
+    subtitle: '',
+    image: '',
+    start_publish_date: '',
+    end_publish_date: '',
+    is_active: true,
+    is_approved: false,
+    button_url_1: '',
+    button_url_2: ''
+  };
+
+  // Convert ISO/server date string to input[type=date] format (YYYY-MM-DD)
+  const toDateInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const [formData, setFormData] = useState<Banner>(() => {
+    const b = banner || emptyBanner;
+    return {
+      ...b,
+      start_publish_date: toDateInput(b.start_publish_date),
+      end_publish_date: toDateInput(b.end_publish_date),
+    };
   });
+
+  // Keep form in sync when editing a different banner
+  useEffect(() => {
+    const b = banner || emptyBanner;
+    setFormData({
+      ...b,
+      start_publish_date: toDateInput(b.start_publish_date),
+      end_publish_date: toDateInput(b.end_publish_date),
+    });
+  }, [banner]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,11 +150,11 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
           <Label htmlFor="start_publish_date">Start Publish Date</Label>
           <Input
           id="start_published_date"
-          type="datetime-local"
+          type="date"
           value={formData.start_publish_date || ''}
           onChange={(e) => {
             const value = e.target.value;
-            const isValid = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+            const isValid = /^\d{4}-\d{2}-\d{2}$/.test(value);
             if (isValid || value === '') {
               setFormData(prev => ({
                 ...prev,
@@ -116,8 +162,8 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
               }));
             }
           }}
-          min="2020-01-01T00:00"
-          max="2030-12-31T23:59"
+          min="2020-01-01"
+          max="2030-12-31"
           required
         />
         </div>
@@ -125,11 +171,11 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
           <Label htmlFor="end_publish_date">End Publish Date</Label>
           <Input
               id="end_publish_date"
-              type="datetime-local"
+              type="date"
               value={formData.end_publish_date || ''}
               onChange={(e) => {
                 const value = e.target.value;
-                const isValid = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value);
+                const isValid = /^\d{4}-\d{2}-\d{2}$/.test(value);
                 if (isValid || value === '') {
                   setFormData(prev => ({
                     ...prev,
@@ -137,8 +183,8 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
                   }));
                 }
               }}
-              min="2020-01-01T00:00"
-              max="2030-12-31T23:59"
+              min="2020-01-01"
+              max="2030-12-31"
               required
             />
         </div>
@@ -169,11 +215,11 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 };
 
 const BannerManagement =  ({ userRole }: { userRole: string }) => {
-  const [banners, setBanners] = useState<any[]>([]);
-  const [banner, setBanner] = useState<any>();
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [banner, setBanner] = useState<Banner | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<any>(null);
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogDelete, setIsDialogDelete] = useState(false);
   const { toast } = useToast();
@@ -186,7 +232,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     try {
       const response = await bannerService.getAll();
       if (response.error) throw new Error(response.error);
-      setBanners(response.data || []);
+      setBanners((response.data as Banner[]) || []);
     } catch (error) {
       console.error('Error fetching banners:', error);
       toast({
@@ -199,7 +245,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const saveBanner = async (formData: any) => {
+  const saveBanner = async (formData: Banner) => {
     setSaving(true);
     try {
       if (editingBanner?.id) {
@@ -218,8 +264,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         const response = await bannerService.create(formData);
         if (response.error) throw new Error(response.error);
         
-        setBanners(prev => [response.data, ...prev]);
-        
+        fetchBanners()
+
         toast({
           title: 'Success',
           description: 'Banner created successfully',
@@ -330,7 +376,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            {userRole == "admin" ?<Button onClick={() => setEditingBanner(null)}>
+            {userRole !== "approver" && userRole !== "viewer" ?<Button onClick={() => setEditingBanner(null)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Banner
             </Button> : <></> }
@@ -345,7 +391,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
               </DialogDescription>
             </DialogHeader>
             <BannerForm
-              banner={editingBanner}
+              banner={editingBanner || undefined}
               onSave={saveBanner}
               onCancel={() => {
                 setEditingBanner(null);
@@ -415,17 +461,25 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                   </div>
                 { 
                   userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
-                    <Button
-                      variant={banner.is_active ? "destructive" : "success"}
-                      size="sm"
-                      onClick={() => togglePublished(banner.id, !banner.is_active)}
-                    >
-                      {!banner.is_active ? (
-                        <CircleCheck className="w-4 h-4" />
-                      ) : (
-                        <CircleX className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_active"
+                        checked={banner.is_active}
+                        onCheckedChange={(checked) => togglePublished(banner.id, checked)}
+                      />
+                    </div>
+                    {banner.image ? (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" title="Preview Image">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                          <img src={banner.image} alt="Banner image" className="w-full h-auto rounded-md" />
+                        </DialogContent>
+                      </Dialog>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"

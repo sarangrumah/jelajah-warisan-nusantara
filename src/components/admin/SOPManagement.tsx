@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Edit, Save, X, Plus, CircleCheck, CircleX, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 
 type SopCategory = 'Peraturan' | 'SOP';
@@ -48,7 +48,28 @@ const SOPForm = ({ sop, onSave, onCancel, saving }: {
   onCancel: () => void;
   saving: boolean;
 }) => {
-  const [formData, setFormData] = useState<SOPItem>(sop || emptySOP);
+  // Normalize publish_date for input[type=datetime-local]
+  const toDateTimeInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+  };
+
+  const [formData, setFormData] = useState<SOPItem>({
+    ...(sop || emptySOP),
+    publish_date: toDateTimeInput(sop?.publish_date),
+  });
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...(sop || emptySOP),
+      publish_date: toDateTimeInput(sop?.publish_date),
+    }));
+  }, [sop]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -354,13 +375,13 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                   {userRole === 'admin' || userRole === 'super-admin' ? (
                     <div className="flex items-center space-x-2">
-                      <Button
-                        variant={item.is_active ? 'destructive' : 'success'}
-                        size="sm"
-                        onClick={() => toggleActive(item.id!, !item.is_active)}
-                      >
-                        {!item.is_active ? <CircleCheck className="w-4 h-4" /> : <CircleX className="w-4 h-4" />}
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="is_active"
+                          checked={item.is_active}
+                          onCheckedChange={(checked) => toggleActive(item.id!, checked)}
+                        />
+                      </div>
                       <Button
                         variant="outline"
                         size="sm"
