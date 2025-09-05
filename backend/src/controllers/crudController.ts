@@ -255,6 +255,13 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           }
         }
 
+        // Normalize foreign keys: convert empty string to NULL for *_id fields (e.g., sites_id)
+        Object.keys(insertData).forEach((key) => {
+          if (key.endsWith('_id') && insertData[key] === '') {
+            insertData[key] = null;
+          }
+        });
+
         insertData.id = id;
         insertData.created_at = new Date();
         insertData.updated_at = new Date();
@@ -385,6 +392,13 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           ...mainData,
           updated_at: new Date()
         };
+
+        // Normalize foreign keys on update: empty string -> NULL for *_id columns
+        Object.keys(data).forEach((key) => {
+          if (key.endsWith('_id') && (data as any)[key] === '') {
+            (data as any)[key] = null;
+          }
+        });
 
         if (fields.includes('updated_by') && req.user) {
           data.updated_by = req.user.id;
@@ -646,7 +660,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         // Ensure user has role 'approver' or 'admin'
         const userRoles = req.user?.roles || [];
-        if (!userRoles.includes('approver') && !userRoles.includes('admin')) {
+        if (!userRoles.includes('approver') && !userRoles.includes('super-admin')) {
           return res.status(403).json({ error: 'You do not have permission to approve records.' });
         }
 

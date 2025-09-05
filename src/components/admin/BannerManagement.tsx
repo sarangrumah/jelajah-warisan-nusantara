@@ -480,6 +480,15 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         </DialogContent>
                       </Dialog>
                     ) : null}
+                    {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved ? (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => toggleApproved(banner.id)}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"
@@ -501,7 +510,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole == "approver" && !banner.is_approved? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !banner.is_approved ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"

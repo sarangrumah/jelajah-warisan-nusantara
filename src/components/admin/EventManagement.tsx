@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +22,7 @@ interface EventItem {
   category: string;
   subtitle?: string;
   description?: string;
-  sites_id: string;                 // Foreign key to tb_sites
+  sites_id?: string;                 // Foreign key to tb_sites
   location?: string;
   address?: string;
   start_published_date: string;    // ISO date string
@@ -132,6 +133,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   const [loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
   const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+  const [useSites, setUseSites] = useState<boolean>(false)
 
   useEffect(() => {
       fetchSites();    
@@ -139,16 +141,49 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   }, []);
 
   useEffect(() => {
-    
-    if (sites != undefined) {
+
+    if (formData.sites_id != null && !useSites) {
+      setUseSites(true)
+    }
+
+    if (sites != undefined && useSites) {
       sites.filter((e, index) => {
         if (formData.sites_id == e.id) {
           formData.address = e.address
         }
       })
     }
+
+
   }, [formData.sites_id]);
 
+
+  useEffect(() => {
+    if (!useSites && formData.sites_id != null) {
+       formData.address = ''
+       formData.sites_id = null
+    } else {
+      if (sites != undefined) {
+      sites.filter((e, index) => {
+          if (formData.sites_id == e.id) {
+            formData.address = e.address
+          }
+        })
+      }
+    }
+  }, [useSites])
+
+  // Ensure address follows useSites toggle and selected site
+  useEffect(() => {
+    if (!useSites) {
+      setFormData(prev => ({ ...prev, address: '' }));
+      return;
+    }
+    if (sites && formData.sites_id) {
+      const selected = sites.find((e) => e.id === formData.sites_id);
+      setFormData(prev => ({ ...prev, address: selected?.address ?? '' }));
+    }
+  }, [useSites, formData.sites_id, sites])
 
 
 
@@ -231,7 +266,19 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className='space-y-3'>
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id="use-sites"
+            checked={useSites}
+            onCheckedChange={(checked) => setUseSites(!!checked)}
+          />
+          <Label htmlFor="use-sites">Use Sites</Label>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+       {useSites ? 
         <div className="space-y-3">
           <Label htmlFor="sites">Sites</Label>
           {loading ? (
@@ -248,7 +295,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
               ))}
             </SelectContent>
           </Select>}
-        </div>
+        </div> : 
+        null}
         <div className="space-y-3">
           <Label htmlFor="category">Category</Label>
           {loadingCat ? (
@@ -503,7 +551,7 @@ const emptyEvent: EventItem = {
   category: '',
   subtitle: '',
   description: '',
-  sites_id: '',                     // Will be set when selecting a site
+  sites_id: null,                     // Will be set when selecting a site
   location: '',
   address: '',
   start_published_date: new Date().toISOString(),        // e.g., new Date().toISOString()
@@ -797,6 +845,15 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                       />
                     </div>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => toggleApproved(museum.id)}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"
@@ -818,7 +875,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !museum.is_approved ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"

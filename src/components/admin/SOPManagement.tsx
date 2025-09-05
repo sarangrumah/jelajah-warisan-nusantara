@@ -382,6 +382,11 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => toggleActive(item.id!, checked)}
                         />
                       </div>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
+                        <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
+                          Approve
+                        </Button>
+                      ) : null}
                       <Button
                         variant="outline"
                         size="sm"

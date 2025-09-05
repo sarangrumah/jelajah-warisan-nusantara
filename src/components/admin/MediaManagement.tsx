@@ -50,6 +50,9 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
     ...media,
     published_date: toDateTimeInput(media.published_date) as any,
   });
+  const [authorInput, setAuthorInput] = useState<string>(
+    Array.isArray(media.author) ? media.author.join(', ') : ''
+  );
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -57,12 +60,15 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
       ...media,
       published_date: toDateTimeInput(media.published_date) as any,
     }));
+    setAuthorInput(Array.isArray(media.author) ? media.author.join(', ') : '');
   }, [media]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
   };
+
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -170,15 +176,19 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
           <Label htmlFor="author">Author(s)</Label>
           <Input
             id="author"
-            value={formData.author != undefined ? formData.author.join(", ") : formData.author} // Convert array to comma-separated string for display
+            value={authorInput}
             onChange={(e) => {
-              const value = e.target.value;
-              // Split by comma and trim whitespace; filter out empty entries
-              // const authors = ;
-              setFormData(prev => ({ ...prev, author: value
-                .split(",")
-                .map(name => name.trim())
-                .filter(name => name.length > 0) }));
+              const raw = e.target.value;
+              setAuthorInput(raw);
+              const parsed = raw
+                .split(',')
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0);
+              setFormData((prev) => ({ ...prev, author: parsed }));
+            }}
+            onBlur={() => {
+              const normalized = (formData.author || []).join(', ');
+              setAuthorInput(normalized);
             }}
             placeholder="e.g., John Doe, Jane Smith"
           />
@@ -503,6 +513,15 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(item.id, checked)}
                       />
                     </div>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => toggleApproved(item.id)}
+                      >
+                        Approve
+                      </Button>
+                    ) : null}
                     <Button
                       variant="outline"
                       size="sm"
@@ -524,7 +543,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole == "approver" && !item.is_approved? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !item.is_approved ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"

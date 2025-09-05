@@ -9,12 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { map, string } from 'zod';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 interface SitesItem {
   id?: string;
   name: string;
@@ -414,11 +415,22 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="facilities">Facilities</Label>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="facilities">Facilities</Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              Gunakan koma untuk memisahkan. Contoh: Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <Textarea
           id="facilities"
           value={formData.facilities}
           // placeholder=''
+          placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
            onChange={(e) => setFormData(prev => ({ ...prev,
             facilities: e.target.value
           }))}
@@ -556,12 +568,14 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         }
         
         setSitess(prev => [response.data, ...prev]);
-        
         toast({
           title: 'Success',
           description: 'Sites created successfully',
         });
       }
+
+        fetchSites()
+
       
       setEditingSites(emptySites);
       setIsDialogOpen(false);
@@ -765,6 +779,15 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                         />
                       </div>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => toggleApproved(museum.id)}
+                        >
+                          Approve
+                        </Button>
+                      ) : null}
                       <Button
                         variant="outline"
                         size="sm"
@@ -787,7 +810,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                       <Trash className="w-4 h-4" />
                     </Button>
                       </div> : 
-                      userRole == "approver" && !museum.is_approved? 
+                      userRole === "approver" && !museum.is_approved ? 
                       <div className="flex items-center space-x-2">
                           <Button
                             variant="success"
@@ -804,10 +827,10 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                 <CardDescription className="flex items-center gap-2">
                   {museum.subtitle}
                   <Badge variant={'secondary'}>
-                    {museum.type_relation.name}
+                    {museum.type_relation?.name}
                   </Badge>
                   <Badge variant={'secondary'}>
-                    {museum.categories_relation.name}
+                    {museum.categories_relation?.name}
                   </Badge>
                 </CardDescription>
               </CardHeader>
