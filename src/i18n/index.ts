@@ -559,7 +559,7 @@ const resources = {
       },
       // Agenda Section
       agenda: {
-        title: "Agenda & Event",
+        title: "Agenda",
         subtitle: "Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia"
       },
       // Footer translations

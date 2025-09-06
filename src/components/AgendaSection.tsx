@@ -56,7 +56,7 @@ const AgendaSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold pb-3 text-heritage-gradient">
-            {t('agenda.title', 'Agenda & Event')}
+            {t('agenda.title', 'Agenda')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             {t('agenda.subtitle', 'Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia')}
@@ -94,7 +94,17 @@ const AgendaSection = () => {
                 <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                <img src={event.image_url ? event.image_url : logo } alt={event.title} className="w-full h-full object-contain object-center" />
+                <img
+                  src={
+                    event.image_url
+                      ? event.image_url.startsWith('/assets/')
+                        ? event.image_url
+                        : `/assets/events/${event.image_url.replace(/^.*[\\/]/, '')}`
+                      : logo
+                  }
+                  alt={event.title}
+                  className="w-full h-full object-contain object-center"
+                />
               </div>
 
               {/* Event Content */}
