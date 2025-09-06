@@ -8,7 +8,12 @@ import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
+<<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
+=======
+// --- Vite Dynamic Image Import Solution ---
+const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
+>>>>>>> origin/main
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 }
@@ -16,11 +21,16 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 function getImageOrVideoUrl(filename: string) {
+<<<<<<< HEAD
   // If the filename is an absolute URL or starts with /assets/ or /uploads/, use it directly
+=======
+  // If the filename is an absolute URL or starts with /assets/, use it directly
+>>>>>>> origin/main
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
+<<<<<<< HEAD
       filename.startsWith('/assets/') ||
       filename.startsWith('/uploads/'))
   ) {
@@ -32,6 +42,15 @@ function getImageOrVideoUrl(filename: string) {
   }
   // Fallback: pass through as-is
   return filename;
+=======
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Otherwise, try to resolve using Vite's import
+  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
+>>>>>>> origin/main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
