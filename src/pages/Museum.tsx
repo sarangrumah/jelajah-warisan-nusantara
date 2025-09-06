@@ -120,8 +120,9 @@ const Museum = () => {
                   <img
                     src={(() => {
                       console.log('Museum item debug:', item);
-                      console.log('Museum image debug:', item.image_url, getMuseumsImageUrl(item.image_url));
-                      const resolved = getMuseumsImageUrl(item.image_url);
+                      const imageCandidate = item.image_url || item.image || item.photo || '';
+                      console.log('Museum image debug:', imageCandidate, getMuseumsImageUrl(imageCandidate));
+                      const resolved = getMuseumsImageUrl(imageCandidate);
                       return resolved || '/placeholder.svg';
                     })()}
                     alt={item.name}
