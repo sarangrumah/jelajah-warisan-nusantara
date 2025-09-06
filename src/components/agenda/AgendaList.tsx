@@ -8,6 +8,29 @@ import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
 
+const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
+
+function getEventImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/events/ for production
+  if (justFile) {
+    return `/assets/events/${justFile}`;
+  }
+  return undefined;
+}
+
 const AgendaList = () => {
   // const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -114,8 +137,8 @@ const AgendaList = () => {
                     <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                       {getStatusLabel(event.status)}
                     </div>
-                    <img 
-                      src={event.image_url ? event.image_url : logo} 
+                    <img
+                      src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
                       alt={event.title}
                       className="w-full h-full object-contain object-center"
                     />
