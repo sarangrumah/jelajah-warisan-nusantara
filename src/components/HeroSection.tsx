@@ -17,6 +17,16 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 function getImageOrVideoUrl(filename: string) {
+  // If the filename is an absolute URL or starts with /assets/, use it directly
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Otherwise, try to resolve using Vite's import
   const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as any).default : filename;
 }
