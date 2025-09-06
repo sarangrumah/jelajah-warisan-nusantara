@@ -96,11 +96,16 @@ const AgendaSection = () => {
                 </div>
                 <img
                   src={
-                    event.image_url
-                      ? event.image_url.startsWith('/assets/')
-                        ? event.image_url
-                        : `/assets/events/${event.image_url.replace(/^.*[\\/]/, '')}`
-                      : logo
+                    (() => {
+                      console.log('[AgendaSection] event.image_url:', event.image_url);
+                      if (event.image_url) {
+                        if (event.image_url.startsWith('/assets/')) {
+                          return event.image_url;
+                        }
+                        return `/assets/events/${event.image_url.replace(/^.*[\\/]/, '')}`;
+                      }
+                      return logo;
+                    })()
                   }
                   alt={event.title}
                   className="w-full h-full object-contain object-center"
