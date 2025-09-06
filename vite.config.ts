@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
       },
     },
+    preview: {
+      allowedHosts: ['museumcagarbudaya.kemenbud.go.id'],
+    },
     plugins: [
       react(),
       mode === 'development' &&
