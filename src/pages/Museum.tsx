@@ -127,7 +127,7 @@ const Museum = () => {
                   <img
                     src={(() => {
                       console.log('Museum item debug:', item);
-                      const imageCandidate = item.image_url || item.image || item.photo || '';
+                      const imageCandidate = item.img_banner || '';
                       console.log('Museum image debug:', imageCandidate, getMuseumsImageUrl(imageCandidate));
                       const resolved = getMuseumsImageUrl(imageCandidate);
                       return resolved || '/placeholder.svg';
