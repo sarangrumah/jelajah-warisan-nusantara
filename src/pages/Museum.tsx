@@ -118,7 +118,10 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={getMuseumsImageUrl(item.image_url)}
+                    src={(() => {
+                      console.log('Museum image debug:', item.image_url, getMuseumsImageUrl(item.image_url));
+                      return getMuseumsImageUrl(item.image_url);
+                    })()}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />
