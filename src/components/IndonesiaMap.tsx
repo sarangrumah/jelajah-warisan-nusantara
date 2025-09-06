@@ -20,6 +20,29 @@ interface LocationData {
   contact?: string;
 }
 
+const museumImages = import.meta.glob('../assets/museum/*', { eager: true });
+
+function getMuseumImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(museumImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/museum/ for production
+  if (justFile) {
+    return `/assets/museum/${justFile}`;
+  }
+  return undefined;
+}
+
 const IndonesiaMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -147,7 +170,7 @@ const IndonesiaMap = () => {
       const popupContent = `
         <div style="padding: 16px; min-width: 280px; max-width: 320px;">
           <div style="margin-bottom: 12px;">
-            <img src="${location.image_url}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
+            <img src="${getMuseumImageUrl(location.image_url)}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
             <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name || location.title}</h3>
             <span style="background-color: ${location.type === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${location.type}</span>
           </div>
