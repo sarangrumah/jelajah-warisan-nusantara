@@ -21,7 +21,14 @@ function getEventImageUrl(filename: string) {
   }
   const justFile = filename?.split('/').pop() || filename;
   const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  return match ? (match[1] as any).default : undefined;
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/events/ for production
+  if (justFile) {
+    return `/assets/events/${justFile}`;
+  }
+  return undefined;
 }
 
 const AgendaSection = () => {
