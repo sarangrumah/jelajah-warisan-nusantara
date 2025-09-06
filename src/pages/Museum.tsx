@@ -10,6 +10,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { defaultMuseums } from '@/../database/default-data';
 import { museumService } from '@/lib/api-services';
 
+const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
+const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
+
+function getMuseumsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  // Try museums first
+  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Try images as fallback
+  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/museums/ or public/assets/images/ for production
+  if (justFile) {
+    return `/assets/museums/${justFile}`;
+  }
+  return '/placeholder.svg';
+}
+
 const Museum = () => {
   const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
@@ -95,7 +125,13 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url}
+                    src={(() => {
+                      console.log('Museum item debug:', item);
+                      const imageCandidate = item.img_banner || '';
+                      console.log('Museum image debug:', imageCandidate, getMuseumsImageUrl(imageCandidate));
+                      const resolved = getMuseumsImageUrl(imageCandidate);
+                      return resolved || '/placeholder.svg';
+                    })()}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />

@@ -8,8 +8,7 @@ import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
-// --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
+// --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 }
@@ -17,8 +16,22 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 function getImageOrVideoUrl(filename: string) {
-  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  // If the filename is an absolute URL or starts with /assets/ or /uploads/, use it directly
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/') ||
+      filename.startsWith('/uploads/'))
+  ) {
+    return filename;
+  }
+  // Rewrite legacy '/src/assets/...' to '/assets/...'
+  if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
+    return filename.replace('/src', '');
+  }
+  // Fallback: pass through as-is
+  return filename;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
@@ -79,12 +92,13 @@ const HeroSection = () => {
       const response = await bannerService.getAll();
       if (response.error) {
         console.log('Error fetching slides:', response.error);
-        setSlides(defaultSlides);
+        setSlides(mapSlidesWithImageUrl(defaultSlides));
       }
       if(response.data.length === 0) {
         setSlides(defaultSlides);
       } else {
-        setSlides(response.data);
+        setSlides(mapSlidesWithImageUrl(response.data));
+        console.log('[HeroSection] Slides fetched from API:', response.data);
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
@@ -116,36 +130,44 @@ const HeroSection = () => {
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {slides && slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            {/* --- Improved: Render image or video based on original filename (asset) --- */}
-            {isImage(slide.asset) ? (
-              <img
-                src={slide.image}
-                alt={t(slide.title)}
-                className="w-full h-full object-cover parallax"
-              />
-            ) : isVideo(slide.asset) ? (
-              <video
-                src={slide.image}
-                controls
-                className="w-full h-full object-cover parallax"
-              />
-            ) : (
-              <img
-                src="/public/placeholder.svg"
-                alt="Not found"
-                className="w-full h-full object-cover parallax"
-              />
-            )}
-            <div className="absolute inset-0 overlay-gradient" />
-          </div>
-        ))}
+        {slides && slides.map((slide, index) => {
+          console.log('[HeroSection] Rendering slide:', {
+            index,
+            asset: slide.asset,
+            image: slide.image,
+            slide
+          });
+          return (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {/* --- Improved: Render image or video based on original filename (asset) --- */}
+              {isImage(slide.asset) ? (
+                <img
+                  src={slide.image}
+                  alt={t(slide.title)}
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : isVideo(slide.asset) ? (
+                <video
+                  src={slide.image}
+                  controls
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : (
+                <img
+                  src="/public/placeholder.svg"
+                  alt="Not found"
+                  className="w-full h-full object-cover parallax"
+                />
+              )}
+              <div className="absolute inset-0 overlay-gradient" />
+            </div>
+          );
+        })}
         {isLoading && (
           <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
