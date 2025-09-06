@@ -120,7 +120,8 @@ const Museum = () => {
                   <img
                     src={(() => {
                       console.log('Museum image debug:', item.image_url, getMuseumsImageUrl(item.image_url));
-                      return getMuseumsImageUrl(item.image_url);
+                      const resolved = getMuseumsImageUrl(item.image_url);
+                      return resolved || '/placeholder.svg';
                     })()}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
