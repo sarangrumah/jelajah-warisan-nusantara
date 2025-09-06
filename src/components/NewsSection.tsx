@@ -3,6 +3,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { news } from '@/../database/default-data';
 
+const newsImages = import.meta.glob('../assets/news/*', { eager: true });
+
+function getNewsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/news/ for production
+  if (justFile) {
+    return `/assets/news/${justFile}`;
+  }
+  return undefined;
+}
+
 const NewsSection = () => {
   return (
     <section className="py-20 bg-background">
@@ -21,8 +44,8 @@ const NewsSection = () => {
           {news.map((article) => (
             <Card key={article.id} className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <div className="aspect-video relative overflow-hidden">
-                <img 
-                  src={article.image} 
+                <img
+                  src={getNewsImageUrl(article.image)}
                   alt={article.title}
                   className="w-full h-full object-cover"
                 />
