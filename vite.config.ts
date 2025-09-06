@@ -7,10 +7,16 @@ import { loadEnv } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  // DEBUG: Log config load and allowed hosts
+  // eslint-disable-next-line no-console
+  console.log('Vite config loaded. Preview allowedHosts:', [
+    'museumcagarbudaya.kemenbud.go.id',
+    'www.museumcagarbudaya.kemenbud.go.id'
+  ]);
   
   return {
     server: {
-      base: './',      
+      base: './',
       host: "::",
       port: 8080,
       // Security headers for development
@@ -22,7 +28,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      allowedHosts: ['museumcagarbudaya.kemenbud.go.id'],
+      allowedHosts: [
+        'museumcagarbudaya.kemenbud.go.id',
+        'www.museumcagarbudaya.kemenbud.go.id'
+      ],
     },
     plugins: [
       react(),
