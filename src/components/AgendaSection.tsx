@@ -8,6 +8,22 @@ import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
+const eventImages = import.meta.glob('../assets/events/*', { eager: true });
+
+function getEventImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
+  return match ? (match[1] as any).default : undefined;
+}
+
 const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
@@ -96,16 +112,9 @@ const AgendaSection = () => {
                 </div>
                 <img
                   src={
-                    (() => {
-                      console.log('[AgendaSection] event.image_url:', event.image_url);
-                      if (event.image_url) {
-                        if (event.image_url.startsWith('/assets/')) {
-                          return event.image_url;
-                        }
-                        return `/assets/events/${event.image_url.replace(/^.*[\\/]/, '')}`;
-                      }
-                      return logo;
-                    })()
+                    event.image_url
+                      ? getEventImageUrl(event.image_url) || logo
+                      : logo
                   }
                   alt={event.title}
                   className="w-full h-full object-contain object-center"
