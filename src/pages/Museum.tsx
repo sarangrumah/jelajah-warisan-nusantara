@@ -11,6 +11,7 @@ import { defaultMuseums } from '@/../database/default-data';
 import { museumService } from '@/lib/api-services';
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
+const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
 
 function getMuseumsImageUrl(filename: string) {
   if (
@@ -22,15 +23,21 @@ function getMuseumsImageUrl(filename: string) {
     return filename;
   }
   const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
+  // Try museums first
+  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as any).default;
   }
-  // Fallback: try public/assets/museums/ for production
+  // Try images as fallback
+  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/museums/ or public/assets/images/ for production
   if (justFile) {
     return `/assets/museums/${justFile}`;
   }
-  return undefined;
+  return '/placeholder.svg';
 }
 
 const Museum = () => {
