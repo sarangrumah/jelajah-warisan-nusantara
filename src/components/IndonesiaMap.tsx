@@ -38,7 +38,7 @@ function getMuseumImageUrl(filename: string) {
   }
   // Fallback: try public/assets/museum/ for production
   if (justFile) {
-    return `/assets/museum/${justFile}`;
+    return `/assets/museums/${justFile}`;
   }
   return undefined;
 }
