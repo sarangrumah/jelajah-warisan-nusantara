@@ -119,6 +119,7 @@ const Museum = () => {
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={(() => {
+                      console.log('Museum item debug:', item);
                       console.log('Museum image debug:', item.image_url, getMuseumsImageUrl(item.image_url));
                       const resolved = getMuseumsImageUrl(item.image_url);
                       return resolved || '/placeholder.svg';
