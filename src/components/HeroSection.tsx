@@ -8,12 +8,12 @@ import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
-<<<<<<< HEAD
+// <<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
-=======
+// =======
 // --- Vite Dynamic Image Import Solution ---
 const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
->>>>>>> origin/main
+// >>>>>>> origin/main
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 }
