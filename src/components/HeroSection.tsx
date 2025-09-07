@@ -21,16 +21,12 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 function getImageOrVideoUrl(filename: string) {
-<<<<<<< HEAD
-  // If the filename is an absolute URL or starts with /assets/ or /uploads/, use it directly
-=======
-  // If the filename is an absolute URL or starts with /assets/, use it directly
->>>>>>> origin/main
+
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-<<<<<<< HEAD
+// <<<<<<< HEAD
       filename.startsWith('/assets/') ||
       filename.startsWith('/uploads/'))
   ) {
@@ -42,15 +38,15 @@ function getImageOrVideoUrl(filename: string) {
   }
   // Fallback: pass through as-is
   return filename;
-=======
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // Otherwise, try to resolve using Vite's import
-  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
->>>>>>> origin/main
+// =======
+  //     filename.startsWith('/assets/'))
+  // ) {
+  //   return filename;
+  // }
+  // // Otherwise, try to resolve using Vite's import
+  // const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
+  // return match ? (match[1] as any).default : filename;
+// >>>>>>> origin/main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
