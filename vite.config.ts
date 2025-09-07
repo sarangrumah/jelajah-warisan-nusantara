@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
+      port: 443,
+      strictPort: true,
       allowedHosts: [
         'museumcagarbudaya.kemenbud.go.id',
         'www.museumcagarbudaya.kemenbud.go.id'
