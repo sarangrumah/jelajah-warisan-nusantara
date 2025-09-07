@@ -19,6 +19,10 @@ export default defineConfig(({ mode }) => {
       base: './',
       host: "::",
       port: 8080,
+      // Avoid dev reloads when backend writes into hero assets
+      watch: {
+        ignored: ['**/src/assets/hero-sections/**'],
+      },
       // Security headers for development
       headers: {
         'X-Frame-Options': 'DENY',
