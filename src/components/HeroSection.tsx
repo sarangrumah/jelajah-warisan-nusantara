@@ -27,25 +27,25 @@ function getImageOrVideoUrl(filename: string) {
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
 // <<<<<<< HEAD
-      filename.startsWith('/assets/') ||
-      filename.startsWith('/uploads/'))
-  ) {
-    return filename;
-  }
-  // Rewrite legacy '/src/assets/...' to '/assets/...'
-  if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
-    return filename.replace('/src', '');
-  }
-  // Fallback: pass through as-is
-  return filename;
-// =======
-  //     filename.startsWith('/assets/'))
+  //     filename.startsWith('/assets/') ||
+  //     filename.startsWith('/uploads/'))
   // ) {
   //   return filename;
   // }
+  // // Rewrite legacy '/src/assets/...' to '/assets/...'
+  // if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
+  //   return filename.replace('/src', '');
+  // }
+  // // Fallback: pass through as-is
+  // return filename;
+// =======
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
   // // Otherwise, try to resolve using Vite's import
-  // const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  // return match ? (match[1] as any).default : filename;
+  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
 // >>>>>>> origin/main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>

@@ -20,4 +20,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  preview: {
+    allowedHosts: [
+      'museumcagarbudaya.kemenbud.go.id'
+    ]
+  }
 });
