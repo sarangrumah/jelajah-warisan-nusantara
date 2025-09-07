@@ -3,8 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { bannerService } from '@/lib/api-services';
-// import { heroVideoService } from '@/lib/api-services';
+import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
@@ -28,34 +27,7 @@ const HeroSection = () => {
   const [slides, setSlides] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
-  const images = import.meta.glob(`@/assets/images/*`, { 
-    eager: true,
-    import: 'default'
-   }) as Record<string, string>;
-
-  const getImage = (name: string) => {
-    for(const path in images) {
-      if(path.includes(name)) {
-        return images[path];
-      }
-    }
-    return null;
-  }
-
-  const videos = import.meta.glob(`@/assets/hero-sections/*`, { 
-    eager: true,
-    import: 'default'
-   }) as Record<string, string>;
-
-  const getVideo = (name: string) => {
-    for(const path in videos) {
-      if(path.includes(name)) {
-        return videos[path];
-      }
-    }
-    return null;
-  }
+  const [types, setTypes] = useState([]);
 
   const handleVideoEnded = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
@@ -99,64 +71,50 @@ const HeroSection = () => {
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
+      const imageResponse = response.data.filter((slide: any) => slide.media_type === 'image').sort((a: any, b: any) => b.id.localeCompare(a.id));
+      const videoResponse = response.data.filter((slide: any) => slide.media_type === 'video').sort((a: any, b: any) => b.id.localeCompare(a.id));
       if (response.error || response.data.length === 0) {
         setSlides(mapSlidesWithImageUrl(defaultSlides));
+        setVideoList(mapSlidesWithImageUrl(defaultVideos));
       } else {
-        setSlides(mapSlidesWithImageUrl(response.data));
-      }
-    } catch (error) {
-      setSlides(mapSlidesWithImageUrl(defaultSlides));
-    }
-  };
-
-  /* --- BACKUP: Original fetchSlides logic ---
-  const fetchSlides = async () => {
-    try {
-      const response = await bannerService.getAll();
-      const filteredResponse = response.data.filter((slide: any) => slide.media_type === 'image');
-      const sortedResponse = filteredResponse.sort((a: any, b: any) => b.id.localeCompare(a.id));
-      if (response.error) {
-        console.error('Error fetching slides:', response.error);
-        setSlides(defaultSlides);
-      }
-      if(response.data.length === 0) {
-        setSlides(defaultSlides);
-      } else {
-        setSlides(sortedResponse);
+        setSlides(mapSlidesWithImageUrl(imageResponse));
+        setVideoList(mapSlidesWithImageUrl(videoResponse));
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
+      setSlides(mapSlidesWithImageUrl(defaultSlides));
     }
   };
-  --- END BACKUP --- */
 
   useEffect(() => {
     fetchSlides();
   },[]);
 
-  const fetchVideos = async () => {
+  const fetchTypeSites = async () => {
     try {
-      const response = await bannerService.getAll();
-      const filteredResponse = response.data.filter((slide: any) => slide.media_type === 'video');
-      const sortedResponse = filteredResponse.sort((a: any, b: any) => b.id.localeCompare(a.id));
-      if (response.error) {
-        console.error('Error fetching videos:', response.error)
-        setVideoList(defaultVideos);
-      }
-      if(response.data.length === 0) {
-        setVideoList(defaultVideos);
+      const response = await TypesAndCategoriesSites.getAllTypes();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching tyes:', response.error);
       } else {
-        setVideoList(sortedResponse);
+        setTypes(response.data);
       }
     } catch (error) {
-      console.error('Error fetching videos:', error)
+      console.error('Error fetching museums:', error);
     }
   }
 
   useEffect(() => {
-    fetchVideos();
-  }, []);
-  console.log(videoList)
+    fetchTypeSites();
+  },[]);
+
+  const linkTo = (slides: string) => {
+    const type = types.find((type) => type.name === slides)?.id;
+    if(slides === 'museum' || slides === 'heritage') {      
+      return `/museums/${type}`;
+    } else {
+      return `/collection`;
+    }
+  }
 
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
@@ -171,19 +129,10 @@ const HeroSection = () => {
           >
             {/* --- Vite Dynamic Image Import Solution --- */}
             <img
-              src={ getImage(slide.image) }
+              src={ getImageUrl(slide.image) }
               alt={t(slide.title)}
               className="w-full h-full object-cover parallax"
             />
-            {/*
-            --- BACKUP: Original image rendering logic ---
-            <img
-              src={slide.image}
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
-            --- END BACKUP ---
-            */}
             <div className="absolute inset-0 overlay-gradient" />
           </div>
         ))}
@@ -205,8 +154,7 @@ const HeroSection = () => {
               {slides.length > 0 && t(slides[currentSlide].subtitle)}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {/* <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}> */}
-              <Link to={slides.length > 0 ? `/${slides[currentSlide].button_url_1.split('.')[1]}` : "/"}>
+              <Link to={slides.length > 0 ? linkTo(slides[currentSlide].button_url_1.split('.')[1]) : "/"}>
                 <Button
                   variant="outline"
                   size="lg"
@@ -275,9 +223,8 @@ const HeroSection = () => {
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
                 <video 
-                key={currentVideoIndex} 
-                // src={videoList[currentVideoIndex].image}
-                src={getVideo(videoList[currentVideoIndex].image)}
+                key={currentVideoIndex}
+                src={getImageUrl(videoList[currentVideoIndex].image)}
                 onEnded={handleVideoEnded} controls autoPlay className="w-full" />
               </div>
             </div>

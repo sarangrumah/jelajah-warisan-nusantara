@@ -31,7 +31,7 @@ const Header = () => {
 
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
-    { name: t('nav.museum'), href: '/museum' },
+    { name: t('nav.museum'), href: '/museums' },
     { name: t('nav.koleksi'), href: '/collection' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
@@ -112,7 +112,7 @@ const Header = () => {
                     key={item.name}
                     to={item.href}
                     className={`transition-heritage font-medium ${
-                      location.pathname === item.href 
+                      location.pathname === item.href
                         ? 'text-primary border-b-2 border-primary' 
                         : 'text-foreground hover:text-primary'
                     }`}

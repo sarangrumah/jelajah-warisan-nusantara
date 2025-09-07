@@ -50,7 +50,7 @@ const App = () => (
           <Route path="/ppid" element={<PPID />} />
           <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
           <Route path="/peraturan" element={<Peraturan />} />
-          <Route path="/museum" element={<Museum />} />
+          <Route path="/museums/:type?" element={<Museum />} />
           <Route path="/museum/:id" element={<MuseumDetail />} />
           <Route path="/heritage" element={<Heritage />} />
           <Route path="/heritage/:id" element={<HeritageDetail />} />

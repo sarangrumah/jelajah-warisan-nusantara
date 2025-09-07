@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultMuseums } from '@/../database/default-data';
-import { museumService } from '@/lib/api-services';
+import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
 
 const Museum = () => {
+  const { type } = useParams();
   const [museums, setMuseums] = useState([]);
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [types, setTypes] = useState([]);
 
   const { pathname } = useLocation();
       
@@ -22,32 +25,15 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const images = import.meta.glob(`@/assets/images/*`, { 
-    eager: true,
-    import: 'default'
-   }) as Record<string, string>;
-
-  const getImage = (name: string) => {
-    for(const path in images) {
-      if(path.includes(name)) {
-        return images[path];
-      }
-    }
-    return null;
-  }
-
   const fetchMuseums = async () => {
     try {
       const response = await museumService.getAll();
 
-      if (response.error) {
+      if (response.error || response.data.length === 0) {
         console.error('Error fetching museums:', response.error);
-        setMuseums(defaultMuseums);
-      }
-      if(response.data.length === 0) {
-        setMuseums(defaultMuseums);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
       } else {
-        setMuseums(response.data);
+        setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
       }
     } catch (error) {
       console.error('Error fetching museums:', error);
@@ -58,12 +44,37 @@ const Museum = () => {
     fetchMuseums();
   }, []);
 
+  const fetchType = async () => {
+    try {
+      const response = await TypesAndCategoriesSites.getAllTypes();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching tyes:', response.error);
+      } else {
+        setTypes(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  };
+  useEffect(() => {
+    fetchType();
+  }, []);
+
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || museum.type === filterType;
+    const matchesFilter = filterType === 'all' || types.length > 0 && types.find((type) => type.id === museum.type).name === filterType;
     return matchesSearch && matchesFilter;
   });
+  
+  useEffect(() => {
+    const selectedType = types.find((t) => t.id === type)?.name;
+    if (type) {
+      setFilterType(selectedType);
+    } else {
+      setFilterType('all');
+    }
+  }, [type, types]);
 
   return (
     <div className="py-20 min-h-screen bg-background">
@@ -113,7 +124,7 @@ const Museum = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={getImage(item.img_banner)}
+                    src={getImageUrl(item.img_banner)}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
                   />
@@ -130,11 +141,12 @@ const Museum = () => {
                   <p className="text-sm">{item.description}</p>
                   <div className="mt-4">
                     <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                      item.type === 'museum' 
+                      types.length > 0 && types.find((type) => type.id === item.type).name === 'museum' 
                         ? 'bg-primary/10 text-primary'
                         : 'bg-secondary/10 text-secondary'
                     }`}>
-                      {item.type === 'museum' ? t('Museum') : t('Heritage Site')}
+                      {types.length > 0 && types.find((type) => type.id === item.type).name === 'museum' ? 'Museum' : 'Cagar Budaya'}
+                      {/* {item.type === 'museum' ? t('Museum') : t('Heritage Site')} */}
                     </span>
                   </div>
                 </CardContent>
