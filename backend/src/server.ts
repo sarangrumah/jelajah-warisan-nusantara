@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -61,8 +62,14 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files
-// app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/assets', express.static(path.join(__dirname, '../../src/assets')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Serve assets from project root src/assets (outside backend)
+const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
+  ? path.resolve(__dirname, '../../../src/assets')
+  : path.resolve(process.cwd(), 'src/assets');
+
+app.use('/assets', express.static(assetsDir));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
