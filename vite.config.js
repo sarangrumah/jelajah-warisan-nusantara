@@ -22,7 +22,8 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: [
-      'museumcagarbudaya.kemenbud.go.id'
+      'museumcagarbudaya.kemenbud.go.id',
+      'www.museumcagarbudaya.kemenbud.go.id'
     ]
   }
 });
