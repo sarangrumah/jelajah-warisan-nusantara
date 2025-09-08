@@ -128,7 +128,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {museum.facilities.map((facility, index) => (
+                    {(museum.facilities ?? []).map((facility, index) => (
                       <Badge key={index} variant="outline">
                         {facility}
                       </Badge>
