@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
-const museumImages = import.meta.glob('../assets/images/museums/*', { eager: true });
+const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 
 function getMuseumImageUrl(filename: string) {
   if (
