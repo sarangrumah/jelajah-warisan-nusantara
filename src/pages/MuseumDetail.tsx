@@ -10,6 +10,22 @@ import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
+const museumImages = import.meta.glob('../assets/images/museums/*', { eager: true });
+
+function getMuseumImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Try to resolve using Vite's import
+  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
+}
+
 const MuseumDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -62,7 +78,7 @@ const MuseumDetail = () => {
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={museum.image_url}
+            src={museum.image_url ? getMuseumImageUrl(museum.image_url.split('/').pop() || museum.image_url) : ''}
             alt={museum.name}
             className="w-full h-full object-cover"
           />
