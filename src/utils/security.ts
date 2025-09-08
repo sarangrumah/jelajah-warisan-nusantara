@@ -29,8 +29,8 @@ export const CSP_POLICY = {
   ],
   'connect-src': [
     "'self'",
-    "http://localhost:3001",
-    "https://your-backend-domain.com", // Replace with your production backend URL
+    "https://localhost:3001",
+    "https://museumcagarbudaya.kemenbud.go.id", // Replace with your production backend URL
   ],
   'frame-ancestors': ["'none'"],
   'base-uri': ["'self'"],

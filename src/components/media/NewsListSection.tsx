@@ -6,6 +6,29 @@ import { Button } from '@/components/ui/button';
 import { newsService } from '@/lib/api-services';
 import { publications } from '@/../database/default-data';
 
+const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
+
+function getNewsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/news/ for production
+  if (justFile) {
+    return `/assets/news/${justFile}`;
+  }
+  return undefined;
+}
+
 const NewsListSection = () => {
   const [articles, setArticles] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -109,8 +132,8 @@ const NewsListSection = () => {
             <Card key={index} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
               {article.featured_image_url && (
                 <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={article.featured_image_url} 
+                  <img
+                    src={getNewsImageUrl(article.featured_image_url)}
                     alt={article.title}
                     className="w-full h-full object-cover"
                   />

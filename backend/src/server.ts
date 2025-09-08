@@ -4,11 +4,13 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 // Import routes
 import authRoutes from './routes/auth';
 import apiRoutes from './routes/api';
 import uploadRoutes from './routes/upload';
+import usersRoutes from './routes/users';
 
 // Load environment variables
 dotenv.config();
@@ -62,6 +64,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Serve assets from project root src/assets (outside backend)
+const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
+  ? path.resolve(__dirname, '../../../src/assets')
+  : path.resolve(process.cwd(), 'src/assets');
+
+app.use('/assets', express.static(assetsDir));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
@@ -75,6 +84,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/users', usersRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

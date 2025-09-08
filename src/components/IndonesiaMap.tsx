@@ -19,8 +19,29 @@ interface LocationData {
   openingHours?: string;
   ticketPrice?: string;
   contact?: string;
-  longitude?: number;
-  latitude?: number;
+}
+
+const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
+
+function getMuseumsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/museums/ for production
+  if (justFile) {
+    return `/assets/museums/${justFile}`;
+  }
+  return undefined;
 }
 
 const IndonesiaMap = () => {
@@ -35,10 +56,12 @@ const IndonesiaMap = () => {
   const fetchLocations = async () => {
     try {
       const museum = await museumService.getAll();
-      if (museum.error) {
+      if (museum.error || museum.data.length === 0) {
         throw new Error('Error fetching museums: ' + museum.error);
+      } else {
+        const filteredMuseums = museum.data.filter((museum: any) => museum.is_active === true && museum.is_approved === true);
+        setLocations(mapSlidesWithImageUrl(filteredMuseums));
       }
-      setLocations(mapSlidesWithImageUrl(museum.data));
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
@@ -168,7 +191,7 @@ const IndonesiaMap = () => {
       const popupContent = `
         <div style="padding: 16px; min-width: 280px; max-width: 320px;">
           <div style="margin-bottom: 12px;">
-            <img src="${getImageUrl(location.img_banner)}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
+            <img src="${getMuseumsImageUrl(location.image_url)}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
             <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name || location.title}</h3>
             <span style="background-color: ${types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${types.length > 0 && types.find((type) => type.id === location.type)?.name}</span>
           </div>

@@ -141,11 +141,11 @@ export const ImageUpload = ({
         onDragLeave={handleDragLeave}
         onClick={openFileDialog}
       >
-        <CardContent className="p-6">
+        <CardContent className="p-6">|
           {value && preview ? (
             <div className="relative group">
               <img
-                src={value}
+                src={`../../${value}`}
                 alt="Preview"
                 className="w-full h-32 object-cover rounded-md"
               />

@@ -27,7 +27,7 @@ export const tableConfigs = {
     'website','aboutus','vision','mission','latitude','longitude',
     'created_by','created_at','updated_by','updated_at'],
   tb_company_leadership: ['id', 'name','position','is_active','company_id','created_by','created_at','updated_by','updated_at'],
-  tb_company_visitor: [  // ✅ Fixed: "visitior" → "visitor"
+  tb_company_visitor: [
     'id', 'visitor_count', 'year', 'is_active', 'company_id',
     'created_by', 'updated_by'
   ],
@@ -35,10 +35,54 @@ export const tableConfigs = {
   tb_type_sites: ['id', 'name'],
   tb_categories_sites: ['id','name','type_id'],
   tb_categories_event: ['id','name'],
+  tb_media: ['id','title','image_url','file_url','categories','subtitle','description','source','author','is_active', 'is_approved','created_at','created_by','updated_at','updated_by','published_date'],
   tb_sites:['id','name','type','category','subtitle','description','address',
-    'opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price',
+    'opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price','collection',
     'latitude','longitude','is_active', 'is_approved','created_at','created_by','updated_at','updated_by'],
-  tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by']
+  tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by'],
+  tb_faqs:  ['id','question','answer','category','order_index','file_url','is_active','is_published','created_at','created_by','updated_at','updated_by'],
+  tb_sop: ['id','title','subtitle','description','publish_date','category','document_url','author','is_active','is_approved','created_at','created_by','updated_at','updated_by']
+  ,tb_career_management: [
+    'id',
+    'title',
+    'subtitle',
+    'description',
+    'requirement',
+    'responsibility',
+    'supervisor',
+    'publish_date',
+    'end_publish_date',
+    'position_needed',
+    'period',
+    'location',
+    'is_active',
+    'is_approved',
+    'created_at',
+    'created_by',
+    'updated_at',
+    'updated_by'
+  ]
+  ,tb_career_submission_management: [
+    'id',
+    'career_id',
+    'name_volunteer',
+    'email',
+    'mobile_phone',
+    'university_name',
+    'major',
+    'semester',
+    'ipk',
+    'motivation',
+    'cv_url',
+    'transcript_url',
+    'cover_letter_url',
+    'application_status',
+    'is_active',
+    'created_at',
+    'created_by',
+    'updated_at',
+    'updated_by'
+  ]
 };
 
 export const tableRelationships = {
@@ -58,6 +102,15 @@ export const tableRelationships = {
         type: 'left', 
         fields: ['id', 'name', 'address'] // only these are joined
       },
+    }
+  },
+  tb_career_submission_management: {
+    career: {
+      table: 'tb_career_management',
+      localKey: 'career_id',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'title']
     }
   },
   tb_sites: {
@@ -118,6 +171,14 @@ export const approvalConfig = {
     autoActivateOnApprove: true
   },
   tb_events: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  tb_sop: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  tb_career_management: {
     requiresApproval: true,
     autoActivateOnApprove: true
   }

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { defaultEvents } from '@/../database/default-data';
-import { agendaService } from '@/lib/api-services';
+import { agendaService, EventsService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -18,11 +18,14 @@ const EventDetail = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await agendaService.getAll();
-      if (response.error) {
+      const response = await EventsService.getAll();
+      if (response.error || response.data.length === 0) {
         console.error('Error fetching events:', response.error);
+        setEvents(defaultEvents);
+      } else {
+        const filteredEvents = response.data.filter((event: any) => event.id === id);
+        setEvents(filteredEvents);
       }
-      setEvents(response.data || defaultEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -31,7 +34,7 @@ const EventDetail = () => {
     fetchEvents();
   }, []);
 
-  const filteredEvent = events.filter((event) => event.id.toString() === id);
+  // const filteredEvent = events.filter((event) => event.id.toString() === id);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -101,7 +104,7 @@ const EventDetail = () => {
         </Link>
       </div>
 
-      {filteredEvent && filteredEvent.map((event) => (
+      {events && events.map((event) => (
         <div key={event.id}>
         {/* Hero Image */}
           <section className="relative h-96x overflow-hidden h-[86vh]">
@@ -137,7 +140,7 @@ const EventDetail = () => {
                       ))}
                     </div>
                   </CardContent>
-                  <CardContent className="p-6">
+                  {/* <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
                     <ul className="space-y-2">
                       {event.highlights.map((highlight, index) => (
@@ -147,7 +150,7 @@ const EventDetail = () => {
                         </li>
                       ))}
                     </ul>
-                  </CardContent>
+                  </CardContent> */}
                 </Card>
 
                 {/* Highlights */}

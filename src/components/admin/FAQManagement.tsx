@@ -7,21 +7,149 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, ArrowUp, ArrowDown, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { EmptyState } from '../ErrorHandling';
 
-const FAQManagement = () => {
-  const [faqs, setFaqs] = useState<any[]>([]);
+interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  order_index: number;
+  file_url: string;
+  is_active: boolean;
+  is_published: boolean;
+  created_at: string;
+  created_by: number;
+  updated_at: string;
+  updated_by: number;
+}
+
+const FaqForm = ({ faq, onSave, onCancel, saving }: {
+  faq?: Faq;
+  onSave: (data: Faq) => void;
+  onCancel: () => void;
+  saving: boolean
+}) => {
+  const [formData, setFormData] = useState<Faq>(faq);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="question">Question</Label>
+        <Textarea
+          id="question"
+          value={formData.question}
+          onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
+          required
+          rows={2}
+          placeholder="What is the question users frequently ask?"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="answer">Answer</Label>
+        <Textarea
+          id="answer"
+          value={formData.answer}
+          onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
+          required
+          rows={4}
+          placeholder="Provide a comprehensive answer to the question"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="category">Category</Label>
+          <Input
+            id="category"
+            value={formData.category}
+            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+            placeholder="e.g., General, Tickets, Exhibitions"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="order_index">Display Order</Label>
+          <Input
+            id="order_index"
+            type="number"
+            value={formData.order_index}
+             onChange={(e) => {
+              const value = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                order_index: value === '' ? 0 : parseInt(value, 10) // Handle empty input
+              }));
+            }}
+            placeholder="0"
+            min="0"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_published"
+          checked={formData.is_published}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
+        />
+        <Label htmlFor="is_published">Publish FAQ</Label>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saving}>
+          {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+
+const emptyFaq: Faq = {
+  id: "",
+  question: '',
+  answer: '',
+  category: "",
+  order_index: 0,
+  file_url: '',
+  is_active: true,
+  is_published: false,
+  created_at: '',
+  created_by: 0,
+  updated_at: '',
+  updated_by: 0,
+};
+
+const FAQManagement =  ({ userRole }: { userRole: string }) => {
+  const [faqs, setFaqs] = useState<Faq[]>([]);
+  const [faq, setFaq] = useState<Faq>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingFaq, setEditingFaq] = useState<any>(null);
+  const [editingFaq, setEditingFaq] = useState<Faq>(emptyFaq);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogDelete, setIsDialogDelete] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchFaqs();
   }, []);
+
+
 
   const fetchFaqs = async () => {
     try {
@@ -31,7 +159,7 @@ const FAQManagement = () => {
         throw new Error(response.error);
       }
       
-      setFaqs(response.data || []);
+      setFaqs(response.data as Faq[]|| []);
     } catch (error) {
       console.error('Error fetching FAQs:', error);
       toast({
@@ -44,26 +172,19 @@ const FAQManagement = () => {
     }
   };
 
-  const saveFaq = async (formData: any) => {
+  const saveFaq = async (formData: Faq) => {
     setSaving(true);
     try {
-      const faqData = {
-        question: formData.question,
-        answer: formData.answer,
-        category: formData.category,
-        order_index: formData.order_index ? parseInt(formData.order_index) : 0,
-        is_published: formData.is_published,
-      };
-
+      let response;
       if (editingFaq?.id) {
-        const response = await faqService.update(editingFaq.id, faqData);
+        response = await faqService.update(editingFaq.id, formData);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
         setFaqs(prev => prev.map(f => 
-          f.id === editingFaq.id ? { ...f, ...faqData } : f
+          f.id === editingFaq.id ? { ...f, ...formData } : f
         ).sort((a, b) => a.order_index - b.order_index));
         
         toast({
@@ -71,7 +192,7 @@ const FAQManagement = () => {
           description: 'FAQ updated successfully',
         });
       } else {
-        const response = await faqService.create(faqData);
+        response = await faqService.create(formData);
         
         if (response.error) {
           throw new Error(response.error);
@@ -107,8 +228,8 @@ const FAQManagement = () => {
         throw new Error(response.error);
       }
       
-      setFaqs(prev => prev.map(faq => 
-        faq.id === id ? { ...faq, is_published: isPublished } : faq
+      setFaqs(prev => prev.map(e => 
+        e.id === id ? { ...e, is_published: isPublished } : e
       ));
       
       toast({
@@ -169,96 +290,57 @@ const FAQManagement = () => {
     }
   };
 
-  const FaqForm = ({ faq, onSave, onCancel }: {
-    faq?: any;
-    onSave: (data: any) => void;
-    onCancel: () => void;
-  }) => {
-    const [formData, setFormData] = useState({
-      question: faq?.question || '',
-      answer: faq?.answer || '',
-      category: faq?.category || '',
-      order_index: faq?.order_index?.toString() || '0',
-      is_published: faq?.is_published ?? true,
-    });
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSave(formData);
-    };
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="question">Question</Label>
-          <Textarea
-            id="question"
-            value={formData.question}
-            onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-            required
-            rows={2}
-            placeholder="What is the question users frequently ask?"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="answer">Answer</Label>
-          <Textarea
-            id="answer"
-            value={formData.answer}
-            onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
-            required
-            rows={4}
-            placeholder="Provide a comprehensive answer to the question"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              placeholder="e.g., General, Tickets, Exhibitions"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) => setFormData(prev => ({ ...prev, order_index: e.target.value }))}
-              placeholder="0"
-              min="0"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="is_published"
-            checked={formData.is_published}
-            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_published: checked }))}
-          />
-          <Label htmlFor="is_published">Publish FAQ</Label>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            <Save className="w-4 h-4 mr-2" />
-            Save
-          </Button>
-        </div>
-      </form>
-    );
+  const toggleApproved = async (id: string) => {
+    try {
+      const response = await faqService.approve(id);
+      if (response.error) throw new Error(response.error);
+      
+      setFaqs(prev => prev.map(faq => 
+        faq.id === id ? { ...faq, is_approved: response.data["is_approved"] } : faq
+      ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Approved`,
+      });
+      fetchFaqs();
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update banner status',
+        variant: 'destructive',
+      });
+    }
   };
+
+  const toggleDelete = async (id: string) => {
+    try {
+      setIsDialogDelete(false)
+      const response = await faqService.delete(id);
+      if (response.error) throw new Error(response.error);
+      
+      // setBanners(prev => prev.map(banner => 
+      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      // ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Deleted`,
+      });
+
+      fetchFaqs()
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete banner',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+
 
   if (loading) {
     return (
@@ -277,30 +359,61 @@ const FAQManagement = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingFaq(null)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add FAQ
-            </Button>
+            { userRole !== "approver" && userRole !== "viewer" ?             
+              <Button onClick={() => setEditingFaq(emptyFaq)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add FAQ
+              </Button> : 
+              <div></div>
+            }
+
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingFaq ? 'Edit FAQ' : 'Add New FAQ'}
+                {editingFaq.id ? 'Edit FAQ' : 'Add New FAQ'}
               </DialogTitle>
               <DialogDescription>
-                {editingFaq ? 'Update FAQ information' : 'Create a new frequently asked question'}
+                {editingFaq.id ? 'Update FAQ information' : 'Create a new frequently asked question'}
               </DialogDescription>
             </DialogHeader>
             <FaqForm
               faq={editingFaq}
               onSave={saveFaq}
               onCancel={() => {
-                setEditingFaq(null);
+                setEditingFaq(emptyFaq);
                 setIsDialogOpen(false);
               }}
+              saving={saving}
             />
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="flex justify-between items-center">
+        {faq != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + faq.question + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + faq.question + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(faq.id)}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                  </Button>
+              </div>
+          </DialogContent>
+        </Dialog > : <div></div>}
       </div>
 
       {faqs.length === 0 ? (

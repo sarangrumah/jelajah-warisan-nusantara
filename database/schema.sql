@@ -1,8 +1,8 @@
 -- PostgreSQL Database Schema for Local Development
 -- Migrated from Supabase
 
--- Create custom types
-CREATE TYPE app_role AS ENUM ('admin', 'editor', 'viewer');
+-- Include all roles used by the app
+CREATE TYPE app_role AS ENUM ('super-admin', 'admin', 'approver', 'editor', 'viewer');
 
 -- Create tables
 CREATE TABLE profiles (
@@ -215,6 +215,6 @@ AS $$
     SELECT 1
     FROM user_roles
     WHERE user_id = _user_id
-      AND role IN ('admin', 'editor')
+      AND role IN ('admin', 'approver')
   )
 $$;

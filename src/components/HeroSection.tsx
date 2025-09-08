@@ -7,16 +7,51 @@ import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 
+// <<<<<<< HEAD
+// --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
+// =======
 // --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/images/hero-section/*', { eager: true });
-function getImageUrl(filename: string) {
+const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
+// >>>>>>> origin/main
+function isImage(filename: string) {
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+}
+function isVideo(filename: string) {
+  return /\.(mp4|webm|ogg)$/i.test(filename);
+}
+function getImageOrVideoUrl(filename: string) {
+
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+// <<<<<<< HEAD
+  //     filename.startsWith('/assets/') ||
+  //     filename.startsWith('/uploads/'))
+  // ) {
+  //   return filename;
+  // }
+  // // Rewrite legacy '/src/assets/...' to '/assets/...'
+  // if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
+  //   return filename.replace('/src', '');
+  // }
+  // // Fallback: pass through as-is
+  // return filename;
+// =======
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // // Otherwise, try to resolve using Vite's import
   const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as any).default : filename;
+// >>>>>>> origin/main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
-    image: getImageUrl(slide.image?.split('/').pop() || slide.image),
+    asset: slide.image?.split('/').pop() || slide.image, // keep original filename
+    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
   }));
 
 const HeroSection = () => {
@@ -67,22 +102,19 @@ const HeroSection = () => {
     }
   };
   
-  // --- Vite-compatible fetchSlides with image mapping ---
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
-      const imageResponse = response.data.filter((slide: any) => slide.media_type === 'image').sort((a: any, b: any) => b.id.localeCompare(a.id));
-      const videoResponse = response.data.filter((slide: any) => slide.media_type === 'video').sort((a: any, b: any) => b.id.localeCompare(a.id));
       if (response.error || response.data.length === 0) {
+        console.error('Error fetching slides:', response.error);
         setSlides(mapSlidesWithImageUrl(defaultSlides));
-        setVideoList(mapSlidesWithImageUrl(defaultVideos));
       } else {
-        setSlides(mapSlidesWithImageUrl(imageResponse));
-        setVideoList(mapSlidesWithImageUrl(videoResponse));
+        const filteredSlides = response.data.filter((slide: any) => slide.is_active === true && slide.is_approved === true);
+        setSlides(mapSlidesWithImageUrl(filteredSlides));
+        console.log('[HeroSection] Slides fetched from API:', response.data);
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
-      setSlides(mapSlidesWithImageUrl(defaultSlides));
     }
   };
 
@@ -94,7 +126,7 @@ const HeroSection = () => {
     try {
       const response = await TypesAndCategoriesSites.getAllTypes();
       if (response.error || response.data.length === 0) {
-        console.error('Error fetching tyes:', response.error);
+        console.error('Error fetching types:', response.error);
       } else {
         setTypes(response.data);
       }
@@ -120,22 +152,44 @@ const HeroSection = () => {
     <section id="beranda" className="relative h-screen overflow-hidden">
       {/* Background Image Slider */}
       <div className="absolute inset-0">
-        {slides && slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            {/* --- Vite Dynamic Image Import Solution --- */}
-            <img
-              src={ getImageUrl(slide.image) }
-              alt={t(slide.title)}
-              className="w-full h-full object-cover parallax"
-            />
-            <div className="absolute inset-0 overlay-gradient" />
-          </div>
-        ))}
+        {slides && slides.map((slide, index) => {
+          console.log('[HeroSection] Rendering slide:', {
+            index,
+            asset: slide.asset,
+            image: slide.image,
+            slide
+          });
+          return (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {/* --- Improved: Render image or video based on original filename (asset) --- */}
+              {isImage(slide.asset) ? (
+                <img
+                  src={slide.image}
+                  alt={t(slide.title)}
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : isVideo(slide.asset) ? (
+                <video
+                  src={slide.image}
+                  controls
+                  className="w-full h-full object-cover parallax"
+                />
+              ) : (
+                <img
+                  src="/public/placeholder.svg"
+                  alt="Not found"
+                  className="w-full h-full object-cover parallax"
+                />
+              )}
+              <div className="absolute inset-0 overlay-gradient" />
+            </div>
+          );
+        })}
         {isLoading && (
           <div className="absolute inset-0 bg-card/50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -181,14 +235,14 @@ const HeroSection = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+        className="absolute left-6 top-2/3 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
       >
         <ChevronLeft size={24} className="text-foreground" />
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+        className="absolute right-6 top-2/3 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
       >
         <ChevronRight size={24} className="text-foreground" />
       </button>

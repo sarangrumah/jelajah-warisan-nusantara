@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -21,7 +22,7 @@ interface EventItem {
   category: string;
   subtitle?: string;
   description?: string;
-  sites_id: string;                 // Foreign key to tb_sites
+  sites_id?: string;                 // Foreign key to tb_sites
   location?: string;
   address?: string;
   start_published_date: string;    // ISO date string
@@ -80,17 +81,51 @@ interface Categories {
   name: string;
 }
 
-
-
 const EventForm = ({ museum, onSave, onCancel, saving }: {
   museum: EventItem;
   onSave: (data: EventItem) => void;
   onCancel: () => void;
   saving: boolean;
 }) => {
+  // Helpers to normalize date values for inputs
+  const toDateInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const toDateTimeInput = (value?: string) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+  };
+
   const [formData, setFormData] = useState<EventItem>({
     ...museum,
+    start_published_date: toDateTimeInput(museum.start_published_date),
+    end_published_date: toDateTimeInput(museum.end_published_date),
+    start_date: toDateInput(museum.start_date),
+    end_date: toDateInput(museum.end_date),
   });
+
+  // Keep inputs in sync when switching edited event
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...museum,
+      start_published_date: toDateTimeInput(museum.start_published_date),
+      end_published_date: toDateTimeInput(museum.end_published_date),
+      start_date: toDateInput(museum.start_date),
+      end_date: toDateInput(museum.end_date),
+    }));
+  }, [museum]);
 
   const [sites, setSites] = useState<SitesItem[]>()
   const [categories, setCategories] = useState<Categories[]>()
@@ -98,6 +133,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   const [loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
   const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+  const [useSites, setUseSites] = useState<boolean>(false)
 
   useEffect(() => {
       fetchSites();    
@@ -105,16 +141,49 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   }, []);
 
   useEffect(() => {
-    
-    if (sites != undefined) {
+
+    if (formData.sites_id != null && !useSites) {
+      setUseSites(true)
+    }
+
+    if (sites != undefined && useSites) {
       sites.filter((e, index) => {
         if (formData.sites_id == e.id) {
           formData.address = e.address
         }
       })
     }
+
+
   }, [formData.sites_id]);
 
+
+  useEffect(() => {
+    if (!useSites && formData.sites_id != null) {
+       formData.address = ''
+       formData.sites_id = null
+    } else {
+      if (sites != undefined) {
+      sites.filter((e, index) => {
+          if (formData.sites_id == e.id) {
+            formData.address = e.address
+          }
+        })
+      }
+    }
+  }, [useSites])
+
+  // Ensure address follows useSites toggle and selected site
+  useEffect(() => {
+    if (!useSites) {
+      setFormData(prev => ({ ...prev, address: '' }));
+      return;
+    }
+    if (sites && formData.sites_id) {
+      const selected = sites.find((e) => e.id === formData.sites_id);
+      setFormData(prev => ({ ...prev, address: selected?.address ?? '' }));
+    }
+  }, [useSites, formData.sites_id, sites])
 
 
 
@@ -128,10 +197,10 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       
       setSites(response.data as SitesItem[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -149,10 +218,10 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       
       setCategories(response.data as Categories[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -197,7 +266,19 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className='space-y-3'>
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id="use-sites"
+            checked={useSites}
+            onCheckedChange={(checked) => setUseSites(!!checked)}
+          />
+          <Label htmlFor="use-sites">Use Sites</Label>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+       {useSites ? 
         <div className="space-y-3">
           <Label htmlFor="sites">Sites</Label>
           {loading ? (
@@ -214,7 +295,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
               ))}
             </SelectContent>
           </Select>}
-        </div>
+        </div> : 
+        null}
         <div className="space-y-3">
           <Label htmlFor="category">Category</Label>
           {loadingCat ? (
@@ -271,7 +353,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="start_publish_date">Start Publish Date</Label>
+          <Label htmlFor="start_published_date">Start Publish Date</Label>
           <Input
           id="start_published_date"
           type="datetime-local"
@@ -469,7 +551,7 @@ const emptyEvent: EventItem = {
   category: '',
   subtitle: '',
   description: '',
-  sites_id: '',                     // Will be set when selecting a site
+  sites_id: null,                     // Will be set when selecting a site
   location: '',
   address: '',
   start_published_date: new Date().toISOString(),        // e.g., new Date().toISOString()
@@ -490,12 +572,14 @@ const emptyEvent: EventItem = {
 };
 
 const EventManagement = ({ userRole }: { userRole: string }) => {
-  const [event, setEvents] = useState<EventItem[]>([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [event, setEvent] = useState<EventItem>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem>(emptyEvent);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const [isDialogDelete, setIsDialogDelete] = useState(false);
 
 
   useEffect(() => {
@@ -511,10 +595,10 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       }
       setEvents(response.data as EventItem[] || []);
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('Error fetching events:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load event',
+        description: 'Failed to load events',
         variant: 'destructive',
       });
     } finally {
@@ -623,7 +707,32 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const toggleDelete = async (id: string) => {
+    try {
+      setIsDialogDelete(false)
+      const response = await EventsService.delete(id);
+      if (response.error) throw new Error(response.error);
+      
+      // setBanners(prev => prev.map(banner => 
+      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+      // ));
+      
+      toast({
+        title: 'Success',
+        description: `Banner Deleted`,
+      });
 
+      fetchEvents()
+    } catch (error) {
+      console.error('Error toggling banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete banner',
+        variant: 'destructive',
+      });
+    }
+  };
+  
 
   if (loading) {
     return (
@@ -638,22 +747,25 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Event & Heritage Management</h2>
-          <p className="text-muted-foreground">Manage event and heritage sites</p>
+          <p className="text-muted-foreground">Manage events and heritage sites</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditingEvent(emptyEvent)}>
+            { userRole !== "approver" && userRole !== "viewer" ?             
+              <Button onClick={() => setEditingEvent(emptyEvent)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Event
-            </Button>
+              </Button> : 
+              <div></div>
+            }
           </DialogTrigger>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingEvent ? 'Edit Event' : 'Add New Event'}
+                {editingEvent.id ? 'Edit Event' : 'Add New Event'}
               </DialogTitle>
               <DialogDescription>
-                {editingEvent ? 'Update museum information' : 'Create a new museum or heritage site'}
+                {editingEvent.id ? 'Update event information' : 'Create a new Manage event'}
               </DialogDescription>
             </DialogHeader>
             <EventForm
@@ -668,10 +780,37 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </Dialog>
       </div>
 
-      {event.length === 0 ? (
+      
+      <div className="flex justify-between items-center">
+        {event != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + event.name + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + event.name + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(event.id)}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                  </Button>
+              </div>
+          </DialogContent>
+        </Dialog > : <div></div>}
+      </div>
+
+      {events.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
-            <p className="text-muted-foreground mb-4">No event created yet</p>
+            <p className="text-muted-foreground mb-4">No events created yet</p>
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create First Event
@@ -680,7 +819,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {event.map((museum) => (
+          {events.map((museum) => (
             <Card key={museum.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -697,37 +836,55 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     <CardDescription>{museum.subtitle}</CardDescription>                    
                     <CardDescription>{museum.location}</CardDescription>
                   </div>
-                { userRole == "admin" ? <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => togglePublished(museum.id, !museum.is_active)}
-                  >
-                    {museum.is_active ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditingEvent(museum);
-                      setIsDialogOpen(true);
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  </div> : userRole == "approver" && !museum.is_approved? <div className="flex items-center space-x-2">
+                { 
+                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_active"
+                        checked={museum.is_active}
+                        onCheckedChange={(checked) => togglePublished(museum.id, checked)}
+                      />
+                    </div>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
                       <Button
                         variant="success"
-                        className="w-full"
+                        size="sm"
                         onClick={() => toggleApproved(museum.id)}
                       >
                         Approve
                       </Button>
-                  </div> : <div></div>}
+                    ) : null}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingEvent(museum);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        // setEditingBanner(banner);
+                        setEvent(museum)
+                        setIsDialogDelete(true);
+                      }}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                    </div> : userRole === "approver" && !museum.is_approved ? <div className="flex items-center space-x-2">
+                        <Button
+                          variant="success"
+                          className="w-full"
+                          onClick={() => toggleApproved(museum.id)}
+                        >
+                          Approve
+                        </Button>
+                    </div> : <div></div>
+                }
                 </div>
               </CardHeader>
               <CardContent>

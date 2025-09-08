@@ -8,14 +8,28 @@ import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
-/* --- Vite Dynamic Image Import Solution for Agenda Images --- */
-const agendaImages = import.meta.glob('../assets/images/agenda/*', { eager: true });
-function getAgendaImageUrl(filename: string) {
-  if (!filename) { return undefined; }
-  const match = Object.entries(agendaImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : undefined;
+const eventImages = import.meta.glob('../assets/events/*', { eager: true });
+
+function getEventImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as any).default;
+  }
+  // Fallback: try public/assets/events/ for production
+  if (justFile) {
+    return `/assets/events/${justFile}`;
+  }
+  return undefined;
 }
-/* --- END Vite Dynamic Image Import Solution --- */
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -103,21 +117,15 @@ const AgendaSection = () => {
                 <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
                   {getStatusLabel(event.status)}
                 </div>
-                {/* --- Vite Dynamic Image Import Solution for Agenda Images --- */}
                 <img
                   src={
-                    getAgendaImageUrl(event.image_url?.split('/').pop())
-                      || event.image_url
-                      || logo
+                    event.image_url
+                      ? getEventImageUrl(event.image_url) || logo
+                      : logo
                   }
                   alt={event.title}
                   className="w-full h-full object-contain object-center"
                 />
-                {/*
-                --- BACKUP: Original image rendering logic ---
-                <img src={event.image_url ? event.image_url : logo } alt={event.title} className="w-full h-full object-contain object-center" />
-                --- END BACKUP ---
-                */}
               </div>
 
               {/* Event Content */}

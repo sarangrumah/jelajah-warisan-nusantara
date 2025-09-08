@@ -29,12 +29,15 @@ interface AdminSidebarProps {
 const menuItems = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
   { id: 'banner', label: 'Banner', icon: FileText },
-  { id: 'company', label: 'Profil', icon: Settings },
+  { id: 'company', label: 'Company Profile', icon: Settings },
   { id: 'museum', label: 'Museum', icon: Settings },
   { id: 'agenda', label: 'Agenda', icon: Calendar },
   { id: 'media', label: 'Media', icon: FileText },
+  { id: 'sop', label: 'SOP', icon: FileText },
+  { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
+  { id: 'career-submissions', label: 'Submissions', icon: Users },
   { id: 'faq', label: 'FAQ', icon: Settings },
-  { id: 'career', label: 'Karir', icon: Users },
+  // { id: 'career', label: 'Karir', icon: Users },
   { id: 'users', label: 'Users', icon: Shield },
 ];
 
