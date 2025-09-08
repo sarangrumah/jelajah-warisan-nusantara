@@ -11,7 +11,7 @@ import { defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
-const collectionImages = import.meta.glob('../assets/images/collections/*', { eager: true });
+const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
 
 function getCollectionImageUrl(filename: string) {
   if (
