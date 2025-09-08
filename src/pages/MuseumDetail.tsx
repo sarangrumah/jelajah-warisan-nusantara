@@ -11,8 +11,10 @@ import { museumService } from '@/lib/api-services';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
-function getMuseumImageUrl(filename: string) {
+function getMuseumImageUrl(filename: string | undefined | null) {
+  if (!filename) return PLACEHOLDER_IMAGE;
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
@@ -23,7 +25,7 @@ function getMuseumImageUrl(filename: string) {
   }
   // Try to resolve using Vite's import
   const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  return match ? (match[1] as any).default : PLACEHOLDER_IMAGE;
 }
 
 const MuseumDetail = () => {
@@ -78,7 +80,7 @@ const MuseumDetail = () => {
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={museum.image_url ? getMuseumImageUrl(museum.image_url.split('/').pop() || museum.image_url) : ''}
+            src={getMuseumImageUrl(museum.image_url?.split('/').pop() || museum.image_url)}
             alt={museum.name}
             className="w-full h-full object-cover"
           />
