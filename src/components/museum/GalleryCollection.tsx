@@ -13,6 +13,22 @@ import { collectionService } from '@/lib/api-services';
 //   "https://picsum.photos/id/1024/600/400",
 // ];
 
+const collectionImages = import.meta.glob('@/assets/collections/*', { eager: true });
+
+function getCollectionImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Try to resolve using Vite's import
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
+}
+
 const GalleryCollection = ({museumName}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -43,7 +59,7 @@ const GalleryCollection = ({museumName}) => {
   }, []);
 
   const galleries = collections.filter(collection => collection.museum === museumName);
-  const images = galleries.map(gallery => gallery.image_url);
+  const images = galleries.map(gallery => getCollectionImageUrl(gallery.image_url?.split('/').pop() || gallery.image_url || ""));
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {
@@ -83,7 +99,7 @@ const GalleryCollection = ({museumName}) => {
             return (
               <img
                 key={index}
-                src={images[index]}
+                src={images[index] || ""}
                 alt={`gallery-${index}`}
                 onClick={() => isCenter && setSelectedImage(images[index])}
                 className={`absolute rounded-2xl object-cover cursor-pointer transition-all duration-500 ${
