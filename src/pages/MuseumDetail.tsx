@@ -5,9 +5,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { defaultCollections, defaultMuseums } from '@/../database/default-data';
+import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
-import { collectionService, museumService } from '@/lib/api-services';
+import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
@@ -17,7 +17,6 @@ const MuseumDetail = () => {
   const { pathname } = useLocation();
   
   const [museums, setMuseums] = useState([]);
-  const [collections, setCollections] = useState([]);
       
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,26 +37,6 @@ const MuseumDetail = () => {
   }
   useEffect(() => {
     fetchMuseums();
-  }, []);
-
-  const fetchCollections = async () => {
-    try {
-      const response = await collectionService.getAll();
-
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching collections:', response.error);
-        setCollections(mapSlidesWithImageUrl(defaultCollections));
-      } else {
-        setCollections(mapSlidesWithImageUrl(response.data));
-      }
-
-    } catch (error) {
-      console.error('Error fetching collections:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCollections();
   }, []);
 
   const filteredMuseum = museums.filter((m) => m.id === id);
@@ -149,7 +128,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    <GalleryCollection collections={collections} museumId={museum.id} />
+                    <GalleryCollection />
                   </div>
                 </CardContent>
               </Card>

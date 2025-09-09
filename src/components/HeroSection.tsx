@@ -22,9 +22,11 @@ function isVideo(filename: string) {
 function getImageOrVideoUrl(filename: string) {
 
   if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
+    typeof filename === 'string' && 
+    (filename.startsWith('http://') || 
+    filename.startsWith('https://') || 
+    filename.startsWith('/assets/'))
+  ) { return filename; }
 // <<<<<<< HEAD
   //     filename.startsWith('/assets/') ||
   //     filename.startsWith('/uploads/'))
@@ -38,10 +40,6 @@ function getImageOrVideoUrl(filename: string) {
   // // Fallback: pass through as-is
   // return filename;
 // =======
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
   // // Otherwise, try to resolve using Vite's import
   const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as any).default : filename;
@@ -111,7 +109,6 @@ const HeroSection = () => {
       } else {
         const filteredSlides = response.data.filter((slide: any) => slide.is_active === true && slide.is_approved === true);
         setSlides(mapSlidesWithImageUrl(filteredSlides));
-        console.log('[HeroSection] Slides fetched from API:', response.data);
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
@@ -235,14 +232,14 @@ const HeroSection = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-2/3 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+        className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
       >
         <ChevronLeft size={24} className="text-foreground" />
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-6 top-2/3 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+        className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
       >
         <ChevronRight size={24} className="text-foreground" />
       </button>

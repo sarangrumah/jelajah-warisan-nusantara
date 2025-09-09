@@ -21,7 +21,7 @@ const FloatingButtons = () => {
       </div>
 
       {/* Social Media Buttons - Vertical Stack */}
-      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4 max-md:hidden">
+      <div className="fixed left-6 top-2/3 transform -translate-y-1/2 z-40 flex flex-col space-y-4 max-md:hidden">
         {socialMedia.map((social, index) => (
           <Button
             key={social.label}

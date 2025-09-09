@@ -108,11 +108,11 @@ const Museum = () => {
   }, [type, types]);
 
   return (
-    <div className="py-20 min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative h-72 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
+      <section className="relative py-20 h-80 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
             {t('Museum & Cagar Budaya')}
