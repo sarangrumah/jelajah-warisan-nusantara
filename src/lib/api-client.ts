@@ -22,7 +22,7 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    this.baseUrl = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : 'http://localhost:3001';
     this.token = localStorage.getItem('auth_token');
   }
 
@@ -43,6 +43,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     try {
+      console.log('FETCH URL:', `${this.baseUrl}${endpoint}`);
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
         headers: {

@@ -50,7 +50,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
       // Handle PostgreSQL array format like {admin,editor}
       const rolesStr = dbRoles.toString();
       if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
-        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+        userRoles = rolesStr.slice(1, -1).split(',').filter((role: string) => role.trim() !== '');
       }
     }
 

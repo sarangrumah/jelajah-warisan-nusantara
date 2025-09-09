@@ -11,6 +11,24 @@ import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
+const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
+function getMuseumImageUrl(filename: string | undefined | null) {
+  if (!filename) return PLACEHOLDER_IMAGE;
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Try to resolve using Vite's import
+  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : PLACEHOLDER_IMAGE;
+}
+
 const MuseumDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -75,7 +93,7 @@ const MuseumDetail = () => {
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl(museum.img_banner)}
+            src={getMuseumImageUrl(museum.image_url?.split('/').pop() || museum.image_url)}
             alt={museum.name}
             className="w-full h-full object-cover"
           />
@@ -109,9 +127,9 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {museum.facilities && museum.facilities.split(',').map((facility) => (
-                      <Badge key={facility} variant="outline" className='p-2'>
-                        {facility.charAt(0).toUpperCase() + facility.slice(1)}
+                    {(museum.facilities ?? []).map((facility, index) => (
+                      <Badge key={index} variant="outline">
+                        {facility}
                       </Badge>
                     ))}
                     {/* {typeof museum.facilities === 'string' && Object.entries(parseStringToJSON(museum.facilities)).map(([key, value]) => (
