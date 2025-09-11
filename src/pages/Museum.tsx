@@ -82,7 +82,7 @@ const Museum = () => {
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative h-72 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
+      <section className="relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
             {t('Museum & Cagar Budaya')}
@@ -140,7 +140,7 @@ const Museum = () => {
                   <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <MapPin size={16} className="mr-1" />
                     {item.location}
@@ -155,7 +155,7 @@ const Museum = () => {
                       {item.type === 'museum' ? t('Museum') : t('Heritage Site')}
                     </span>
                   </div>
-                </CardContent>
+                </CardContent> */}
               </Card>
             </Link>
           ))}
