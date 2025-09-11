@@ -167,7 +167,7 @@ const AgendaSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center">
+        {/* <div className="text-center">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               Jangan Lewatkan Event Menarik Lainnya
@@ -184,16 +184,9 @@ const AgendaSection = () => {
                   Lihat Semua Agenda
                 </Button>
               </Link>
-              {/* <Button 
-                variant="outline"
-                size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 transition-heritage"
-              >
-                Berlangganan Newsletter
-              </Button> */}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
