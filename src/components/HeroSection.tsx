@@ -107,7 +107,12 @@ const HeroSection = () => {
         console.error('Error fetching slides:', response.error);
         setSlides(mapSlidesWithImageUrl(defaultSlides));
       } else {
-        const filteredSlides = response.data.filter((slide: any) => slide.is_active === true && slide.is_approved === true);
+        const filteredSlides = response.data.filter((slide: any) => (
+          slide.is_active === true 
+          && slide.is_approved === true 
+          && new Date(slide.start_publish_date) <= new Date()
+          && new Date(slide.end_publish_date) >= new Date()
+        ));
         setSlides(mapSlidesWithImageUrl(filteredSlides));
       }
     } catch (error) {

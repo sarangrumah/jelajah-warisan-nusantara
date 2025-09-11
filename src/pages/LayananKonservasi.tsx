@@ -6,9 +6,7 @@ import ConservationSection from '@/components/layanan-konservasi/ConservationSec
 import { useLocation } from 'react-router-dom';
 import BannerSection from '@/components/layanan-konservasi/BannerSection';
 import { Card, CardContent } from '@/components/ui/card';
-import conservation1 from '@/assets/conservation/conservation1.png';
-import conservation2 from '@/assets/conservation/conservation2.png';
-import GalleryCollection from '@/components/museum/GalleryCollection';
+import GalleryConservation from '@/components/layanan-konservasi/GalleryConservation';
 
 const LayananKonservasi = () => {
   const { pathname } = useLocation();
@@ -37,8 +35,6 @@ const LayananKonservasi = () => {
     return () => observer.disconnect();
   }, []);
 
-  const collections = [conservation1, conservation2];
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -47,7 +43,7 @@ const LayananKonservasi = () => {
       <Card className='outline-none border-none rounded-none flex justify-center scroll-reveal'>
         <CardContent className='w-[80%]'>
           <div className="flexx flex-wrapx p-5">
-            <GalleryCollection collections={collections} />
+            <GalleryConservation />
           </div>
         </CardContent>
       </Card>

@@ -63,7 +63,12 @@ const Museum = () => {
         console.error('Error fetching museums:', response.error);
         setMuseums(mapSlidesWithImageUrl(defaultMuseums));
       } else {
-        const filteredMuseums = response.data.filter((museum: any) => museum.is_active === true && museum.is_approved === true);
+        const filteredMuseums = response.data.filter((museum: any) => (
+          museum.is_active === true 
+          && museum.is_approved === true
+          // && new Date(museum.start_publish_date) <= new Date()
+          // && new Date(museum.end_publish_date) >= new Date()
+        ));
         setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
       }
     } catch (error) {

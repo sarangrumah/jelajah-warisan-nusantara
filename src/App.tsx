@@ -27,6 +27,7 @@ import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
 // import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";
 import Peraturan from "./pages/Peraturan";
+import MemoryOfWorld from "./pages/MemoryOfWorld";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/heritage/:id" element={<HeritageDetail />} />
           <Route path="/collection" element={<Collection />} />
           <Route path="/collection/:id" element={<CollectionDetail />} />
+          <Route path="/mow" element={<MemoryOfWorld />} />
           <Route path="/sites" element={<NotFound />} />
           <Route path="/sites/:id" element={<NotFound />} />
           <Route path="/event/:id" element={<EventDetail />} />

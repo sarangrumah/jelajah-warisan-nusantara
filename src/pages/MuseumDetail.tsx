@@ -8,14 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
-import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
+import { mapSlidesWithImageUrl } from '@/components/helper';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function getMuseumImageUrl(filename: string | undefined | null) {
-  if (!filename) return PLACEHOLDER_IMAGE;
+  if (!filename) { return PLACEHOLDER_IMAGE };
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
@@ -146,7 +146,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    <GalleryCollection />
+                    <GalleryCollection museum={museum.id} />
                   </div>
                 </CardContent>
               </Card>

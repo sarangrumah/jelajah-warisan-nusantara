@@ -32,7 +32,15 @@ const Header = () => {
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
     { name: t('nav.museum'), href: '/museums' },
-    { name: t('nav.koleksi'), href: '/collection' },
+    {
+      name: t('nav.collection'),
+      href: '/collection',
+      subItems: [
+        { name: t('nav.koleksi'), href: '/collection' },
+        { name: t('nav.mow'), href: '/mow' },
+      ],
+    },
+    // { name: t('nav.koleksi'), href: '/collection' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 

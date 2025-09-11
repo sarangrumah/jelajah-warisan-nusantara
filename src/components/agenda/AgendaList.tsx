@@ -46,7 +46,12 @@ const AgendaList = () => {
         console.error('Error fetching events:', response.error);
         setEvents(defaultEvents);
       } else {
-        const filteredEvents = response.data.filter((event: any) => event.is_active === true && event.is_approved === true);
+        const filteredEvents = response.data.filter((event: any) => (
+          event.is_active === true 
+          && event.is_approved === true
+          && new Date(event.start_published_date) <= new Date()
+          && new Date(event.end_published_date) >= new Date()
+        ));
         setEvents(filteredEvents);
       }
     } catch (error) {
