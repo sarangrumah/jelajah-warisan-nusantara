@@ -165,14 +165,14 @@ const uploadMulter = multer({
       if (file.mimetype === 'application/pdf') {
         cb(null, true);
       } else {
-        cb(new Error('Only PDF files are allowed for this bucket'), false);
+        cb(null, false);
       }
     } else {
       // Image files for other buckets
       if (file.mimetype.startsWith('image/')) {
         cb(null, true);
       } else {
-        cb(new Error('Only image files are allowed for this bucket'), false);
+        cb(null, false);
       }
     }
   },

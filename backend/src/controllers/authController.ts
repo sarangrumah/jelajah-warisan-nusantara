@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { query } from '../config/database';
 import { body, validationResult } from 'express-validator';
@@ -70,8 +70,8 @@ export const signUp = async (req: Request, res: Response) => {
       // Generate token
       const token = jwt.sign(
         { userId, email },
-        process.env.JWT_SECRET!,
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+        process.env.JWT_SECRET as Secret,
+        { expiresIn: '7d' }
       );
 
       res.status(201).json({
@@ -138,8 +138,8 @@ export const signIn = async (req: Request, res: Response) => {
     // Generate token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      process.env.JWT_SECRET as Secret,
+      { expiresIn: '7d' }
     );
 
     console.log('🔐 Token generated for user:', user.id);
@@ -154,7 +154,7 @@ export const signIn = async (req: Request, res: Response) => {
       // Handle PostgreSQL array format like {admin,editor}
       const rolesStr = user.roles.toString();
       if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
-        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+        userRoles = rolesStr.slice(1, -1).split(',').filter((role: string) => role.trim() !== '');
       }
     }
     
@@ -208,7 +208,7 @@ export const getProfile = async (req: Request, res: Response) => {
     } else if (profile.roles) {
       const rolesStr = profile.roles.toString();
       if (rolesStr.startsWith('{') && rolesStr.endsWith('}')) {
-        userRoles = rolesStr.slice(1, -1).split(',').filter(role => role.trim() !== '');
+        userRoles = rolesStr.slice(1, -1).split(',').filter((role: string) => role.trim() !== '');
       }
     }
     
@@ -270,7 +270,7 @@ export const getAllProfile = async (req: AuthRequest, res: Response) => {
           userRoles = rolesStr
             .slice(1, -1)
             .split(",")
-            .filter((role) => role.trim() !== "");
+            .filter((role: string) => role.trim() !== "");
         }
       }
 

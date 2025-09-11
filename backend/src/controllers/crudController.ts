@@ -9,22 +9,25 @@ interface JoinConfig {
   table: string;
   localKey: string;
   foreignKey: string;
-  type: 'left' | 'inner';
+  type: 'left' | 'inner' | 'has_many';
   fields?: string[];
 }
 
 // Generic CRUD controller factory
 export const createCrudController = (tableName: string, fields: string[]) => {
  // Get auto-join relations (for belongs-to, not has-many)
-  const relations = tableRelationships[tableName] || {};
-  const flatJoins = [];
-  const hasManyRelations = [];
+  const relations = tableRelationships[tableName as keyof typeof tableRelationships] || {};
+  const flatJoins: { name: string; config: JoinConfig }[] = [];
+  const hasManyRelations: { name: string; config: JoinConfig }[] = [];
 
   Object.entries(relations).forEach(([relKey, relConfig]) => {
-    if (relConfig.type === 'has_many') {
-      hasManyRelations.push({ name: relKey, config: relConfig });
-    } else {
-      flatJoins.push({ name: relKey, config: relConfig });
+    if (relConfig && typeof relConfig === 'object' && 'type' in relConfig && typeof relConfig.type === 'string') {
+      const typedRelConfig = relConfig as JoinConfig;
+      if (typedRelConfig.type === 'has_many') {
+        hasManyRelations.push({ name: relKey, config: typedRelConfig });
+      } else {
+        flatJoins.push({ name: relKey, config: typedRelConfig });
+      }
     }
   });
 
@@ -51,10 +54,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
   const buildBelongsToSelect = (relName: string, relConfig: JoinConfig): string => {
     const { table: childTable, fields } = relConfig;
-    const allFields = fields || tableConfigs[childTable] || [];
+    const allFields = fields || tableConfigs[childTable as keyof typeof tableConfigs] || [];
 
     const jsonFields = allFields
-      .map(f => `'${f}', ${childTable}.${f}`)
+      .map((f: string) => `'${f}', ${childTable}.${f}`)
       .join(', ');
 
     return `json_build_object(${jsonFields}) AS ${relName}`;
@@ -84,16 +87,16 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         }
 
         // Add has-many subqueries (e.g., company_leadership[])
-        const relations = tableRelationships[tableName];
+        const relations = tableRelationships[tableName as keyof typeof tableRelationships];
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
-            if (relConfig.type === 'has_many') {
-              const { table: childTable, localKey, fields: relFields } = relConfig;
-              const childFields = relFields || tableConfigs[childTable] || [];
+            if (relConfig && typeof relConfig === 'object' && 'type' in relConfig && relConfig.type === 'has_many') {
+              const { table: childTable, localKey, fields: relFields } = relConfig as JoinConfig;
+              const childFields = relFields || tableConfigs[childTable as keyof typeof tableConfigs] || [];
 
               const jsonFields = childFields
-                .filter(f => f !== localKey) // exclude foreignKey
-                .map(f => `'${f}', ${childTable}.${f}`)
+                .filter((f: string) => f !== localKey) // exclude foreignKey
+                .map((f: string) => `'${f}', ${childTable}.${f}`)
                 .join(', ');
 
               selectFields += `,
@@ -185,38 +188,38 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         }
 
         // Add has-many relations (e.g., company_leadership[])
-        const relations = tableRelationships[tableName];
+        const relations = tableRelationships[tableName as keyof typeof tableRelationships];
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
             // Only "has many" (child has foreignKey to parent's id)
-            if (relConfig.foreignKey === 'id') {
-              const { table: childTable, localKey, fields: relFields } = relConfig;
-              const childFields = relFields || Object.keys(tableConfigs[childTable] || {});
+            if (relConfig && typeof relConfig === 'object' && 'foreignKey' in relConfig) {
+              if ((relConfig as JoinConfig).foreignKey === 'id') {
+                const { table: childTable, localKey, fields: relFields } = relConfig as JoinConfig;
+                const childFields = relFields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
 
-              const jsonFields = childFields
-                .filter(f => f !== localKey)
-                .map(f => `'${f}', ${childTable}.${f}`)
-                .join(', ');
+                const jsonFields = childFields
+                  .filter((f: string) => f !== localKey)
+                  .map((f: string) => `'${f}', ${childTable}.${f}`)
+                  .join(', ');
 
-              const result = await query(
-                `SELECT json_agg(json_build_object(${jsonFields})) AS data
-                 FROM ${childTable}
-                 WHERE ${childTable}.${localKey} = $1`,
-                [id]
-              );
+                const result = await query(
+                  `SELECT json_agg(json_build_object(${jsonFields})) AS data
+                   FROM ${childTable}
+                   WHERE ${childTable}.${localKey} = $1`,
+                  [id]
+                );
 
-              record[relKey] = result.rows[0].data || [];
+                record[relKey] = result.rows[0].data || [];
+              }
             }
           }
         }
-
         res.json(record);
       } catch (error) {
         console.error(`Get ${tableName} by ID error:`, error);
         res.status(500).json({ error: 'Internal server error' });
       }
     },
-
     // === CREATE === (unchanged, but works)
     create: async (req: AuthRequest, res: Response) => {
       const client = await getClient();

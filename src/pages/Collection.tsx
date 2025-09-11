@@ -11,6 +11,22 @@ import { defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
+const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
+
+function getCollectionImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Try to resolve using Vite's import
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
+}
+
 const Collection = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
@@ -99,7 +115,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url ? item.image_url : logo}
+                    src={item.image_url ? getCollectionImageUrl(item.image_url.split('/').pop() || item.image_url) : logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />

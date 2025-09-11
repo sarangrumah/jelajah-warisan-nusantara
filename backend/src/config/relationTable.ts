@@ -1,4 +1,5 @@
 import { tableConfigs } from '../config/tableConfigs';
+import { RelationshipConfig } from '../helper/types';
 
 /**
  * Builds a JSON aggregation subquery for "has many" relations
@@ -6,11 +7,11 @@ import { tableConfigs } from '../config/tableConfigs';
 export const buildHasManySelect = (
   parentTable: string,
   relKey: string,
-  relConfig: JoinConfig
+  relConfig: RelationshipConfig
 ): string => {
   const { table: childTable, localKey, fields } = relConfig;
 
-  const allFields = fields || Object.keys(tableConfigs[childTable] || {});
+  const allFields = fields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
   const selectedFields = allFields.filter(f => f !== localKey); // exclude foreignKey
 
   const jsonFields = selectedFields
