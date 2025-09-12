@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite preview",
-    "start:all": "concurrently \"npm run start\" \"npm run --prefix backend start\""
+    "watch:build": "chokidar 'src/**/*' -c 'npm run build'",
+    "start:all": "concurrently \"npm run start\" \"npm run --prefix backend start\" \"npm run watch:build\""
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^44.3.0",
