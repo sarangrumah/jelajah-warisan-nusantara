@@ -31,14 +31,13 @@ const ProfileSection = () => {
               Visi & Misi Kami
             </h3> */}
             
-            <div className="space-y-4 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                 <p className="text-muted-foreground">
                   {t('profile.visionText')}
                 </p>
               </div>
-              
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                 <ul className="space-y-2 text-muted-foreground">
