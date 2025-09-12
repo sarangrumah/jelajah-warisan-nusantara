@@ -42,8 +42,13 @@ const Beranda = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <HeroSection />
-      <ProfileSection />
+      <HeroSection onScrollToNextSection={() => {
+        const el = document.getElementById('profile-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }} />
+      <div id="profile-section">
+        <ProfileSection />
+      </div>
       <ManagementSection />
       <AgendaSection />
       <DistributionSection />

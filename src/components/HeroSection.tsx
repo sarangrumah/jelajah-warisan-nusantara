@@ -55,7 +55,11 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
     image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
   }));
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onScrollToNextSection?: () => void;
+}
+
+const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -277,6 +281,18 @@ const HeroSection = () => {
             </div>
           </div>
         </div>
+      )}
+      {/* Scroll to Next Section Button */}
+      {onScrollToNextSection && (
+        <button
+          onClick={onScrollToNextSection}
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 bg-background/80 rounded-full p-3 shadow-lg hover:bg-primary hover:text-primary-foreground transition-heritage"
+          aria-label="Scroll to next section"
+        >
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+            <path d="M12 16l-6-6h12l-6 6z" fill="currentColor"/>
+          </svg>
+        </button>
       )}
     </section>
   );
