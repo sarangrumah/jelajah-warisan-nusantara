@@ -190,7 +190,7 @@ const CollectionDetail = () => {
               </Card>
             </div> */}
 
-            <Card className="mt-8">
+            {/* <Card className="mt-8">
               <CardHeader>
                 <CardTitle>{t('Related Artifacts')}</CardTitle>
               </CardHeader>
@@ -208,7 +208,7 @@ const CollectionDetail = () => {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </section>
         </div>
       ))}
