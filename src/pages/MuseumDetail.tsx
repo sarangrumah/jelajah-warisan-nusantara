@@ -194,13 +194,13 @@ const MuseumDetail = () => {
                   <div className="flex items-start gap-3">
                     <Globe className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold hidden">{t('button.visitWebsite')}</p>
-                      <p className="text-sm text-muted-foreground hidden">{museum.website}</p>
-                      <button 
+                      <p className="font-semibold">{t('museumDetail.website')}</p>
+                      <p className="text-sm text-muted-foreground">{museum.website}</p>
+                      {/* <button 
                         onClick={() => window.open(`https://${museum.website}`, '_blank')} 
                         className="bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-2 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
                         Kunjungi Situs
-                      </button>
+                      </button> */}
                     </div>
                   </div>
 
@@ -228,7 +228,7 @@ const MuseumDetail = () => {
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                       onClick={() => shareEventHandler('https://wa.me/6281295953929')}
                     >
-                      <Globe size={16} className="mr-2" />
+                      <Globe size={20} className="mr-2" />
                       {t('Kunjungi Situs Web')}
                     </Button>
                     <Button 

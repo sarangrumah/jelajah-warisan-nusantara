@@ -428,6 +428,7 @@ const resources = {
         ticketPrice: "Ticket Price",
         museum: "Museum",
         heritage: "Heritage Site",
+        website: "Website",
       },
       // Filter
       filter: {
@@ -883,6 +884,7 @@ const resources = {
         ticketPrice: "Harga Tiket",
         museum: "Museum",
         heritage: "Cagar Budaya",
+        website: "Situs Web",
       },
       // Filter
       filter: {
