@@ -55,11 +55,61 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
     image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
   }));
 
+import { useRef } from 'react';
+
 interface HeroSectionProps {
   onScrollToNextSection?: () => void;
 }
 
 const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const hasSnappedRef = useRef(false);
+
+  useEffect(() => {
+    const handleSnapScroll = (e: WheelEvent | TouchEvent) => {
+      if (hasSnappedRef.current) { return; }
+      // Only trigger if at top of page or HeroSection is in view
+      const section = sectionRef.current;
+      if (!section) { return; }
+
+      // For wheel event
+      if ('deltaY' in e && (e as WheelEvent).deltaY > 0) {
+        e.preventDefault();
+        hasSnappedRef.current = true;
+        if (onScrollToNextSection) { onScrollToNextSection(); }
+      }
+      // For touch event (swipe up)
+      if ('touches' in e && e.type === 'touchend') {
+        const touchEndY = (e as TouchEvent).changedTouches[0].clientY;
+        if (section.dataset.touchStartY && Number(section.dataset.touchStartY) - touchEndY > 30) {
+          e.preventDefault();
+          hasSnappedRef.current = true;
+          if (onScrollToNextSection) { onScrollToNextSection(); }
+        }
+      }
+    };
+
+    // Touch start to record initial Y
+    const handleTouchStart = (e: TouchEvent) => {
+      if (sectionRef.current) {
+        sectionRef.current.dataset.touchStartY = String(e.touches[0].clientY);
+      }
+    };
+
+    const section = sectionRef.current;
+    if (section) {
+      section.addEventListener('wheel', handleSnapScroll, { passive: false });
+      section.addEventListener('touchstart', handleTouchStart, { passive: true });
+      section.addEventListener('touchend', handleSnapScroll, { passive: false });
+    }
+    return () => {
+      if (section) {
+        section.removeEventListener('wheel', handleSnapScroll);
+        section.removeEventListener('touchstart', handleTouchStart);
+        section.removeEventListener('touchend', handleSnapScroll);
+      }
+    };
+  }, [onScrollToNextSection]);
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -146,7 +196,11 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   }, []);
 
   return (
-    <section id="beranda" className="relative h-screen overflow-hidden">
+    <section
+      id="beranda"
+      className="relative h-screen overflow-hidden"
+      ref={sectionRef}
+    >
       {/* Background Image Slider */}
       <div className="absolute inset-0">
         {slides && slides.map((slide, index) => {
@@ -282,18 +336,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
           </div>
         </div>
       )}
-      {/* Scroll to Next Section Button */}
-      {onScrollToNextSection && (
-        <button
-          onClick={onScrollToNextSection}
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 bg-background/80 rounded-full p-3 shadow-lg hover:bg-primary hover:text-primary-foreground transition-heritage"
-          aria-label="Scroll to next section"
-        >
-          <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
-            <path d="M12 16l-6-6h12l-6 6z" fill="currentColor"/>
-          </svg>
-        </button>
-      )}
+    {/* (Button removed: snap scroll is now automatic) */}
     </section>
   );
 };
