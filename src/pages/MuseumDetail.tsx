@@ -1,6 +1,6 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Clock, Phone, Globe, Calendar, Building} from 'lucide-react';
+import { MapPin, Clock, Phone, Globe, Calendar} from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -228,7 +228,7 @@ const MuseumDetail = () => {
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                       onClick={() => shareEventHandler('https://wa.me/6281295953929')}
                     >
-                      <Building size={16} className="mr-2" />
+                      <Globe size={16} className="mr-2" />
                       {t('Kunjungi Situs Web')}
                     </Button>
                     <Button 
