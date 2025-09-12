@@ -36,7 +36,7 @@ const ManagementSection = () => {
   ];
 
   return (
-    <section className="from-card to-background">
+    <section className="py-20 from-card to-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           {/* <h2 className="text-4xl md:text-5xl font-bold mb-6 text-heritage-gradient pb-5">
