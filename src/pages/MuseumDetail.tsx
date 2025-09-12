@@ -1,8 +1,9 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Clock, Phone, Globe, Calendar } from 'lucide-react';
+import { MapPin, Clock, Phone, Globe, Calendar, Share2} from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { defaultMuseums } from '@/../database/default-data';
@@ -12,9 +13,18 @@ import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-
+  const shareEventHandler = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 function getMuseumImageUrl(filename: string | undefined | null) {
-  if (!filename) return PLACEHOLDER_IMAGE;
+  if (!filename) { return PLACEHOLDER_IMAGE };
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
@@ -201,12 +211,34 @@ const MuseumDetail = () => {
                       <p className="text-sm text-muted-foreground">{museum.ticketPrice}</p>
                     </div>
                   </div>
-                  <button 
+                  {/* <button 
                     className="w-full bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
                     Beli Tiket
-                  </button>
+                  </button> */}
                 </CardContent>
               </Card>
+                {/* Actions */}
+                <Card>
+                  <CardContent className="p-6 space-y-3">
+                    {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                      {t('Register Now')}
+                    </Button> */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >
+                      <Share2 size={16} className="mr-2" />
+                      {t('Share Event')}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >Beli Tiket
+                    </Button>
+                  </CardContent>
+                </Card>
             </div>
           </div>
         </section>
