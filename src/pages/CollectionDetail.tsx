@@ -119,8 +119,17 @@ const CollectionDetail = () => {
                     <div className="flex items-center gap-3">
                       <Calendar className="text-primary" size={20} />
                       <div>
-                        <p className="font-semibold">{t('Period')}</p>
-                        <p className="text-sm text-muted-foreground">{collection.period}</p>
+                        <p className="font-semibold">{t('Discovered Year')}</p>
+                        <p className="text-sm text-muted-foreground">{collection.discoveredYear}</p>
+                        {/* <p><span className="font-semibold">{t('Condition')}:</span> {collection.condition}</p> */}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <Palette className="text-primary" size={20} />
+                      <div>
+                        <p className="font-semibold">{t('Condition')}</p>
+                        <p className="text-sm text-muted-foreground">{collection.condition}</p>
                       </div>
                     </div>
 
@@ -153,7 +162,7 @@ const CollectionDetail = () => {
             </div>
 
             {/* Additional Information */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
               <Card>
                 <CardHeader>
                   <CardTitle>{t('Historical Significance')}</CardTitle>
@@ -179,7 +188,7 @@ const CollectionDetail = () => {
                   </p>
                 </CardContent>
               </Card>
-            </div>
+            </div> */}
 
             <Card className="mt-8">
               <CardHeader>
