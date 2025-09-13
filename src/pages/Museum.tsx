@@ -130,7 +130,10 @@ const Museum = () => {
                       const imageCandidate = item.img_banner || '';
                       console.log('Museum image debug:', imageCandidate, getMuseumsImageUrl(imageCandidate));
                       const resolved = getMuseumsImageUrl(imageCandidate);
-                      return resolved || '/placeholder.svg';
+                      // Use logo as placeholder if no image
+                      return (resolved && resolved !== '/placeholder.svg')
+                        ? resolved
+                        : '/src/assets/MCB-Logo.png';
                     })()}
                     alt={item.name}
                     className="w-full h-full object-cover object-bottom"
@@ -140,7 +143,7 @@ const Museum = () => {
                   <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
-                {/* <CardContent>
+                <CardContent>
                   <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <MapPin size={16} className="mr-1" />
                     {item.location}
@@ -148,14 +151,28 @@ const Museum = () => {
                   <p className="text-sm">{item.description}</p>
                   <div className="mt-4">
                     <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                      item.type === 'museum' 
-                        ? 'bg-primary/10 text-primary' 
+                      item.type === 'museum'
+                        ? 'bg-primary/10 text-primary'
                         : 'bg-secondary/10 text-secondary'
                     }`}>
                       {item.type === 'museum' ? t('Museum') : t('Heritage Site')}
                     </span>
                   </div>
-                </CardContent> */}
+                  <div className="flex gap-2 mt-6">
+                    <button
+                      className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
+                      type="button"
+                    >
+                      Beli Tiket
+                    </button>
+                    <Link
+                      to={`/museum/${item.id}`}
+                      className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
+                    >
+                      Kunjungi Museum
+                    </Link>
+                  </div>
+                </CardContent>
               </Card>
             </Link>
           ))}
