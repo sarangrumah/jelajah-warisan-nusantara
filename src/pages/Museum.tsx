@@ -144,7 +144,7 @@ const Museum = () => {
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
+                  {/* <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <MapPin size={16} className="mr-1" />
                     {item.location}
                   </div>
@@ -157,7 +157,7 @@ const Museum = () => {
                     }`}>
                       {item.type === 'museum' ? t('Museum') : t('Heritage Site')}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex gap-2 mt-6">
                     <button
                       className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
