@@ -27,14 +27,17 @@ const LoadingSpinner: React.FC = () => (
         src={logo}
         alt="Loading..."
         style={{
-          width: 64,
-          height: 64,
+          maxWidth: 64,
+          maxHeight: 64,
+          width: "auto",
+          height: "auto",
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%, -50%) scale(1.1)",
+          transform: "translate(-50%, -50%)",
           zIndex: 2,
-          filter: "drop-shadow(0 0 8px #fff8)"
+          filter: "drop-shadow(0 0 8px #fff8)",
+          objectFit: "contain"
         }}
       />
       <span
