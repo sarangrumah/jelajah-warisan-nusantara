@@ -31,7 +31,7 @@ import Peraturan from "./pages/Peraturan";
 import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-import SocialMediaFloatingButtons from "@/components/SocialMediaFloatingButtons";
+import FloatingButtons from "@/components/FloatingButtons";
 
 const queryClient = new QueryClient();
 
@@ -78,7 +78,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-      <SocialMediaFloatingButtons />
+      <FloatingButtons />
     </>
   );
 };
