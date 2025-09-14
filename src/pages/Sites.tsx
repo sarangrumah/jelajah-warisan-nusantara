@@ -19,7 +19,7 @@ const Sites = () => {
   const getCollection = async () => {
     setGlobalLoading(true);
     try {
-      const response = await fetch('https://localhost:3001/api/collections');
+      const response = await fetch('https://localhost:3000/api/collections');
       const data = await response.json();
       setCollections(data);
     } catch (error) {

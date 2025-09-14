@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
       // Proxy API requests to backend during development
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: 'http://localhost:3000',
           changeOrigin: true,
           secure: false,
         },
