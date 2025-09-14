@@ -9,7 +9,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Home",
-        museum: "Museum",
+        museum: "Destination",
         koleksi: "Collection",
         agenda: "Agenda",
         tentangKami: "About Us",
@@ -428,6 +428,7 @@ const resources = {
         ticketPrice: "Ticket Price",
         museum: "Museum",
         heritage: "Heritage Site",
+        website: "Website",
       },
       // Filter
       filter: {
@@ -462,7 +463,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Beranda",
-        museum: "Museum",
+        museum: "Destinasi",
         koleksi: "Koleksi",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
@@ -883,6 +884,7 @@ const resources = {
         ticketPrice: "Harga Tiket",
         museum: "Museum",
         heritage: "Cagar Budaya",
+        website: "Situs Web",
       },
       // Filter
       filter: {

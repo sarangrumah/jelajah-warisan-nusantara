@@ -199,7 +199,7 @@ const SitesDetail = () => {
           </Card>
         </div>
 
-        <Card className="mt-8">
+        {/* <Card className="mt-8">
           <CardHeader>
             <CardTitle>{t('Related Artifacts')}</CardTitle>
           </CardHeader>
@@ -212,7 +212,7 @@ const SitesDetail = () => {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </section>
 
       <Footer />
