@@ -51,8 +51,6 @@ const AgendaManagement = () => {
   const [showDialog, setShowDialog] = useState(false);
   const { toast } = useToast();
 
-
-
   useEffect(() => {
     fetchAgendaItems();
   }, []);
@@ -60,7 +58,7 @@ const AgendaManagement = () => {
   const fetchAgendaItems = async () => {
     try {
       const response = await agendaService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setAgendaItems((response.data as AgendaItem[]) || []);
     } catch (error) {
       console.error('Error fetching agenda items:', error);
@@ -81,7 +79,7 @@ const AgendaManagement = () => {
       if (item.id) {
         // Update existing item
         response = await agendaService.update(item.id, item);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         setAgendaItems(prev =>
           prev.map(existing =>
@@ -101,7 +99,7 @@ const AgendaManagement = () => {
         };
         
         response = await agendaService.create(newItem);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         setAgendaItems(prev => [response.data, ...prev]);
       }
 
@@ -127,7 +125,7 @@ const AgendaManagement = () => {
   const deleteAgendaItem = async (id: string) => {
     try {
       const response = await agendaService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setAgendaItems(prev => prev.filter(item => item.id !== id));
       toast({
@@ -147,7 +145,7 @@ const AgendaManagement = () => {
   const togglePublished = async (id: string, currentStatus: boolean) => {
     try {
       const response = await agendaService.update(id, { is_published: !currentStatus });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setAgendaItems(prev =>
         prev.map(item =>
@@ -207,7 +205,7 @@ const AgendaManagement = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingItem == null ? 'Edit Agenda' : 'Tambah Agenda Baru'}
+                {editingItem === null ? 'Edit Agenda' : 'Tambah Agenda Baru'}
               </DialogTitle>
               <DialogDescription>
                 Isi informasi agenda kegiatan museum

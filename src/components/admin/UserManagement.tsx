@@ -76,8 +76,6 @@ const UserManagement = () => {
 
       const profilesData = profilesResponse.data || [];
 
-
-      
       // Transform the data for display
       const transformedUsers: User[] = Array.isArray(profilesData) ? profilesData.map((profile: any) => (
       {
@@ -117,7 +115,7 @@ const UserManagement = () => {
   };
 
   const handleCreateUser = async () => {
-    if (!isSuperAdmin) return;
+    if (!isSuperAdmin) {return "";}
     if (!newUserEmail || !newUserPassword) {
       toast({ title: 'Validasi', description: 'Email dan password wajib diisi', variant: 'destructive' });
       return;
@@ -130,14 +128,14 @@ const UserManagement = () => {
         display_name: newUserName,
       });
 
-      if (resp.error) throw new Error(resp.error);
+      if (resp.error) {throw new Error(resp.error);}
 
       const created: any = resp.data || {};
       const createdUserId: string | undefined = created.id || created.user_id || created.user?.id;
 
       if (createdUserId) {
         const roleResp = await userService.updateRole(createdUserId, newUserRole);
-        if (roleResp.error) throw new Error(roleResp.error);
+        if (roleResp.error) {throw new Error(roleResp.error);}
       }
 
       toast({ title: 'Berhasil', description: 'Pengguna berhasil dibuat' });
@@ -230,9 +228,9 @@ const UserManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Manajemen Pengguna</h2>
+          <h2 className="text-2xl font-bold">User Management</h2>
           <p className="text-muted-foreground">
-            Kelola pengguna dan hak akses sistem
+            Management user and role user.
           </p>
         </div>
         {isSuperAdmin && (
@@ -288,11 +286,11 @@ const UserManagement = () => {
                         id={`active_${user.id}`}
                         checked={!!user.email_verified}
                         onCheckedChange={async (checked) => {
-                          if (!isSuperAdmin) return;
+                          if (!isSuperAdmin) {return "";}
                           setSaving(true);
                           try {
                             const resp = await userService.setActive(user.id, checked);
-                            if (resp.error) throw new Error(resp.error);
+                            if (resp.error) {throw new Error(resp.error);}
                             setUsers((prev) => prev.map(u => u.id === user.id ? { ...u, email_verified: checked } : u));
                             toast({ title: 'Berhasil', description: `Pengguna ${checked ? 'diaktifkan' : 'dinonaktifkan'}` });
                           } catch (err) {
@@ -456,7 +454,7 @@ const UserManagement = () => {
       </Dialog>
 
   {/* Create User Dialog - Super Admin Only */}
-  <Dialog open={showCreateDialog} onOpenChange={(open) => { setShowCreateDialog(open); if (!open) resetCreateForm(); }}>
+  <Dialog open={showCreateDialog} onOpenChange={(open) => { setShowCreateDialog(open); if (!open) {resetCreateForm();} }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Buat Pengguna Baru</DialogTitle>
@@ -538,11 +536,11 @@ const UserManagement = () => {
             <Button
               type="button"
               onClick={async () => {
-                if (!selectedUser) return;
+                if (!selectedUser) {return "";}
                 setSaving(true);
                 try {
                   const resp = await userService.update(selectedUser.id, { email: editEmail, display_name: editName });
-                  if (resp.error) throw new Error(resp.error);
+                  if (resp.error) {throw new Error(resp.error);}
                   toast({ title: 'Berhasil', description: 'Info pengguna diperbarui' });
                   setShowEditInfoDialog(false);
                   await fetchUsers();

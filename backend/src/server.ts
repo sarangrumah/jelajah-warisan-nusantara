@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import os from 'os';
 import fs from 'fs';
 
 // Import routes
@@ -61,8 +62,12 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Serve static files for uploaded contents
+// Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
+const uploadBase = process.env.UPLOAD_PATH
+  ? path.resolve(process.env.UPLOAD_PATH)
+  : path.resolve(__dirname, '../../uploads');
+app.use('/uploads', express.static(uploadBase));
 
 // Serve assets from project root src/assets (outside backend)
 const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))

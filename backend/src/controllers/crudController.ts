@@ -231,6 +231,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         let images: any[] = [];
         let companyLeadership: any[] = [];
         let companyVisitor: any[] = [];
+        let gallery: any[] = [];
 
         if (tableName === 'tb_sites') {
           ({ images = [], ...insertData } = data);
@@ -238,6 +239,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         if (tableName === 'tb_company') {
           ({ companyLeadership = [], companyVisitor = [], ...insertData } = data);
+        }
+
+        if (tableName === 'tb_memoryoftheworld') {
+          ({ gallery = [], ...insertData } = data);
         }
 
         if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string' ) {
@@ -351,6 +356,20 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           }
         }
 
+        // Insert gallery for tb_memoryoftheworld before commit
+        if (tableName === 'tb_memoryoftheworld' && gallery.length > 0) {
+          const createdBy = insertData.created_by || 'system';
+          for (const item of gallery) {
+            const filePath = (item && (item.path || item.upload_file)) || item;
+            if (!filePath) continue;
+            await client.query(
+              `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
+               VALUES ($1, $2, $3, $4, $4, $5)`,
+              [uuidv4(), id, filePath, createdBy, new Date()]
+            );
+          }
+        }
+
         await client.query('COMMIT');
 
         // Return enriched
@@ -360,6 +379,18 @@ export const createCrudController = (tableName: string, fields: string[]) => {
                 (SELECT json_agg(json_build_object('id', cl.id, 'name', cl.name, 'position', cl.position)) FROM tb_company_leadership cl WHERE cl.company_id = c.id) AS company_leadership,
                 (SELECT json_agg(json_build_object('id', cv.id, 'visitor_count', cv.visitor_count, 'year', cv.year)) FROM tb_company_visitor cv WHERE cv.company_id = c.id) AS company_visitor
              FROM tb_company c WHERE c.id = $1`,
+            [id]
+          );
+          return res.status(201).json(result.rows[0]);
+        }
+
+        // Return enriched record for tb_memoryoftheworld with galleries
+        if (tableName === 'tb_memoryoftheworld') {
+          const result = await query(
+            `SELECT m.*,
+              (SELECT json_agg(json_build_object('id', g.id, 'id_memoryoftheworld', g.id_memoryoftheworld, 'upload_file', g.upload_file))
+               FROM tb_memoryoftheworld_gallery g WHERE g.id_memoryoftheworld = m.id) AS galleries
+             FROM tb_memoryoftheworld m WHERE m.id = $1`,
             [id]
           );
           return res.status(201).json(result.rows[0]);
@@ -385,6 +416,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         // 🔹 Extract nested arrays — single destructuring, no reassignment
         const {
           images = [],
+          gallery = [],
           company_leadership: companyLeadership = [],
           company_visitor: companyVisitor = [],
           ...mainData // All top-level fields
@@ -427,7 +459,8 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const hasMainUpdates = validFields.length > 0;
         const hasNestedUpdates =
           (tableName === 'tb_company' && (companyLeadership.length > 0 || companyVisitor.length > 0)) ||
-          (tableName === 'tb_sites' && images.length > 0);
+          (tableName === 'tb_sites' && images.length > 0) ||
+          (tableName === 'tb_memoryoftheworld' && gallery.length > 0);
 
         if (!hasMainUpdates && !hasNestedUpdates) {
           return res.status(400).json({ error: 'No data to update' });
@@ -583,6 +616,32 @@ export const createCrudController = (tableName: string, fields: string[]) => {
                 `INSERT INTO tb_images (id, path, sites_id, created_by, updated_by, created_at)
                 VALUES ($1, $2, $3, $4, $4, $5)`,
                 [uuidv4(), img.path, id, updatedBy, new Date()]
+              );
+            }
+          }
+        }
+
+        // 🔹 4. Handle gallery for tb_memoryoftheworld
+        if (tableName === 'tb_memoryoftheworld') {
+          for (const item of gallery as any[]) {
+            const filePath = item.path || item.upload_file;
+            if (item?.is_deleted && item.id) {
+              await client.query(
+                `DELETE FROM tb_memoryoftheworld_gallery WHERE id = $1 AND id_memoryoftheworld = $2`,
+                [item.id, id]
+              );
+            } else if (item.id) {
+              await client.query(
+                `UPDATE tb_memoryoftheworld_gallery
+                 SET upload_file = $1, updated_by = $2, updated_at = $3
+                 WHERE id = $4 AND id_memoryoftheworld = $5`,
+                [filePath, updatedBy, new Date(), item.id, id]
+              );
+            } else if (filePath) {
+              await client.query(
+                `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
+                 VALUES ($1, $2, $3, $4, $4, $5)`,
+                [uuidv4(), id, filePath, updatedBy, new Date()]
               );
             }
           }

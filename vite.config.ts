@@ -7,6 +7,7 @@ import { loadEnv } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const DEV_PORT = Number(env.VITE_DEV_PORT || env.PORT) || 8080;
   // DEBUG: Log config load and allowed hosts
   // eslint-disable-next-line no-console
   console.log('Vite config loaded. Preview allowedHosts:', [
@@ -18,10 +19,18 @@ export default defineConfig(({ mode }) => {
     server: {
       base: './',
       host: "::",
-      port: 8080,
+      port: DEV_PORT,
       // Avoid dev reloads when backend writes into hero assets
       watch: {
-        ignored: ['**/src/assets/hero-sections/**'],
+        // Ignore any files written by the backend uploader
+        ignored: [
+          '**/src/assets/hero-sections/**',
+          '**/backend/uploads/**',
+          '**/backend/src/uploads/**',
+          '**/uploads/**',
+          path.resolve(__dirname, 'backend/uploads/**/*'),
+          path.resolve(__dirname, 'backend/src/uploads/**/*'),
+        ],
       },
       // Security headers for development
       headers: {
@@ -32,7 +41,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      port: 443,
+      port: Number(env.VITE_PREVIEW_PORT) || 443,
       strictPort: true,
       allowedHosts: [
         'museumcagarbudaya.kemenbud.go.id',

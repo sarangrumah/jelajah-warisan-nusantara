@@ -56,13 +56,13 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
 }) => {
   // Convert various date formats to input[type=datetime-local] friendly (YYYY-MM-DDTHH:MM)
   const toDateTimeLocal = (value?: string) => {
-    if (!value) return '';
+    if (!value) {return ''};
     let d = new Date(value);
     if (isNaN(d.getTime())) {
       // Try common "YYYY-MM-DD HH:MM:SS" format
       d = new Date(value.replace(' ', 'T'));
     }
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) {return ''};
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -208,7 +208,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const fetchItems = async () => {
     try {
       const response = await careerMgmtService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setItems((response.data as any) || []);
     } catch (e) {
       console.error(e);
@@ -267,7 +267,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   };
 
   const saveSubmission = async () => {
-    if (!submissionFor) return;
+    if (!submissionFor) {return};
     setSubmissionSaving(true);
     try {
       const payload: any = {
@@ -287,7 +287,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
         is_active: true,
       };
       const res = await careerSubmissionService.create(payload);
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       toast({ title: 'Success', description: 'Submission added' });
       setIsSubmissionDialogOpen(false);
       setSubmissionFor(null);
@@ -304,12 +304,12 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       if (editingItem?.id) {
         const res = await careerMgmtService.update(editingItem.id, formData);
-        if (res.error) throw new Error(res.error);
+        if (res.error) {throw new Error(res.error)};
         setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...formData } : i));
         toast({ title: 'Success', description: 'Posting updated' });
       } else {
         const res = await careerMgmtService.create(formData);
-        if (res.error) throw new Error(res.error);
+        if (res.error) {throw new Error(res.error)};
         setItems(prev => [res.data as any, ...prev]);
         toast({ title: 'Success', description: 'Posting created' });
       }
@@ -326,7 +326,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
       const res = await careerMgmtService.update(id, { is_active: isActive });
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       setItems(prev => prev.map(i => i.id === id ? { ...i, is_active: isActive } : i));
       toast({ title: 'Success', description: `Item ${isActive ? 'activated' : 'deactivated'}` });
     } catch (e) {
@@ -338,7 +338,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const res = await careerMgmtService.approve(id);
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       setItems(prev => prev.map(i => i.id === id ? { ...i, is_approved: (res as any).data?.is_approved } : i));
       toast({ title: 'Success', description: 'Posting approved' });
       fetchItems();
@@ -352,7 +352,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false);
       const res = await careerMgmtService.delete(id);
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       toast({ title: 'Success', description: 'Posting deleted' });
       fetchItems();
     } catch (e) {

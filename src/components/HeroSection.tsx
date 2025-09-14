@@ -7,12 +7,12 @@ import { bannerService } from '@/lib/api-services';
 import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
+import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
 // =======
-// --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
+// Avoid Vite glob imports on src/assets to prevent HMR reloads when files change
 // >>>>>>> origin/main
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
@@ -20,39 +20,18 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
-function getImageOrVideoUrl(filename: string) {
-
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-// <<<<<<< HEAD
-  //     filename.startsWith('/assets/') ||
-  //     filename.startsWith('/uploads/'))
-  // ) {
-  //   return filename;
-  // }
-  // // Rewrite legacy '/src/assets/...' to '/assets/...'
-  // if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
-  //   return filename.replace('/src', '');
-  // }
-  // // Fallback: pass through as-is
-  // return filename;
-// =======
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // // Otherwise, try to resolve using Vite's import
-  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
-// >>>>>>> origin/main
+function getImageOrVideoUrl(p: string) {
+  if (typeof p !== 'string' || p.length === 0) return '';
+  // Resolve uploads to API base; keep /assets local references intact
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) return assetUrl(p);
+  if (p.startsWith('/src/assets/')) return p.replace('/src', '');
+  return p;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
-    asset: slide.image?.split('/').pop() || slide.image, // keep original filename
-    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
+    asset: slide.image?.split('/').pop() || slide.image,
+    image: getImageOrVideoUrl(slide.image),
   }));
 
 const HeroSection = () => {
