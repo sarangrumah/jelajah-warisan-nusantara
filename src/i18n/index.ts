@@ -9,7 +9,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Home",
-        museum: "Museum",
+        museum: "Destination",
         collection: "Collection",
         koleksi: "MCB Collection",
         mow: "Memory Of the World",
@@ -479,7 +479,7 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Beranda",
-        museum: "Museum",
+        museum: "Destinasi",
         collection: "Koleksi",
         koleksi: "Koleksi MCB",
         mow: "Memori Dunia",
