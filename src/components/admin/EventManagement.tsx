@@ -33,6 +33,7 @@ interface EventItem {
   website?: string;
   banner_img?: string;
   ticket_price?: string;
+  ticket_url?: string;
   is_active: boolean;
   is_approved: boolean;
   created_at?: string;
@@ -89,9 +90,9 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 }) => {
   // Helpers to normalize date values for inputs
   const toDateInput = (value?: string) => {
-    if (!value) return '';
+    if (!value) {return ''};
     const d = new Date(value);
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) {return ''};
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -99,9 +100,9 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   };
 
   const toDateTimeInput = (value?: string) => {
-    if (!value) return '';
+    if (!value) {return ''};
     const d = new Date(value);
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) {return ''};
     const tzOffset = d.getTimezoneOffset();
     const local = new Date(d.getTime() - tzOffset * 60000);
     return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
@@ -142,21 +143,19 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
   useEffect(() => {
 
-    if (formData.sites_id != null && !useSites) {
+    if (formData.sites_id !== null && !useSites) {
       setUseSites(true)
     }
 
     if (sites != undefined && useSites) {
-      sites.filter((e, index) => {
-        if (formData.sites_id == e.id) {
+      sites.filter((e) => {
+        if (formData.sites_id === e.id) {
           formData.address = e.address
         }
       })
     }
 
-
   }, [formData.sites_id]);
-
 
   useEffect(() => {
     if (!useSites && formData.sites_id != null) {
@@ -164,8 +163,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
        formData.sites_id = null
     } else {
       if (sites != undefined) {
-      sites.filter((e, index) => {
-          if (formData.sites_id == e.id) {
+      sites.filter((e) => {
+          if (formData.sites_id === e.id) {
             formData.address = e.address
           }
         })
@@ -184,8 +183,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       setFormData(prev => ({ ...prev, address: selected?.address ?? '' }));
     }
   }, [useSites, formData.sites_id, sites])
-
-
 
   const fetchSites = async () => {
     try {
@@ -236,7 +233,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       banner_img: url
     }));
   };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -330,7 +326,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
-
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
         <Textarea
@@ -396,7 +391,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="start_date">Start Date</Label>
@@ -417,8 +411,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
           />
         </div>
       </div>
-
-
 
       {/* <div className="space-y-2">
         <Label htmlFor="opening_hours">Opening Hours (JSON format)</Label>
@@ -468,7 +460,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
-
       <div className="space-y-2">
         <Label htmlFor="ticket_price">Ticket Price</Label>
         <Input
@@ -478,6 +469,15 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
             onChange={(e) => setFormData(prev => ({ ...prev,
             ticket_price: e.target.value
           }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="ticket_url">Ticket URL</Label>
+        <Input
+          id="ticket_url"
+          value={formData.ticket_url || ''}
+          onChange={(e) => setFormData(prev => ({ ...prev, ticket_url: e.target.value }))}
         />
       </div>
 
@@ -497,7 +497,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         <Label htmlFor="is_active">Publish Event</Label>
       </div>
       
-
       {/* <div className="space-y-2">
         <Label htmlFor="facilities">Facilities (JSON format)</Label>
         <Textarea
@@ -545,7 +544,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   );
 };
 
-const emptyEvent: EventItem = {
+  const emptyEvent: EventItem = {
   id: '',
   name: '',
   category: '',
@@ -561,7 +560,8 @@ const emptyEvent: EventItem = {
   contact: '',
   website: '',
   banner_img: '',
-  ticket_price: '',
+    ticket_price: '',
+    ticket_url: '',
   is_active: true,
   is_approved: false,
   created_at: '',
@@ -580,7 +580,6 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
-
 
   useEffect(() => {
     fetchEvents();
@@ -611,7 +610,6 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     let response 
     try {
     
-
       if (editingEvent?.id) {
         console.log("ini data form", formData)
         const response = await EventsService.update(editingEvent.id, formData);
@@ -686,7 +684,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await EventsService.approve(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setEvents(prev => prev.map(events => 
         events.id === id ? { ...events, is_approved: response.data["is_approved"] } : events
@@ -711,7 +709,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false)
       const response = await EventsService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       // setBanners(prev => prev.map(banner => 
       //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
@@ -733,7 +731,6 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     }
   };
   
-
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -746,8 +743,8 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Event & Heritage Management</h2>
-          <p className="text-muted-foreground">Manage events and heritage sites</p>
+          <h2 className="text-2xl font-bold">Agenda Management</h2>
+          <p className="text-muted-foreground">Manage Agenda and Content</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -780,7 +777,6 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         </Dialog>
       </div>
 
-      
       <div className="flex justify-between items-center">
         {event != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
@@ -837,7 +833,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     <CardDescription>{museum.location}</CardDescription>
                   </div>
                 { 
-                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                  userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="is_active"

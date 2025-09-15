@@ -33,7 +33,7 @@ Edit `.env` with your configuration:
 DATABASE_URL=postgresql://username:password@localhost:5432/heritage_museum_db
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRES_IN=7d
-PORT=3001
+PORT=3000
 NODE_ENV=development
 UPLOAD_PATH=./uploads
 MAX_FILE_SIZE=10485760
@@ -54,7 +54,7 @@ psql heritage_museum_db < src/scripts/add-users-table.sql
 npm run dev
 ```
 
-The API will be available at `http://localhost:3001`
+The API will be available at `http://localhost:3000`
 
 ## API Endpoints
 

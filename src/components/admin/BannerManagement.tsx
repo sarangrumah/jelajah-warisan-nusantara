@@ -28,7 +28,6 @@ interface Banner {
   updated_at?: string;
 }
 
-
 const BannerForm = ({ banner, onSave, onCancel, saving }: {
   banner?: Banner | null;
   onSave: (data: Banner) => void;
@@ -49,9 +48,9 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 
   // Convert ISO/server date string to input[type=date] format (YYYY-MM-DD)
   const toDateInput = (value?: string) => {
-    if (!value) return '';
+    if (!value) {return ''};
     const d = new Date(value);
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) {return ''};
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
@@ -115,7 +114,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         />
       </div> */}
 
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="button_url_1">Button Url 1</Label>
@@ -136,7 +134,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
           />
         </div>
       </div>
-
 
       <ImageUpload
         label="Banner Image"
@@ -231,7 +228,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const fetchBanners = async () => {
     try {
       const response = await bannerService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setBanners((response.data as Banner[]) || []);
     } catch (error) {
       console.error('Error fetching banners:', error);
@@ -250,7 +247,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     try {
       if (editingBanner?.id) {
         const response = await bannerService.update(editingBanner.id, formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         setBanners(prev => prev.map(b => 
           b.id === editingBanner.id ? { ...b, ...formData } : b
@@ -262,7 +259,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         });
       } else {
         const response = await bannerService.create(formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         fetchBanners()
 
@@ -289,7 +286,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
       const response = await bannerService.update(id, { is_active: isPublished });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setBanners(prev => prev.map(banner => 
         banner.id === id ? { ...banner, is_active: isPublished } : banner
@@ -312,7 +309,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await bannerService.approve(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setBanners(prev => prev.map(banner => 
         banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
@@ -337,7 +334,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false)
       const response = await bannerService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       // setBanners(prev => prev.map(banner => 
       //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
@@ -429,7 +426,6 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         </Dialog > : <div></div>}
       </div>
       
-
       {banners.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -460,7 +456,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     <CardDescription>{banner.subtitle}</CardDescription>
                   </div>
                 { 
-                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                  userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="is_active"

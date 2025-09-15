@@ -12,9 +12,7 @@ import {
   Shield,
   Home,
   BarChart3,
-  Menu,
-  X
-} from 'lucide-react';
+  Menu} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminSidebarProps {
@@ -31,9 +29,11 @@ const menuItems = [
   { id: 'banner', label: 'Banner', icon: FileText },
   { id: 'company', label: 'Company Profile', icon: Settings },
   { id: 'museum', label: 'Museum', icon: Settings },
+  { id: 'master-collection', label: 'Collections', icon: FileText },
   { id: 'agenda', label: 'Agenda', icon: Calendar },
   { id: 'media', label: 'Media', icon: FileText },
   { id: 'sop', label: 'SOP', icon: FileText },
+  { id: 'memoryworld', label: 'Memory World', icon: FileText },
   { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
   { id: 'career-submissions', label: 'Submissions', icon: Users },
   { id: 'faq', label: 'FAQ', icon: Settings },
@@ -51,8 +51,8 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
   };
 
   const isMenuItemDisabled = (itemId: string) => {
-    if (itemId === 'overview') return false;
-    if (itemId === 'users') return !isAdmin;
+    if (itemId === 'overview') {return false};
+    if (itemId === 'users') {return !isAdmin};
     return !canEdit;
   };
 
