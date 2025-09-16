@@ -34,14 +34,44 @@ const ensureUniqueFilename = (dir: string, desired: string) => {
 // Use an absolute path relative to this file for reliability
 // Store uploads under backend/uploads (not under src) to avoid Vite HMR
 const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../uploads');
-const bucketsToCreate = ['documents', 'cv-uploads', 'transcripts', 'cover-letters', 'images'];
 
-bucketsToCreate.forEach(bucket => {
-  const bucketPath = path.join(uploadDir, bucket);
-  if (!fs.existsSync(bucketPath)) {
-    fs.mkdirSync(bucketPath, { recursive: true });
+const DEFAULT_BUCKET = 'images';
+const bucketWhitelist = [
+  'documents',
+  'cv-uploads',
+  'transcripts',
+  'cover-letters',
+  'images',
+  'hero-sections',
+  'sites',
+  'events',
+  'museum',
+  'memory-thumbnails'
+];
+
+const allowedBuckets = new Set(bucketWhitelist);
+
+const ensureBucketPath = (bucket: string) => {
+  const target = path.join(uploadDir, bucket);
+  if (!fs.existsSync(target)) {
+    fs.mkdirSync(target, { recursive: true });
   }
-});
+  return target;
+};
+
+const resolveBucket = (rawBucket: any) => {
+  const candidate = typeof rawBucket === 'string' && rawBucket.trim().length > 0
+    ? rawBucket.trim().toLowerCase()
+    : DEFAULT_BUCKET;
+
+  if (allowedBuckets.has(candidate)) {
+    return candidate;
+  }
+
+  return DEFAULT_BUCKET;
+};
+
+bucketWhitelist.forEach(ensureBucketPath);
 
 // File filter for PDF files
 const pdfFileFilter = (req: any, file: any, cb: any) => {
@@ -66,11 +96,21 @@ const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) 
   return multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
-        cb(null, path.join(uploadDir, bucket));
+        try {
+          cb(null, ensureBucketPath(bucket));
+        } catch (err) {
+          cb(err as Error, uploadDir);
+        }
       },
       filename: (req, file, cb) => {
-        const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
-        cb(null, uniqueName);
+        try {
+          const dir = ensureBucketPath(bucket);
+          const finalName = ensureUniqueFilename(dir, file.originalname);
+          cb(null, finalName);
+        } catch (err) {
+          const fallback = `${uuidv4()}${path.extname(file.originalname)}`;
+          cb(null, fallback);
+        }
       }
     }),
     fileFilter,
@@ -83,43 +123,22 @@ const uploadPDF = createMulterConfig('documents', pdfFileFilter, 10 * 1024 * 102
 const uploadCV = createMulterConfig('cv-uploads', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadTranscript = createMulterConfig('transcripts', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadCoverLetter = createMulterConfig('cover-letters', pdfFileFilter, 5 * 1024 * 1024); // 5MB
-// Helper to ensure hero-sections bucket lives under backend uploads
-const heroSectionsPath = path.join(uploadDir, 'hero-sections');
-if (!fs.existsSync(heroSectionsPath)) {
-  fs.mkdirSync(heroSectionsPath, { recursive: true });
-}
-
 // Generic upload endpoint that handles different buckets
 const uploadMulter = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const bucket = req.body.bucket || 'images';
-      // Special-case: hero-sections now stored under backend uploads, not src/assets
-      if (bucket === 'hero-sections') {
-        return cb(null, heroSectionsPath);
+      try {
+        const bucket = resolveBucket(req.body.bucket);
+        const bucketPath = ensureBucketPath(bucket);
+        cb(null, bucketPath);
+      } catch (err) {
+        cb(err as Error, uploadDir);
       }
-
-      const bucketPath = path.join(uploadDir, bucket);
-      
-      // Ensure bucket directory exists
-      if (!fs.existsSync(bucketPath)) {
-        fs.mkdirSync(bucketPath, { recursive: true });
-      }
-      
-      cb(null, bucketPath);
     },
     filename: (req, file, cb) => {
-      const bucket = req.body.bucket || 'images';
       try {
-        if (bucket === 'hero-sections') {
-          const finalName = ensureUniqueFilename(heroSectionsPath, file.originalname);
-          return cb(null, finalName);
-        }
-        // default behavior for other buckets: keep original sanitized + uniqueness in their bucket dir
-        const dir = path.join(uploadDir, bucket);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
+        const bucket = resolveBucket(req.body.bucket);
+        const dir = ensureBucketPath(bucket);
         const finalName = ensureUniqueFilename(dir, file.originalname);
         cb(null, finalName);
       } catch (e) {
@@ -129,9 +148,10 @@ const uploadMulter = multer({
     }
   }),
   fileFilter: (req, file, cb) => {
-    const bucket = req.body.bucket || 'images';
-    
-    if (bucket === 'documents' || bucket === 'cv-uploads' || bucket === 'transcripts' || bucket === 'cover-letters') {
+    const bucket = resolveBucket(req.body.bucket);
+    const pdfBuckets = new Set(['documents', 'cv-uploads', 'transcripts', 'cover-letters']);
+
+    if (pdfBuckets.has(bucket)) {
       // PDF files for these buckets
       if (file.mimetype === 'application/pdf') {
         cb(null, true);
@@ -156,16 +176,15 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const bucket = req.body.bucket || 'images';
+  const bucket = resolveBucket(req.body.bucket);
   // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
-  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
-  const relativeUrl = `..${fileUrl}`;
+  const fileUrl = `../src/assets/${bucket}/${req.file.filename}`;
   
   res.json({
     message: 'File uploaded successfully',
     file: {
       url: fileUrl,
-      relative_url: relativeUrl,
+      relative_url: fileUrl,
       name: req.file.filename,
       originalName: req.file.originalname,
       size: req.file.size,
@@ -180,7 +199,7 @@ router.post('/documents', authenticateToken, uploadPDF.single('file'), (req, res
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `/uploads/documents/${req.file.filename}`;
+  const fileUrl = `../src/assets/documents/${req.file.filename}`;
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -198,7 +217,7 @@ router.post('/cv-uploads', uploadCV.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `/uploads/cv-uploads/${req.file.filename}`;
+  const fileUrl = `../src/assets/cv-assets/${req.file.filename}`;
   res.json({
     message: 'CV uploaded successfully',
     file: {
@@ -216,7 +235,7 @@ router.post('/transcripts', uploadTranscript.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `/uploads/transcripts/${req.file.filename}`;
+  const fileUrl = `../src/assets/transcripts/${req.file.filename}`;
   res.json({
     message: 'Transcript uploaded successfully',
     file: {
@@ -234,7 +253,7 @@ router.post('/cover-letters', uploadCoverLetter.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `/uploads/cover-letters/${req.file.filename}`;
+  const fileUrl = `../src/assets/cover-letters/${req.file.filename}`;
   res.json({
     message: 'Cover letter uploaded successfully',
     file: {
@@ -247,33 +266,33 @@ router.post('/cover-letters', uploadCoverLetter.single('file'), (req, res) => {
   });
 });
 
-// Kept for backward compatibility; now also writes to backend uploads/hero-sections
-router.post('/images', authenticateToken, multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, heroSectionsPath),
-    filename: (req, file, cb) => cb(null, ensureUniqueFilename(heroSectionsPath, file.originalname))
-  }),
-  fileFilter: imageFileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
-}).single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
+// // Kept for backward compatibility; now also writes to backend assets/hero-sections
+// router.post('/images', authenticateToken, multer({
+//   storage: multer.diskStorage({
+//     destination: (req, file, cb) => cb(null, heroSectionsPath),
+//     filename: (req, file, cb) => cb(null, ensureUniqueFilename(heroSectionsPath, file.originalname))
+//   }),
+//   fileFilter: imageFileFilter,
+//   limits: { fileSize: 5 * 1024 * 1024 },
+// }).single('file'), (req, res) => {
+//   if (!req.file) {
+//     return res.status(400).json({ error: 'No file uploaded' });
+//   }
   
-  const fileUrl = `/uploads/hero-sections/${req.file.filename}`;
-  const relativeUrl = `..${fileUrl}`;
-  res.json({
-    message: 'Image uploaded successfully',
-    file: {
-      url: fileUrl,
-      relative_url: relativeUrl,
-      name: req.file.filename,
-      originalName: req.file.originalname,
-      size: req.file.size,
-      type: req.file.mimetype
-    }
-  });
-});
+//   const fileUrl = `/assets/hero-sections/${req.file.filename}`;
+//   const relativeUrl = `..${fileUrl}`;
+//   res.json({
+//     message: 'Image uploaded successfully',
+//     file: {
+//       url: fileUrl,
+//       relative_url: relativeUrl,
+//       name: req.file.filename,
+//       originalName: req.file.originalname,
+//       size: req.file.size,
+//       type: req.file.mimetype
+//     }
+//   });
+// });
 
 // Serve uploaded files
 router.use('/uploads', (req, res, next) => {

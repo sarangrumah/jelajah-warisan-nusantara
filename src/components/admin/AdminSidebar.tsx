@@ -30,7 +30,7 @@ const menuItems = [
   { id: 'company', label: 'Company Profile', icon: Settings },
   { id: 'museum', label: 'Museum', icon: Settings },
   { id: 'master-collection', label: 'Collections', icon: FileText },
-  { id: 'agenda', label: 'Agenda', icon: Calendar },
+  { id: 'agenda', label: 'Event', icon: Calendar },
   { id: 'media', label: 'Media', icon: FileText },
   { id: 'sop', label: 'SOP', icon: FileText },
   { id: 'memoryworld', label: 'Memory World', icon: FileText },

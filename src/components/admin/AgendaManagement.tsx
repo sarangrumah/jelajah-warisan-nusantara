@@ -292,7 +292,7 @@ const AgendaManagement = () => {
                     label="Event Image"
                     value={editingItem.image_url}
                     onChange={(url) => setEditingItem(prev => ({ ...prev, image_url: url }))}
-                    bucket="images"
+                    bucket="hero-sections"
                   />
                 </div>
                 

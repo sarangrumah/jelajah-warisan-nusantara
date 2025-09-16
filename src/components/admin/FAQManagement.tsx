@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, ArrowUp, ArrowDown, Trash } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, ArrowUp, ArrowDown, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '../ErrorHandling';
@@ -203,7 +203,7 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
         });
       }
       
-      setEditingFaq(null);
+      setEditingFaq(emptyFaq);
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Error saving FAQ:', error);
@@ -231,7 +231,7 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
       
       toast({
         title: 'Success',
-        description: `FAQ ${isPublished ? 'published' : 'unpublished'}`,
+        description: `FAQ ${isPublished ? 'published' : 'draft'}`,
       });
     } catch (error) {
       console.error('Error toggling FAQ:', error);
@@ -424,17 +424,13 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
                     >
                       <ArrowDown className="w-4 h-4" />
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => togglePublished(faq.id, !faq.is_published)}
-                    >
-                      {faq.is_published ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center">
+                      <Switch
+                        id={`faq-publish-${faq.id}`}
+                        checked={faq.is_published}
+                        onCheckedChange={(checked) => togglePublished(faq.id, checked)}
+                      />
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
