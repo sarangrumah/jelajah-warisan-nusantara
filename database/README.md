@@ -123,5 +123,5 @@ For the backend API (Phase 2), you'll need:
 DATABASE_URL=postgresql://username:password@localhost:5432/heritage_museum_db
 JWT_SECRET=your-jwt-secret-key
 NODE_ENV=development
-PORT=3001
+PORT=3000
 ```

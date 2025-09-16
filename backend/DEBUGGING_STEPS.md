@@ -16,7 +16,7 @@ Follow these steps to debug and fix the authentication issue:
    DATABASE_URL=postgresql://username:password@localhost:5432/your_database_name
    JWT_SECRET=your-super-secret-jwt-key-here
    JWT_EXPIRES_IN=7d
-   PORT=3001
+   PORT=3000
    NODE_ENV=development
    ```
 
@@ -126,7 +126,7 @@ npm run test-db
 npm run dev
 
 # Check if backend is responding
-curl http://localhost:3001/health
+curl http://localhost:3000/health
 ```
 
 ## Expected Success Output

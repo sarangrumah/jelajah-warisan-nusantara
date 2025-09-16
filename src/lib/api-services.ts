@@ -115,6 +115,16 @@ export const mediaService = {
   approve: (id: string) => apiClient.approve('tb_events', id),
 };
 
+// Memory of The World
+export const memoryWorldService = {
+  getAll: () => apiClient.getAll('tb_memoryoftheworld'),
+  getById: (id: string) => apiClient.getById('tb_memoryoftheworld', id),
+  create: (data: any) => apiClient.create('tb_memoryoftheworld', data),
+  update: (id: string, data: any) => apiClient.update('tb_memoryoftheworld', id, data),
+  delete: (id: string) => apiClient.delete('tb_memoryoftheworld', id),
+  approve: (id: string) => apiClient.approve('tb_memoryoftheworld', id),
+};
+
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('tb_faqs'),
@@ -142,6 +152,16 @@ export const sopService = {
   create: (data: any) => apiClient.create('tb_sop', data),
   update: (id: string, data: any) => apiClient.update('tb_sop', id, data),
   delete: (id: string) => apiClient.delete('tb_sop', id),
+};
+
+// Master Collection (tb_master_collection)
+export const masterCollectionService = {
+  getAll: () => apiClient.getAll('tb_master_collection'),
+  getById: (id: string) => apiClient.getById('tb_master_collection', id),
+  create: (data: any) => apiClient.create('tb_master_collection', data),
+  update: (id: string, data: any) => apiClient.update('tb_master_collection', id, data),
+  delete: (id: string) => apiClient.delete('tb_master_collection', id),
+  approve: (id: string) => apiClient.approve('tb_master_collection', id),
 };
 
 // Career Management (new postings table separate from career_opportunities)

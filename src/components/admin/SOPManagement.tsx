@@ -50,9 +50,9 @@ const SOPForm = ({ sop, onSave, onCancel, saving }: {
 }) => {
   // Normalize publish_date for input[type=datetime-local]
   const toDateTimeInput = (value?: string) => {
-    if (!value) return '';
+    if (!value) {return '';}
     const d = new Date(value);
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) {return '';}
     const tzOffset = d.getTimezoneOffset();
     const local = new Date(d.getTime() - tzOffset * 60000);
     return local.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
@@ -201,7 +201,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
   const fetchItems = async () => {
     try {
       const response = await sopService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       setItems((response.data as unknown as SOPItem[]) || []);
     } catch (error) {
       console.error('Error fetching SOP items:', error);
@@ -216,12 +216,12 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     try {
       if (editingItem?.id) {
         const response = await sopService.update(editingItem.id, formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error);}
         setItems(prev => prev.map(i => (i.id === editingItem.id ? { ...i, ...formData } : i)));
         toast({ title: 'Success', description: 'SOP updated successfully' });
       } else {
         const response = await sopService.create(formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error);}
         setItems(prev => [response.data as unknown as SOPItem, ...prev]);
         toast({ title: 'Success', description: 'SOP created successfully' });
       }
@@ -238,7 +238,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
       const response = await sopService.update(id, { is_active: isActive });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       setItems(prev => prev.map(i => (i.id === id ? { ...i, is_active: isActive } : i)));
       toast({ title: 'Success', description: `Item ${isActive ? 'activated' : 'deactivated'}` });
     } catch (error) {
@@ -250,7 +250,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await sopService.approve(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       setItems(prev => prev.map(i => (i.id === id ? { ...i, is_approved: (response as any).data?.is_approved } : i)));
       toast({ title: 'Success', description: 'SOP approved' });
       fetchItems();
@@ -264,7 +264,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false);
       const response = await sopService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       toast({ title: 'Success', description: 'SOP deleted' });
       fetchItems();
     } catch (error) {

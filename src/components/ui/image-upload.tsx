@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, X, Image, Loader2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
+import { assetUrl } from '@/lib/asset-url';
 
 interface ImageUploadProps {
   label: string;
@@ -126,6 +127,8 @@ export const ImageUpload = ({
     fileInputRef.current?.click();
   };
 
+  const displayUrl = assetUrl(value);
+
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
@@ -141,11 +144,11 @@ export const ImageUpload = ({
         onDragLeave={handleDragLeave}
         onClick={openFileDialog}
       >
-        <CardContent className="p-6">|
+        <CardContent className="p-6">
           {value && preview ? (
             <div className="relative group">
               <img
-                src={`../../${value}`}
+                src={displayUrl}
                 alt="Preview"
                 className="w-full h-32 object-cover rounded-md"
               />
@@ -163,7 +166,7 @@ export const ImageUpload = ({
                   </DialogTrigger>
                   <DialogContent className="max-w-3xl">
                     <img
-                      src={value}
+                      src={displayUrl}
                       alt="Full preview"
                       className="w-full h-auto rounded-md"
                     />
