@@ -1,7 +1,7 @@
 // translation-api.js (ESM version)
 import express from 'express';
 import bodyParser from 'body-parser';
-import axios from 'axios';
+const {Translate} = require('@google-cloud/translate').v2;
 import pkg from 'pg';
 import cors from 'cors';
 
@@ -16,17 +16,12 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// --- Google Translate API ---
+// --- Google Translate API (using @google-cloud/translate) ---
+const translate = new Translate();
+
 async function autoTranslate(text, targetLang = 'en') {
-  const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
-  if (!apiKey) throw new Error('GOOGLE_TRANSLATE_API_KEY not set');
-  const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-  const res = await axios.post(url, {
-    q: text,
-    target: targetLang,
-    format: 'text'
-  });
-  return res.data.data.translations[0].translatedText;
+  const [translation] = await translate.translate(text, targetLang);
+  return translation;
 }
 
 // --- CRUD ENDPOINTS ---
