@@ -119,7 +119,6 @@ const FaqForm = ({ faq, onSave, onCancel, saving }: {
   );
 };
 
-
 const emptyFaq: Faq = {
   id: "",
   question: '',
@@ -148,8 +147,6 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
   useEffect(() => {
     fetchFaqs();
   }, []);
-
-
 
   const fetchFaqs = async () => {
     try {
@@ -290,58 +287,26 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleApproved = async (id: string) => {
-    try {
-      const response = await faqService.approve(id);
-      if (response.error) throw new Error(response.error);
-      
-      setFaqs(prev => prev.map(faq => 
-        faq.id === id ? { ...faq, is_approved: response.data["is_approved"] } : faq
-      ));
-      
-      toast({
-        title: 'Success',
-        description: `Banner Approved`,
-      });
-      fetchFaqs();
-    } catch (error) {
-      console.error('Error toggling banner:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update banner status',
-        variant: 'destructive',
-      });
-    }
-  };
-
   const toggleDelete = async (id: string) => {
     try {
       setIsDialogDelete(false)
       const response = await faqService.delete(id);
-      if (response.error) throw new Error(response.error);
-      
-      // setBanners(prev => prev.map(banner => 
-      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
-      // ));
-      
+      if (response.error) {throw new Error(response.error)};
       toast({
         title: 'Success',
-        description: `Banner Deleted`,
+        description: `Faq Deleted`,
       });
-
       fetchFaqs()
     } catch (error) {
-      console.error('Error toggling banner:', error);
+      console.error('Error toggling faq:', error);
       toast({
         title: 'Error',
-        description: 'Failed to delete banner',
+        description: 'Failed to delete FAQ',
         variant: 'destructive',
       });
     }
   };
   
-
-
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">

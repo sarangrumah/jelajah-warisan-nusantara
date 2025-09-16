@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Upload, X, Image, Loader2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
+import { assetUrl } from '@/lib/asset-url';
 
 interface ImageItem {
   path: string;  // URL or path to image
@@ -157,7 +158,7 @@ export const GalleryUpload = ({
           {value.map((image, index) => (
             <div key={index} className="relative group">
               <img
-                src={image.path}
+                src={assetUrl(image.path)}
                 alt={`Gallery image ${index + 1}`}
                 className="w-full h-24 object-cover rounded-md"
               />

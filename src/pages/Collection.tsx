@@ -68,7 +68,7 @@ const Collection = () => {
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative py-20 h-80 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
+      <section className="relative py-20 from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             {t('collection.title')}
@@ -124,7 +124,7 @@ const Collection = () => {
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Building size={16} className="mr-1" />
@@ -141,7 +141,7 @@ const Collection = () => {
                       {t(item.category)}
                     </span>
                   </div>
-                </CardContent>
+                </CardContent> */}
               </Card>
             </Link>
           ))}

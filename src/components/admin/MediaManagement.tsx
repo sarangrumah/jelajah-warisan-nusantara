@@ -38,9 +38,9 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
 }) => {
   // Normalize published_date for input[type=datetime-local]
   const toDateTimeInput = (value?: string) => {
-    if (!value) return '' as any;
+    if (!value) {return '' as any;}
     const d = new Date(value);
-    if (isNaN(d.getTime())) return '' as any;
+    if (isNaN(d.getTime())) {return '' as any;}
     const tzOffset = d.getTimezoneOffset();
     const local = new Date(d.getTime() - tzOffset * 60000);
     return local.toISOString().slice(0, 16) as any; // YYYY-MM-DDTHH:mm
@@ -67,8 +67,6 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
     e.preventDefault();
     onSave(formData);
   };
-
-  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -231,7 +229,6 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
   );
 };
 
-
 const emptyMedia: Media = {
   id: "", // placeholder for "no ID"
   title: "",
@@ -258,8 +255,6 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
-
-
 
   useEffect(() => {
     fetchMediaItems();
@@ -294,7 +289,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
       if (item.id) {
         // Update existing media item
         response = await mediaService.update(item.id, item);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error);}
 
         setMediaItems(prev =>
           prev.map(existing =>
@@ -305,7 +300,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         // Create new media item
 
         response = await mediaService.create(item);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error);}
 
         setMediaItems(prev => [response.data, ...prev]);
       }
@@ -360,7 +355,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false)
       const response = await mediaService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       
       // setBanners(prev => prev.map(banner => 
       //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
@@ -385,7 +380,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await mediaService.approve(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       
       setMediaItems(prev => prev.map(media => 
         media.id === id ? { ...media, is_approved: response.data["is_approved"] } : media
@@ -505,7 +500,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     <CardDescription>{item.subtitle}</CardDescription>
                   </div>
                 { 
-                  userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                  userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="is_active"

@@ -36,6 +36,7 @@ interface SitesItem {
   collection: string;
   img_banner: string;
   ticket_price:string;
+  ticket_url?: string;
   is_approved: boolean;
   is_active: boolean;
   created_at?: string;
@@ -142,7 +143,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
     }
     
   }, [ formData.type]);
-
 
   const fetchTypes = async () => {
     try {
@@ -303,8 +303,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           />
         </div>
       </div> */}
-
-
+      
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
         <Textarea
@@ -329,8 +328,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         bucket="images"
         maxImages={8}
       />
-
-
 
       <div className="space-y-2">
         <Label>Opening Hours</Label>
@@ -411,6 +408,15 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           onChange={(e) => setFormData(prev => ({ ...prev,
             ticket_price: e.target.value
           }))}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="ticket_url">Ticket URL</Label>
+        <Input
+          id="ticket_url"
+          value={formData.ticket_url || ''}
+          onChange={(e) => setFormData(prev => ({ ...prev, ticket_url: e.target.value }))}
         />
       </div>
 
@@ -500,6 +506,7 @@ const emptySites: SitesItem = {
   collection: '',
   img_banner: '',
   ticket_price: '',
+  ticket_url: '',
   is_approved: false, // reasonable default
   is_active: true,    // often default to active
 };
@@ -543,7 +550,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     let response 
     try {
     
-
       if (editingSites?.id) {
         console.log("ini data form", formData)
         const response = await museumService.update(editingSites.id, formData);
@@ -576,7 +582,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
 
         fetchSites()
 
-      
       setEditingSites(emptySites);
       setIsDialogOpen(false);
     } catch (error) {
@@ -620,7 +625,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await museumService.approve(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       
       setSitess(prev => prev.map(events => 
         events.id === id ? { ...events, is_approved: response.data["is_approved"] } : events
@@ -645,7 +650,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     try {
       setIsDialogDelete(false)
       const response = await museumService.delete(id);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error);}
       
       // setBanners(prev => prev.map(banner => 
       //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
@@ -678,8 +683,8 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Sites & Heritage Management</h2>
-          <p className="text-muted-foreground">Manage museums and heritage sites</p>
+          <h2 className="text-2xl font-bold">Museum Management</h2>
+          <p className="text-muted-foreground">Manage Museum and Content</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -742,7 +747,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         </Dialog > : <div></div>}
       </div>
       
-
       {museums.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -771,7 +775,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                     </CardTitle>
                   </div>
                   { 
-                    userRole == "admin" || userRole == "super-admin" ? <div className="flex items-center space-x-2">
+                    userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                       <div className="flex items-center space-x-2">
                         <Switch
                           id="is_active"

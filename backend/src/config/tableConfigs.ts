@@ -37,9 +37,9 @@ export const tableConfigs = {
   tb_categories_event: ['id','name'],
   tb_media: ['id','title','image_url','file_url','categories','subtitle','description','source','author','is_active', 'is_approved','created_at','created_by','updated_at','updated_by','published_date'],
   tb_sites:['id','name','type','category','subtitle','description','address',
-    'opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price','collection',
+    'opening_hours','phone','whatsapp','website','facilities','img_banner','ticket_price','ticket_url','collection',
     'latitude','longitude','is_active', 'is_approved','created_at','created_by','updated_at','updated_by'],
-  tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','is_active','is_approved','created_at','created_by','updated_at','updated_by'],
+  tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','ticket_url','is_active','is_approved','created_at','created_by','updated_at','updated_by'],
   tb_faqs:  ['id','question','answer','category','order_index','file_url','is_active','is_published','created_at','created_by','updated_at','updated_by'],
   tb_sop: ['id','title','subtitle','description','publish_date','category','document_url','author','is_active','is_approved','created_at','created_by','updated_at','updated_by']
   ,tb_career_management: [
@@ -82,7 +82,60 @@ export const tableConfigs = {
     'created_by',
     'updated_at',
     'updated_by'
-  ]
+  ],
+  // Master Collection used by Admin page
+  // Columns aligned with requested form:
+  // title, subtitle, description, museum_name, discovered_year,
+  // condition, material, dimensions, origin, image_url
+  tb_master_collection: [
+    'id',
+    'title',
+    'subtitle',
+    'description',
+    'museum_name',
+    'discovered_year',
+    'condition',
+    'material',
+    'dimensions',
+    'origin',
+    'image_url',
+    'is_active',
+    'company_id',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+  tb_memoryoftheworld: [
+    'id',
+    'title',
+    'subtitle',
+    'description',
+    'date',
+    'thumbnails',
+    'start_publish_date',
+    'end_publish_date',
+    'is_active',
+    'is_approved',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+
+  tb_memoryoftheworld_gallery: [
+    'id',
+    'id_memoryoftheworld',
+    'upload_file',
+    'is_active',
+    'is_approved',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+
+
 };
 
 export const tableRelationships = {
@@ -103,6 +156,16 @@ export const tableRelationships = {
         fields: ['id', 'name', 'address'] // only these are joined
       },
     }
+  },
+  // Memory of the World relations
+  tb_memoryoftheworld: {
+    galleries: {
+      table: 'tb_memoryoftheworld_gallery',
+      localKey: 'id_memoryoftheworld',
+      foreignKey: 'id',
+      type: 'has_many', 
+       fields: ['id', 'upload_file', ]
+    },
   },
   tb_career_submission_management: {
     career: {
@@ -179,6 +242,14 @@ export const approvalConfig = {
     autoActivateOnApprove: true
   },
   tb_career_management: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  tb_memoryoftheworld: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  tb_master_collection: {
     requiresApproval: true,
     autoActivateOnApprove: true
   }

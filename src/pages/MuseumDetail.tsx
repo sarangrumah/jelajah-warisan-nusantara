@@ -1,8 +1,9 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Clock, Phone, Globe, Calendar } from 'lucide-react';
+import { MapPin, Clock, Phone, Globe, Calendar} from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { defaultMuseums } from '@/../database/default-data';
@@ -13,7 +14,16 @@ import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-
+  const shareEventHandler = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 function getMuseumImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
   if (
@@ -191,13 +201,13 @@ const MuseumDetail = () => {
                   <div className="flex items-start gap-3">
                     <Globe className="mt-1 text-primary" size={20} />
                     <div>
-                      <p className="font-semibold hidden">{t('button.visitWebsite')}</p>
-                      <p className="text-sm text-muted-foreground hidden">{museum.website}</p>
-                      <button 
+                      <p className="font-semibold">{t('museumDetail.website')}</p>
+                      <p className="text-sm text-muted-foreground">{museum.website}</p>
+                      {/* <button 
                         onClick={() => window.open(`https://${museum.website}`, '_blank')} 
                         className="bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-2 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
                         Kunjungi Situs
-                      </button>
+                      </button> */}
                     </div>
                   </div>
 
@@ -208,12 +218,34 @@ const MuseumDetail = () => {
                       <p className="text-sm text-muted-foreground">{museum.ticketPrice}</p>
                     </div>
                   </div>
-                  <button 
+                  {/* <button 
                     className="w-full bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
                     Beli Tiket
-                  </button>
+                  </button> */}
                 </CardContent>
               </Card>
+                {/* Actions */}
+                <Card>
+                  <CardContent className="p-6 space-y-3">
+                    {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                      {t('Register Now')}
+                    </Button> */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >
+                      <Globe size={20} className="mr-2" />
+                      {t('Kunjungi Situs Web')}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                    >Beli Tiket
+                    </Button>
+                  </CardContent>
+                </Card>
             </div>
           </div>
         </section>

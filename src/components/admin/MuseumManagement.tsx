@@ -261,9 +261,6 @@
 //   const [isDialogOpen, setIsDialogOpen] = useState(false);
 //   const { toast } = useToast();
 
-
-
-
 //   useEffect(() => {
 //     fetchMuseums();
 //   }, []);
@@ -377,8 +374,6 @@
 //       });
 //     }
 //   };
-
-
 
 //   if (loading) {
 //     return (
