@@ -481,12 +481,13 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      {console.log('ImageUpload value (banner_img):', formData.banner_img)}
       <ImageUpload
         label="Banner Image"
         value={formData.banner_img}
         onChange={handleImageUpload}
         bucket="images"
-      /> 
+      />
 
       <div className="flex items-center space-x-2">
         <Switch
