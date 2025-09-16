@@ -27,7 +27,7 @@ function getImageOrVideoUrl(p: string) {
   if (p.startsWith('/src/assets/')) { return p.replace('/src', ''); }
   // If it's just a filename, prepend the conservation assets path
   if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p) && !p.startsWith('/assets/')) {
-    return `/assets/conservation/${p}`;
+    return `/assets/hero-sections/${p}`;
   }
   return p;
 }
