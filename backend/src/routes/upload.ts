@@ -155,12 +155,21 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  
+
   const bucket = req.body.bucket || 'images';
-  // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
-  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+
+  // If UPLOAD_PATH points to src/assets, return /assets/images/filename.jpg
+  let fileUrl;
+  if (
+    process.env.UPLOAD_PATH &&
+    process.env.UPLOAD_PATH.replace(/\\/g, '/').includes('src/assets')
+  ) {
+    fileUrl = `/assets/${bucket}/${req.file.filename}`;
+  } else {
+    fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  }
   const relativeUrl = `..${fileUrl}`;
-  
+
   res.json({
     message: 'File uploaded successfully',
     file: {
