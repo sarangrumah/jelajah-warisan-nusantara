@@ -5,6 +5,9 @@ export function assetUrl(u?: string): string {
   // already absolute URL
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
 
+  // Always return /assets/ paths as-is (for frontend static assets)
+  if (u.startsWith('/assets/')) return u;
+
   // Normalize legacy '../uploads' to '/uploads'
   if (u.startsWith('../uploads')) u = u.replace(/^\.\./, '');
 
@@ -22,7 +25,7 @@ export function assetUrl(u?: string): string {
     }
   }
 
-  // For all other URLs (e.g., /assets/, static, or relative), return as-is
+  // For all other URLs (e.g., static, or relative), return as-is
   return u;
 }
 
