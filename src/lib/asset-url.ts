@@ -8,10 +8,17 @@ export function assetUrl(u?: string): string {
   // Normalize legacy '../uploads' to '/uploads'
   if (u.startsWith('../uploads')) u = u.replace(/^\.\./, '');
 
-  // If it points to backend-served uploads, prefix with API base
-  if (u.startsWith('/uploads/')) return `${API_BASE}${u}`;
+  // Only prefix with API base for backend-served uploads
+  if (u.startsWith('/uploads/')) {
+    // If API_BASE is set and not just '/', use it; otherwise, use relative path
+    if (API_BASE && API_BASE !== '/') {
+      return `${API_BASE}${u}`;
+    } else {
+      return u;
+    }
+  }
 
-  // Keep other app-relative assets as-is
+  // For all other URLs (e.g., /assets/, static, or relative), return as-is
   return u;
 }
 
