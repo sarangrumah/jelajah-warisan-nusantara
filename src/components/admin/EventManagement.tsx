@@ -481,6 +481,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      {console.log('ImageUpload value (banner_img):', formData.banner_img)}
       <ImageUpload
         label="Banner Image"
         value={formData.banner_img}

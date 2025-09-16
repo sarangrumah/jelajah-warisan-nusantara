@@ -188,6 +188,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
  
   // This ensures proper state updates
   const handleImageUpload = async (url: string) => {
+    console.log('handleImageUpload received:', url);
     setFormData(prev => ({
       ...prev,
       img_banner: url
@@ -314,6 +315,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      {console.log('ImageUpload value (img_banner):', formData.img_banner)}
       <ImageUpload
         label="Main Image"
         value={formData.img_banner}
