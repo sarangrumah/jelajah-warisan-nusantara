@@ -20,13 +20,20 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
+const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
+
 function getImageOrVideoUrl(p: string) {
   if (typeof p !== 'string' || p.length === 0) { return ''; }
   // Resolve uploads to API base; keep /assets local references intact
   if (p.startsWith('/uploads/') || p.startsWith('../uploads')) { return assetUrl(p); }
   if (p.startsWith('/src/assets/')) { return p.replace('/src', ''); }
-  // If it's just a filename, prepend the conservation assets path
+  // If it's just a filename, try to resolve from src/assets/images
   if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p) && !p.startsWith('/assets/')) {
+    const match = Object.entries(images).find(([key]) => key.endsWith('/' + p));
+    if (match) {
+      return match[1] as string;
+    }
+    // fallback to previous public assets path for legacy
     return `/assets/images/${p}`;
   }
   return p;
