@@ -1,11 +1,12 @@
 // translation-api.js (ESM version)
 import express from 'express';
 import bodyParser from 'body-parser';
-import {Translate} from '@google-cloud/translate';
-import pkg from 'pg';
+import pkg from '@google-cloud/translate';
+const { Translate } = pkg.v2;
+import pg from 'pg';
 import cors from 'cors';
 
-const { Pool } = pkg;
+const { Pool } = pg;
 
 const app = express();
 app.use(bodyParser.json());
