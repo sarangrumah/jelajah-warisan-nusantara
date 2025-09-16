@@ -11,25 +11,13 @@ const FloatingButtons = () => {
     <>
       {/* Social Media Buttons - Vertical Stack above chat button */}
       <div className="fixed flex flex-col gap-3 z-50" style={{ right: 24, bottom: 110 }}>
-        {socialMedia.map((social, index) => (
+        {socialMedia.map((social) => (
           <button
             key={social.label}
             title={social.label}
             aria-label={social.label}
             onClick={() => window.open(social.href, '_blank')}
-            style={{
-              background: social.color,
-              color: "#fff",
-              borderRadius: "50%",
-              width: 44,
-              height: 44,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px #0002",
-              fontSize: 22,
-              transition: "transform 0.2s",
-            }}
+            className="rounded-full w-12 h-12 flex items-center justify-center bg-primary text-white shadow-lg heritage-glow hover:bg-primary/80 transition-all duration-200"
             tabIndex={0}
           >
             <social.icon size={22} />
