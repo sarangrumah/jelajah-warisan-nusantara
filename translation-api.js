@@ -1,9 +1,11 @@
-// translation-api.js
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-const { Pool } = require('pg');
-const cors = require('cors');
+// translation-api.js (ESM version)
+import express from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import pkg from 'pg';
+import cors from 'cors';
+
+const { Pool } = pkg;
 
 const app = express();
 app.use(bodyParser.json());
