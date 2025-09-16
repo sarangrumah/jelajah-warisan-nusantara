@@ -70,9 +70,17 @@ const BannerSection = () => {
             }`}
           >
             <img
-              src={ slide.image }
+              src={slide.image}
               alt={slide.title}
               className="w-full h-full object-cover parallax"
+              onLoad={() => {
+                console.log('Image loaded:', slide.image);
+                setIsLoading(false);
+              }}
+              onError={() => {
+                console.error('Image failed to load:', slide.image);
+                setIsLoading(false);
+              }}
             />
             <div className="absolute inset-0 overlay-gradient" />
           </div>
