@@ -1,7 +1,7 @@
 // translation-api.js (ESM version)
 import express from 'express';
 import bodyParser from 'body-parser';
-const {Translate} = require('@google-cloud/translate').v2;
+import {Translate} from '@google-cloud/translate';
 import pkg from 'pg';
 import cors from 'cors';
 
