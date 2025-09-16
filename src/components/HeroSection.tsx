@@ -21,10 +21,14 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 function getImageOrVideoUrl(p: string) {
-  if (typeof p !== 'string' || p.length === 0) return '';
+  if (typeof p !== 'string' || p.length === 0) { return ''; }
   // Resolve uploads to API base; keep /assets local references intact
-  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) return assetUrl(p);
-  if (p.startsWith('/src/assets/')) return p.replace('/src', '');
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) { return assetUrl(p); }
+  if (p.startsWith('/src/assets/')) { return p.replace('/src', ''); }
+  // If it's just a filename, prepend the conservation assets path
+  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p) && !p.startsWith('/assets/')) {
+    return `/assets/conservation/${p}`;
+  }
   return p;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
@@ -202,6 +206,12 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   src={slide.image}
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
+                  onLoad={() => {
+                    console.log('[HeroSection] Image loaded:', slide.image);
+                  }}
+                  onError={() => {
+                    console.error('[HeroSection] Image failed to load:', slide.image);
+                  }}
                 />
               ) : isVideo(slide.asset) ? (
                 <video
