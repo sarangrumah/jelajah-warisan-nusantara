@@ -97,6 +97,50 @@ app.put('/api/translations/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  
+  //
+  // --- New endpoint: Get all Bahasa (Indonesian) translations in table format ---
+  //
+  app.get('/api/translations/bahasa', async (req, res) => {
+    try {
+      // Get all unique (module, page, key) combinations
+      const allKeysResult = await pool.query(
+        `SELECT DISTINCT module, page, key FROM translations`
+      );
+      const allKeys = allKeysResult.rows;
+  
+      // Get all Bahasa entries
+      const bahasaResult = await pool.query(
+        `SELECT id, module, page, key, language_code, text, last_updated, auto_translated
+         FROM translations
+         WHERE language_code = 'id'`
+      );
+      const bahasaMap = {};
+      for (const row of bahasaResult.rows) {
+        bahasaMap[`${row.module}|${row.page}|${row.key}`] = row;
+      }
+  
+      // Build the table
+      const table = allKeys.map(({module, page, key}) => {
+        const bahasa = bahasaMap[`${module}|${page}|${key}`];
+        return {
+          id: bahasa ? bahasa.id : null,
+          module,
+          page,
+          key,
+          language_code: 'id',
+          text: bahasa ? bahasa.text : null,
+          last_updated: bahasa ? bahasa.last_updated : null,
+          auto_translated: bahasa ? bahasa.auto_translated : null,
+          missing: !bahasa
+        };
+      });
+  
+      res.json(table);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 });
 
 // Delete translation
