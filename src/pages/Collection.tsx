@@ -124,7 +124,7 @@ const Collection = () => {
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
-                {/* <CardContent>
+                <CardContent>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Building size={16} className="mr-1" />
@@ -135,13 +135,13 @@ const Collection = () => {
                       {item.period}
                     </div>
                   </div>
-                  <p className="text-sm mt-3">{item.description}</p>
+                  {/* <p className="text-sm mt-3">{item.description}</p> */}
                   <div className="mt-4">
                     <span className="inline-block px-2 py-1 rounded-full text-xs bg-accent/10 text-accent">
                       {t(item.category)}
                     </span>
                   </div>
-                </CardContent> */}
+                </CardContent>
               </Card>
             </Link>
           ))}
