@@ -8,9 +8,13 @@ export function assetUrl(u?: string): string {
   // Normalize legacy '../uploads' to '/uploads'
   if (u.startsWith('../uploads')) u = u.replace(/^\.\./, '');
 
-  // Only prefix with API base for backend-served uploads
+  // Special handling for production: always use the real backend domain for /uploads/
   if (u.startsWith('/uploads/')) {
-    // If API_BASE is set and not just '/', use it; otherwise, use relative path
+    // If running on production domain, force the correct backend URL
+    if (typeof window !== 'undefined' && window.location.hostname === 'museumcagarbudaya.kemenbud.go.id') {
+      return `https://museumcagarbudaya.kemenbud.go.id${u}`;
+    }
+    // Otherwise, use API_BASE if set, or relative
     if (API_BASE && API_BASE !== '/') {
       return `${API_BASE}${u}`;
     } else {
