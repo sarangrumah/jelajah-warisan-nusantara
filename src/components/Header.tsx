@@ -57,7 +57,7 @@ const Header = () => {
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },
-    { name: t('nav.admin'), href: '/admin' },
+    // { name: t('nav.admin'), href: '/admin' },
   ];
 
   return (

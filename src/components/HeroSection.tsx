@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
-import { defaultVideos } from '@/../database/default-data';
+// import { defaultVideos } from '@/../database/default-data';
+import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
 // =======
-// --- Vite Dynamic Image Import Solution ---
-const heroImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
+// Avoid Vite glob imports on src/assets to prevent HMR reloads when files change
 // >>>>>>> origin/main
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
@@ -19,52 +19,98 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
-function getImageOrVideoUrl(filename: string) {
+const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
 
-  if (
-    typeof filename === 'string' && 
-    (filename.startsWith('http://') || 
-    filename.startsWith('https://') || 
-    filename.startsWith('/assets/'))
-  ) { return filename; }
-// <<<<<<< HEAD
-  //     filename.startsWith('/assets/') ||
-  //     filename.startsWith('/uploads/'))
-  // ) {
-  //   return filename;
-  // }
-  // // Rewrite legacy '/src/assets/...' to '/assets/...'
-  // if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
-  //   return filename.replace('/src', '');
-  // }
-  // // Fallback: pass through as-is
-  // return filename;
-// =======
-  // // Otherwise, try to resolve using Vite's import
-  const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
-// >>>>>>> origin/main
+function getImageOrVideoUrl(p: string) {
+  if (typeof p !== 'string' || p.length === 0) { return ''; }
+  // Resolve uploads to API base; keep /assets local references intact
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) { return assetUrl(p); }
+  if (p.startsWith('/src/assets/')) { return p.replace('/src', ''); }
+  // If it's just a filename, try to resolve from src/assets/images
+  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p) && !p.startsWith('/assets/')) {
+    const match = Object.entries(images).find(([key]) => key.endsWith('/' + p));
+    if (match) {
+      return match[1] as string;
+    }
+    // fallback to previous public assets path for legacy
+    return `/assets/images/${p}`;
+  }
+  return p;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
-    asset: slide.image?.split('/').pop() || slide.image, // keep original filename
-    image: getImageOrVideoUrl(slide.image?.split('/').pop() || slide.image), // resolved URL
+    asset: slide.image?.split('/').pop() || slide.image,
+    image: getImageOrVideoUrl(slide.image),
   }));
 
-const HeroSection = () => {
+import { useRef } from 'react';
+
+interface HeroSectionProps {
+  onScrollToNextSection?: () => void;
+}
+
+const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const hasSnappedRef = useRef(false);
+
+  useEffect(() => {
+    const handleSnapScroll = (e: WheelEvent | TouchEvent) => {
+      if (hasSnappedRef.current) { return; }
+      // Only trigger if at top of page or HeroSection is in view
+      const section = sectionRef.current;
+      if (!section) { return; }
+
+      // For wheel event
+      if ('deltaY' in e && (e as WheelEvent).deltaY > 0) {
+        e.preventDefault();
+        hasSnappedRef.current = true;
+        if (onScrollToNextSection) { onScrollToNextSection(); }
+      }
+      // For touch event (swipe up)
+      if ('touches' in e && e.type === 'touchend') {
+        const touchEndY = (e as TouchEvent).changedTouches[0].clientY;
+        if (section.dataset.touchStartY && Number(section.dataset.touchStartY) - touchEndY > 30) {
+          e.preventDefault();
+          hasSnappedRef.current = true;
+          if (onScrollToNextSection) { onScrollToNextSection(); }
+        }
+      }
+    };
+
+    // Touch start to record initial Y
+    const handleTouchStart = (e: TouchEvent) => {
+      if (sectionRef.current) {
+        sectionRef.current.dataset.touchStartY = String(e.touches[0].clientY);
+      }
+    };
+
+    const section = sectionRef.current;
+    if (section) {
+      section.addEventListener('wheel', handleSnapScroll, { passive: false });
+      section.addEventListener('touchstart', handleTouchStart, { passive: true });
+      section.addEventListener('touchend', handleSnapScroll, { passive: false });
+    }
+    return () => {
+      if (section) {
+        section.removeEventListener('wheel', handleSnapScroll);
+        section.removeEventListener('touchstart', handleTouchStart);
+        section.removeEventListener('touchend', handleSnapScroll);
+      }
+    };
+  }, [onScrollToNextSection]);
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
-  const [videoList, setVideoList] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  // const [videoList, setVideoList] = useState([]);
+  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [types, setTypes] = useState([]);
 
-  const handleVideoEnded = () => {
-    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
-  };
+  // const handleVideoEnded = () => {
+  //   setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
+  // };
   // const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -151,7 +197,11 @@ const HeroSection = () => {
   }
 
   return (
-    <section id="beranda" className="relative h-screen overflow-hidden">
+    <section
+      id="beranda"
+      className="relative h-screen overflow-hidden"
+      ref={sectionRef}
+    >
       {/* Background Image Slider */}
       <div className="absolute inset-0">
         {slides && slides.map((slide, index) => {
@@ -174,6 +224,12 @@ const HeroSection = () => {
                   src={slide.image}
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
+                  onLoad={() => {
+                    console.log('[HeroSection] Image loaded:', slide.image);
+                  }}
+                  onError={() => {
+                    console.error('[HeroSection] Image failed to load:', slide.image);
+                  }}
                 />
               ) : isVideo(slide.asset) ? (
                 <video
@@ -203,7 +259,7 @@ const HeroSection = () => {
       <div className="relative z-10 h-full flex items-center justify-center">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
               {slides.length > 0 && t(slides[currentSlide].title)}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
@@ -279,14 +335,16 @@ const HeroSection = () => {
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
                 <video 
-                key={currentVideoIndex}
-                src={getImageUrl(videoList[currentVideoIndex].image)}
-                onEnded={handleVideoEnded} controls autoPlay className="w-full" />
+                // key={currentVideoIndex}
+                // src={getImageUrl(videoList[currentVideoIndex].image)}
+                // onEnded={handleVideoEnded} controls autoPlay className="w-full"
+                 />
               </div>
             </div>
           </div>
         </div>
       )}
+    {/* (Button removed: snap scroll is now automatic) */}
     </section>
   );
 };

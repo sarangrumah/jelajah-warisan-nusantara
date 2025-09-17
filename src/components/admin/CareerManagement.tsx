@@ -30,7 +30,7 @@ const CareerManagement = () => {
   const fetchOpportunities = async () => {
     try {
       const response = await careerService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setOpportunities(response.data || []);
     } catch (error) {
       console.error('Error fetching opportunities:', error);
@@ -47,7 +47,7 @@ const CareerManagement = () => {
   const fetchApplications = async () => {
     try {
       const response = await careerApplicationService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setApplications(response.data || []);
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -71,7 +71,7 @@ const CareerManagement = () => {
 
       if (editingOpportunity?.id) {
         const response = await careerService.update(editingOpportunity.id, opportunityData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         setOpportunities(prev => prev.map(o => 
           o.id === editingOpportunity.id ? { ...o, ...opportunityData } : o
@@ -83,7 +83,7 @@ const CareerManagement = () => {
         });
       } else {
         const response = await careerService.create(opportunityData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         setOpportunities(prev => [response.data, ...prev]);
         
@@ -110,7 +110,7 @@ const CareerManagement = () => {
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
       const response = await careerService.update(id, { is_published: isPublished });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setOpportunities(prev => prev.map(opportunity => 
         opportunity.id === id ? { ...opportunity, is_published: isPublished } : opportunity
@@ -133,7 +133,7 @@ const CareerManagement = () => {
   const updateApplicationStatus = async (id: string, status: string) => {
     try {
       const response = await careerApplicationService.update(id, { status });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setApplications(prev => prev.map(app => 
         app.id === id ? { ...app, status } : app

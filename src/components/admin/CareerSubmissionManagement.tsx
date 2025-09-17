@@ -47,7 +47,7 @@ const CareerSubmissionManagement = ({ userRole }: { userRole: string }) => {
   const fetchSubmissions = async () => {
     try {
       const res = await careerSubmissionService.getAll();
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       setSubmissions((res.data as Submission[]) || []);
     } catch (e) {
       console.error(e);
@@ -74,7 +74,7 @@ const CareerSubmissionManagement = ({ userRole }: { userRole: string }) => {
   const updateStatus = async (id: string, application_status: Submission['application_status']) => {
     try {
       const res = await careerSubmissionService.update(id, { application_status });
-      if (res.error) throw new Error(res.error);
+      if (res.error) {throw new Error(res.error)};
       setSubmissions(prev => prev.map(s => s.id === id ? { ...s, application_status } : s));
       toast({ title: 'Success', description: `Status updated to ${application_status}` });
     } catch (e) {

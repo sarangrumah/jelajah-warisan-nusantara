@@ -17,7 +17,7 @@ const ProfileSection = () => {
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">
+          <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
@@ -31,14 +31,13 @@ const ProfileSection = () => {
               Visi & Misi Kami
             </h3> */}
             
-            <div className="space-y-4 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                 <p className="text-muted-foreground">
                   {t('profile.visionText')}
                 </p>
               </div>
-              
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                 <ul className="space-y-2 text-muted-foreground">
@@ -52,7 +51,7 @@ const ProfileSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center scroll-reveal">
+        {/* <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               {t('profile.callToAction')}
@@ -66,7 +65,7 @@ const ProfileSection = () => {
               </button>
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

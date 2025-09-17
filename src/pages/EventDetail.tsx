@@ -240,10 +240,10 @@ const EventDetail = () => {
                         <span className="text-sm">{event.contact.email}</span>
                       </div>
                     </div>
-                    <button 
+                    {/* <button 
                       className="bg-gradient-to-r w-full from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
                       Beli Tiket
-                    </button>
+                    </button> */}
                   </CardContent>
                 </Card>
 

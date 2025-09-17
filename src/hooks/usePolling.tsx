@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { setGlobalLoading } from "@/components/LoadingContext";
 
 interface UsePollingOptions {
   interval?: number; // in milliseconds
@@ -17,6 +18,7 @@ export function usePolling<T>(
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetch = useCallback(async () => {
+    setGlobalLoading(true);
     try {
       setError(null);
       const response = await fetchFn();
@@ -31,6 +33,7 @@ export function usePolling<T>(
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
+      setGlobalLoading(false);
     }
   }, [fetchFn]);
 

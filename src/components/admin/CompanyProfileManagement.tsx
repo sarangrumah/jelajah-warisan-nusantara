@@ -480,11 +480,10 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
     fetchProfiles();
   }, []);
 
-
   const fetchProfiles = async () => {
     try {
       const response = await contentService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       // Filter company profiles on the client side for now
       const companyProfiles = (response.data as Company[]|| []);
       setProfiles(companyProfiles);
@@ -533,7 +532,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
       console.log("ini form datanya", formData)
       if (editingProfile?.id) {
         response = await contentService.update(editingProfile.id, formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
         setProfiles(prev => 
           prev.map(profile => 
@@ -544,7 +543,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
         );
       } else {
         response = await contentService.create(formData);
-        if (response.error) throw new Error(response.error);
+        if (response.error) {throw new Error(response.error)};
         
        setProfiles(prev => [{ ...response.data, updated_at: new Date().toISOString() }, ...prev]);
       }
@@ -574,7 +573,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
       const response = await contentService.update(id, { is_published: isPublished });
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       
       setProfiles(prev => prev.map(profile => 
         profile.id === id ? { ...profile, is_published: isPublished } : profile
@@ -593,7 +592,6 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
       });
     }
   };
-
 
   if (loading) {
     return (
@@ -711,7 +709,6 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div> : <div></div>}
-
 
                 </div>
               </CardHeader>

@@ -29,47 +29,60 @@ import LayananKonservasi from "./pages/LayananKonservasi";
 import Peraturan from "./pages/Peraturan";
 import MemoryOfWorld from "./pages/MemoryOfWorld";
 
+import { useLoading } from "@/components/LoadingContext";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+import FloatingButtons from "@/components/FloatingButtons";
+
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/beranda" element={<Beranda />} />
-          <Route path="/agenda" element={<Agenda />} />
-          <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
-          <Route path="/tentang-kami" element={<TentangKami />} />
-          {/* <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} /> */}
-          <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
-          <Route path="/media-publikasi" element={<MediaPublikasi />} />
-          <Route path="/hubungi-kami" element={<HubungiKami />} />
-          <Route path="/career" element={<Career />} />
-          <Route path="/ppid" element={<PPID />} />
-          <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
-          <Route path="/peraturan" element={<Peraturan />} />
-          <Route path="/museums/:type?" element={<Museum />} />
-          <Route path="/museum/:id" element={<MuseumDetail />} />
-          <Route path="/heritage" element={<Heritage />} />
-          <Route path="/heritage/:id" element={<HeritageDetail />} />
-          <Route path="/collection" element={<Collection />} />
-          <Route path="/collection/:id" element={<CollectionDetail />} />
-          <Route path="/mow" element={<MemoryOfWorld />} />
-          <Route path="/sites" element={<NotFound />} />
-          <Route path="/sites/:id" element={<NotFound />} />
-          <Route path="/event/:id" element={<EventDetail />} />
-          <Route path="/news/:id" element={<NewsDetail />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const { loading } = useLoading();
+
+  return (
+    <>
+      {loading && <LoadingSpinner />}
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/beranda" element={<Beranda />} />
+              <Route path="/agenda" element={<Agenda />} />
+              <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
+              <Route path="/tentang-kami" element={<TentangKami />} />
+              {/* <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} /> */}
+              <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
+              <Route path="/media-publikasi" element={<MediaPublikasi />} />
+              <Route path="/hubungi-kami" element={<HubungiKami />} />
+              <Route path="/career" element={<Career />} />
+              <Route path="/ppid" element={<PPID />} />
+              <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
+              <Route path="/peraturan" element={<Peraturan />} />
+              <Route path="/museums/:type?" element={<Museum />} />
+              <Route path="/museum/:id" element={<MuseumDetail />} />
+              <Route path="/heritage" element={<Heritage />} />
+              <Route path="/heritage/:id" element={<HeritageDetail />} />
+              <Route path="/collection" element={<Collection />} />
+              <Route path="/collection/:id" element={<CollectionDetail />} />
+              <Route path="/mow" element={<MemoryOfWorld />} />
+              <Route path="/sites" element={<NotFound />} />
+              <Route path="/sites/:id" element={<NotFound />} />
+              <Route path="/event/:id" element={<EventDetail />} />
+              <Route path="/news/:id" element={<NewsDetail />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+      <FloatingButtons />
+    </>
+  );
+};
 
 export default App;

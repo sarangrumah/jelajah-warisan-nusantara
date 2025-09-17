@@ -32,7 +32,8 @@ const ensureUniqueFilename = (dir: string, desired: string) => {
 
 // Ensure upload directories exist
 // Use an absolute path relative to this file for reliability
-const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../uploads');
+// Store uploads under backend/uploads (not under src) to avoid Vite HMR
+const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../uploads');
 const bucketsToCreate = ['documents', 'cv-uploads', 'transcripts', 'cover-letters', 'images'];
 
 bucketsToCreate.forEach(bucket => {
@@ -82,48 +83,19 @@ const uploadPDF = createMulterConfig('documents', pdfFileFilter, 10 * 1024 * 102
 const uploadCV = createMulterConfig('cv-uploads', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadTranscript = createMulterConfig('transcripts', pdfFileFilter, 5 * 1024 * 1024); // 5MB
 const uploadCoverLetter = createMulterConfig('cover-letters', pdfFileFilter, 5 * 1024 * 1024); // 5MB
-// Resolve frontend hero-sections path: always under project root src/assets/hero-sections
-// Works from both dev (backend/src/...) and prod (backend/dist/...)
-const resolveHeroSectionsPath = () => {
-  // Go up three levels from backend/*/routes to project root, then to src/assets/hero-sections
-  const target = path.resolve(__dirname, '../../../src/assets/hero-sections');
-  if (!fs.existsSync(target)) {
-    fs.mkdirSync(target, { recursive: true });
-  }
-  return target;
-};
-
-// Dedicated multer for hero images into frontend assets
-const uploadHeroImage = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      const heroPath = resolveHeroSectionsPath();
-      cb(null, heroPath);
-    },
-    filename: (req, file, cb) => {
-      try {
-        const heroPath = resolveHeroSectionsPath();
-        const finalName = ensureUniqueFilename(heroPath, file.originalname);
-        cb(null, finalName);
-      } catch (e) {
-        // fallback to uuid if anything goes wrong
-        const fallback = `${uuidv4()}${path.extname(file.originalname)}`;
-        cb(null, fallback);
-      }
-    }
-  }),
-  fileFilter: imageFileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
+// Helper to ensure hero-sections bucket lives under backend uploads
+const heroSectionsPath = path.join(uploadDir, 'hero-sections');
+if (!fs.existsSync(heroSectionsPath)) {
+  fs.mkdirSync(heroSectionsPath, { recursive: true });
+}
 
 // Generic upload endpoint that handles different buckets
 const uploadMulter = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
       const bucket = req.body.bucket || 'images';
-      // Special-case: hero-sections should go into frontend assets so it can be served under /assets
+      // Special-case: hero-sections now stored under backend uploads, not src/assets
       if (bucket === 'hero-sections') {
-        const heroSectionsPath = resolveHeroSectionsPath();
         return cb(null, heroSectionsPath);
       }
 
@@ -140,8 +112,7 @@ const uploadMulter = multer({
       const bucket = req.body.bucket || 'images';
       try {
         if (bucket === 'hero-sections') {
-          const dir = resolveHeroSectionsPath();
-          const finalName = ensureUniqueFilename(dir, file.originalname);
+          const finalName = ensureUniqueFilename(heroSectionsPath, file.originalname);
           return cb(null, finalName);
         }
         // default behavior for other buckets: keep original sanitized + uniqueness in their bucket dir
@@ -168,8 +139,8 @@ const uploadMulter = multer({
         cb(null, false);
       }
     } else {
-      // Image files for other buckets
-      if (file.mimetype.startsWith('image/')) {
+      // Allow image and video files for general buckets
+      if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
         cb(null, true);
       } else {
         cb(null, false);
@@ -184,14 +155,21 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  
+
   const bucket = req.body.bucket || 'images';
-  // Construct public URL based on bucket
-  const fileUrl = bucket === 'hero-sections'
-    ? `../src/assets/hero-sections/${req.file.filename}`
-    : `/uploads/${bucket}/${req.file.filename}`;
-  const relativeUrl = fileUrl.startsWith('/') ? `..${fileUrl}` : `../${fileUrl}`;
-  
+
+  // If UPLOAD_PATH points to src/assets, return /assets/images/filename.jpg
+  let fileUrl;
+  if (
+    process.env.UPLOAD_PATH &&
+    process.env.UPLOAD_PATH.replace(/\\/g, '/').includes('src/assets')
+  ) {
+    fileUrl = `/assets/${bucket}/${req.file.filename}`;
+  } else {
+    fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  }
+  const relativeUrl = `..${fileUrl}`;
+
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -278,14 +256,21 @@ router.post('/cover-letters', uploadCoverLetter.single('file'), (req, res) => {
   });
 });
 
-router.post('/images', authenticateToken, uploadHeroImage.single('file'), (req, res) => {
+// Kept for backward compatibility; now also writes to backend uploads/hero-sections
+router.post('/images', authenticateToken, multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, heroSectionsPath),
+    filename: (req, file, cb) => cb(null, ensureUniqueFilename(heroSectionsPath, file.originalname))
+  }),
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+}).single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  // Return the path relative to frontend src/assets/hero-sections
-  const fileUrl = `../src/assets/hero-sections/${req.file.filename}`;
-  const relativeUrl = ``;
+  const fileUrl = `/uploads/hero-sections/${req.file.filename}`;
+  const relativeUrl = `..${fileUrl}`;
   res.json({
     message: 'Image uploaded successfully',
     file: {

@@ -43,7 +43,7 @@ const ContentManagement = () => {
   const fetchContentSections = async () => {
     try {
       const response = await contentService.getAll();
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
       setSections((response.data as ContentSection[]) || []);
     } catch (error) {
       console.error('Error fetching content sections:', error);
@@ -61,7 +61,7 @@ const ContentManagement = () => {
     setSaving(sectionId);
     try {
       const response = await contentService.update(sectionId, updates);
-      if (response.error) throw new Error(response.error);
+      if (response.error) {throw new Error(response.error)};
 
       setSections(prev => 
         prev.map(section => 

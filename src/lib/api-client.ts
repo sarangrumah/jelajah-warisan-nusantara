@@ -1,8 +1,10 @@
+import { setGlobalLoading } from "@/components/LoadingContext";
+
 // API Client for backend integration
 export interface ApiResponse<T = any> {
-  data?: T;
-  error?: string;
-  message?: string;
+ data?: T;
+ error?: string;
+ message?: string;
 }
 
 export interface User {
@@ -22,7 +24,7 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : 'http://localhost:3001';
+    this.baseUrl = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : 'http://localhost:3000';
     this.token = localStorage.getItem('auth_token');
   }
 
@@ -42,6 +44,7 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    setGlobalLoading(true);
     try {
       console.log('FETCH URL:', `${this.baseUrl}${endpoint}`);
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -51,16 +54,18 @@ class ApiClient {
           ...options.headers,
         },
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         return { error: data.error || data.message || 'An error occurred' };
       }
-
+  
       return { data };
     } catch (error) {
       return { error: 'Network error occurred ' + error };
+    } finally {
+      setGlobalLoading(false);
     }
   }
 
@@ -156,6 +161,7 @@ class ApiClient {
     formData.append('bucket', bucket);
     formData.append('file', file);
 
+    setGlobalLoading(true);
     try {
       const response = await fetch(`${this.baseUrl}/api/upload`, {
         method: 'POST',
@@ -164,16 +170,18 @@ class ApiClient {
         },
         body: formData,
       });
-
+  
       const responseData = await response.json();
-
+  
       if (!response.ok) {
         return { error: responseData.error || 'Upload failed' };
       }
-
+  
       return { data: responseData.file };
     } catch (error) {
-      return { error: 'Upload failed'+ error };
+      return { error: 'Upload failed'+error };
+    } finally {
+      setGlobalLoading(false);
     }
   }
 }

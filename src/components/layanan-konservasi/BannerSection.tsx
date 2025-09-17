@@ -1,8 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect } from 'react'
-import berita1 from '@/assets/conservation/berita1.jpg'
-import berita2 from '@/assets/conservation/berita2.jpg'
-import berita3 from '@/assets/conservation/berita3.jpeg'
+const getImageUrl = (filename: string) => `/assets/conservation/${filename}`;
 
 const BannerSection = () => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -12,17 +10,17 @@ const BannerSection = () => {
     {
       title: 'Laboratorium Uji Sampel',
       subtitle: 'Museum & Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
-      image: berita1,
+      image: getImageUrl('berita1.jpg'),
     },
     {
       title: 'Penyewaan Alat',
       subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
-      image: berita3,
+      image: getImageUrl('berita3.jpeg'),
     },
     {
       title: 'Edukasi',
       subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
-      image: berita2,
+      image: getImageUrl('berita2.jpg'),
     }
   ]
 
@@ -70,9 +68,17 @@ const BannerSection = () => {
             }`}
           >
             <img
-              src={ slide.image }
+              src={slide.image}
               alt={slide.title}
               className="w-full h-full object-cover parallax"
+              onLoad={() => {
+                console.log('Image loaded:', slide.image);
+                setIsLoading(false);
+              }}
+              onError={() => {
+                console.error('Image failed to load:', slide.image);
+                setIsLoading(false);
+              }}
             />
             <div className="absolute inset-0 overlay-gradient" />
           </div>

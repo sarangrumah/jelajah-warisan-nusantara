@@ -8,19 +8,24 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+import { setGlobalLoading } from "@/components/LoadingContext";
+
 const Sites = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-
+ 
   const getCollection = async () => {
+    setGlobalLoading(true);
     try {
-      const response = await fetch('https://localhost:3001/api/collections');
+      const response = await fetch('https://localhost:3000/api/collections');
       const data = await response.json();
       setCollections(data);
     } catch (error) {
       console.error('Error fetching collections:', error);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
