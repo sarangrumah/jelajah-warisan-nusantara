@@ -35,7 +35,6 @@ const Agenda = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      {/* <AgendaBanner /> */}
       <AgendaList />
       <Footer />
       <FloatingButtons />

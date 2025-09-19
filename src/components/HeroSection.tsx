@@ -19,6 +19,7 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
+
 const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
 
 function getImageOrVideoUrl(p: string) {
@@ -36,6 +37,7 @@ function getImageOrVideoUrl(p: string) {
     return `/assets/images/${p}`;
   }
   return p;
+//>>>>>>> main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
@@ -106,6 +108,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [slides, setSlides] = useState([]);
   // const [videoList, setVideoList] = useState([]);
   // const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   const [types, setTypes] = useState([]);
 
   // const handleVideoEnded = () => {
@@ -338,7 +341,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                 // key={currentVideoIndex}
                 // src={getImageUrl(videoList[currentVideoIndex].image)}
                 // onEnded={handleVideoEnded} controls autoPlay className="w-full"
-                 />
+
               </div>
             </div>
           </div>

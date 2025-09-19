@@ -290,14 +290,10 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            {userRole === 'admin' ? (
-              <Button onClick={() => setEditingItem(emptySOP)}>
-                <Plus className="w-4 h-4 mr-2" />
+            {userRole !== "approver" && userRole !== "viewer" ?<Button onClick={() => setEditingItem(emptySOP)}>
+              <Plus className="w-4 h-4 mr-2" />
                 Add SOP
-              </Button>
-            ) : (
-              <></>
-            )}
+            </Button> : <></> }
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
