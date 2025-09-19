@@ -99,13 +99,18 @@ const MemoryOfWorld = () => {
               <SelectValue placeholder={t('Filter by category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filter.collection.categoryAll')}</SelectItem>
-              <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
+              {/* <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
               <SelectItem value="sculpture">{t('filter.collection.categorySculpture')}</SelectItem>
               <SelectItem value="manuscript">{t('filter.collection.categoryManuscript')}</SelectItem>
               <SelectItem value="textile">{t('filter.collection.categoryTextile')}</SelectItem>
-              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>
-              <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem>
+              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>*/}
+              <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
+              <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
+              <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>
+              <SelectItem value="history">{t('filter.collection.categoryHistory')}</SelectItem>
+              <SelectItem value="numismatic">{t('filter.collection.categoryNumismatic')}</SelectItem>
+              <SelectItem value="prehistorical">{t('filter.collection.categoryPreHistorical')}</SelectItem>
+              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
