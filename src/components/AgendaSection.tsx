@@ -44,6 +44,45 @@ const AgendaSection = () => {
   const [activeCategory, setActiveCategory] = useState('semua');
   const [events, setEvents] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Accessibility: Announce slide changes
+  const totalSlides = (
+    activeCategory === 'semua'
+      ? events.slice(0, 6)
+      : events.filter(event => event.category === activeCategory).slice(0, 6)
+  ).length;
+
+  // Auto-slide logic
+  useEffect(() => {
+    if (!carouselApi || isPaused) return;
+    const interval = setInterval(() => {
+      if (carouselApi) {
+        carouselApi.scrollNext();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi, isPaused, activeCategory, events]);
+
+  // Update current index for live region
+  useEffect(() => {
+    if (!carouselApi) return;
+    const onSelect = () => {
+      setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
+    };
+    carouselApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      carouselApi.off('select', onSelect);
+    };
+  }, [carouselApi, activeCategory, events]);
+
+  // Pause on hover/focus, resume on mouse leave/blur
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+  const handleFocus = () => setIsPaused(true);
+  const handleBlur = () => setIsPaused(false);
 
   // Diagnostic log for Embla API
   useEffect(() => {
@@ -122,18 +161,25 @@ const AgendaSection = () => {
 
         {/* Events Carousel */}
         <div className="relative mb-12 scroll-reveal">
-          <Carousel setApi={setCarouselApi}>
+          <Carousel
+            setApi={setCarouselApi}
+            aria-label="Agenda Events Carousel"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          >
             <CarouselPrevious
-              className="h-16 w-16 text-3xl"
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary"
               size="icon"
-              // eslint-disable-next-line no-console
-              onClick={() => { console.log('[AgendaSection] Prev clicked'); carouselApi?.scrollPrev(); }}
+              aria-label="Previous slide"
+              onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
             />
             <CarouselNext
-              className="h-16 w-16 text-3xl"
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary"
               size="icon"
-              // eslint-disable-next-line no-console
-              onClick={() => { console.log('[AgendaSection] Next clicked'); carouselApi?.scrollNext(); }}
+              aria-label="Next slide"
+              onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
             />
             <CarouselContent>
               {filteredEvents.map((event, index) => (
@@ -141,6 +187,7 @@ const AgendaSection = () => {
                   key={event.id}
                   className="md:basis-1/2 lg:basis-1/3"
                   style={{ animationDelay: `${index * 0.1}s` }}
+                  aria-label={`Slide ${index + 1} of ${filteredEvents.length}`}
                 >
                   <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
                     {/* Event Image */}
@@ -197,6 +244,24 @@ const AgendaSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+            {/* Pause/Resume Button */}
+            <div className="absolute right-4 bottom-4 z-10">
+              <Button
+                onClick={() => setIsPaused((p) => !p)}
+                aria-pressed={isPaused}
+                aria-label={isPaused ? "Resume auto-slide" : "Pause auto-slide"}
+                className="bg-primary text-primary-foreground px-4 py-2 rounded focus:ring-2 focus:ring-primary"
+                tabIndex={0}
+              >
+                {isPaused ? "Resume" : "Pause"}
+              </Button>
+            </div>
+            {/* Live region for screen readers */}
+            <div className="sr-only" aria-live="polite" aria-atomic="true">
+              {filteredEvents[currentIndex]
+                ? `Showing slide ${currentIndex + 1} of ${filteredEvents.length}: ${filteredEvents[currentIndex].title}`
+                : ""}
+            </div>
           </Carousel>
         </div>
 
