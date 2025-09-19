@@ -473,17 +473,30 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           {console.log('[Banner Preview] VITE_API_URL:', import.meta.env.VITE_API_URL, 'banner.image:', banner.image)}
-                          <img
-                            src={
-                              banner.image?.startsWith('/')
-                                ? banner.image
-                                : banner.image?.startsWith('http')
-                                  ? banner.image
-                                  : `/uploads/${banner.image}`
+                          {(() => {
+                            let imgUrl = '';
+                            if (
+                              banner.image?.startsWith('/') ||
+                              banner.image?.startsWith('http') ||
+                              banner.image?.startsWith('../src/assets/')
+                            ) {
+                              imgUrl = banner.image;
+                            } else {
+                              imgUrl = `/uploads/images/${banner.image}`;
                             }
-                            alt="Banner image"
-                            className="w-full h-auto rounded-md"
-                          />
+                            return (
+                              <div>
+                                <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
+                                  Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
+                                </div>
+                                <img
+                                  src={imgUrl}
+                                  alt="Banner image"
+                                  className="w-full h-auto rounded-md"
+                                />
+                              </div>
+                            );
+                          })()}
                         </DialogContent>
                       </Dialog>
                     ) : null}
