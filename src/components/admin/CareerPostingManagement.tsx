@@ -173,7 +173,7 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
 
       <div className="flex items-center space-x-2">
         <Switch id="is_active" checked={!!formData.is_active} onCheckedChange={(checked) => setFormData(p => ({...p, is_active: checked}))} />
-        <Label htmlFor="is_active">Is Active</Label>
+        <Label htmlFor="is_active">Publish</Label>
       </div>
 
       <div className="flex justify-end space-x-2">
@@ -328,7 +328,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
       const res = await careerMgmtService.update(id, { is_active: isActive });
       if (res.error) {throw new Error(res.error)};
       setItems(prev => prev.map(i => i.id === id ? { ...i, is_active: isActive } : i));
-      toast({ title: 'Success', description: `Item ${isActive ? 'activated' : 'deactivated'}` });
+      toast({ title: 'Success', description: `Posting ${isActive ? 'published' : 'draft'}` });
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
@@ -440,7 +440,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                     <CardTitle className="flex items-center gap-2">
                       {item.title}
                       <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                        {item.is_active ? 'Active' : 'Inactive'}
+                        {item.is_active ? 'Published' : 'Draft'}
                       </Badge>
                       <Badge variant={item.is_approved ? 'success' : 'secondary'}>
                         {item.is_approved ? 'Approved' : 'Pending'}
@@ -450,9 +450,9 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                   {userRole === 'admin' || userRole === 'super-admin' ? (
                     <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
+                      {/* <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
                         <UserPlus className="w-4 h-4" />
-                      </Button>
+                      </Button> */}
                       <div className="flex items-center space-x-2">
                         <Switch
                           id="is_active"

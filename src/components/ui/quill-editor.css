@@ -1,0 +1,33 @@
+.quill-editor-container .ql-editor {
+  color: #ffffff;
+}
+
+.quill-editor-container .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.quill-editor-container .ql-toolbar .ql-stroke {
+  stroke: rgba(255, 255, 255, 0.85);
+}
+
+.quill-editor-container .ql-toolbar .ql-stroke-miter {
+  stroke: rgba(255, 255, 255, 0.85);
+}
+
+.quill-editor-container .ql-toolbar .ql-fill {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.quill-editor-container .ql-toolbar .ql-picker {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.quill-editor-container .ql-toolbar button:hover .ql-stroke,
+.quill-editor-container .ql-toolbar button:hover .ql-stroke-miter,
+.quill-editor-container .ql-toolbar button:hover .ql-fill,
+.quill-editor-container .ql-toolbar .ql-picker-label:hover,
+.quill-editor-container .ql-toolbar .ql-picker-options {
+  color: #ffffff;
+  stroke: #ffffff;
+  fill: #ffffff;
+}
