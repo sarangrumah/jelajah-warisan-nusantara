@@ -267,73 +267,34 @@ const PPIDSection = () => {
             </Card>
           </div>
         </div>
+
         <div className="text-center scroll-reveal">
-
-          <div className="scroll-reveal">
-            {/* <Card className="heritage-glow mb-6">
-              <CardHeader>
-                <CardTitle className="text-2xl">Dokumen & Formulir</CardTitle>
-                <p className="text-muted-foreground">
-                  Unduh dokumen yang diperlukan untuk permohonan informasi
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {documents.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText size={20} className="text-primary" />
-                        <div>
-                          <h4 className="font-medium text-sm">{doc.title}</h4>
-                          <p className="text-xs text-muted-foreground">{doc.type} • {doc.size}</p>
-                        </div>
-                      </div>
-                      <Button size="sm" variant="outline">
-                        <Download size={14} />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                
-                <Button className="w-full mt-4">
-                  <FileText size={16} className="mr-2" />
-                  Ajukan Permohonan Informasi
-                </Button>
-              </CardContent>
-            </Card> */}
-
-            <Card className="heritage-glow">
-              <CardHeader>
-                <CardTitle className="text-xl">Kontak PPID</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Phone size={20} className="text-primary" />
-                    <div>
-                      <p className="font-medium">Telepon</p>
-                      <p className="text-sm text-muted-foreground">+62 21 3811551 ext. 205</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Mail size={20} className="text-primary" />
-                    <div>
-                      <p className="font-medium">Email</p>
-                      <p className="text-sm text-muted-foreground">ppid@museumcagarbudaya.go.id</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Clock size={20} className="text-primary" />
-                    <div>
-                      <p className="font-medium">Jam Layanan</p>
-                      <p className="text-sm text-muted-foreground">Senin - Jumat: 08:00 - 16:00 WIB</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Kontak PPID
+            </h3>
+            {/* <p className="text-muted-foreground mb-6">
+              Kami berkomitmen untuk memberikan pelayanan informasi publik yang 
+              cepat, akurat, dan transparan kepada seluruh masyarakat Indonesia 
+              sesuai dengan prinsip keterbukaan informasi publik.
+            </p> */}
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 21 3811551 ext. 205</div>
+                <div className="text-muted-foreground">Telepon</div>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">ppid@museumcagarbudaya.go.id</div>
+                <div className="text-muted-foreground">eMail</div>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">Senin - Jumat: 08:00 - 16:00 WIB</div>
+                <div className="text-muted-foreground">Jam Layanan</div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
         <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
