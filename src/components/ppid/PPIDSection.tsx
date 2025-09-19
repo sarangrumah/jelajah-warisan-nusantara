@@ -280,11 +280,11 @@ const PPIDSection = () => {
             </p> */}
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 21 3811551 ext. 205</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 812 9595 3929</div>
                 <div className="text-muted-foreground">Telepon</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">ppid@museumcagarbudaya.go.id</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">museumcb@kemenbud.go.id</div>
                 <div className="text-muted-foreground">Email</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">

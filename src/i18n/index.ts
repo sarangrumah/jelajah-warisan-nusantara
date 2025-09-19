@@ -942,6 +942,7 @@ const resources = {
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
           categoryPreHistorical: "PraSejarah",
+          categoryGeographic: "Geographic",
         },
         heritage: {
           search: "Cari Situs Warisan...",
@@ -965,6 +966,7 @@ const resources = {
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
           categoryPreHistorical: "PraSejarah",
+          categoryGeographic: "Geographic",
         },
       },
       mow: {
