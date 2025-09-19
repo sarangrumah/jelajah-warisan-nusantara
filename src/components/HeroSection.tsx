@@ -325,7 +325,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
       )}
 
       {/* Video Modal */}
-      {isVideoPlaying && (
+      {/*isVideoPlaying && (
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex items-center justify-center">
           <div className="relative max-w-4xl w-full mx-4">
             <button
@@ -344,7 +344,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
             </div>
           </div>
         </div>
-      )}
+      )*/}
     {/* (Button removed: snap scroll is now automatic) */}
     </section>
   );
