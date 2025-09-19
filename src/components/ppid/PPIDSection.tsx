@@ -235,7 +235,7 @@ const PPIDSection = () => {
               </CardContent>
             </Card> */}
 
-            <Card className="heritage-glow">
+            {/* <Card className="heritage-glow">
               <CardHeader>
                 <CardTitle className="text-xl">Kontak PPID</CardTitle>
               </CardHeader>
@@ -264,7 +264,7 @@ const PPIDSection = () => {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
 
