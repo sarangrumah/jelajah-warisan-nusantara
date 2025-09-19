@@ -477,9 +477,9 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                             src={
                               banner.image?.startsWith('/')
                                 ? banner.image
-                                : import.meta.env.VITE_API_URL
-                                  ? `${import.meta.env.VITE_API_URL}/${banner.image}`
-                                  : banner.image
+                                : banner.image?.startsWith('http')
+                                  ? banner.image
+                                  : `/uploads/${banner.image}`
                             }
                             alt="Banner image"
                             className="w-full h-auto rounded-md"
