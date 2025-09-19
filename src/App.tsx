@@ -27,6 +27,7 @@ import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
 // import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";
 import Peraturan from "./pages/Peraturan";
+import MemoryOfWorld from "./pages/MemoryOfWorld";
 
 import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";

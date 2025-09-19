@@ -12,7 +12,8 @@ export default defineConfig({
     '**/*.png',
     '**/*.gif',
     '**/*.svg',
-    '**/*.webp'
+    '**/*.webp',
+    '**/*.tif'
   ],
   // ...other config options if needed
   resolve: {

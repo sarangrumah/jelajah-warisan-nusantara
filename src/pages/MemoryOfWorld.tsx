@@ -1,18 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Search, Filter, Calendar, Building } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { defaultCollections } from '@/../database/default-data';
+import { Filter, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
+import { defaultMemories } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
-const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
+interface Memory {
+  type: string;
+}
 
+const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
 function getCollectionImageUrl(filename: string) {
   if (
     typeof filename === 'string' &&
@@ -26,37 +29,36 @@ function getCollectionImageUrl(filename: string) {
   const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as any).default : filename;
 }
-
-const Collection = () => {
+const MemoryOfWorld = () => {
   const { t } = useTranslation();
-  const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [memories, setMemories] = useState([]);
   const [filterCategory, setFilterCategory] = useState('all');
   const { pathname } = useLocation();
-    
+      
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  const fetchCollections = async () => {
+
+  const fetchMemories = async () => {
     try {
       const response = await collectionService.getAll();
-
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching collections:', response.error);
-        setCollections(defaultCollections);
+      const filteredResponse = (response.data as Memory[]).filter(item => item.type === 'mow');
+      if(response.error || filteredResponse.length === 0) {
+        console.error('Error fetching memories:', response.error);
+        setMemories(defaultMemories);
       } else {
-        setCollections(response.data);
+        setMemories(filteredResponse);
       }
     } catch (error) {
-      console.error('Error fetching collections:', error);
+      console.error('Error fetching memories:', error);
     }
-  };
-
+  }
   useEffect(() => {
-    fetchCollections();
+    fetchMemories();
   }, []);
 
-  const filteredCollections = collections.filter(item => {
+  const filteredMemories = memories.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
@@ -68,13 +70,13 @@ const Collection = () => {
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative py-20 from-secondary to-secondary/80 flex items-center justify-center">
+      <section className="relative py-20 h-80 bg-gradient-to-r from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {t('collection.title')}
+            {t('mow.title')}
           </h1>
           <p className="text-xl">
-            {t('collection.subtitle')}
+            {t('mow.subtitle')}
           </p>
         </div>
       </section>
@@ -85,7 +87,7 @@ const Collection = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={t('filter.collection.search')}
+              placeholder={t('filter.mow.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -110,10 +112,10 @@ const Collection = () => {
 
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCollections.map((item) => (
+          {filteredMemories.map((item) => (
             <Link key={item.id} to={`/collection/${item.id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <div className="aspect-video overflow-hidden rounded-t-lg">
+                <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
                   <img
                     src={item.image_url ? getCollectionImageUrl(item.image_url.split('/').pop() || item.image_url) : logo}
                     alt={item.title}
@@ -121,36 +123,22 @@ const Collection = () => {
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
-                  <CardDescription>{item.subtitle}</CardDescription>
+                  <CardTitle className="text-lg">
+                    {item.title}
+                  </CardTitle>
+                  <CardDescription>
+                    {item.subtitle}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center">
-                      <Building size={16} className="mr-1" />
-                      {item.museum}
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar size={16} className="mr-1" />
-                      {item.period}
-                    </div>
-                  </div>
-                  {/* <p className="text-sm mt-3">{item.description}</p> */}
-                  <div className="mt-4">
-                    <span className="inline-block px-2 py-1 rounded-full text-xs bg-accent/10 text-accent">
-                      {t(item.category)}
-                    </span>
-                  </div>
-                </CardContent>
               </Card>
             </Link>
           ))}
         </div>
 
-        {filteredCollections.length === 0 && (
+        {filteredMemories.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {t('No collections found. Try adjusting your search or filter.')}
+              {t('No memories found. Try adjusting your search or filter.')}
             </p>
           </div>
         )}
@@ -159,6 +147,6 @@ const Collection = () => {
       <Footer />
     </div>
   );
-};
+}
 
-export default Collection;
+export default MemoryOfWorld

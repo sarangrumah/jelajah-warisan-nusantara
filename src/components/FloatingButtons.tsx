@@ -35,6 +35,7 @@ const FloatingButtons = () => {
           <MessageCircle size={24} className="text-white" />
         </Button>
       </div>
+
     </>
   );
 };

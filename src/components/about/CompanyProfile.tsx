@@ -3,10 +3,25 @@ import { MapPin, Users, Building, Award, Target, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DynamicComponent } from '../dynamic-components';
 import compProfile from '@/assets/museum-interior.jpg'
+import { contentService } from '@/lib/api-services';
+import { useEffect, useState } from 'react';
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
+  const [companies, setCompanies] = useState([]);
+
+  const fetchCompanies = async () => {
+    const response = await contentService.getAll();
+    if (response.error || response.data.length === 0) {
+      console.error('Error fetching companies:', response.error);
+    } 
+    setCompanies(response.data);
+  };
   
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
   const highlights = [
     {
       icon: 'Building',
@@ -36,16 +51,19 @@ const CompanyProfile = () => {
     { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
+  console.log(companies)
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            {t('about.companyProfile.title')}
+            {/* {t('about.companyProfile.title')} */}
+            {companies.length > 0 && companies[0].name}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            {t('about.companyProfile.subtitle')}
+          <p className="text-xl text-muted-foreground max-w-3xlx mx-auto leading-relaxed">
+            {/* {t('about.companyProfile.subtitle')} */}
+            {companies.length > 0 && companies[0].aboutus}
           </p>
         </div>
 
@@ -105,13 +123,15 @@ const CompanyProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Eye className="h-6 w-6 text-primary" />
-                    Visi
+                    {t('profile.vision')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg text-muted-foreground leading-relaxed text-justify">
-                    "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
-                    yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat."
+                    {/* "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
+                    yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat." */}
+                    {/* {t('profile.visionText')} */}
+                    {companies.length > 0 && companies[0].vision}
                   </p>
                 </CardContent>
               </Card>
@@ -120,28 +140,21 @@ const CompanyProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-6 w-6 text-primary" />
-                    Misi
+                    {t('profile.mission')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3 text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Melindungi dan melestarikan cagar budaya serta koleksi museum sebagai warisan bangsa
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Mengembangkan museum sebagai pusat edukasi, penelitian, dan rekreasi budaya
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Meningkatkan kesadaran masyarakat terhadap pentingnya warisan budaya
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Membangun sistem informasi terintegrasi untuk pengelolaan warisan budaya
-                    </li>
-                  </ul>
+                  {/* <ul className="space-y-3 text-muted-foreground">
+                    {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul> */}
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
+                    {companies.length > 0 && companies[0].mission}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -164,54 +177,55 @@ const CompanyProfile = () => {
           ))}
         </div>
       </div>
-              {/* <div className="gap-12 mb-16 mx-auto px-4 pt-6 ">
-                <div className="max-w-4xl mx-auto text-center">
-                  <h2 className="text-3xl font-bold mb-8 text-heritage-gradient">Informasi Kontak</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                      <CardHeader>
-                        <CardTitle>Kantor Pusat</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4 text-left">
-                        <div className="flex items-start gap-3">
-                          <MapPin className="h-5 w-5 text-primary mt-1" />
-                          <div>
-                            <p className="font-medium">Alamat</p>
-                            <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <Building className="h-5 w-5 text-primary mt-1" />
-                          <div>
-                            <p className="font-medium">Gedung</p>
-                            <p className="text-muted-foreground">Gedung E, Kompleks Kemendikbudristek</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
       
-                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                      <CardHeader>
-                        <CardTitle>Kontak</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4 text-left">
-                        <div>
-                          <p className="font-medium">Telepon</p>
-                          <p className="text-muted-foreground">+62 21 5725019</p>
-                        </div>
-                        <div>
-                          <p className="font-medium">Email</p>
-                          <p className="text-muted-foreground">info@kebudayaan.kemdikbud.go.id</p>
-                        </div>
-                        <div>
-                          <p className="font-medium">Website</p>
-                          <p className="text-muted-foreground">www.kebudayaan.kemdikbud.go.id</p>
-                        </div>
-                      </CardContent>
-                    </Card>
+      {/* <div className="gap-12 mb-16 mx-auto px-4 pt-6 ">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-8 text-heritage-gradient">Informasi Kontak</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Kantor Pusat</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-left">
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-5 w-5 text-primary mt-1" />
+                  <div>
+                    <p className="font-medium">Alamat</p>
+                    <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
                   </div>
                 </div>
-              </div> */}
+                <div className="flex items-start gap-3">
+                  <Building className="h-5 w-5 text-primary mt-1" />
+                  <div>
+                    <p className="font-medium">Gedung</p>
+                    <p className="text-muted-foreground">Gedung E, Kompleks Kemendikbudristek</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Kontak</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-left">
+                <div>
+                  <p className="font-medium">Telepon</p>
+                  <p className="text-muted-foreground">+62 21 5725019</p>
+                </div>
+                <div>
+                  <p className="font-medium">Email</p>
+                  <p className="text-muted-foreground">info@kebudayaan.kemdikbud.go.id</p>
+                </div>
+                <div>
+                  <p className="font-medium">Website</p>
+                  <p className="text-muted-foreground">www.kebudayaan.kemdikbud.go.id</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div> */}
     </section>
   );
 };

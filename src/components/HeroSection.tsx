@@ -3,8 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { bannerService } from '@/lib/api-services';
-import { heroVideoService } from '@/lib/api-services';
+import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
@@ -20,6 +19,7 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
+
 const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
 
 function getImageOrVideoUrl(p: string) {
@@ -37,6 +37,7 @@ function getImageOrVideoUrl(p: string) {
     return `/assets/images/${p}`;
   }
   return p;
+//>>>>>>> main
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
@@ -107,6 +108,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [slides, setSlides] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [types, setTypes] = useState([]);
 
   const handleVideoEnded = () => {
     setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
@@ -149,41 +151,52 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
-      if (response.error) {
-        console.log('Error fetching slides:', response.error);
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching slides:', response.error);
         setSlides(mapSlidesWithImageUrl(defaultSlides));
-      }
-      if(response.data.length === 0) {
-        setSlides(defaultSlides);
       } else {
-        setSlides(mapSlidesWithImageUrl(response.data));
-        console.log('[HeroSection] Slides fetched from API:', response.data);
+        const filteredSlides = response.data.filter((slide: any) => (
+          slide.is_active === true 
+          && slide.is_approved === true 
+          && new Date(slide.start_publish_date) <= new Date()
+          && new Date(slide.end_publish_date) >= new Date()
+        ));
+        setSlides(mapSlidesWithImageUrl(filteredSlides));
       }
     } catch (error) {
       console.error('Error fetching slides:', error);
     }
-
   };
 
   useEffect(() => {
     fetchSlides();
   },[]);
 
-  const fetchVideos = async () => {
+  const fetchTypeSites = async () => {
     try {
-      const response = await heroVideoService.getAll();
-      if (response.error) {
-        console.log('Error fetching videos:', response.error)
+      const response = await TypesAndCategoriesSites.getAllTypes();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching types:', response.error);
+      } else {
+        setTypes(response.data);
       }
-      setVideoList(response.data || defaultVideos);
     } catch (error) {
-      console.error('Error fetching videos:', error)
+      console.error('Error fetching museums:', error);
     }
   }
 
   useEffect(() => {
-    fetchVideos();
-  }, []);
+    fetchTypeSites();
+  },[]);
+
+  const linkTo = (slides: string) => {
+    const type = types.find((type) => type.name === slides)?.id;
+    if(slides === 'museum' || slides === 'heritage') {      
+      return `/museums/${type}`;
+    } else {
+      return `/collection`;
+    }
+  }
 
   return (
     <section
@@ -255,7 +268,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               {slides.length > 0 && t(slides[currentSlide].subtitle)}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={currentSlide === 0 ? "/museum" : currentSlide === 1 ? "/collection" : "/heritage"}>
+              <Link to={slides.length > 0 ? linkTo(slides[currentSlide].button_url_1.split('.')[1]) : "/"}>
                 <Button
                   variant="outline"
                   size="lg"
@@ -324,8 +337,8 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
                 <video 
-                key={currentVideoIndex} 
-                src={videoList[currentVideoIndex].video}
+                key={currentVideoIndex}
+                src={getImageUrl(videoList[currentVideoIndex].image)}
                 onEnded={handleVideoEnded} controls autoPlay className="w-full" />
               </div>
             </div>
