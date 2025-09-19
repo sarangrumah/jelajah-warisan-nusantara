@@ -472,7 +472,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
-                          <img src={banner.image} alt="Banner image" className="w-full h-auto rounded-md" />
+                          <img src={`${import.meta.env.VITE_API_URL}/${banner.image}`} alt="Banner image" className="w-full h-auto rounded-md" />
                         </DialogContent>
                       </Dialog>
                     ) : null}

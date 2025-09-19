@@ -20,17 +20,9 @@ export default defineConfig(({ mode }) => {
       base: './',
       host: "::",
       port: DEV_PORT,
-      // Avoid dev reloads when backend writes into hero assets
       watch: {
-        // Ignore any files written by the backend uploader
-        ignored: [
-          '**/src/assets/hero-sections/**',
-          '**/backend/uploads/**',
-          '**/backend/src/uploads/**',
-          '**/uploads/**',
-          path.resolve(__dirname, 'backend/uploads/**/*'),
-          path.resolve(__dirname, 'backend/src/uploads/**/*'),
-        ],
+        // Only ignore heavy system folders so asset buckets trigger reloads
+        ignored: ['**/node_modules/**', '**/.git/**'],
       },
       // Security headers for development
       headers: {

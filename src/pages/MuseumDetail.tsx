@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
+import { mapSlidesWithImageUrl } from '@/components/helper';
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
@@ -52,11 +53,12 @@ const MuseumDetail = () => {
   const fetchMuseums = async () => {
     try {
       const response = await museumService.getAll();
-      if (response.error) {
+      if (response.error || response.data.length === 0) {
         console.error('Error fetching museums:', response.error);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
+      } else {
+        setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
       }
-
-      setMuseums(response.data || defaultMuseums);
     } catch (error) {
       console.error('Error fetching museums:', error);
     }
@@ -65,7 +67,7 @@ const MuseumDetail = () => {
     fetchMuseums();
   }, []);
 
-  const filteredMuseum = museums.filter((m) => m.id.toString() === id);
+  const filteredMuseum = museums.filter((m) => m.id === id);
 
   if (filteredMuseum.length === 0) {
     return (
@@ -79,6 +81,17 @@ const MuseumDetail = () => {
       </div>
     );
   }
+
+  // const parseStringToJSON = (openingHoursString) => {
+  //   try {
+  //     const jsonString = openingHoursString
+  //     .replace(/'/g, '"')
+  //     console.log(jsonString);
+  //     return JSON.parse(jsonString);
+  //   } catch (error) {
+  //     return { days_hours: openingHoursString, error }; // Fallback
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,7 +113,7 @@ const MuseumDetail = () => {
               {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.name}</h1>
-            <p className="text-xl">{museum.subtitle}</p>
+            <p className="text-xl pe-8">{museum.subtitle}</p>
           </div>
         </section>  
         {/* Content */}
@@ -118,22 +131,6 @@ const MuseumDetail = () => {
                   </p>
                 </CardContent>
               </Card>
-
-              {/* <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>{t('Collections & Highlights')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {museum.collections.map((collection, index) => (
-                      <div key={index} className="p-4 border rounded-lg">
-                        <h4 className="font-semibold">{collection}</h4>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card> */}
-
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>{t('museumDetail.facilities')}</CardTitle>
@@ -145,6 +142,11 @@ const MuseumDetail = () => {
                         {facility}
                       </Badge>
                     ))}
+                    {/* {typeof museum.facilities === 'string' && Object.entries(parseStringToJSON(museum.facilities)).map(([key, value]) => (
+                      <Badge key={key} variant="outline" className='p-2'>
+                        {key.charAt(0).toUpperCase() + key.slice(1)+' '}: {(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}
+                      </Badge>
+                    ))} */}
                   </div>
                 </CardContent>
               </Card>
@@ -154,7 +156,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    <GalleryCollection museumName={museum.name} />
+                    <GalleryCollection museum={museum.id} />
                   </div>
                 </CardContent>
               </Card>
@@ -171,7 +173,7 @@ const MuseumDetail = () => {
                     <MapPin className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.location')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.location}</p>
+                      <p className="text-sm text-muted-foreground">{museum.address}</p>
                     </div>
                   </div>
 
@@ -179,7 +181,12 @@ const MuseumDetail = () => {
                     <Clock className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.openingHours')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.openingHours}</p>
+                      <div className="text-sm text-muted-foreground">
+                        {museum.opening_hours.map((openingHour, index) => (
+                          <p key={index}>{`${Object.keys(openingHour)} : ${Object.values(openingHour)}`}</p>
+                        ))}
+                        {/* {parseStringToJSON(museum.opening_hours).days_hours} */}
+                      </div>
                     </div>
                   </div>
 

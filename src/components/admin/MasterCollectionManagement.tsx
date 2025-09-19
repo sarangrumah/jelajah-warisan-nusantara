@@ -279,14 +279,14 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Button onClick={() => { setEditing(emptyCollection); setOpen(true); }}>
           <Plus className="w-4 h-4 mr-2" />
-          Create Collection
+          Add Collection
         </Button>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? 'Edit Collection' : 'Create Collection'}</DialogTitle>
+            <DialogTitle>{editing?.id ? 'Edit Collection' : 'Add Collection'}</DialogTitle>
             <DialogDescription>Fill the collection details</DialogDescription>
           </DialogHeader>
           {editing && (
@@ -313,7 +313,7 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
           <CardContent>
             <Button onClick={() => { setEditing(emptyCollection); setOpen(true); }}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Collection
+              Add Collection
             </Button>
           </CardContent>
         </Card>
