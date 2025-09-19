@@ -156,7 +156,7 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
           label="Featured Image"
           value={formData.image_url}
           onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-          bucket="images"
+          bucket="hero-sections"
         />
         <div className="space-y-2">
           <Label htmlFor="file_url">File URL (for documents)</Label>
@@ -426,10 +426,10 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingMedia ? 'Edit Media Item' : 'Add New Media Item'}
+                {editingMedia.id ? 'Edit Media Item' : 'Add New Media Item'}
               </DialogTitle>
               <DialogDescription>
-                {editingMedia ? 'Update media item information' : 'Create a new news article, publication, or document'}
+                {editingMedia.id ? 'Update media item information' : 'Create a new news article, publication, or document'}
               </DialogDescription>
             </DialogHeader>
             <MediaForm

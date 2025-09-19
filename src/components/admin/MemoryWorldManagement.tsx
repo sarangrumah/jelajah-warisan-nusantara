@@ -237,14 +237,14 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Button onClick={() => { setEditing(emptyItem); setOpen(true); }}>
           <Plus className="w-4 h-4 mr-2" />
-          Create
+          Add Memory of The World
         </Button>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? 'Edit' : 'Create'}</DialogTitle>
+            <DialogTitle>{editing?.id ? 'Edit Memory of The World' : 'Add Memory of The World'}</DialogTitle>
             <DialogDescription>Manage Memory of The World content</DialogDescription>
           </DialogHeader>
           {editing && (

@@ -188,6 +188,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
  
   // This ensures proper state updates
   const handleImageUpload = async (url: string) => {
+    console.log('handleImageUpload received:', url);
     setFormData(prev => ({
       ...prev,
       img_banner: url
@@ -314,18 +315,19 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      {console.log('ImageUpload value (img_banner):', formData.img_banner)}
       <ImageUpload
         label="Main Image"
         value={formData.img_banner}
         onChange={handleImageUpload}
-        bucket="images"
+        bucket="sites"
       />
 
       <GalleryUpload
         label="Gallery images"
         value={formData.images}
         onChange={handleGalleryUpload}
-        bucket="images"
+        bucket="sites"
         maxImages={8}
       />
 
@@ -690,12 +692,12 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           <DialogTrigger asChild>
             {/* <Button onClick={() => setEditingSites(emptySites)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Sites
+              Add Museum
             </Button> */}
             { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingSites(emptySites)}>
                 <Plus className="w-4 h-4 mr-2" />
-                Add Sites
+                Add Museum
               </Button> : 
               <div></div>
             }
@@ -703,7 +705,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingSites.id ? 'Edit Sites' : 'Add New Sites'}
+                {editingSites.id ? 'Edit Museum' : 'Add New Sites'}
               </DialogTitle>
               <DialogDescription>
                 {editingSites.id ? 'Update museum information' : 'Create a new museum or heritage site'}

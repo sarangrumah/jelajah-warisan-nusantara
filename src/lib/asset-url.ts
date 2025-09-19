@@ -5,13 +5,27 @@ export function assetUrl(u?: string): string {
   // already absolute URL
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
 
+  // Always return /assets/ paths as-is (for frontend static assets)
+  if (u.startsWith('/assets/')) return u;
+
   // Normalize legacy '../uploads' to '/uploads'
   if (u.startsWith('../uploads')) u = u.replace(/^\.\./, '');
 
-  // If it points to backend-served uploads, prefix with API base
-  if (u.startsWith('/uploads/')) return `${API_BASE}${u}`;
+  // Special handling for production: always use the real backend domain for /uploads/
+  if (u.startsWith('/uploads/')) {
+    // If running on production domain, force the correct backend URL
+    if (typeof window !== 'undefined' && window.location.hostname === 'museumcagarbudaya.kemenbud.go.id') {
+      return `https://museumcagarbudaya.kemenbud.go.id${u}`;
+    }
+    // Otherwise, use API_BASE if set, or relative
+    if (API_BASE && API_BASE !== '/') {
+      return `${API_BASE}${u}`;
+    } else {
+      return u;
+    }
+  }
 
-  // Keep other app-relative assets as-is
+  // For all other URLs (e.g., static, or relative), return as-is
   return u;
 }
 

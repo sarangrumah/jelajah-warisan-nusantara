@@ -278,13 +278,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           insertData.created_by = req.user.id;
         }
 
-        const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
-        if (approvalSettings?.requiresApproval) {
-          insertData.is_approved = false;
-          if (approvalSettings.autoActivateOnApprove) {
-            insertData.is_active = false;
-          }
-        }
 
         const excludedOnCreate = ['updated_by', 'updated_at'];
         const validFields = fields

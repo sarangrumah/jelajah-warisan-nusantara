@@ -127,14 +127,14 @@
 //           label="Main Image"
 //           value={formData.image_url}
 //           onChange={handleImageUpload}
-//           bucket="images"
+//           bucket="museum"
 //         />
 
 //         <GalleryUpload
 //           label="Gallery Images"
 //           value={formData.gallery_images}
 //           onChange={handleGalleryUpload}
-//           bucket="images"
+//           bucket="museum"
 //           maxImages={8}
 //         />
 

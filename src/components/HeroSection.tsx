@@ -19,38 +19,23 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
-//<<<<<<< update_museum_detail
-//function getImageOrVideoUrl(filename: string) {
 
-//  if (
-//    typeof filename === 'string' && 
-//    (filename.startsWith('http://') || 
- //   filename.startsWith('https://') || 
- //   filename.startsWith('/assets/'))
-//  ) { return filename; }
-// <<<<<<< HEAD
-  //     filename.startsWith('/assets/') ||
-  //     filename.startsWith('/uploads/'))
-  // ) {
-  //   return filename;
-  // }
-  // // Rewrite legacy '/src/assets/...' to '/assets/...'
-  // if (typeof filename === 'string' && filename.startsWith('/src/assets/')) {
-  //   return filename.replace('/src', '');
-  // }
-  // // Fallback: pass through as-is
-  // return filename;
-// =======
-  // // Otherwise, try to resolve using Vite's import
- // const match = Object.entries(heroImages).find(([path]) => path.endsWith(filename));
-  //return match ? (match[1] as any).default : filename;
-// >>>>>>> origin/main
-//=======
+const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
+
 function getImageOrVideoUrl(p: string) {
-  if (typeof p !== 'string' || p.length === 0) return '';
+  if (typeof p !== 'string' || p.length === 0) { return ''; }
   // Resolve uploads to API base; keep /assets local references intact
-  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) return assetUrl(p);
-  if (p.startsWith('/src/assets/')) return p.replace('/src', '');
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) { return assetUrl(p); }
+  if (p.startsWith('/src/assets/')) { return p.replace('/src', ''); }
+  // If it's just a filename, try to resolve from src/assets/images
+  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p) && !p.startsWith('/assets/')) {
+    const match = Object.entries(images).find(([key]) => key.endsWith('/' + p));
+    if (match) {
+      return match[1] as string;
+    }
+    // fallback to previous public assets path for legacy
+    return `/assets/images/${p}`;
+  }
   return p;
 //>>>>>>> main
 }
@@ -241,6 +226,12 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   src={slide.image}
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
+                  onLoad={() => {
+                    console.log('[HeroSection] Image loaded:', slide.image);
+                  }}
+                  onError={() => {
+                    console.error('[HeroSection] Image failed to load:', slide.image);
+                  }}
                 />
               ) : isVideo(slide.asset) ? (
                 <video

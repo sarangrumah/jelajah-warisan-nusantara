@@ -481,11 +481,12 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      {console.log('ImageUpload value (banner_img):', formData.banner_img)}
       <ImageUpload
         label="Banner Image"
         value={formData.banner_img}
         onChange={handleImageUpload}
-        bucket="images"
+        bucket="events"
       /> 
 
       <div className="flex items-center space-x-2">
@@ -743,8 +744,8 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Agenda Management</h2>
-          <p className="text-muted-foreground">Manage Agenda and Content</p>
+          <h2 className="text-2xl font-bold">Event Management</h2>
+          <p className="text-muted-foreground">Manage Event and Content</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>

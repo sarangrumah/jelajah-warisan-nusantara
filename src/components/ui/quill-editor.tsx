@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import './quill-editor.css';
 
 type QuillEditorProps = {
   value: string;
@@ -78,7 +79,7 @@ export default function QuillEditor({
   ];
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full quill-editor-container', className)}>
       <Quill
         theme={theme}
         value={value || ''}
@@ -94,4 +95,3 @@ export default function QuillEditor({
     </div>
   );
 }
-

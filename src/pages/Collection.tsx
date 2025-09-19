@@ -124,7 +124,7 @@ const Collection = () => {
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
-                {/* <CardContent>
+                <CardContent>
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Building size={16} className="mr-1" />
@@ -141,7 +141,7 @@ const Collection = () => {
                       {t(item.category)}
                     </span>
                   </div>
-                </CardContent> */}
+                </CardContent>
               </Card>
             </Link>
           ))}
