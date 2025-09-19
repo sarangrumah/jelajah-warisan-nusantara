@@ -285,7 +285,7 @@ const PPIDSection = () => {
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="font-bold text-heritage-gradient text-2xl mb-2">ppid@museumcagarbudaya.go.id</div>
-                <div className="text-muted-foreground">eMail</div>
+                <div className="text-muted-foreground">Email</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="font-bold text-heritage-gradient text-2xl mb-2">Senin - Jumat: 08:00 - 16:00 WIB</div>
@@ -294,7 +294,6 @@ const PPIDSection = () => {
             </div>
           </div>
         </div>
-      </div>
 
         <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
