@@ -308,7 +308,7 @@ const CareerManagement = () => {
               Add Opportunity
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingOpportunity ? 'Edit Career Opportunity' : 'Add New Career Opportunity'}
