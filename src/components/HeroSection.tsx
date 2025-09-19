@@ -20,7 +20,7 @@ function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
 
-const images = import.meta.glob('/src/assets/images/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
+const images = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
 
 function getImageOrVideoUrl(p: string) {
   if (typeof p !== 'string' || p.length === 0) { return ''; }
