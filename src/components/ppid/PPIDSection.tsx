@@ -134,10 +134,10 @@ const PPIDSection = () => {
           <div className="scroll-reveal">
             <Card className="heritage-glow">
               <CardHeader>
-                <CardTitle className="text-2xl">Prosedur Permohonan Informasi</CardTitle>
-                <p className="text-muted-foreground">
+                <CardTitle className="text-2xl">Ketentuan Pemohon Informasi Publik</CardTitle>
+                {/* <p className="text-muted-foreground">
                   Langkah-langkah untuk mengajukan permohonan informasi publik
-                </p>
+                </p> */}
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -169,7 +169,7 @@ const PPIDSection = () => {
           <div className="scroll-reveal">
             <Card className="heritage-glow">
               <CardHeader>
-                <CardTitle className="text-2xl">Ketentuan Peemohon Informasi Publik</CardTitle>
+                <CardTitle className="text-2xl">Prosedur Permohonan Informasi</CardTitle>
                 <p className="text-muted-foreground">
                   Langkah-langkah untuk mengajukan permohonan informasi publik
                 </p>
@@ -201,6 +201,73 @@ const PPIDSection = () => {
               </CardContent>
             </Card>
           </div>
+
+          <div className="scroll-reveal">
+            {/* <Card className="heritage-glow mb-6">
+              <CardHeader>
+                <CardTitle className="text-2xl">Dokumen & Formulir</CardTitle>
+                <p className="text-muted-foreground">
+                  Unduh dokumen yang diperlukan untuk permohonan informasi
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {documents.map((doc, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <FileText size={20} className="text-primary" />
+                        <div>
+                          <h4 className="font-medium text-sm">{doc.title}</h4>
+                          <p className="text-xs text-muted-foreground">{doc.type} • {doc.size}</p>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        <Download size={14} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button className="w-full mt-4">
+                  <FileText size={16} className="mr-2" />
+                  Ajukan Permohonan Informasi
+                </Button>
+              </CardContent>
+            </Card> */}
+
+            <Card className="heritage-glow">
+              <CardHeader>
+                <CardTitle className="text-xl">Kontak PPID</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Phone size={20} className="text-primary" />
+                    <div>
+                      <p className="font-medium">Telepon</p>
+                      <p className="text-sm text-muted-foreground">+62 21 3811551 ext. 205</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail size={20} className="text-primary" />
+                    <div>
+                      <p className="font-medium">Email</p>
+                      <p className="text-sm text-muted-foreground">ppid@museumcagarbudaya.go.id</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock size={20} className="text-primary" />
+                    <div>
+                      <p className="font-medium">Jam Layanan</p>
+                      <p className="text-sm text-muted-foreground">Senin - Jumat: 08:00 - 16:00 WIB</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <div className="text-center scroll-reveal">
 
           <div className="scroll-reveal">
             {/* <Card className="heritage-glow mb-6">
