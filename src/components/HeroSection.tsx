@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
-import { defaultVideos } from '@/../database/default-data';
+// import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
@@ -106,13 +106,14 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
-  const [videoList, setVideoList] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  // const [videoList, setVideoList] = useState([]);
+  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   const [types, setTypes] = useState([]);
 
-  const handleVideoEnded = () => {
-    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
-  };
+  // const handleVideoEnded = () => {
+  //   setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
+  // };
   // const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -337,9 +338,10 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
             <div className="aspect-video bg-card rounded-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center">
                 <video 
-                key={currentVideoIndex}
-                src={getImageUrl(videoList[currentVideoIndex].image)}
-                onEnded={handleVideoEnded} controls autoPlay className="w-full" />
+                // key={currentVideoIndex}
+                // src={getImageUrl(videoList[currentVideoIndex].image)}
+                // onEnded={handleVideoEnded} controls autoPlay className="w-full"
+
               </div>
             </div>
           </div>

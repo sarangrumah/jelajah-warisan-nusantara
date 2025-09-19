@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter, MapPin } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -117,7 +117,7 @@ const Museum = () => {
       <Header />
       
       {/* Hero Banner */}
-      <section className="relative from-primary to-primary-glow flex items-center justify-center">
+      <section className="py-20 relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
             {t('Museum & Cagar Budaya')}

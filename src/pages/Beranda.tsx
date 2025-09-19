@@ -6,7 +6,7 @@ import ManagementSection from '@/components/ManagementSection';
 import AgendaSection from '@/components/AgendaSection';
 import DistributionSection from '@/components/DistributionSection';
 import NewsSection from '@/components/NewsSection';
-import FloatingButtons from '@/components/FloatingButtons';
+// import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
 import SectionWrapper from '@/components/SectionWrapper';
 import { useLocation } from 'react-router-dom';
@@ -62,7 +62,7 @@ const Beranda = () => {
         <NewsSection />
       </SectionWrapper>
       <Footer />
-      <FloatingButtons />
+      {/* <FloatingButtons /> */}
     </div>
   );
 };
