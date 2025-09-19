@@ -269,7 +269,7 @@ const PPIDSection = () => {
         </div>
 
         <div className="text-center scroll-reveal">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
               Kontak PPID
             </h3>
