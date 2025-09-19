@@ -170,13 +170,13 @@ const AgendaSection = () => {
             onBlur={handleBlur}
           >
             <CarouselPrevious
-              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary"
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -left-20 z-20"
               size="icon"
               aria-label="Previous slide"
               onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
             />
             <CarouselNext
-              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary"
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -right-20 z-20"
               size="icon"
               aria-label="Next slide"
               onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
@@ -245,7 +245,7 @@ const AgendaSection = () => {
               ))}
             </CarouselContent>
             {/* Pause/Resume Button */}
-            <div className="absolute right-4 bottom-4 z-10">
+            {/* <div className="absolute right-4 bottom-4 z-10">
               <Button
                 onClick={() => setIsPaused((p) => !p)}
                 aria-pressed={isPaused}
@@ -255,7 +255,7 @@ const AgendaSection = () => {
               >
                 {isPaused ? "Resume" : "Pause"}
               </Button>
-            </div>
+            </div> */}
             {/* Live region for screen readers */}
             <div className="sr-only" aria-live="polite" aria-atomic="true">
               {filteredEvents[currentIndex]
