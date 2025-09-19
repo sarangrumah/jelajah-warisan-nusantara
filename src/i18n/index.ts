@@ -478,7 +478,8 @@ const resources = {
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
-          categoryPreHistorical: "Numismatic & Heraldic",
+          categoryPreHistorical: "PreHistorical",
+          categoryGeographic: "Geographic",
         },
       },
       mow: {

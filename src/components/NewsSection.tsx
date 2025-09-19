@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,16 @@ function getNewsImageUrl(filename: string) {
 }
 
 const NewsSection = () => {
+  const [carouselApi, setCarouselApi] = React.useState(null);
+
+  // Diagnostic log for Embla API
+  React.useEffect(() => {
+    if (carouselApi) {
+      // eslint-disable-next-line no-console
+      console.log('[NewsSection] Carousel API set:', carouselApi);
+    }
+  }, [carouselApi]);
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -49,9 +60,19 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
-          <Carousel>
-            <CarouselPrevious />
-            <CarouselNext />
+          <Carousel setApi={setCarouselApi}>
+            <CarouselPrevious
+              className="h-16 w-16 text-3xl"
+              size="icon"
+              // eslint-disable-next-line no-console
+              onClick={() => { console.log('[NewsSection] Prev clicked'); carouselApi?.scrollPrev(); }}
+            />
+            <CarouselNext
+              className="h-16 w-16 text-3xl"
+              size="icon"
+              // eslint-disable-next-line no-console
+              onClick={() => { console.log('[NewsSection] Next clicked'); carouselApi?.scrollNext(); }}
+            />
             <CarouselContent>
               {news.map((article) => (
                 <CarouselItem

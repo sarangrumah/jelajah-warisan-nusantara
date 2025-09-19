@@ -43,6 +43,15 @@ const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
   const [events, setEvents] = useState([]);
+  const [carouselApi, setCarouselApi] = useState(null);
+
+  // Diagnostic log for Embla API
+  useEffect(() => {
+    if (carouselApi) {
+      // eslint-disable-next-line no-console
+      console.log('[AgendaSection] Carousel API set:', carouselApi);
+    }
+  }, [carouselApi]);
 
   const fetchEvents = async () => {
     try {
@@ -113,9 +122,19 @@ const AgendaSection = () => {
 
         {/* Events Carousel */}
         <div className="relative mb-12 scroll-reveal">
-          <Carousel>
-            <CarouselPrevious />
-            <CarouselNext />
+          <Carousel setApi={setCarouselApi}>
+            <CarouselPrevious
+              className="h-16 w-16 text-3xl"
+              size="icon"
+              // eslint-disable-next-line no-console
+              onClick={() => { console.log('[AgendaSection] Prev clicked'); carouselApi?.scrollPrev(); }}
+            />
+            <CarouselNext
+              className="h-16 w-16 text-3xl"
+              size="icon"
+              // eslint-disable-next-line no-console
+              onClick={() => { console.log('[AgendaSection] Next clicked'); carouselApi?.scrollNext(); }}
+            />
             <CarouselContent>
               {filteredEvents.map((event, index) => (
                 <CarouselItem
