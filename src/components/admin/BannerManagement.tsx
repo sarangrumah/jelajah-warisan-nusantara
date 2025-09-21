@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
+import { VITE_API_URL } from '@/lib/env';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -472,6 +473,11 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
+                          {banner.image?.startsWith('../src/assets/') && (
+                            <div style={{ color: 'orange', fontWeight: 'bold', marginBottom: 12 }}>
+                              Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
+                            </div>
+                          )}
                           {(() => {
                             let imgUrl = '';
                             if (
@@ -482,13 +488,12 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                               imgUrl = banner.image;
                             } else {
                               // Use API base URL if available
-                              const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
-                              imgUrl = `${apiBase}/uploads/images/${banner.image}`;
+                              imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
                             }
                             // Log the final image URL and environment for debugging
                             if (typeof window !== "undefined") {
                               // Only log in browser
-                              console.log('[Banner Preview] VITE_API_URL:', import.meta.env.VITE_API_URL, 'banner.image:', banner.image);
+                              console.log('[Banner Preview] VITE_API_URL:', VITE_API_URL, 'banner.image:', banner.image);
                               console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
                             }
                             return (
