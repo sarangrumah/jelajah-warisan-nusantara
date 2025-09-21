@@ -472,7 +472,6 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
-                          {console.log('[Banner Preview] VITE_API_URL:', import.meta.env.VITE_API_URL, 'banner.image:', banner.image)}
                           {(() => {
                             let imgUrl = '';
                             if (
@@ -482,7 +481,15 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                             ) {
                               imgUrl = banner.image;
                             } else {
-                              imgUrl = `/uploads/images/${banner.image}`;
+                              // Use API base URL if available
+                              const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
+                              imgUrl = `${apiBase}/uploads/images/${banner.image}`;
+                            }
+                            // Log the final image URL and environment for debugging
+                            if (typeof window !== "undefined") {
+                              // Only log in browser
+                              console.log('[Banner Preview] VITE_API_URL:', import.meta.env.VITE_API_URL, 'banner.image:', banner.image);
+                              console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
                             }
                             return (
                               <div>
