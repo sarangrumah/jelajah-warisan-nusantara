@@ -220,6 +220,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogDelete, setIsDialogDelete] = useState(false);
+  const [previewBannerId, setPreviewBannerId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -466,50 +467,58 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                       />
                     </div>
                     {banner.image ? (
-                      <Dialog>
+                      <Dialog open={previewBannerId === banner.id} onOpenChange={(open) => setPreviewBannerId(open ? banner.id! : null)}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" title="Preview Image">
+                          <Button variant="outline" size="sm" title="Preview Image" onClick={() => setPreviewBannerId(banner.id!)}>
                             <Eye className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                          {banner.image?.startsWith('../src/assets/') && (
-                            <div style={{ color: 'orange', fontWeight: 'bold', marginBottom: 12 }}>
-                              Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
-                            </div>
-                          )}
-                          {(() => {
-                            let imgUrl = '';
-                            if (
-                              banner.image?.startsWith('/') ||
-                              banner.image?.startsWith('http') ||
-                              banner.image?.startsWith('../src/assets/')
-                            ) {
-                              imgUrl = banner.image;
-                            } else {
-                              // Use API base URL if available
-                              imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
-                            }
-                            // Log the final image URL and environment for debugging
-                            if (typeof window !== "undefined") {
-                              // Only log in browser
-                              console.log('[Banner Preview] VITE_API_URL:', VITE_API_URL, 'banner.image:', banner.image);
-                              console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
-                            }
-                            return (
-                              <div>
-                                <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
-                                  Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
-                                </div>
-                                <img
-                                  src={imgUrl}
-                                  alt="Banner image"
-                                  className="w-full h-auto rounded-md"
-                                />
+                        {previewBannerId === banner.id && (
+                          <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                              <DialogTitle>Banner Image Preview</DialogTitle>
+                              <DialogDescription>
+                                Preview of the selected banner image. Asset-relative images may not work in production.
+                              </DialogDescription>
+                            </DialogHeader>
+                            {banner.image?.startsWith('../src/assets/') && (
+                              <div style={{ color: 'orange', fontWeight: 'bold', marginBottom: 12 }}>
+                                Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
                               </div>
-                            );
-                          })()}
-                        </DialogContent>
+                            )}
+                            {(() => {
+                              let imgUrl = '';
+                              if (
+                                banner.image?.startsWith('/') ||
+                                banner.image?.startsWith('http') ||
+                                banner.image?.startsWith('../src/assets/')
+                              ) {
+                                imgUrl = banner.image;
+                              } else {
+                                // Use API base URL if available
+                                imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
+                              }
+                              // Log the final image URL and environment for debugging
+                              if (typeof window !== "undefined") {
+                                // Only log in browser
+                                console.log('[Banner Preview] VITE_API_URL:', VITE_API_URL, 'banner.image:', banner.image);
+                                console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
+                              }
+                              return (
+                                <div>
+                                  <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
+                                    Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
+                                  </div>
+                                  <img
+                                    src={imgUrl}
+                                    alt="Banner image"
+                                    className="w-full h-auto rounded-md"
+                                  />
+                                </div>
+                              );
+                            })()}
+                          </DialogContent>
+                        )}
                       </Dialog>
                     ) : null}
                     {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved ? (
