@@ -69,10 +69,20 @@ const ProfileSection = () => {
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                   <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
+                  {!profile.vision && (
+                    <div style={{ color: 'red', fontSize: '0.9em' }}>
+                      <b>Debug:</b> Vision is missing or empty from backend.
+                    </div>
+                  )}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                   <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
+                  {!profile.mission && (
+                    <div style={{ color: 'red', fontSize: '0.9em' }}>
+                      <b>Debug:</b> Mission is missing or empty from backend.
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
