@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite preview",
-    "watch:build": "chokidar 'src/**/*' -c 'npm run build'",
+    "watch:build": "chokidar \"src/**/*\" -c \"npm run build\"",
     "start:all": "concurrently \"npm run start\" \"npm run --prefix backend start\" \"npm run watch:build\""
   },
   "dependencies": {
@@ -105,6 +105,8 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.2.1",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
