@@ -11,7 +11,8 @@ const AgendaBanner = () => {
   ];
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    // <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section className="min-h-screen bg-background">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
         style={{ backgroundImage: `url(${slides[0].image})` }}

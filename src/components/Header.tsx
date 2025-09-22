@@ -18,6 +18,8 @@ const Header = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
+  // const iconSrc = require(`@/assets/images/logo/MCB Logo_Putih_notext.png`);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
@@ -29,8 +31,16 @@ const Header = () => {
 
   const navigationItems = [
     { name: t('nav.beranda'), href: '/beranda' },
-    { name: t('nav.museum'), href: '/museum' },
-    { name: t('nav.koleksi'), href: '/collection' },
+    { name: t('nav.museum'), href: '/museums' },
+    {
+      name: t('nav.collection'),
+      href: '/collection',
+      subItems: [
+        { name: t('nav.koleksi'), href: '/collection' },
+        { name: t('nav.mow'), href: '/mow' },
+      ],
+    },
+    // { name: t('nav.koleksi'), href: '/collection' },
     { name: t('nav.agenda'), href: '/agenda' },
     { 
       name: t('nav.tentangKami'), 
@@ -65,18 +75,13 @@ const Header = () => {
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
-                {/* <span className="text-primary-foreground font-bold text-xl">
-                </span> */}
-                <img src={logo} alt="Logo" className='w-[3rem] h-[2rem]x'/>
-
+                <img src={logo} alt="Logo" className='w-[3rem]'/>
+                {/* <img src={new URL('@/assets/images/logo/MCB Logo_Putih_notext.png', import.meta.url).href} alt="Logo" className='w-[3rem]'/> */}
               </div>
               <div>
                 <h1 className="text-xl font-bold text-heritage-gradient">
                   Museum dan Cagar Budaya
                 </h1>
-                {/* <p className="text-sm text-muted-foreground">
-                  Republik Indonesia
-                </p> */}
               </div>
             </div>
 
@@ -115,7 +120,7 @@ const Header = () => {
                     key={item.name}
                     to={item.href}
                     className={`transition-heritage font-medium ${
-                      location.pathname === item.href 
+                      location.pathname === item.href
                         ? 'text-primary border-b-2 border-primary' 
                         : 'text-foreground hover:text-primary'
                     }`}

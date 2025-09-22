@@ -28,13 +28,14 @@ const FloatingButtons = () => {
       {/* WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-40">
         <Button
-          size="lg"
-          className="rounded-full w-14 h-14 bg-[rgba(13,148,136,0.75)] hover:bg-[rgba(0, 82, 75, 0.75)] heritage-glow shadow-lg float-animation"
+          // size="lg"
+          className="rounded-full w-12 h-12 bg-[rgba(13,148,136,0.75)] hover:bg-[rgba(0, 82, 75, 0.75)] heritage-glow shadow-lg float-animation"
           onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
         >
           <MessageCircle size={24} className="text-white" />
         </Button>
       </div>
+
     </>
   );
 };

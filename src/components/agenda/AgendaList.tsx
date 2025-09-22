@@ -3,10 +3,11 @@ import { Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { agendaService } from '@/lib/api-services';
+import { agendaService, EventsService } from '@/lib/api-services';
 import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
+import { set } from 'zod';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
 
@@ -40,12 +41,19 @@ const AgendaList = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await agendaService.getAll();
-      if (response.error) {
+      const response = await EventsService.getAll();
+      if (response.error || response.data.length === 0) {
         console.error('Error fetching events:', response.error);
+        setEvents(defaultEvents);
+      } else {
+        const filteredEvents = response.data.filter((event: any) => (
+          event.is_active === true 
+          && event.is_approved === true
+          && new Date(event.start_published_date) <= new Date()
+          && new Date(event.end_published_date) >= new Date()
+        ));
+        setEvents(filteredEvents);
       }
-
-      setEvents(response.data || defaultEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -56,29 +64,15 @@ const AgendaList = () => {
 
   const filteredEvents = events.filter(event => {
     if(activeCategory === 'semua') {
-      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     } else {
-      const matchesSearch = event.category.toLowerCase() === activeCategory.toLowerCase() && (event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = event.category.toLowerCase() === activeCategory.toLowerCase() && (event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
       return matchesSearch && event.category === activeCategory;
     }
   });
-
-  // const formatDate = (date) => {
-  //   return new Date(date).toLocaleDateString('id-ID', {
-  //     weekday: 'long',
-  //     year: 'numeric',
-  //     month: 'long',
-  //     day: 'numeric'
-  //   });
-  // };
-
-  // const formatTime = (time) => {
-  //   if (!time) return '';
-  //   return time.slice(0, 5);
-  // };
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,13 +133,13 @@ const AgendaList = () => {
                     </div>
                     <img
                       src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
-                      alt={event.title}
+                      alt={event.name}
                       className="w-full h-full object-contain object-center"
                     />
                   </div>
                 </div>
               <CardHeader>
-                <CardTitle className="text-xl line-clamp-2">{event.title}</CardTitle>
+                <CardTitle className="text-xl line-clamp-2">{event.name}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 line-clamp-3">

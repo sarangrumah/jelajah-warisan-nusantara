@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,51 @@ function getNewsImageUrl(filename: string) {
 }
 
 const NewsSection = () => {
+  const [carouselApi, setCarouselApi] = React.useState(null);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  // Accessibility: Announce slide changes
+  const totalSlides = news.length;
+
+  // Auto-slide logic
+  React.useEffect(() => {
+    if (!carouselApi || isPaused) { return; }
+    const interval = setInterval(() => {
+      if (carouselApi) {
+        carouselApi.scrollNext();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi, isPaused, news]);
+
+  // Update current index for live region
+  React.useEffect(() => {
+    if (!carouselApi) { return; }
+    const onSelect = () => {
+      setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
+    };
+    carouselApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      carouselApi.off('select', onSelect);
+    };
+  }, [carouselApi, news]);
+
+  // Pause on hover/focus, resume on mouse leave/blur
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+  const handleFocus = () => setIsPaused(true);
+  const handleBlur = () => setIsPaused(false);
+
+  // Diagnostic log for Embla API
+  React.useEffect(() => {
+    if (carouselApi) {
+      // eslint-disable-next-line no-console
+      console.log('[NewsSection] Carousel API set:', carouselApi);
+    }
+  }, [carouselApi]);
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -49,14 +95,32 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
-          <Carousel>
-            <CarouselPrevious />
-            <CarouselNext />
+          <Carousel
+            setApi={setCarouselApi}
+            aria-label="News Carousel"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          >
+            <CarouselPrevious
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -left-20 z-20"
+              size="icon"
+              aria-label="Previous slide"
+              onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
+            />
+            <CarouselNext
+              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -right-20 z-20"
+              size="icon"
+              aria-label="Next slide"
+              onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
+            />
             <CarouselContent>
-              {news.map((article) => (
+              {news.map((article, index) => (
                 <CarouselItem
                   key={article.id}
                   className="md:basis-1/2 lg:basis-1/3"
+                  aria-label={`Slide ${index + 1} of ${news.length}`}
                 >
                   <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
                     <div className="aspect-video relative overflow-hidden">
@@ -97,6 +161,24 @@ const NewsSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+            {/* Pause/Resume Button */}
+            {/* <div className="absolute right-4 bottom-4 z-10">
+              <button
+                onClick={() => setIsPaused((p) => !p)}
+                aria-pressed={isPaused}
+                aria-label={isPaused ? "Resume auto-slide" : "Pause auto-slide"}
+                className="bg-primary text-primary-foreground px-4 py-2 rounded focus:ring-2 focus:ring-primary"
+                tabIndex={0}
+              >
+                {isPaused ? "Resume" : "Pause"}
+              </button>
+            </div> */}
+            {/* Live region for screen readers */}
+            <div className="sr-only" aria-live="polite" aria-atomic="true">
+              {news[currentIndex]
+                ? `Showing slide ${currentIndex + 1} of ${news.length}: ${news[currentIndex].title}`
+                : ""}
+            </div>
           </Carousel>
         </div>
 

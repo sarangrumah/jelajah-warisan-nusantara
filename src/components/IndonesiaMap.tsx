@@ -4,7 +4,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
-import { heritageService, museumService } from '@/lib/api-services';
+import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { mapSlidesWithImageUrl, getImageUrl } from './helper';
 
 interface LocationData {
   id: string;
@@ -49,19 +50,18 @@ const IndonesiaMap = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'museum' | 'heritage'>('all');
   const [locations, setLocations] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
 
   const fetchLocations = async () => {
     try {
       const museum = await museumService.getAll();
-      const heritage = await heritageService.getAll();
-      if (museum.error) {
+      if (museum.error || museum.data.length === 0) {
         throw new Error('Error fetching museums: ' + museum.error);
+      } else {
+        const filteredMuseums = museum.data.filter((museum: any) => museum.is_active === true && museum.is_approved === true);
+        setLocations(mapSlidesWithImageUrl(filteredMuseums));
       }
-      if (heritage.error) {
-        throw new Error('Error fetching heritages: ' + heritage.error);
-      }
-      setLocations(museum.data.concat(heritage.data)); // Concatenate museums and heritages heritage.data);
-      // setLocations(heritage.data);
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
@@ -70,8 +70,31 @@ const IndonesiaMap = () => {
     fetchLocations();
   },[])
 
+  const fetchType = async () => {
+    try {
+      const response = await TypesAndCategoriesSites.getAllTypes();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching types:', response.error);
+      } else {
+        setTypes(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  };
+  useEffect(() => {
+    fetchType();
+  }, []);
   // Filter locations based on current filter
-  const filteredLocations = filter === 'all' ? locations : (filter === 'museum' ? locations.filter(loc => loc.type === 'museum') : locations.filter(loc => loc.type !== 'museum'));
+  useEffect(() => {
+    if(filter === 'all') {
+      setFilteredLocations(locations);
+    } else if(filter === 'museum') {
+      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name === 'museum'));
+    } else {
+      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name !== 'museum'));
+    }
+  }, [filter, locations, types])
 
   useEffect(() => {
     if (!mapContainer.current || map.current) { return };
@@ -124,8 +147,8 @@ const IndonesiaMap = () => {
 
     // Create custom icon function
     const createCustomIcon = (location: LocationData) => {
-      const color = location.type === 'museum' ? '#3b82f6' : '#10b981';
-      const icon = location.type === 'museum' ? '🏛️' : '🏛️';
+      const color = types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981';
+      const icon = types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '🏛️' : '🏛️';
       
       return L.divIcon({
         className: 'custom-marker',
@@ -152,13 +175,11 @@ const IndonesiaMap = () => {
     };
     // Add markers for filtered locations
     filteredLocations.forEach((location) => {
-      // const marker = L.marker(location.coordinates, {
-      //   icon: createCustomIcon(location),
-      // }).addTo(map.current!);
-      if (!location.coordinates) { return };
+      if (!location.latitude || !location.longitude) { return };
       let coords: [number, number];
       try {
-        coords = JSON.parse(location.coordinates);
+        coords = [parseFloat(location.latitude), parseFloat(location.longitude)];
+        // coords = JSON.parse(location.coordinates);
       } catch {
         return;
       }
@@ -172,13 +193,13 @@ const IndonesiaMap = () => {
           <div style="margin-bottom: 12px;">
             <img src="${getMuseumsImageUrl(location.image_url)}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
             <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name || location.title}</h3>
-            <span style="background-color: ${location.type === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${location.type}</span>
+            <span style="background-color: ${types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${types.length > 0 && types.find((type) => type.id === location.type)?.name}</span>
           </div>
-          <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${location.description}</p>
+          <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${location.subtitle}</p>
           <div style="margin-bottom: 12px;">
             <div style="margin-bottom: 6px;">
               <strong style="color: #374151; font-size: 12px;">📍 Alamat:</strong>
-              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${location.location}</p>
+              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${location.address}</p>
             </div>
             ${location.openingHours ? `
               <div style="margin-bottom: 6px;">
@@ -197,7 +218,8 @@ const IndonesiaMap = () => {
             <button 
               class="popup-btn-detail"
               data-id="${location.id}"
-              data-type="${location.type}"
+              data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
+              data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
               style="
                 flex: 1; 
                 background-color: #3b82f6; 
@@ -221,7 +243,8 @@ const IndonesiaMap = () => {
             <button 
               class="popup-btn-list"
               data-region="${location.region}"
-              data-type="${location.type}"
+              data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
+              data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
               style="
                 flex: 1; 
                 background-color: #10b981; 
@@ -303,12 +326,13 @@ const IndonesiaMap = () => {
           detailBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const id = (detailBtn as HTMLElement).dataset.id;
-            const type = (detailBtn as HTMLElement).dataset.type;
-            if (type === 'museum') {
-              navigate(`/museum/${id}`);
-            } else {
-              navigate(`/heritage/${id}`);
-            }
+            navigate(`/museum/${id}`);
+            // const type = (detailBtn as HTMLElement).dataset.type;
+            // if (type === 'museum') {
+            //   navigate(`/museum/${id}`);
+            // } else {
+            //   navigate(`/heritage/${id}`);
+            // }
           });
         }
         
@@ -317,15 +341,14 @@ const IndonesiaMap = () => {
         if (listBtn) {
           listBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            // const region = (listBtn as HTMLElement).dataset.region;
-            const type = (listBtn as HTMLElement).dataset.type;
-            if (type === 'museum') {
-              // navigate(`/museum?region=${region}`);
-              navigate(`/museum`);
-            } else {
-              // navigate(`/heritage?region=${region}`);
-              navigate(`/heritage`);
-            }
+            const typeid = (detailBtn as HTMLElement).dataset.typeid;
+            navigate(`/museums/${typeid}`);
+            // const type = (listBtn as HTMLElement).dataset.type;
+            // if (type === 'museum') {
+            //   navigate(`/museums/${typeid}`);
+            // } else {
+            //   navigate(`/heritage`);
+            // }
           });
         }
       });
@@ -347,7 +370,7 @@ const IndonesiaMap = () => {
       });
     });
 
-  }, [filteredLocations, navigate]);
+  }, [filteredLocations, types, navigate]);
 
   return (
     <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-6xl mx-auto">
@@ -358,10 +381,11 @@ const IndonesiaMap = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-500/30">
-              🏛️ Museum: {locations.filter(l => l.type === 'museum').length}
+            {/* types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' */}
+              🏛️ Museum: {locations.filter(l => l.type === '12bc00a9-ba1a-4562-940d-4e33bb26acdc').length}
             </Badge>
             <Badge variant="outline" className="bg-green-500/20 text-green-600 border-green-500/30">
-              🏛️ Cagar Budaya: {locations.filter(l => l.type !== 'museum').length}
+              🏛️ Cagar Budaya: {locations.filter(l => l.type !== '12bc00a9-ba1a-4562-940d-4e33bb26acdc').length}
             </Badge>
           </div>
           <Select value={filter} onValueChange={(value) => setFilter(value as 'all' | 'museum' | 'heritage')}>

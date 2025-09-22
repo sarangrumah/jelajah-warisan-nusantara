@@ -82,33 +82,37 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const disabled = isMenuItemDisabled(item.id);
+          if (!disabled) {
+              return (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start",
+                  disabled && "opacity-50 cursor-not-allowed"
+                )}
+                onClick={() => !disabled && handleTabChange(item.id)}
+                disabled={disabled}
+              >
+                <Icon className="w-4 h-4 mr-3" />
+                {item.label}
+              </Button>
+            );
+          } else {
+            return (<></>);
+          }
           
-          return (
-            <Button
-              key={item.id}
-              variant={activeTab === item.id ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start",
-                disabled && "opacity-50 cursor-not-allowed"
-              )}
-              onClick={() => !disabled && handleTabChange(item.id)}
-              disabled={disabled}
-            >
-              <Icon className="w-4 h-4 mr-3" />
-              {item.label}
-            </Button>
-          );
         })}
       </nav>
 
       {/* Bottom actions */}
       <div className="p-4 border-t border-border space-y-2">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="w-full justify-start"
           onClick={() => {
             navigate('/');
@@ -118,8 +122,8 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
           <Home className="w-4 h-4 mr-3" />
           Lihat Website
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full justify-start"
           onClick={() => {
             onSignOut();

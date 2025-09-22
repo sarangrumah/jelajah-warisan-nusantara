@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite preview",
-    "watch:build": "chokidar 'src/**/*' -c 'npm run build'",
+    "watch:build": "chokidar \"src/**/*\" -c \"npm run build\"",
     "start:all": "concurrently \"npm run start\" \"npm run --prefix backend start\" \"npm run watch:build\""
   },
   "dependencies": {
@@ -64,6 +64,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
     "express": "^5.1.0",
+    "framer-motion": "^12.23.12",
     "i18next": "^25.3.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "input-otp": "^1.2.4",
@@ -104,6 +105,8 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.2.1",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",

@@ -10,7 +10,9 @@ const resources = {
       nav: {
         beranda: "Home",
         museum: "Destination",
-        koleksi: "Collection",
+        collection: "Collection",
+        koleksi: "MCB Collection",
+        mow: "Memory Of the World",
         agenda: "Agenda",
         tentangKami: "About Us",
         strukturOrganisasi: "Organizational structure",
@@ -35,7 +37,7 @@ const resources = {
           subtitle: "Storing and exhibiting valuable artifacts from all over Indonesia",
           cta: "View Collections"
         },
-        sites: {
+        heritage: {
           title: "Indonesian Cultural Heritage",
           subtitle: "Protecting historical sites that are the pride of the nation",
           cta: "Discover Sites"
@@ -50,10 +52,10 @@ const resources = {
         visionText: "To become a leading institution in the preservation and management of world-class and sustainable Indonesian cultural heritage.",
         mission: "Mission",
         missionItems: [
-          "• Manage and preserve national museum collections",
-          "• Protect and maintain cultural heritage sites",
-          "• Develop education and research programs",
-          "• Promote sustainable cultural tourism"
+          "Manage and preserve national museum collections",
+          "Protect and maintain cultural heritage sites",
+          "Develop education and research programs",
+          "Promote sustainable cultural tourism"
         ],
         callToAction: "Let's Preserve Indonesian Culture Together",
         callToActionText: "Join us in preserving the cultural richness of the archipelago for future generations.",
@@ -441,12 +443,19 @@ const resources = {
         collection: {
           search: "Search collections...",
           categoryAll: "All Categories",
-          categoryWeapon: "Weapons",
-          categorySculpture: "Sculptures",
-          categoryManuscript: "Manuscripts",
-          categoryTextile: "Textiles",
-          categoryJewelry: "Jewelry",
+          // categoryWeapon: "Weapons",
+          // categorySculpture: "Sculptures",
+          // categoryManuscript: "Manuscripts",
+          // categoryTextile: "Textiles",
+          // categoryJewelry: "Jewelry",
           categoryCeramic: "Ceramics",
+          categoryEtnograhpy: "Etnograhpy",
+          categoryArcheology: "Archeology",
+          categoryHistory: "History",
+          categoryNumismatic: "Numismatic & Heraldic",
+          categoryPreHistorical: "PreHistorical",
+          // categoryCeramics: "Ceramics",
+          categoryGeographic: "Geographic",
         },
         heritage: {
           search: "Search heritage sites...",
@@ -454,7 +463,29 @@ const resources = {
           categoryTemple: "Temples",
           categoryArcheological: "Archeological Sites",
           categoryFortress: "Fortresses",
-        }
+        },
+        mow: {
+          search: "Search memory of the world...",
+          categoryAll: "All Categories",
+          // categoryWeapon: "Weapons",
+          // categorySculpture: "Sculptures",
+          // categoryManuscript: "Manuscripts",
+          // categoryTextile: "Textiles",
+          // categoryJewelry: "Jewelry",
+          // categoryCeramic: "Ceramics",
+          categoryCeramic: "Ceramics",
+          categoryEtnograhpy: "Etnograhpy",
+          categoryArcheology: "Archeology",
+          categoryHistory: "History",
+          categoryNumismatic: "Numismatic & Heraldic",
+          categoryPreHistorical: "PreHistorical",
+          categoryGeographic: "Geographic",
+        },
+      },
+      mow: {
+        title: "Memory of the World",
+        subtitle: "Uncovering the Memory of the World",
+        description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
       }
     }
   },
@@ -464,7 +495,9 @@ const resources = {
       nav: {
         beranda: "Beranda",
         museum: "Destinasi",
-        koleksi: "Koleksi",
+        collection: "Koleksi",
+        koleksi: "Koleksi MCB",
+        mow: "Memori Dunia",
         agenda: "Agenda", 
         tentangKami: "Tentang Kami",
         strukturOrganisasi: "Struktur Organisasi",
@@ -489,7 +522,7 @@ const resources = {
           subtitle: 'Menyimpan dan memamerkan artifak berharga dari seluruh Indonesia',
           cta: 'Lihat Koleksi',
         },
-        sites: {
+        heritage: {
           title: 'Cagar Budaya Indonesia',
           subtitle: 'Melindungi situs-situs bersejarah yang menjadi kebanggaan bangsa',
           cta: 'Temukan Situs',
@@ -504,12 +537,12 @@ const resources = {
         visionText: "“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”",
         mission: "Misi",
         missionItems: [
-          "• Mewujudkan pengelolaan koleksi, cagar budaya, dan bangunan bersejarah yang berkelanjutan.",
-          "• Melaksanakan upaya pelayanan dan pelibatan masyarakat secara terpadu.", 
-          "• Mengedepankan transformasi pengembangan wawasan melalui praktik edukasi yang inovatif dan pembangunan komunitas.",
-          "• Menjalin kepercayaan kuat antara para pemangku kepentingan yang berbasis kemitraan.",
-          "• Mewujudkan ruang ekspresi dan interaksi budaya yang inklusif dan mudah diakses.",
-          "• Mewujudkan tata kelola kelembagaan dan pengelolaan sumber daya manusia yang tangkas dan berorientasi kepada dampak yang berkelanjutan."
+          "Mewujudkan pengelolaan koleksi, cagar budaya, dan bangunan bersejarah yang berkelanjutan.",
+          "Melaksanakan upaya pelayanan dan pelibatan masyarakat secara terpadu.", 
+          "Mengedepankan transformasi pengembangan wawasan melalui praktik edukasi yang inovatif dan pembangunan komunitas.",
+          "Menjalin kepercayaan kuat antara para pemangku kepentingan yang berbasis kemitraan.",
+          "Mewujudkan ruang ekspresi dan interaksi budaya yang inklusif dan mudah diakses.",
+          "Mewujudkan tata kelola kelembagaan dan pengelolaan sumber daya manusia yang tangkas dan berorientasi kepada dampak yang berkelanjutan."
         ],
         callToAction: "Mari Bersama Lestarikan Budaya Indonesia",
         callToActionText: "Bergabunglah dengan kami dalam upaya melestarikan kekayaan budaya nusantara untuk generasi mendatang.",
@@ -897,12 +930,19 @@ const resources = {
         collection: {
           search: "Cari Koleksi...",
           categoryAll: "Semua Kategori",
-          categoryWeapon: "Senjata",
-          categorySculpture: "Patung",
-          categoryManuscript: "Manuskrip",
-          categoryTextile: "Tekstil",
-          categoryJewelry: "Perhiasan",
+          // categoryWeapon: "Senjata",
+          // categorySculpture: "Patung",
+          // categoryManuscript: "Manuskrip",
+          // categoryTextile: "Tekstil",
+          // categoryJewelry: "Perhiasan",
+          // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
+          categoryEtnograhpy: "Etnograhpy",
+          categoryArcheology: "Arkeologi",
+          categoryHistory: "Sejarah",
+          categoryNumismatic: "Numismatik & Heraldik",
+          categoryPreHistorical: "PraSejarah",
+          categoryGeographic: "Geographic",
         },
         heritage: {
           search: "Cari Situs Warisan...",
@@ -910,7 +950,29 @@ const resources = {
           categoryTemple: "Candi",
           categoryArcheological: "Situs Arkeologi",
           categoryFortress: "Benteng"
-        }
+        },
+        mow: {
+          search: "Cari memori dunia...",
+          categoryAll: "Semua Kategori",
+          // categoryWeapon: "Senjata",
+          // categorySculpture: "Patung",
+          // categoryManuscript: "Manuskrip",
+          // categoryTextile: "Tekstil",
+          // categoryJewelry: "Perhiasan",
+          // categoryCeramic: "Keramik",
+          categoryCeramic: "Keramik",
+          categoryEtnograhpy: "Etnograhpy",
+          categoryArcheology: "Arkeologi",
+          categoryHistory: "Sejarah",
+          categoryNumismatic: "Numismatik & Heraldik",
+          categoryPreHistorical: "PraSejarah",
+          categoryGeographic: "Geographic",
+        },
+      },
+      mow: {
+        title: "Memori Dunia",
+        subtitle: "Mengungkap Memori Dunia",
+        description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
       }
     }
   }

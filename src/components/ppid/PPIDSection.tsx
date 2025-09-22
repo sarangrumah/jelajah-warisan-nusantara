@@ -53,6 +53,33 @@ const PPIDSection = () => {
     }
   ];
 
+  const requestCriteria = [
+    {
+      step: 1,
+      title: 'Pengajuan atas Perseorangan',
+      description: 'Apabila pemohon mengatasnamakan perseorangan wajib menyertakan fotokopi/scan KTP atau identitas lainnya yang masih berlaku (Paspor/SIM).',
+      duration: '1 hari'
+    },
+    {
+      step: 2,
+      title: 'Pengajuan atas Badan Hukum',
+      description: 'Apabila pemohon mengatasnamakan badan hukum Indonesia (organisasi masyarakat/lembaga swadaya masyarakat, organisasi politik, yayasan, dan perusahaan), wajib menyertakan fotokopi/scan akte pendirian badan hukum, surat kuasa dari badan hukum yang bermaterai, dan fotokopi/scan KTP atas nama pemohon/penerima kuasa.',
+      duration: '2 hari'
+    },
+    {
+      step: 3,
+      title: 'Waktu penyampaian Informasi',
+      description: 'Berdasarkan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik, jangka waktu pemenuhan permintaan informasi publik yaitu selama 10 hari kerja terhitung diterimanya dokumen permintaan informasi publik yang lengkap dan dapat ditambah 7 hari kerja jika diperlukan.',
+      duration: '7 hari'
+    },
+    {
+      step: 4,
+      title: 'Ketentuan Biaya',
+      description: 'Permintaan informasi publik ini tidak dipungut biaya (gratis), namun jika ada dokumen/informasi yang harus difotokopi dan atau digandakan maka biaya dibebankan kepada Pemohon.',
+      duration: '3 hari'
+    }
+  ];
+
   const documents = [
     { title: 'Formulir Permohonan Informasi', type: 'PDF', size: '245 KB' },
     { title: 'Standar Layanan PPID', type: 'PDF', size: '1.2 MB' },
@@ -65,11 +92,10 @@ const PPIDSection = () => {
       <div className="container mx-auto px-4 py-10">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
-            PPID - Pejabat Pengelola Informasi dan Dokumentasi
+            Pejabat Pengelola Informasi dan Dokumentasi (PPID)
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Pelayanan informasi publik yang transparan dan akuntabel sesuai dengan 
-            Undang-Undang No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik.
+            Keberadaan Pejabat Pengelola Informasi dan Dokumentasi (PPID) Museum dan Cagar Budaya merupakan bagian dari pelaksanaan amanat Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP). Unit ini berfungsi sebagai perpanjangan tangan PPID Kementerian Kebudayaan dalam memberikan layanan informasi publik kepada masyarakat.
           </p>
         </div>
 
@@ -105,6 +131,41 @@ const PPIDSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
+          <div className="scroll-reveal">
+            <Card className="heritage-glow">
+              <CardHeader>
+                <CardTitle className="text-2xl">Ketentuan Pemohon Informasi Publik</CardTitle>
+                {/* <p className="text-muted-foreground">
+                  Langkah-langkah untuk mengajukan permohonan informasi publik
+                </p> */}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {requestCriteria.map((proc, index) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {proc.step}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-1">{proc.title}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">{proc.description}</p>
+                        {/* <div className="flex items-center gap-2 text-xs">
+                          <Clock size={12} className="text-primary" />
+                          <span className="text-primary font-medium">Maksimal {proc.duration}</span>
+                        </div> */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 p-4 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-primary font-medium">
+                    💡 Total waktu layanan maksimal 13 hari kerja sesuai regulasi UU KIP
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           <div className="scroll-reveal">
             <Card className="heritage-glow">
               <CardHeader>
@@ -174,7 +235,7 @@ const PPIDSection = () => {
               </CardContent>
             </Card> */}
 
-            <Card className="heritage-glow">
+            {/* <Card className="heritage-glow">
               <CardHeader>
                 <CardTitle className="text-xl">Kontak PPID</CardTitle>
               </CardHeader>
@@ -203,7 +264,34 @@ const PPIDSection = () => {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
+          </div>
+        </div>
+
+        <div className="text-center scroll-reveal gap-12 mb-16">
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 mx-auto">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Kontak PPID
+            </h3>
+            {/* <p className="text-muted-foreground mb-6">
+              Kami berkomitmen untuk memberikan pelayanan informasi publik yang 
+              cepat, akurat, dan transparan kepada seluruh masyarakat Indonesia 
+              sesuai dengan prinsip keterbukaan informasi publik.
+            </p> */}
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 812 9595 3929</div>
+                <div className="text-muted-foreground">Telepon</div>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">museumcb@kemenbud.go.id</div>
+                <div className="text-muted-foreground">Email</div>
+              </div>
+              <div className="bg-card border border-border rounded-lg p-4">
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">Senin - Jumat: 08:00 - 16:00 WIB</div>
+                <div className="text-muted-foreground">Jam Layanan</div>
+              </div>
+            </div>
           </div>
         </div>
 

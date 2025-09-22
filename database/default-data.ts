@@ -4597,3 +4597,17 @@ export const news = [
     category: 'Artikel'
   }
 ];
+export const defaultMemories = [
+  {
+    id: 1,
+    title: 'Peresmian Candi Borobudur',
+    subtitle: 'Peresmian selesainya pemugaran Candi Borobudur oleh Presiden Soeharto, 28 Februari 1983',
+    image_url: '/src/assets/collections/6235.jpg',
+  },
+  {
+    id: 2,
+    title: 'Peresmian Candi Borobudur',
+    subtitle: 'Peresmian dimulainya pemugaran Candi Borobudur oleh Presiden Soeharto, 10 Agustus 1973',
+    image_url: '/src/assets/collections/20063.jpg',
+  },
+]

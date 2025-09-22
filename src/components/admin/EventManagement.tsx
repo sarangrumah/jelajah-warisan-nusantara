@@ -757,7 +757,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
               <div></div>
             }
           </DialogTrigger>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingEvent.id ? 'Edit Event' : 'Add New Event'}
@@ -780,7 +780,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
 
       <div className="flex justify-between items-center">
         {event != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                   <DialogTitle>
                   {'Delete ' + event.name + ' content'}

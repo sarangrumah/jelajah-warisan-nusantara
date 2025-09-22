@@ -179,7 +179,7 @@ class ApiClient {
   
       return { data: responseData.file };
     } catch (error) {
-      return { error: 'Upload failed' };
+      return { error: 'Upload failed'+error };
     } finally {
       setGlobalLoading(false);
     }

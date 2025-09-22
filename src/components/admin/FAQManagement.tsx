@@ -142,6 +142,7 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
   const [editingFaq, setEditingFaq] = useState<Faq>(emptyFaq);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogDelete, setIsDialogDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -289,14 +290,16 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
 
   const toggleDelete = async (id: string) => {
     try {
-      setIsDialogDelete(false)
+      setDeleting(true);
       const response = await faqService.delete(id);
       if (response.error) {throw new Error(response.error)};
       toast({
         title: 'Success',
         description: `Faq Deleted`,
       });
-      fetchFaqs()
+      setFaqs(prev => prev.filter(f => f.id !== id));
+      setIsDialogDelete(false);
+      setFaq(undefined);
     } catch (error) {
       console.error('Error toggling faq:', error);
       toast({
@@ -304,6 +307,8 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
         description: 'Failed to delete FAQ',
         variant: 'destructive',
       });
+    } finally {
+      setDeleting(false);
     }
   };
   
@@ -356,7 +361,15 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {faq != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {faq != null  ? <Dialog open={isDialogDelete} onOpenChange={(open) => {
+          if (deleting) {
+            return;
+          }
+          setIsDialogDelete(open);
+          if (!open) {
+            setFaq(undefined);
+          }
+        }}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
                   <DialogTitle>
@@ -367,12 +380,12 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
                   </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <Button type="button" variant="outline" disabled={deleting} onClick={() => setIsDialogDelete(false)}>
                   <X className="w-4 h-4 mr-2" />
                       Cancel
                   </Button>
-                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(faq.id)}>
-                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  <Button type="button" disabled={deleting} onClick={() => toggleDelete(faq.id)}>
+                    {deleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     <Trash className="w-4 h-4 mr-2" />
                       Delete
                   </Button>
@@ -441,6 +454,18 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
+                    {userRole !== 'viewer' && userRole !== 'approver' ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          setFaq(faq);
+                          setIsDialogDelete(true);
+                        }}
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               </CardHeader>
