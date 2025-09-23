@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
@@ -49,19 +50,20 @@ const MuseumDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMuseums = async () => {
-      try {
-        const response = await museumService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching museums:', response.error);
-        } else {
-          setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching museums:', response.error);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
+      } else {
+        setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
       }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
     }
+  }
+  useEffect(() => {
     fetchMuseums();
   }, []);
 

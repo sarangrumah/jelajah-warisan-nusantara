@@ -5,33 +5,16 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
-import { newsService } from '@/lib/api-services';
+import { news } from '@/../database/default-data';
+import { useEffect } from 'react';
 
 const NewsDetail = () => {
   const { pathname } = useLocation();
-  const [news, setNews] = useState([]);
         
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
   const { id } = useParams();
-
-  useEffect(() => {
-      const fetchNews = async () => {
-        try {
-          const response = await newsService.getAll();
-          if (response.error) {
-            console.error('Error fetching news:', response.error);
-          } else {
-            setNews(response.data);
-          }
-        } catch (error) {
-          console.error('Error fetching news:', error);
-        }
-      };
-      fetchNews();
-    }, []);
 
   // const article = id && news[id as keyof typeof news] ? news[id as keyof typeof news] : null;
   const article = news.find((item) => item.id.toString() === id );

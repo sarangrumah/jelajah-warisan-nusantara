@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SubmissionFileButton from '@/components/admin/SubmissionFileButton';
 
 type Submission = {
   id: string;
@@ -175,9 +176,9 @@ const CareerSubmissionManagement = ({ userRole }: { userRole: string }) => {
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {sub.cv_url && <Button asChild variant="outline" size="sm"><a href={sub.cv_url} target="_blank" rel="noopener noreferrer">View CV</a></Button>}
-                  {sub.transcript_url && <Button asChild variant="outline" size="sm"><a href={sub.transcript_url} target="_blank" rel="noopener noreferrer">View Transcript</a></Button>}
-                  {sub.cover_letter_url && <Button asChild variant="outline" size="sm"><a href={sub.cover_letter_url} target="_blank" rel="noopener noreferrer">View Cover Letter</a></Button>}
+                  <SubmissionFileButton url={sub.cv_url} label="CV" />
+                  <SubmissionFileButton url={sub.transcript_url} label="Transcript" />
+                  <SubmissionFileButton url={sub.cover_letter_url} label="Cover Letter" />
                 </div>
               </CardContent>
             </Card>
@@ -213,14 +214,18 @@ const CareerSubmissionManagement = ({ userRole }: { userRole: string }) => {
                   <p className="text-sm text-muted-foreground">{detail.major || '-'} / {detail.semester ?? '-'} / {detail.ipk ?? '-'}</p>
                 </div>
                 <div className="md:col-span-2">
-                  <Label>Motivation</Label>
+                  <Label>Program Magang</Label>
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">{detail.career.title || '-'}</p>
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Motivation and Purpose</Label>
                   <p className="text-sm text-muted-foreground whitespace-pre-line">{detail.motivation || '-'}</p>
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {detail.cv_url && <Button asChild variant="outline" size="sm"><a href={detail.cv_url} target="_blank" rel="noopener noreferrer">View CV</a></Button>}
-                {detail.transcript_url && <Button asChild variant="outline" size="sm"><a href={detail.transcript_url} target="_blank" rel="noopener noreferrer">View Transcript</a></Button>}
-                {detail.cover_letter_url && <Button asChild variant="outline" size="sm"><a href={detail.cover_letter_url} target="_blank" rel="noopener noreferrer">View Cover Letter</a></Button>}
+                <SubmissionFileButton url={detail.cv_url} label="CV" />
+                <SubmissionFileButton url={detail.transcript_url} label="Transcript" />
+                <SubmissionFileButton url={detail.cover_letter_url} label="Cover Letter" />
               </div>
             </>
           )}
@@ -231,4 +236,3 @@ const CareerSubmissionManagement = ({ userRole }: { userRole: string }) => {
 };
 
 export default CareerSubmissionManagement;
-
