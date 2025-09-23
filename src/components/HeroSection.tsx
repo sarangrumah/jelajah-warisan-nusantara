@@ -23,15 +23,14 @@ function getImageOrVideoUrl(p: string) {
   if (p.startsWith('/uploads/') || p.startsWith('../uploads') || p.startsWith('/uploads/images/hero-section/') || p.startsWith('uploads/images/hero-section/')) {
     return assetUrl(p);
   }
-  // If it's an asset-relative path (old frontend), use /assets/hero-sections/
-  const heroSectionMatch = p.match(/hero-sections[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp))/i);
+  // If it's an asset-relative path, always use /assets/images/hero-section/
+  const heroSectionMatch = p.match(/(?:hero-sections|images[\\/]+hero-section)[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp|mp4))/i);
   if (heroSectionMatch) {
-    return `/assets/hero-sections/${heroSectionMatch[1]}`;
+    return `/assets/images/hero-section/${heroSectionMatch[1]}`;
   }
-  // If it's just a filename with a valid image extension, try both locations
-  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p)) {
-    // Prefer backend upload path if available
-    return assetUrl(`/assets/images/hero-section/${p}`);
+  // If it's just a filename with a valid image extension, always resolve to /assets/images/hero-section/
+  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(p)) {
+    return `/assets/images/hero-section/${p}`;
   }
   // Fallback: return as is
   return p;
