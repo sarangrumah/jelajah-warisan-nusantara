@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -20,27 +19,21 @@ const GalleryCollection = ({museum}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [collections, setCollections] = useState([]);
 
-  const fetchCollections = async () => {
-    try {
-      const response = await collectionService.getAll();
-
-      if (response.error) {
-        console.error('Error fetching collections:', response.error);
-        setCollections(defaultCollections);
-      }
-
-      if(response.data.length === 0) {
-        setCollections(defaultCollections);
-      } else {
-        setCollections(response.data);
-      }
-
-    } catch (error) {
-      console.error('Error fetching collections:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await collectionService.getAll();
+  
+        if (response.error) {
+          console.error('Error fetching collections:', response.error);
+        } else {
+          setCollections(response.data);
+        }
+  
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+      }
+    };
     fetchCollections();
   }, []);
 

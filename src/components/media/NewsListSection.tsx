@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { newsService } from '@/lib/api-services';
-import { publications } from '@/../database/default-data';
 
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
 
@@ -43,27 +42,21 @@ const NewsListSection = () => {
   ];
 
   useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await newsService.getAll();
+  
+        if (response.error) {
+          console.error('Error fetching articles:', response.error);
+        } else {
+          setArticles(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    };
     fetchArticles();
   }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const response = await newsService.getAll();
-
-      if (response.error) {
-        console.error('Error fetching articles:', response.error);
-        setArticles(publications);
-      }
-
-      if(response.data.length === 0) {
-        setArticles(publications);
-      } else {
-        setArticles(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    }
-  };
 
   const filteredArticles = articles.filter(article => {
     if (activeCategory === 'semua') {
