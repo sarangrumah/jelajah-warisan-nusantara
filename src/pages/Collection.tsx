@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter, Calendar, Building } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { defaultCollections } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -37,22 +36,21 @@ const Collection = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  const fetchCollections = async () => {
-    try {
-      const response = await collectionService.getAll();
-
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching collections:', response.error);
-        setCollections(defaultCollections);
-      } else {
-        setCollections(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching collections:', error);
-    }
-  };
-
+  
   useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await collectionService.getAll();
+  
+        if (response.error) {
+          console.error('Error fetching collections:', response.error);
+        } else {
+          setCollections(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+      }
+    };
     fetchCollections();
   }, []);
 

@@ -1,17 +1,33 @@
+// import { useState } from 'react';
+import { contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { DynamicComponent } from './dynamic-components';
-import { museumStat } from '@/../database/get-data';
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const [stats, setStats] = useState([
-    { icon: 'Users', value: museumStat.museums, label: 'museums' },
-    { icon: 'Award', value: museumStat.heritages, label: 'heritage' },
-    { icon: 'MapPin', value: museumStat.provinces, label: 'provinces' },
-    { icon: 'Clock', value: museumStat.experiences, label: 'experience' },
-  ]);
+  const [profiles, setProfiles] = useState([]);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const response = await contentService.getAll();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching profiles:', response.error);
+        } else {
+          setProfiles(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+      }
+    };
+    fetchProfiles();
+  }, []);
+  // const [stats, setStats] = useState([
+  //   { icon: 'Users', value: museumStat.museums, label: 'museums' },
+  //   { icon: 'Award', value: museumStat.heritages, label: 'heritage' },
+  //   { icon: 'MapPin', value: museumStat.provinces, label: 'provinces' },
+  //   { icon: 'Clock', value: museumStat.experiences, label: 'experience' },
+  // ]);
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -30,23 +46,25 @@ const ProfileSection = () => {
             {/* <h3 className="text-3xl font-bold text-foreground">
               Visi & Misi Kami
             </h3> */}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                <p className="text-muted-foreground">
-                  {t('profile.visionText')}
-                </p>
+            {profiles.length > 0 && profiles.map((profile: any) => (  
+              <div key={profile.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
+                  <p className="text-muted-foreground">
+                    {profile.vision.replace(/<[^>]+>/g, '')}
+                  </p>
+                </div>
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
+                  <ul className="space-y-2 text-muted-foreground">
+                    {/* {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item: string, index: number) => (
+                      <li key={index}>{item}</li>
+                    ))} */}
+                    {profile.mission}
+                  </ul>
+                </div>
               </div>
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item: string, index: number) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 

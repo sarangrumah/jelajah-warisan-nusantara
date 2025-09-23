@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { defaultHeritages } from '@/../database/default-data';
 import { heritageService } from '@/lib/api-services';
 
 const Heritage = () => {
@@ -22,18 +21,18 @@ const Heritage = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchHeritages = async () => {
-    try {
-      const response = await heritageService.getAll();
-      if(response.error) {
-        console.error('Error fetching heritages:', response.error);
-      }
-      setHeritages(response.data || defaultHeritages);
-    } catch (error) {
-      console.error('Error fetching heritages:', error);
-    }
-  };
   useEffect(() => {
+    const fetchHeritages = async () => {
+      try {
+        const response = await heritageService.getAll();
+        if(response.error) {
+          console.error('Error fetching heritages:', response.error);
+        }
+        setHeritages(response.data);
+      } catch (error) {
+        console.error('Error fetching heritages:', error);
+      }
+    };
     fetchHeritages();
   }, []);
 

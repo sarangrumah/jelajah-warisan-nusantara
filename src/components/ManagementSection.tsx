@@ -1,11 +1,10 @@
-import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
+import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { museumStat } from '@/../database/get-data';
+// import { useTranslation } from 'react-i18next';
 
 const ManagementSection = () => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const managementCards = [
     {
       icon: Building2,
@@ -17,7 +16,7 @@ const ManagementSection = () => {
         'Layanan edukasi publik',
         'Penelitian dan dokumentasi'
       ],
-      stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
+      // stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
       gradient: 'from-primary to-primary-glow'
     },
     {
@@ -30,7 +29,7 @@ const ManagementSection = () => {
         'Program restorasi',
         'Penelitian arkeologi'
       ],
-      stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
+      // stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
       gradient: 'from-accent to-secondary'
     }
   ];
@@ -84,7 +83,7 @@ const ManagementSection = () => {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-8">
-                  {Object.entries(card.stats).map(([key, value], statIndex) => (
+                  {/* {Object.entries(card.stats).map(([key, value], statIndex) => (
                     <div key={statIndex} className="text-center">
                       <div className="text-2xl font-bold text-heritage-gradient">
                         {value}
@@ -98,7 +97,7 @@ const ManagementSection = () => {
                          key === 'projects' ? 'Proyek' : key}
                       </div>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
 
                 {/* Action buttons */}

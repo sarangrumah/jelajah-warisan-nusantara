@@ -5,7 +5,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
@@ -20,20 +19,19 @@ const HeritageDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchHeritages = async () => {
-    try {
-      const response = await museumService.getAll();
-      if(response.error || response.data.length === 0) {
-        console.error('Error fetching heritages:', response.error);
-        setHeritages(mapSlidesWithImageUrl(defaultHeritages));
-      } else {
-        setHeritages(mapSlidesWithImageUrl(response.data));
-      }
-    } catch (error) {
-      console.error('Error fetching heritages:', error);
-    }
-  };
   useEffect(() => {
+    const fetchHeritages = async () => {
+      try {
+        const response = await museumService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching heritages:', response.error);
+        } else {
+          setHeritages(mapSlidesWithImageUrl(response.data));
+        }
+      } catch (error) {
+        console.error('Error fetching heritages:', error);
+      }
+    };
     fetchHeritages();
   }, []);
 

@@ -3,9 +3,7 @@ import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-
-import { eventCategories, defaultEvents } from '@/../database/default-data';
-import { agendaService } from '@/lib/api-services';
+import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 import {
@@ -46,17 +44,34 @@ const AgendaSection = () => {
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [eventCategories, setEventCategories] = useState([]);
 
   // Accessibility: Announce slide changes
-  const totalSlides = (
-    activeCategory === 'semua'
-      ? events.slice(0, 6)
-      : events.filter(event => event.category === activeCategory).slice(0, 6)
-  ).length;
+  // const totalSlides = (
+  //   activeCategory === 'semua'
+  //     ? events.slice(0, 6)
+  //     : events.filter(event => event.category === activeCategory).slice(0, 6)
+  // ).length;
+
+  useEffect(() => {
+    const fetchEventCategories = async () => {
+      try {
+        const response = await TypesAndCategoriesEvent.getAllCategories();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching event categories:', response.error);
+        } else {
+          setEventCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching event categories:', error);
+      }
+    };
+    fetchEventCategories();
+  }, []);
 
   // Auto-slide logic
   useEffect(() => {
-    if (!carouselApi || isPaused) return;
+    if (!carouselApi || isPaused) { return };
     const interval = setInterval(() => {
       if (carouselApi) {
         carouselApi.scrollNext();
@@ -67,7 +82,7 @@ const AgendaSection = () => {
 
   // Update current index for live region
   useEffect(() => {
-    if (!carouselApi) return;
+    if (!carouselApi) { return };
     const onSelect = () => {
       setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
     };
@@ -92,19 +107,25 @@ const AgendaSection = () => {
     }
   }, [carouselApi]);
 
-  const fetchEvents = async () => {
-    try {
-      const response = await agendaService.getAll();
-      if (response.error) {
-        console.error('Error fetching events:', response.error);
-      }
-  
-      setEvents(response.data || defaultEvents);
-    } catch (error) {
-      console.error('Error fetching events:', error);
-    }
-  };
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await EventsService.getAll();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching events:', response.error);
+        } else {
+          const filteredEvents = response.data.filter((event: any) => (
+            event.is_active === true 
+            && event.is_approved === true
+            && new Date(event.start_published_date) <= new Date()
+            && new Date(event.end_published_date) >= new Date()
+          ));
+          setEvents(filteredEvents);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
     fetchEvents();
   }, []);
 
@@ -144,7 +165,7 @@ const AgendaSection = () => {
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
-          {eventCategories.map((category) => (
+          {eventCategories.length > 0 && eventCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
@@ -154,7 +175,7 @@ const AgendaSection = () => {
                   : 'bg-card border border-border text-foreground hover:bg-muted'
               }`}
             >
-              {category.label}
+              {category.name}
             </button>
           ))}
         </div>
