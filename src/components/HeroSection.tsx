@@ -17,22 +17,24 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
+const heroImages = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp,mp4}', { eager: true, import: 'default' });
+
 function getImageOrVideoUrl(p: string) {
   if (typeof p !== 'string' || p.length === 0) { return ''; }
   // If it's an uploaded image (backend), use the API assetUrl helper
   if (p.startsWith('/uploads/') || p.startsWith('../uploads') || p.startsWith('/uploads/images/hero-section/') || p.startsWith('uploads/images/hero-section/')) {
     return assetUrl(p);
   }
-  // If it's an asset-relative path, always use /assets/images/hero-section/
-  const heroSectionMatch = p.match(/(?:hero-sections|images[\\/]+hero-section)[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp|mp4))/i);
-  if (heroSectionMatch) {
-    return `/assets/images/hero-section/${heroSectionMatch[1]}`;
+  // Try to resolve using import.meta.glob mapping
+  const filename = p.split('/').pop();
+  if (filename && heroImages) {
+    for (const [key, value] of Object.entries(heroImages)) {
+      if (key.endsWith('/' + filename)) {
+        return value as string;
+      }
+    }
   }
-  // If it's just a filename with a valid image extension, always resolve to /assets/images/hero-section/
-  if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(p)) {
-    return `/assets/images/hero-section/${p}`;
-  }
-  // Fallback: return as is
+  // Fallback: return as is (will likely 404)
   return p;
 }
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
