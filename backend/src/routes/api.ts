@@ -31,6 +31,10 @@ Object.entries(tableConfigs).forEach(([tableName, fields]) => {
 const careerApplicationsController = createCrudController('career_applications', tableConfigs.career_applications);
 router.post('/career_applications/public', careerApplicationsController.create);
 
+// Debug endpoint to list all registered table names at runtime
+router.get('/debug-tables', (req, res) => {
+  res.json({ tables: Object.keys(require('../config/tableConfigs').tableConfigs) });
+});
 // Debug: Print all registered API routes
 router.stack.forEach((layer) => {
   if (layer.route) {
