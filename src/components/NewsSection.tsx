@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { news } from '@/../database/default-data';
 
 import {
   Carousel,
@@ -10,7 +11,6 @@ import {
   CarouselPrevious,
   CarouselNext
 } from '@/components/ui/carousel';
-import { newsService } from '@/lib/api-services';
 
 const newsImages = import.meta.glob('../assets/news/*', { eager: true });
 
@@ -39,25 +39,9 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const [news, setNews] = React.useState([]);
 
-  React.useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await newsService.getAll();
-        if (response.error) {
-          console.error('Error fetching news:', response.error);
-        } else {
-          setNews(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching news:', error);
-      }
-    };
-    fetchNews();
-  }, []);
   // Accessibility: Announce slide changes
-  // const totalSlides = news.length;
+  const totalSlides = news.length;
 
   // Auto-slide logic
   React.useEffect(() => {
@@ -141,13 +125,13 @@ const NewsSection = () => {
                   <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
                     <div className="aspect-video relative overflow-hidden">
                       <img
-                        src={getNewsImageUrl(article.featured_image_url)}
+                        src={getNewsImageUrl(article.image)}
                         alt={article.title}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-4 left-4">
                         <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                          {article.slug}
+                          {article.category}
                         </span>
                       </div>
                     </div>

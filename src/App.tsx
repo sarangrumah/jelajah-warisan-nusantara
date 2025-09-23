@@ -33,7 +33,6 @@ import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 import FloatingButtons from "@/components/FloatingButtons";
-import PemanfaatanAset from "./pages/PemanfaatanAset";
 
 const queryClient = new QueryClient();
 
@@ -57,7 +56,6 @@ const App = () => {
               {/* <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} /> */}
               <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
               <Route path="/media-publikasi" element={<MediaPublikasi />} />
-              <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
               <Route path="/hubungi-kami" element={<HubungiKami />} />
               <Route path="/career" element={<Career />} />
               <Route path="/ppid" element={<PPID />} />

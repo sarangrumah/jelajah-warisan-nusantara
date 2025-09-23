@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService } from '@/lib/api-services';
 import { heroVideoService } from '@/lib/api-services';
+import { defaultSlides } from '@/../database/default-data';
+import { defaultVideos } from '@/../database/default-data';
 
 const HeroSection = () => {
 
@@ -52,36 +54,42 @@ const HeroSection = () => {
       setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     }
   };
-    
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        const response = await bannerService.getAll();
-        if (response.error) {
-          console.error('Error fetching slides:', response.error);
-        } else {
-          setSlides(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching slides:', error);
-      }
   
-    };
+  const fetchSlides = async () => {
+    try {
+      const response = await bannerService.getAll();
+      if (response.error) {
+        console.log('Error fetching slides:', response.error);
+        setSlides(defaultSlides);
+      }
+      if(response.data.length === 0) {
+        setSlides(defaultSlides);
+      } else {
+        setSlides(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching slides:', error);
+    }
+
+  };
+
+  useEffect(() => {
     fetchSlides();
   },[]);
-  
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await heroVideoService.getAll();
-        if (response.error) {
-          console.error('Error fetching videos:', response.error)
-        }
-        setVideoList(response.data);
-      } catch (error) {
-        console.error('Error fetching videos:', error)
+
+  const fetchVideos = async () => {
+    try {
+      const response = await heroVideoService.getAll();
+      if (response.error) {
+        console.log('Error fetching videos:', response.error)
       }
+      setVideoList(response.data || defaultVideos);
+    } catch (error) {
+      console.error('Error fetching videos:', error)
     }
+  }
+
+  useEffect(() => {
     fetchVideos();
   }, []);
 
