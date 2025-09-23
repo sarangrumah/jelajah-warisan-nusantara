@@ -7,7 +7,6 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
@@ -22,22 +21,20 @@ const CollectionDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchCollections = async () => {
+  useEffect(() => {
+    const fetchCollections = async () => {
       try {
         const response = await collectionService.getAll();
-  
         if (response.error) {
           console.error('Error fetching collections:', response.error);
         }
-  
-        setCollections(response.data || defaultCollections);
+        setCollections(response.data);
       } catch (error) {
         console.error('Error fetching collections:', error);
       }
     };
-    useEffect(() => {
-      fetchCollections();
-    }, []);
+    fetchCollections();
+  }, []);
 
   // const collection = collections[parseInt(id as string) as keyof typeof collections];
   const filteredCollection = collections.filter(collection => collection.id.toString() === id);

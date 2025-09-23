@@ -27,6 +27,7 @@ import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
 // import StrukturOrganisasi from "./pages/StrukturOrganisasi";
 import LayananKonservasi from "./pages/LayananKonservasi";
 import Peraturan from "./pages/Peraturan";
+import PemanfaatanAset from "./pages/PemanfaatanAset";
 import MemoryOfWorld from "./pages/MemoryOfWorld";
 
 import { useLoading } from "@/components/LoadingContext";
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/hubungi-kami" element={<HubungiKami />} />
               <Route path="/career" element={<Career />} />
               <Route path="/ppid" element={<PPID />} />
+              <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
               <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
               <Route path="/peraturan" element={<Peraturan />} />
               <Route path="/museums/:type?" element={<Museum />} />

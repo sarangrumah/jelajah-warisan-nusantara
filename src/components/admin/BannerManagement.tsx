@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
+import { VITE_API_URL } from '@/lib/env';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -476,23 +477,45 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                           <DialogContent className="max-w-3xl">
                             <DialogHeader>
                               <DialogTitle>Banner Image Preview</DialogTitle>
+                              <DialogDescription>
+                                Preview of the selected banner image. Asset-relative images may not work in production.
+                              </DialogDescription>
                             </DialogHeader>
+                            {banner.image?.startsWith('../src/assets/') && (
+                              <div style={{ color: 'orange', fontWeight: 'bold', marginBottom: 12 }}>
+                                Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
+                              </div>
+                            )}
                             {(() => {
-                              const apiUrl = banner.image?.trim() ?? '';
-                              if (!apiUrl) {
-                                return <div className="text-sm text-muted-foreground">Gambar tidak tersedia</div>;
+                              let imgUrl = '';
+                              if (
+                                banner.image?.startsWith('/') ||
+                                banner.image?.startsWith('http') ||
+                                banner.image?.startsWith('../src/assets/')
+                              ) {
+                                // Always use /assets/images/hero-section/ for asset-relative images
+                                const assetMatch = banner.image.match(/(?:hero-sections|images[\\/]+hero-section)[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp|mp4))/i);
+                                if (assetMatch) {
+                                  imgUrl = `/assets/images/hero-section/${assetMatch[1]}`;
+                                } else if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(banner.image)) {
+                                  imgUrl = `/assets/images/hero-section/${banner.image}`;
+                                } else {
+                                  imgUrl = banner.image;
+                                }
+                              } else {
+                                // Use API base URL if available
+                                imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
                               }
-
-                              const imgUrl = apiUrl;
-
-                              if (typeof window !== 'undefined') {
-                                console.log('[Banner Preview] resolved URL:', imgUrl);
+                              // Log the final image URL and environment for debugging
+                              if (typeof window !== "undefined") {
+                                // Only log in browser
+                                console.log('[Banner Preview] VITE_API_URL:', VITE_API_URL, 'banner.image:', banner.image);
+                                console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
                               }
-
-                              return imgUrl ? (
+                              return (
                                 <div>
-                                  <div style={{ wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8 }}>
-                                    {/* Preview URL: {apiUrl} */}
+                                  <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
+                                    Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
                                   </div>
                                   <img
                                     src={imgUrl}
@@ -500,8 +523,6 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                                     className="w-full h-auto rounded-md"
                                   />
                                 </div>
-                              ) : (
-                                <div className="text-sm text-muted-foreground">Gambar tidak tersedia</div>
                               );
                             })()}
                           </DialogContent>
