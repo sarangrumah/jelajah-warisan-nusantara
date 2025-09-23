@@ -24,8 +24,9 @@ function getCollectionImageUrl(filename: string) {
   ) {
     return filename;
   }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  // Always extract the filename and match against imported images
+  const justFile = filename.split('/').pop();
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(justFile || ''));
   return match ? (match[1] as any).default : filename;
 }
 const MemoryOfWorld = () => {
