@@ -144,7 +144,7 @@ const UserManagement = () => {
       await fetchUsers();
     } catch (err) {
       console.error('Error creating user:', err);
-      toast({ title: 'Error', description: 'Gagal membuat pengguna', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Gagal memAdd New User', variant: 'destructive' });
     } finally {
       setCreating(false);
     }
@@ -236,7 +236,7 @@ const UserManagement = () => {
         {isSuperAdmin && (
           <Button onClick={() => setShowCreateDialog(true)}>
             <UserPlus className="w-4 h-4 mr-2" />
-            Buat Pengguna
+            Add New User
           </Button>
         )}
       </div>
@@ -245,7 +245,7 @@ const UserManagement = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="w-5 h-5" />
-            Daftar Pengguna
+            List User
           </CardTitle>
           <CardDescription>
             Kelola role dan hak akses pengguna sistem
@@ -457,9 +457,9 @@ const UserManagement = () => {
   <Dialog open={showCreateDialog} onOpenChange={(open) => { setShowCreateDialog(open); if (!open) {resetCreateForm();} }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Buat Pengguna Baru</DialogTitle>
+            <DialogTitle>Add New User Baru</DialogTitle>
             <DialogDescription>
-              Hanya Super Admin yang dapat membuat pengguna baru
+              Hanya Super Admin yang dapat memAdd New User baru
             </DialogDescription>
           </DialogHeader>
 
