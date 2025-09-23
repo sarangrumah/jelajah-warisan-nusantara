@@ -19,16 +19,19 @@ function isVideo(filename: string) {
 }
 function getImageOrVideoUrl(p: string) {
   if (typeof p !== 'string' || p.length === 0) { return ''; }
-  // Resolve uploads to API base; keep /assets local references intact
-  if (p.startsWith('/uploads/') || p.startsWith('../uploads')) { return assetUrl(p); }
-  // Always resolve any path containing 'hero-sections' and a valid image extension to /assets/hero-sections/filename
+  // If it's an uploaded image (backend), use the API assetUrl helper
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads') || p.startsWith('/uploads/images/hero-section/') || p.startsWith('uploads/images/hero-section/')) {
+    return assetUrl(p);
+  }
+  // If it's an asset-relative path (old frontend), use /assets/hero-sections/
   const heroSectionMatch = p.match(/hero-sections[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp))/i);
   if (heroSectionMatch) {
     return `/assets/hero-sections/${heroSectionMatch[1]}`;
   }
-  // If it's just a filename with a valid image extension, always resolve to /assets/hero-sections/filename
+  // If it's just a filename with a valid image extension, try both locations
   if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p)) {
-    return `/assets/hero-sections/${p}`;
+    // Prefer backend upload path if available
+    return assetUrl(`/uploads/images/hero-section/${p}`);
   }
   // Fallback: return as is
   return p;
