@@ -1,33 +1,49 @@
 // import { useState } from 'react';
-import { contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { contentService } from '@/lib/api-services';
+
+type CompanyProfile = {
+  id: string;
+  name: string;
+  brand?: string;
+  aboutus?: string;
+  vision?: string;
+  mission?: string;
+  address?: string;
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  website?: string;
+  latitude?: string;
+  longitude?: string;
+  // Add other fields as needed
+};
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const [profiles, setProfiles] = useState([]);
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const response = await contentService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching profiles:', response.error);
-        } else {
-          setProfiles(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching profiles:', error);
+        if (response.error) { throw new Error(response.error); }
+        // Use the first profile (or adjust as needed)
+        const data = response.data as CompanyProfile[];
+        setProfile(data && data.length > 0 ? data[0] : null);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load profile');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchProfiles();
+    fetchProfile();
   }, []);
-  // const [stats, setStats] = useState([
-  //   { icon: 'Users', value: museumStat.museums, label: 'museums' },
-  //   { icon: 'Award', value: museumStat.heritages, label: 'heritage' },
-  //   { icon: 'MapPin', value: museumStat.provinces, label: 'provinces' },
-  //   { icon: 'Clock', value: museumStat.experiences, label: 'experience' },
-  // ]);
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -41,34 +57,56 @@ const ProfileSection = () => {
           </p>
         </div>
 
-        <div className="grid gap-12 items-center mb-16">
-          <div className="space-y-6 scroll-reveal">
-            {/* <h3 className="text-3xl font-bold text-foreground">
-              Visi & Misi Kami
-            </h3> */}
-            {profiles.length > 0 && profiles.map((profile: any) => (  
-              <div key={profile.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        {loading && (
+          <div className="text-center text-muted-foreground">Loading company profile...</div>
+        )}
+        {error && (
+          <div className="text-center text-red-500">Error: {error}</div>
+        )}
+        {profile && (
+          <div className="grid gap-12 items-center mb-16">
+            <div className="space-y-6 scroll-revealx">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <p className="text-muted-foreground">
-                    {profile.vision.replace(/<[^>]+>/g, '')}
-                  </p>
+                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
+                  {!profile.vision && (
+                    <div style={{ color: 'red', fontSize: '0.9em' }}>
+                      <b>Debug:</b> Vision is missing or empty from backend.
+                    </div>
+                  )}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <ul className="space-y-2 text-muted-foreground">
-                    {/* {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item: string, index: number) => (
-                      <li key={index}>{item}</li>
-                    ))} */}
-                    {profile.mission}
+                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
+                  {!profile.mission && (
+                    <div style={{ color: 'red', fontSize: '0.9em' }}>
+                      <b>Debug:</b> Mission is missing or empty from backend.
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold text-primary mb-2">About Us</h4>
+                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+                </div>
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold text-primary mb-2">Contact</h4>
+                  <ul className="text-muted-foreground space-y-1">
+                    <li><b>Address:</b> {profile.address || '-'}</li>
+                    <li><b>Phone:</b> {profile.phone || '-'}</li>
+                    <li><b>WhatsApp:</b> {profile.whatsapp || '-'}</li>
+                    <li><b>Email:</b> {profile.email || '-'}</li>
+                    <li><b>Website:</b> {profile.website || '-'}</li>
                   </ul>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Call to Action */}
+        {/* Call to Action (optional) */}
         {/* <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">

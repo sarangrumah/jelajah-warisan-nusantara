@@ -5,21 +5,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
+/*
+// Disabled due to missing images causing Vite errors
 const collectionImages = import.meta.glob('@/assets/collections/*', { eager: true });
 
 function getCollectionImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  return '/placeholder.svg'; // fallback to a placeholder image
 }
+*/
 
 const GalleryCollection = ({museum}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -45,7 +38,7 @@ const GalleryCollection = ({museum}) => {
   }, []);
 
   const galleries = collections.filter(collection => collection.museum === museum);
-  const images = galleries.map(gallery => getCollectionImageUrl(gallery.image_url?.split('/').pop() || gallery.image_url || ""));
+  const images = galleries.map(() => '/placeholder.svg');
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {
