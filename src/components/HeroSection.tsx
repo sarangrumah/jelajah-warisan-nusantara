@@ -31,7 +31,7 @@ function getImageOrVideoUrl(p: string) {
   // If it's just a filename with a valid image extension, try both locations
   if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp)$/i.test(p)) {
     // Prefer backend upload path if available
-    return assetUrl(`/images/hero-section/${p}`);
+    return assetUrl(`/assets/images/hero-section/${p}`);
   }
   // Fallback: return as is
   return p;
