@@ -52,7 +52,22 @@ const ProfileSection = () => {
           <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+          {loading && (
+            <div className="text-center text-muted-foreground">Loading company profile...</div>
+          )}
+          {error && (
+            <div className="text-center text-red-500">Error: {error}</div>
+          )}
+          {profile ? (
+            <p
+              className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify"
+              dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }}
+            />
+          ) : (!loading && !error) ? (
+            <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
+              No company profile data available.
+            </p>
+          ) : null}
             {/* {t('profile.description')} */}
           
         </div>
