@@ -51,9 +51,9 @@ const ProfileSection = () => {
           <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
-            {t('profile.description')}
-          </p>
+          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+            {/* {t('profile.description')} */}
+          
         </div>
 
         {loading && (
@@ -83,22 +83,6 @@ const ProfileSection = () => {
                       <b>Debug:</b> Mission is missing or empty from backend.
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">About Us</h4>
-                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
-                </div>
-                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">Contact</h4>
-                  <ul className="text-muted-foreground space-y-1">
-                    <li><b>Address:</b> {profile.address || '-'}</li>
-                    <li><b>Phone:</b> {profile.phone || '-'}</li>
-                    <li><b>WhatsApp:</b> {profile.whatsapp || '-'}</li>
-                    <li><b>Email:</b> {profile.email || '-'}</li>
-                    <li><b>Website:</b> {profile.website || '-'}</li>
-                  </ul>
                 </div>
               </div>
             </div>
