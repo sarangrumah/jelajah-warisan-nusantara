@@ -3,11 +3,10 @@ import { Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { agendaService, EventsService } from '@/lib/api-services';
-import { eventCategories, defaultEvents } from '@/../database/default-data';
+import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
-import { set } from 'zod';
+// import { set } from 'zod';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
 
@@ -36,30 +35,45 @@ const AgendaList = () => {
   // const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
-
   const [events, setEvents] = useState([]);
+  const [eventCategories, setEventCategories] = useState([]);
 
-  const fetchEvents = async () => {
-    try {
-      const response = await EventsService.getAll();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching events:', response.error);
-        setEvents(defaultEvents);
-      } else {
-        const filteredEvents = response.data.filter((event: any) => (
-          event.is_active === true 
-          && event.is_approved === true
-          && new Date(event.start_published_date) <= new Date()
-          && new Date(event.end_published_date) >= new Date()
-        ));
-        setEvents(filteredEvents);
-      }
-    } catch (error) {
-      console.error('Error fetching events:', error);
-    }
-  };
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await EventsService.getAll();
+        if (response.error) {
+          console.error('Error fetching events:', response.error);
+        } else {
+          const filteredEvents = response.data.filter((event: any) => (
+            event.is_active === true 
+            && event.is_approved === true
+            && new Date(event.start_published_date) <= new Date()
+            && new Date(event.end_published_date) >= new Date()
+          ));
+          setEvents(filteredEvents);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
     fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const fetchEventCategories = async () => {
+      try {
+        const response = await TypesAndCategoriesEvent.getAllCategories();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching event categories:', response.error);
+        } else {
+          setEventCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching event categories:', error);
+      }
+    };
+    fetchEventCategories();
   }, []);
 
   const filteredEvents = events.filter(event => {
@@ -106,19 +120,18 @@ const AgendaList = () => {
                 className="pl-10"
               />
             </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {eventCategories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={activeCategory === category.id ? "default" : "outline"}
-                  onClick={() => setActiveCategory(category.id)}
-                  className="text-sm"
-                >
-                  {category.label}
-                </Button>
-              ))}
-            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {eventCategories.map((category) => (
+              <Button
+                key={category.id}
+                variant={activeCategory === category.id ? "default" : "outline"}
+                onClick={() => setActiveCategory(category.id)}
+                className="text-sm"
+              >
+                {category.name}
+              </Button>
+            ))}
           </div>
         </div>
 

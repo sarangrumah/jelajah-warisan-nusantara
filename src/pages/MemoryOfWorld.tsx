@@ -7,8 +7,7 @@ import { Filter, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { defaultMemories } from '@/../database/default-data';
-import { collectionService } from '@/lib/api-services';
+import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 interface Memory {
@@ -25,8 +24,9 @@ function getCollectionImageUrl(filename: string) {
   ) {
     return filename;
   }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  // Always extract the filename and match against imported images
+  const justFile = filename.split('/').pop();
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(justFile || ''));
   return match ? (match[1] as any).default : filename;
 }
 const MemoryOfWorld = () => {
@@ -40,27 +40,26 @@ const MemoryOfWorld = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchMemories = async () => {
-    try {
-      const response = await collectionService.getAll();
-      const filteredResponse = (response.data as Memory[]).filter(item => item.type === 'mow');
-      if(response.error || filteredResponse.length === 0) {
-        console.error('Error fetching memories:', response.error);
-        setMemories(defaultMemories);
-      } else {
-        setMemories(filteredResponse);
-      }
-    } catch (error) {
-      console.error('Error fetching memories:', error);
-    }
-  }
   useEffect(() => {
+    const fetchMemories = async () => {
+      try {
+        const response = await memoryWorldService.getAll();
+        if (response.error || !response.data) {
+          console.error('Error fetching memories:', response);
+        } else {
+          setMemories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching memories:', error);
+      }
+    }
     fetchMemories();
   }, []);
 
   const filteredMemories = memories.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (item.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (item.subtitle?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    // If tb_memoryoftheworld does not have a category field, skip category filtering
     const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
     return matchesSearch && matchesFilter;
   });
@@ -99,11 +98,6 @@ const MemoryOfWorld = () => {
               <SelectValue placeholder={t('Filter by category')} />
             </SelectTrigger>
             <SelectContent>
-              {/* <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
-              <SelectItem value="sculpture">{t('filter.collection.categorySculpture')}</SelectItem>
-              <SelectItem value="manuscript">{t('filter.collection.categoryManuscript')}</SelectItem>
-              <SelectItem value="textile">{t('filter.collection.categoryTextile')}</SelectItem>
-              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>*/}
               <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
               <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
               <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>

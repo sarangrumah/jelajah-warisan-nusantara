@@ -493,7 +493,15 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                                 banner.image?.startsWith('http') ||
                                 banner.image?.startsWith('../src/assets/')
                               ) {
-                                imgUrl = banner.image;
+                                // Always use /assets/images/hero-section/ for asset-relative images
+                                const assetMatch = banner.image.match(/(?:hero-sections|images[\\/]+hero-section)[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp|mp4))/i);
+                                if (assetMatch) {
+                                  imgUrl = `/assets/images/hero-section/${assetMatch[1]}`;
+                                } else if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(banner.image)) {
+                                  imgUrl = `/assets/images/hero-section/${banner.image}`;
+                                } else {
+                                  imgUrl = banner.image;
+                                }
                               } else {
                                 // Use API base URL if available
                                 imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
