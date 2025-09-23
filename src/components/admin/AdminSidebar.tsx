@@ -86,22 +86,26 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
         {menuItems.map((item) => {
           const Icon = item.icon;
           const disabled = isMenuItemDisabled(item.id);
+          if (!disabled) {
+              return (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start",
+                  disabled && "opacity-50 cursor-not-allowed"
+                )}
+                onClick={() => !disabled && handleTabChange(item.id)}
+                disabled={disabled}
+              >
+                <Icon className="w-4 h-4 mr-3" />
+                {item.label}
+              </Button>
+            );
+          } else {
+            return (<></>);
+          }
           
-          return (
-            <Button
-              key={item.id}
-              variant={activeTab === item.id ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start",
-                disabled && "opacity-50 cursor-not-allowed"
-              )}
-              onClick={() => !disabled && handleTabChange(item.id)}
-              disabled={disabled}
-            >
-              <Icon className="w-4 h-4 mr-3" />
-              {item.label}
-            </Button>
-          );
         })}
       </nav>
 

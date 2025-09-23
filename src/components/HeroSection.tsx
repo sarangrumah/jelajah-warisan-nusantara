@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { defaultSlides } from '@/../database/default-data';
-// import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
@@ -148,46 +146,44 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     }
   };
   
-  const fetchSlides = async () => {
-    try {
-      const response = await bannerService.getAll();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching slides:', response.error);
-        setSlides(mapSlidesWithImageUrl(defaultSlides));
-      } else {
-        const filteredSlides = response.data.filter((slide: any) => (
-          slide.is_active === true 
-          && slide.is_approved === true 
-          && new Date(slide.start_publish_date) <= new Date()
-          && new Date(slide.end_publish_date) >= new Date()
-        ));
-        setSlides(mapSlidesWithImageUrl(filteredSlides));
-      }
-    } catch (error) {
-      console.error('Error fetching slides:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await bannerService.getAll();
+        if (response.error) {
+          console.error('Error fetching slides:', response.error);
+          // setSlides(mapSlidesWithImageUrl(defaultSlides));
+        } else {
+          const filteredSlides = response.data.filter((slide: any) => (
+            slide.is_active === true 
+            && slide.is_approved === true 
+            && new Date(slide.start_publish_date) <= new Date()
+            && new Date(slide.end_publish_date) >= new Date()
+          ));
+          setSlides(mapSlidesWithImageUrl(filteredSlides));
+        }
+      } catch (error) {
+        console.error('Error fetching slides:', error);
+      }
+    };
     fetchSlides();
-  },[]);
-
-  const fetchTypeSites = async () => {
-    try {
-      const response = await TypesAndCategoriesSites.getAllTypes();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching types:', response.error);
-      } else {
-        setTypes(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  }
+  }, []);
 
   useEffect(() => {
+    const fetchTypeSites = async () => {
+      try {
+        const response = await TypesAndCategoriesSites.getAllTypes();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching types:', response.error);
+        } else {
+          setTypes(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching museums:', error);
+      }
+    }
     fetchTypeSites();
-  },[]);
+  }, []);
 
   const linkTo = (slides: string) => {
     const type = types.find((type) => type.name === slides)?.id;

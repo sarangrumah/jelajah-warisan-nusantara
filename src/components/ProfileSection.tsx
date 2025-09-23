@@ -1,3 +1,4 @@
+// import { useState } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
@@ -64,7 +65,7 @@ const ProfileSection = () => {
         )}
         {profile && (
           <div className="grid gap-12 items-center mb-16">
-            <div className="space-y-6 scroll-reveal">
+            <div className="space-y-6 scroll-revealx">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
