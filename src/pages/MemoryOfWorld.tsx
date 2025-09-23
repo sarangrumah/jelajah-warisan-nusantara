@@ -7,7 +7,7 @@ import { Filter, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { collectionService } from '@/lib/api-services';
+import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 interface Memory {
@@ -43,12 +43,11 @@ const MemoryOfWorld = () => {
   useEffect(() => {
     const fetchMemories = async () => {
       try {
-        const response = await collectionService.getAll();
-        const filteredResponse = (response.data as Memory[]).filter(item => item.type === 'mow');
-        if(response.error || filteredResponse.length === 0) {
+        const response = await memoryWorldService.getAll();
+        if (response.error || !response.data) {
           console.error('Error fetching memories:', response);
         } else {
-          setMemories(filteredResponse);
+          setMemories(response.data);
         }
       } catch (error) {
         console.error('Error fetching memories:', error);
@@ -58,8 +57,9 @@ const MemoryOfWorld = () => {
   }, []);
 
   const filteredMemories = memories.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (item.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (item.subtitle?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    // If tb_memoryoftheworld does not have a category field, skip category filtering
     const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
     return matchesSearch && matchesFilter;
   });
