@@ -46,7 +46,7 @@ const MemoryOfWorld = () => {
         const response = await collectionService.getAll();
         const filteredResponse = (response.data as Memory[]).filter(item => item.type === 'mow');
         if(response.error || filteredResponse.length === 0) {
-          console.error('Error fetching memories:', response.error);
+          console.error('Error fetching memories:', response);
         } else {
           setMemories(filteredResponse);
         }
