@@ -52,6 +52,7 @@ const UserManagement = () => {
   const [creating, setCreating] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserPasswordConfirm, setNewUserPasswordConfirm] = useState('');
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState<string>('viewer');
   const { toast } = useToast();
@@ -110,6 +111,7 @@ const UserManagement = () => {
   const resetCreateForm = () => {
     setNewUserEmail('');
     setNewUserPassword('');
+    setNewUserPasswordConfirm('');
     setNewUserName('');
     setNewUserRole('viewer');
   };
@@ -118,6 +120,20 @@ const UserManagement = () => {
     if (!isSuperAdmin) {return "";}
     if (!newUserEmail || !newUserPassword) {
       toast({ title: 'Validasi', description: 'Email dan password wajib diisi', variant: 'destructive' });
+      return;
+    }
+    console.log(newUserPassword, newUserPasswordConfirm)
+    if (newUserPassword !== newUserPasswordConfirm) {
+      toast({ title: 'Validasi', description: 'Konfirmasi password tidak cocok', variant: 'destructive' });
+      return;
+    }
+    const passwordPolicy = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+    if (!passwordPolicy.test(newUserPassword)) {
+      toast({
+        title: 'Validasi',
+        description: 'Password minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, angka, dan simbol.',
+        variant: 'destructive',
+      });
       return;
     }
     setCreating(true);
@@ -475,6 +491,22 @@ const UserManagement = () => {
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="new-password" className="text-right">Password</Label>
               <Input id="new-password" type="password" className="col-span-3" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="new-password-confirm" className="text-right">Konfirmasi</Label>
+              <Input
+                id="new-password-confirm"
+                type="password"
+                className="col-span-3"
+                value={newUserPasswordConfirm}
+                onChange={(e) => setNewUserPasswordConfirm(e.target.value)}
+                placeholder="Ulangi password"
+              />
+            </div>
+            <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground">
+              <span className="col-span-3 col-start-2">
+                Password minimal 8 karakter dengan huruf besar, huruf kecil, angka, dan simbol.
+              </span>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="new-role" className="text-right">Role</Label>
