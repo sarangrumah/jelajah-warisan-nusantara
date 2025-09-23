@@ -31,4 +31,11 @@ Object.entries(tableConfigs).forEach(([tableName, fields]) => {
 const careerApplicationsController = createCrudController('career_applications', tableConfigs.career_applications);
 router.post('/career_applications/public', careerApplicationsController.create);
 
+// Debug: Print all registered API routes
+router.stack.forEach((layer) => {
+  if (layer.route) {
+    const methods = Object.keys(layer.route.methods).join(',').toUpperCase();
+    console.log(`[API ROUTE] ${methods} ${layer.route.path}`);
+  }
+});
 export default router;
