@@ -140,7 +140,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         label="Banner Image"
         value={formData.image}
         onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
-        bucket="hero-sections"
+        bucket="hero-section"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
