@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 /* import { VITE_API_URL } from '@/lib/env'; */ // No longer used
@@ -82,14 +82,20 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
   }, [formData.image]);
 
   // Keep form in sync when editing a different banner
+  // Only reset formData if the banner id changes (prevents clearing image after upload)
+  const prevBannerIdRef = useRef<string | undefined>();
   useEffect(() => {
-    const b = banner || emptyBanner;
-    setFormData({
-      ...b,
-      start_publish_date: toDateInput(b.start_publish_date),
-      end_publish_date: toDateInput(b.end_publish_date),
-    });
-  }, [banner]);
+    if (banner?.id !== prevBannerIdRef.current) {
+      const b = banner || emptyBanner;
+      setFormData({
+        ...b,
+        start_publish_date: toDateInput(b.start_publish_date),
+        end_publish_date: toDateInput(b.end_publish_date),
+      });
+      prevBannerIdRef.current = banner?.id;
+    }
+    // else, do not reset formData (preserve local changes)
+  }, [banner?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
