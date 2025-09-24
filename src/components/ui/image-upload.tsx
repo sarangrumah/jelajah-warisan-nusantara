@@ -37,7 +37,7 @@ export const ImageUpload = ({
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
-    if (!file) return;
+    if (!file) {return;}
 
     // Show local preview immediately
     setLocalPreview(URL.createObjectURL(file));
@@ -77,8 +77,10 @@ export const ImageUpload = ({
         // Always extract just the filename (strip any path, including ../src/assets/images/)
         if (url) {
           // Remove any directory path, keep only the filename
+          const originalUrl = url;
           url = url.split('/').pop() || url;
           url = `/uploads/${bucket}/${url}`;
+          console.log('[ImageUpload] Upload response url:', originalUrl, 'Normalized preview url:', url);
         }
         onChange(url);
         setLocalPreview(null); // Switch to uploaded image preview
