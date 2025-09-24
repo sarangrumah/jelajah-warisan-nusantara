@@ -52,6 +52,14 @@ const bucketWhitelist = [
 const allowedBuckets = new Set(bucketWhitelist);
 
 const ensureBucketPath = (bucket: string) => {
+  // Special case: for images/hero-section, always use absolute path to src/assets/images/hero-section
+  if (bucket === 'images/hero-section') {
+    const target = path.resolve(__dirname, '../../../src/assets/images/hero-section');
+    if (!fs.existsSync(target)) {
+      fs.mkdirSync(target, { recursive: true });
+    }
+    return target;
+  }
   // Support nested buckets, e.g., "images/hero-section"
   const safeBucket = bucket
     .split('/')
