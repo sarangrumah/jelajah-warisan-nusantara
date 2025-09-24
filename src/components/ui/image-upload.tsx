@@ -148,37 +148,56 @@ export const ImageUpload = ({
   };
 
   // Helper: Extract filename from any path
+  // Robust filename extraction: handles /assets/images/hero-section/filename.jpg, /uploads/images/filename.jpg, etc.
   function extractFilename(path: string | undefined | null): string | null {
     if (!path) { return null; }
-    const parts = path.split('/');
+    // Remove any query/hash
+    const clean = path.split(/[?#]/)[0];
+    // Remove any trailing slash
+    const noSlash = clean.replace(/\/$/, '');
+    // Get last segment
+    const parts = noSlash.split('/');
     return parts[parts.length - 1] || null;
   }
 
   // Admin preview: always try /uploads/images/filename first, fallback to assetUrl(value)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [debugPreview, setDebugPreview] = useState<{uploadsUrl: string, fallbackUrl: string, used: string}>({uploadsUrl: '', fallbackUrl: '', used: ''});
 
-  // Compute preview URL on value/localPreview change
-  // If uploading, show local preview
-  // Otherwise, try /uploads/images/filename, fallback to assetUrl(value)
   useEffect(() => {
     if (localPreview) {
       setPreviewUrl(localPreview);
+      setDebugPreview({uploadsUrl: '', fallbackUrl: '', used: localPreview});
       return;
     }
     if (!value) {
       setPreviewUrl(null);
+      setDebugPreview({uploadsUrl: '', fallbackUrl: '', used: ''});
       return;
     }
     const filename = extractFilename(value);
     if (filename) {
       const uploadsUrl = `/uploads/images/${filename}`;
+      const fallbackUrl = assetUrl(value);
       // Try loading uploads image
       const testImg = new window.Image();
-      testImg.onload = () => setPreviewUrl(uploadsUrl);
-      testImg.onerror = () => setPreviewUrl(assetUrl(value));
+      testImg.onload = () => {
+        setPreviewUrl(uploadsUrl);
+        setDebugPreview({uploadsUrl, fallbackUrl, used: uploadsUrl});
+        // eslint-disable-next-line no-console
+        console.log('[ImageUpload] Preview using uploads:', uploadsUrl);
+      };
+      testImg.onerror = () => {
+        setPreviewUrl(fallbackUrl);
+        setDebugPreview({uploadsUrl, fallbackUrl, used: fallbackUrl});
+        // eslint-disable-next-line no-console
+        console.log('[ImageUpload] Preview fallback to assetUrl:', fallbackUrl);
+      };
       testImg.src = uploadsUrl;
     } else {
-      setPreviewUrl(assetUrl(value));
+      const fallbackUrl = assetUrl(value);
+      setPreviewUrl(fallbackUrl);
+      setDebugPreview({uploadsUrl: '', fallbackUrl, used: fallbackUrl});
     }
   }, [value, localPreview]);
 
@@ -205,6 +224,12 @@ export const ImageUpload = ({
                 alt="Preview"
                 className="w-full h-32 object-cover rounded-md"
               />
+              {/* Debug info for preview URLs */}
+              <div style={{ fontSize: '0.7em', color: '#888', marginTop: 2 }}>
+                <div>Attempted uploads: <code>{debugPreview.uploadsUrl}</code></div>
+                <div>Fallback: <code>{debugPreview.fallbackUrl}</code></div>
+                <div>Used: <code>{debugPreview.used}</code></div>
+              </div>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
                 <Dialog>
                   <DialogTrigger asChild>
