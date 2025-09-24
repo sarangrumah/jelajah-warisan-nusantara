@@ -178,7 +178,8 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   
   const bucket = resolveBucket(req.body.bucket);
   // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
-  const fileUrl = `../src/assets/${bucket}/${req.file.filename}`;
+  // Return the public URL for the uploaded file (for frontend preview)
+  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
   
   res.json({
     message: 'File uploaded successfully',
