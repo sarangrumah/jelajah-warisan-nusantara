@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Upload, X, Image, Loader2, Eye } from 'lucide-react';
+import { X, Image, Loader2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
 import { assetUrl } from '@/lib/asset-url';
@@ -147,10 +147,40 @@ export const ImageUpload = ({
     fileInputRef.current?.click();
   };
 
-  const displayUrl = assetUrl(value);
+  // Helper: Extract filename from any path
+  function extractFilename(path: string | undefined | null): string | null {
+    if (!path) { return null; }
+    const parts = path.split('/');
+    return parts[parts.length - 1] || null;
+  }
 
-  // Show local preview if uploading and localPreview is set, otherwise show uploaded image
-  const previewUrl = localPreview || (value ? displayUrl : null);
+  // Admin preview: always try /uploads/images/filename first, fallback to assetUrl(value)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Compute preview URL on value/localPreview change
+  // If uploading, show local preview
+  // Otherwise, try /uploads/images/filename, fallback to assetUrl(value)
+  useEffect(() => {
+    if (localPreview) {
+      setPreviewUrl(localPreview);
+      return;
+    }
+    if (!value) {
+      setPreviewUrl(null);
+      return;
+    }
+    const filename = extractFilename(value);
+    if (filename) {
+      const uploadsUrl = `/uploads/images/${filename}`;
+      // Try loading uploads image
+      const testImg = new window.Image();
+      testImg.onload = () => setPreviewUrl(uploadsUrl);
+      testImg.onerror = () => setPreviewUrl(assetUrl(value));
+      testImg.src = uploadsUrl;
+    } else {
+      setPreviewUrl(assetUrl(value));
+    }
+  }, [value, localPreview]);
 
   return (
     <div className={`space-y-2 ${className}`}>
