@@ -680,6 +680,19 @@ function BannerImagePreview({ image }: { image: string }) {
         </details>
       );
     }
+    // If the error is "Static asset not found" and the image is asset-relative, show a more helpful message
+    const isAssetRelative = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
+    if (error === 'Static asset not found' && isAssetRelative) {
+      return (
+        <div style={{ color: 'red', fontWeight: 'bold' }}>
+          Image preview error: The selected static asset does not exist.<br />
+          <span>
+            Please upload a new image for this banner. Asset-relative images are not supported in production.
+          </span>
+          {debugInfo}
+        </div>
+      );
+    }
     return (
       <div style={{ color: 'red' }}>
         Image preview error: {error}
