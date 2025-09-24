@@ -487,6 +487,10 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                               </div>
                             )}
                             {/* BannerImagePreview component handles both static and uploaded images */}
+                            {/* Visually hidden DialogTitle for accessibility */}
+                            <VisuallyHidden>
+                              <DialogTitle>Banner Image Preview</DialogTitle>
+                            </VisuallyHidden>
                             <BannerImagePreview image={banner.image} />
                           </DialogContent>
                         )}
@@ -650,6 +654,27 @@ function BannerImagePreview({ image }: { image: string }) {
         className="w-full h-auto rounded-md"
       />
     </div>
+  );
+}
+
+/**
+ * VisuallyHidden: Utility component for accessibility (screen readers only).
+ */
+function VisuallyHidden({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{
+      border: 0,
+      clip: 'rect(0 0 0 0)',
+      height: '1px',
+      margin: '-1px',
+      overflow: 'hidden',
+      padding: 0,
+      position: 'absolute',
+      width: '1px',
+      whiteSpace: 'nowrap'
+    }}>
+      {children}
+    </span>
   );
 }
 
