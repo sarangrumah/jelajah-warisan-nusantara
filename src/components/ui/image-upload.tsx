@@ -32,11 +32,15 @@ export const ImageUpload = ({
 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
     if (!file) return;
+
+    // Show local preview immediately
+    setLocalPreview(URL.createObjectURL(file));
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -45,6 +49,7 @@ export const ImageUpload = ({
         description: 'Please select an image file',
         variant: 'destructive',
       });
+      setLocalPreview(null);
       return;
     }
 
@@ -55,6 +60,7 @@ export const ImageUpload = ({
         description: `File size must be less than ${maxSize}MB`,
         variant: 'destructive',
       });
+      setLocalPreview(null);
       return;
     }
 
@@ -68,6 +74,7 @@ export const ImageUpload = ({
 
       if (response.data?.url) {
         onChange(response.data.url);
+        setLocalPreview(null); // Switch to uploaded image preview
         toast({
           title: 'Success',
           description: 'Image uploaded successfully',
@@ -80,6 +87,7 @@ export const ImageUpload = ({
         description: 'Failed to upload image',
         variant: 'destructive',
       });
+      setLocalPreview(null);
     } finally {
       setUploading(false);
       // Clear the file input to prevent issues
@@ -129,14 +137,17 @@ export const ImageUpload = ({
 
   const displayUrl = assetUrl(value);
 
+  // Show local preview if uploading and localPreview is set, otherwise show uploaded image
+  const previewUrl = localPreview || (value ? displayUrl : null);
+
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
       
       <Card
         className={`border-2 border-dashed cursor-pointer transition-colors ${
-          dragOver 
-            ? 'border-primary bg-primary/5' 
+          dragOver
+            ? 'border-primary bg-primary/5'
             : 'border-border hover:border-primary/50'
         }`}
         onDrop={handleDrop}
@@ -145,10 +156,10 @@ export const ImageUpload = ({
         onClick={openFileDialog}
       >
         <CardContent className="p-6">
-          {value && preview ? (
+          {previewUrl && preview ? (
             <div className="relative group">
               <img
-                src={displayUrl}
+                src={previewUrl}
                 alt="Preview"
                 className="w-full h-32 object-cover rounded-md"
               />
@@ -166,7 +177,7 @@ export const ImageUpload = ({
                   </DialogTrigger>
                   <DialogContent className="max-w-3xl">
                     <img
-                      src={displayUrl}
+                      src={previewUrl}
                       alt="Full preview"
                       className="w-full h-auto rounded-md"
                     />
@@ -179,11 +190,17 @@ export const ImageUpload = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     clearImage();
+                    setLocalPreview(null);
                   }}
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
+              {localPreview && uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-md">
+                  <Loader2 className="w-8 h-8 animate-spin text-white" />
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center">
