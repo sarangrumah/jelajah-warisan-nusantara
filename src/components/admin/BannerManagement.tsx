@@ -665,121 +665,23 @@ const staticAssetGlob = import.meta.glob('/src/assets/**/*.{jpg,jpeg,png,gif,web
  * fallback to static asset path if not found.
  */
 function BannerImagePreview({ image }: { image: string }) {
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [triedUploads, setTriedUploads] = useState(false);
-
-  // Helper: Normalize any static asset path variant to the Vite glob key
-  function normalizeStaticAssetPath(path: string): string {
-    const rel = path.replace(/^(\.\.\/)+src\/assets\//, '') // ../src/assets/
-                   .replace(/^\.\/src\/assets\//, '')     // ./src/assets/
-                   .replace(/^\/src\/assets\//, '')       // /src/assets/
-                   .replace(/^src\/assets\//, '');        // src/assets/
-    return `/src/assets/${rel}`;
+  // Always preview from /uploads/images/filename if image is a filename, or use as-is if already a path
+  let imgUrl: string | null = null;
+  if (!image) {
+    imgUrl = null;
+  } else if (typeof image === 'string' && !image.includes('/')) {
+    // If image is just a filename, use /uploads/images/filename
+    imgUrl = `/uploads/images/${image}`;
+  } else if (typeof image === 'string' && image.startsWith('/uploads/images/')) {
+    imgUrl = image;
+  } else {
+    // Fallback: use as-is
+    imgUrl = image;
   }
 
-  // Helper: Extract filename from any path
-  function extractFilename(path: string): string | null {
-    if (!path) return null;
-    const parts = path.split('/');
-    return parts[parts.length - 1] || null;
-  }
-
-  // Try previewing from /uploads/images/filename first, fallback to static asset
-  useEffect(() => {
-    let isMounted = true;
-    setError(null);
-    setLoading(true);
-
-    // If image is already an uploads path, use as-is
-    if (typeof image === 'string' && image.startsWith('/uploads/images/')) {
-      setImgUrl(image);
-      setLoading(false);
-      setTriedUploads(true);
-      return;
-    }
-
-    // If image is a static asset path, try /uploads/images/filename first
-    const filename = extractFilename(image);
-    if (filename) {
-      const uploadsUrl = `/uploads/images/${filename}`;
-      // Try loading uploads image
-      const testImg = new window.Image();
-      testImg.onload = () => {
-        if (isMounted) {
-          setImgUrl(uploadsUrl);
-          setLoading(false);
-          setTriedUploads(true);
-        }
-      };
-      testImg.onerror = () => {
-        if (isMounted) {
-          // Fallback to static asset
-          // Detect static asset path
-          const isStaticAsset = typeof image === 'string' && (
-            image.startsWith('../src/assets/') ||
-            image.startsWith('/src/assets/') ||
-            image.startsWith('src/assets/') ||
-            image.startsWith('./src/assets/')
-          );
-          if (isStaticAsset) {
-            const globKey = normalizeStaticAssetPath(image);
-            if (staticAssetGlob[globKey]) {
-              staticAssetGlob[globKey]().then((mod: any) => {
-                if (isMounted) {
-                  setImgUrl(mod.default);
-                  setLoading(false);
-                }
-              }).catch((_e: any) => {
-                if (isMounted) {
-                  setError('Failed to load static asset');
-                  setLoading(false);
-                }
-              });
-            } else {
-              setError('Static asset not found');
-              setLoading(false);
-            }
-          } else if (typeof image === 'string' && (image.startsWith('http') || image.startsWith('/'))) {
-            setImgUrl(image);
-            setLoading(false);
-          } else if (image) {
-            setImgUrl(`/uploads/images/${image}`);
-            setLoading(false);
-          } else {
-            setImgUrl(null);
-            setLoading(false);
-          }
-          setTriedUploads(true);
-        }
-      };
-      testImg.src = uploadsUrl;
-      return () => { isMounted = false; };
-    }
-
-    // Fallback: treat as static asset or legacy
-    setImgUrl(image || null);
-    setLoading(false);
-    setTriedUploads(true);
-    return () => { isMounted = false; };
-  }, [image]);
-
-  // Error/fallback UI
-  if (loading) {
-    return <div>Loading image preview...</div>;
-  }
-  if (error) {
-    return (
-      <div style={{ color: 'red' }}>
-        Image preview error: {error}
-      </div>
-    );
-  }
   if (!imgUrl) {
     return <div>No image to preview.</div>;
   }
-  // Add onError fallback for broken images
   return (
     <div>
       <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
@@ -791,7 +693,6 @@ function BannerImagePreview({ image }: { image: string }) {
         className="w-full h-auto rounded-md"
         onError={(e) => {
           (e.target as HTMLImageElement).style.display = 'none';
-          setError('Image failed to load (broken link or missing file)');
         }}
       />
     </div>
