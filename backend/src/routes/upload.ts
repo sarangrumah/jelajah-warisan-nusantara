@@ -203,6 +203,9 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, ''))
     .filter(Boolean)
     .join('/');
+  // Debug: log bucket and safeBucket
+  console.log('[UPLOAD DEBUG] bucket:', bucket, 'safeBucket:', safeBucket, 'filename:', req.file.filename);
+
   // If uploading to images/hero-section, return /assets/images/hero-section/filename as the URL
   let fileUrl;
   if (safeBucket === 'images/hero-section') {
