@@ -33,7 +33,7 @@ const ensureUniqueFilename = (dir: string, desired: string) => {
 // Ensure upload directories exist
 // Use an absolute path relative to this file for reliability
 // Store uploads under backend/uploads (not under src) to avoid Vite HMR
-const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../uploads');
+const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../../public/uploads');
 
 const DEFAULT_BUCKET = 'images';
 const bucketWhitelist = [
@@ -250,7 +250,7 @@ router.post('/copy-to-assets', authenticateToken, (req, res) => {
     }
 
     // Only allow copying from backend/uploads/images
-    const sourceDir = path.resolve(__dirname, '../../uploads/images');
+    const sourceDir = path.resolve(__dirname, '../../../public/uploads/images');
     const sourcePath = path.join(sourceDir, filename);
 
     if (!fs.existsSync(sourcePath)) {
