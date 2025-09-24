@@ -660,15 +660,18 @@ const staticAssetGlob = import.meta.glob('/src/assets/**/*.{jpg,jpeg,png,gif,web
  * - Static asset paths supported: '../src/assets/...', '/src/assets/...', 'src/assets/...', './src/assets/...'
  * - Uploaded images: '/uploads/images/filename.jpg' or any absolute/relative URL
  */
+/**
+ * BannerImagePreview: Always preview from /uploads/images/filename if possible (admin view),
+ * fallback to static asset path if not found.
+ */
 function BannerImagePreview({ image }: { image: string }) {
-  // useState and useEffect are already imported at the top
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [triedUploads, setTriedUploads] = useState(false);
 
   // Helper: Normalize any static asset path variant to the Vite glob key
   function normalizeStaticAssetPath(path: string): string {
-    // Remove leading ../, ./, /, or src/assets/ to get the relative part
     const rel = path.replace(/^(\.\.\/)+src\/assets\//, '') // ../src/assets/
                    .replace(/^\.\/src\/assets\//, '')     // ./src/assets/
                    .replace(/^\/src\/assets\//, '')       // /src/assets/
@@ -676,90 +679,100 @@ function BannerImagePreview({ image }: { image: string }) {
     return `/src/assets/${rel}`;
   }
 
-  // Detect static asset path (make available in render and effect)
-  const isStaticAsset = typeof image === 'string' && (
-    image.startsWith('../src/assets/') ||
-    image.startsWith('/src/assets/') ||
-    image.startsWith('src/assets/') ||
-    image.startsWith('./src/assets/')
-  );
+  // Helper: Extract filename from any path
+  function extractFilename(path: string): string | null {
+    if (!path) return null;
+    const parts = path.split('/');
+    return parts[parts.length - 1] || null;
+  }
 
+  // Try previewing from /uploads/images/filename first, fallback to static asset
   useEffect(() => {
     let isMounted = true;
     setError(null);
+    setLoading(true);
 
-    if (isStaticAsset) {
-      setLoading(true);
-      const globKey = normalizeStaticAssetPath(image);
-      if (staticAssetGlob[globKey]) {
-        staticAssetGlob[globKey]().then((mod: any) => {
-          if (isMounted) {
-            setImgUrl(mod.default);
-            setLoading(false);
-          }
-        }).catch((_e: any) => {
-          if (isMounted) {
-            setError('Failed to load static asset');
-            setLoading(false);
-          }
-        });
-      } else {
-        setError('Static asset not found');
-        setLoading(false);
-      }
-    } else if (typeof image === 'string' && (image.startsWith('http') || image.startsWith('/'))) {
-      // Uploaded image or absolute/relative URL
+    // If image is already an uploads path, use as-is
+    if (typeof image === 'string' && image.startsWith('/uploads/images/')) {
       setImgUrl(image);
       setLoading(false);
-    } else if (image) {
-      // Fallback: treat as uploaded image filename (legacy)
-      setImgUrl(`/uploads/images/${image}`);
-      setLoading(false);
-    } else {
-      setImgUrl(null);
-      setLoading(false);
+      setTriedUploads(true);
+      return;
     }
+
+    // If image is a static asset path, try /uploads/images/filename first
+    const filename = extractFilename(image);
+    if (filename) {
+      const uploadsUrl = `/uploads/images/${filename}`;
+      // Try loading uploads image
+      const testImg = new window.Image();
+      testImg.onload = () => {
+        if (isMounted) {
+          setImgUrl(uploadsUrl);
+          setLoading(false);
+          setTriedUploads(true);
+        }
+      };
+      testImg.onerror = () => {
+        if (isMounted) {
+          // Fallback to static asset
+          // Detect static asset path
+          const isStaticAsset = typeof image === 'string' && (
+            image.startsWith('../src/assets/') ||
+            image.startsWith('/src/assets/') ||
+            image.startsWith('src/assets/') ||
+            image.startsWith('./src/assets/')
+          );
+          if (isStaticAsset) {
+            const globKey = normalizeStaticAssetPath(image);
+            if (staticAssetGlob[globKey]) {
+              staticAssetGlob[globKey]().then((mod: any) => {
+                if (isMounted) {
+                  setImgUrl(mod.default);
+                  setLoading(false);
+                }
+              }).catch((_e: any) => {
+                if (isMounted) {
+                  setError('Failed to load static asset');
+                  setLoading(false);
+                }
+              });
+            } else {
+              setError('Static asset not found');
+              setLoading(false);
+            }
+          } else if (typeof image === 'string' && (image.startsWith('http') || image.startsWith('/'))) {
+            setImgUrl(image);
+            setLoading(false);
+          } else if (image) {
+            setImgUrl(`/uploads/images/${image}`);
+            setLoading(false);
+          } else {
+            setImgUrl(null);
+            setLoading(false);
+          }
+          setTriedUploads(true);
+        }
+      };
+      testImg.src = uploadsUrl;
+      return () => { isMounted = false; };
+    }
+
+    // Fallback: treat as static asset or legacy
+    setImgUrl(image || null);
+    setLoading(false);
+    setTriedUploads(true);
     return () => { isMounted = false; };
-  }, [image, isStaticAsset]);
+  }, [image]);
 
   // Error/fallback UI
   if (loading) {
     return <div>Loading image preview...</div>;
   }
   if (error) {
-    // Show attempted glob key and available keys for debugging
-    let debugInfo = null;
-    if (typeof window !== "undefined") {
-      debugInfo = (
-        <details style={{ fontSize: '0.8em', color: '#888', marginTop: 8 }}>
-          <summary>Debug Info</summary>
-          <div>
-            <div><strong>Attempted glob key:</strong> {normalizeStaticAssetPath(image)}</div>
-            <div><strong>Available static asset keys:</strong>
-              <ul style={{ maxHeight: 120, overflow: 'auto', background: '#f8f8f8', border: '1px solid #eee', padding: 4 }}>
-                {Object.keys(staticAssetGlob).map(k => <li key={k}>{k}</li>)}
-              </ul>
-            </div>
-          </div>
-        </details>
-      );
-    }
-    // If the error is "Static asset not found" and the image is asset-relative, show a more helpful message
-    if (error === 'Static asset not found' && isStaticAsset) {
-      return (
-        <div style={{ color: 'red', fontWeight: 'bold' }}>
-          Image preview error: The selected static asset does not exist.<br />
-          <span>
-            Please check the path or upload a new image for this banner.
-          </span>
-          {debugInfo}
-        </div>
-      );
-    }
     return (
       <div style={{ color: 'red' }}>
         Image preview error: {error}
-        {debugInfo}
       </div>
     );
   }
