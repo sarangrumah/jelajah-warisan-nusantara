@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
-import { VITE_API_URL } from '@/lib/env';
+/* import { VITE_API_URL } from '@/lib/env'; */ // No longer used
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -486,45 +486,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                                 Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
                               </div>
                             )}
-                            {(() => {
-                              let imgUrl = '';
-                              if (
-                                banner.image?.startsWith('/') ||
-                                banner.image?.startsWith('http') ||
-                                banner.image?.startsWith('../src/assets/')
-                              ) {
-                                // Always use /assets/images/hero-section/ for asset-relative images
-                                const assetMatch = banner.image.match(/(?:hero-sections|images[\\/]+hero-section)[\\/]+([^\\/]+\.(jpg|jpeg|png|gif|webp|mp4))/i);
-                                if (assetMatch) {
-                                  imgUrl = `/assets/images/hero-section/${assetMatch[1]}`;
-                                } else if (/^[\w,\s-]+\.(jpg|jpeg|png|gif|webp|mp4)$/i.test(banner.image)) {
-                                  imgUrl = `/assets/images/hero-section/${banner.image}`;
-                                } else {
-                                  imgUrl = banner.image;
-                                }
-                              } else {
-                                // Use API base URL if available
-                                imgUrl = `${VITE_API_URL}/uploads/images/${banner.image}`;
-                              }
-                              // Log the final image URL and environment for debugging
-                              if (typeof window !== "undefined") {
-                                // Only log in browser
-                                console.log('[Banner Preview] VITE_API_URL:', VITE_API_URL, 'banner.image:', banner.image);
-                                console.log('[Banner Preview] Final imgUrl:', imgUrl, 'window.location.origin:', window.location.origin);
-                              }
-                              return (
-                                <div>
-                                  <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
-                                    Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
-                                  </div>
-                                  <img
-                                    src={imgUrl}
-                                    alt="Banner image"
-                                    className="w-full h-auto rounded-md"
-                                  />
-                                </div>
-                              );
-                            })()}
+                            {/* BannerImagePreview component handles both static and uploaded images */}
+                            <BannerImagePreview image={banner.image} />
                           </DialogContent>
                         )}
                       </Dialog>
@@ -615,5 +578,79 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     </div>
   );
 };
+
+/**
+ * BannerImagePreview: Handles previewing both static assets (via import.meta.glob) and uploaded images.
+ */
+const staticAssetGlob = import.meta.glob('/src/assets/**/*.{jpg,jpeg,png,gif,webp}');
+
+function BannerImagePreview({ image }: { image: string }) {
+  // useState and useEffect are already imported at the top
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    setError(null);
+
+    // Helper: is this a static asset path?
+    const isStaticAsset = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
+    if (isStaticAsset) {
+      setLoading(true);
+      // Normalize to /src/assets/...
+      const possibleGlobKey = '/src/assets/' + image.replace(/^(\.\/|\/|..\/src\/assets\/|src\/assets\/)/, '');
+      if (staticAssetGlob[possibleGlobKey]) {
+        staticAssetGlob[possibleGlobKey]().then((mod: any) => {
+          if (isMounted) {
+            setImgUrl(mod.default);
+            setLoading(false);
+          }
+        }).catch((_e: any) => {
+          if (isMounted) {
+            setError('Failed to load static asset');
+            setLoading(false);
+          }
+        });
+      } else {
+        setError('Static asset not found');
+        setLoading(false);
+      }
+    } else if (image?.startsWith('http') || image?.startsWith('/')) {
+      setImgUrl(image);
+      setLoading(false);
+    } else if (image) {
+      // Assume backend upload
+      setImgUrl(`/uploads/images/${image}`);
+      setLoading(false);
+    } else {
+      setImgUrl(null);
+      setLoading(false);
+    }
+    return () => { isMounted = false; };
+  }, [image]);
+
+  if (loading) {
+    return <div>Loading image preview...</div>;
+  }
+  if (error) {
+    return <div style={{ color: 'red' }}>Image preview error: {error}</div>;
+  }
+  if (!imgUrl) {
+    return <div>No image to preview.</div>;
+  }
+  return (
+    <div>
+      <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
+        Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
+      </div>
+      <img
+        src={imgUrl}
+        alt="Banner image"
+        className="w-full h-auto rounded-md"
+      />
+    </div>
+  );
+}
 
 export default BannerManagement;
