@@ -214,6 +214,9 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
   }
 
+  // Debug: log the fileUrl being returned
+  console.log('[UPLOAD DEBUG] Returning fileUrl:', fileUrl);
+
   res.json({
     message: 'File uploaded successfully',
     file: {
