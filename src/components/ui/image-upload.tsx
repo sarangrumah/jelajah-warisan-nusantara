@@ -74,15 +74,18 @@ export const ImageUpload = ({
 
       if (response.data?.url) {
         let url = response.data.url;
-        // Always extract just the filename (strip any path, including ../src/assets/images/)
-        if (url) {
+        if (url && url.startsWith('/assets/')) {
+          // Use as-is for preview
+          console.log('[ImageUpload] Upload response url:', url, 'Used as-is for preview');
+          onChange(url);
+        } else if (url) {
           // Remove any directory path, keep only the filename
           const originalUrl = url;
           url = url.split('/').pop() || url;
           url = `/uploads/${bucket}/${url}`;
           console.log('[ImageUpload] Upload response url:', originalUrl, 'Normalized preview url:', url);
+          onChange(url);
         }
-        onChange(url);
         setLocalPreview(null); // Switch to uploaded image preview
         toast({
           title: 'Success',
