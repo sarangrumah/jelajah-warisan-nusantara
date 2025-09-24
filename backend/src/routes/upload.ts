@@ -52,7 +52,13 @@ const bucketWhitelist = [
 const allowedBuckets = new Set(bucketWhitelist);
 
 const ensureBucketPath = (bucket: string) => {
-  const target = path.join(uploadDir, bucket);
+  // Support nested buckets, e.g., "images/hero-section"
+  const safeBucket = bucket
+    .split('/')
+    .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, '')) // sanitize each segment
+    .filter(Boolean)
+    .join('/');
+  const target = path.join(uploadDir, safeBucket);
   if (!fs.existsSync(target)) {
     fs.mkdirSync(target, { recursive: true });
   }
@@ -60,11 +66,20 @@ const ensureBucketPath = (bucket: string) => {
 };
 
 const resolveBucket = (rawBucket: any) => {
+  // Allow nested buckets like "images/hero-section"
   const candidate = typeof rawBucket === 'string' && rawBucket.trim().length > 0
     ? rawBucket.trim().toLowerCase()
     : DEFAULT_BUCKET;
 
-  if (allowedBuckets.has(candidate)) {
+  // Allow "images/hero-section" and similar
+  if (
+    allowedBuckets.has(candidate) ||
+    candidate.startsWith('images/') ||
+    candidate.startsWith('documents/') ||
+    candidate.startsWith('cv-uploads/') ||
+    candidate.startsWith('transcripts/') ||
+    candidate.startsWith('cover-letters/')
+  ) {
     return candidate;
   }
 
@@ -179,7 +194,13 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   const bucket = resolveBucket(req.body.bucket);
   // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
   // Return the public URL for the uploaded file (for frontend preview)
-  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  // If bucket is nested (e.g., images/hero-section), reflect that in the URL
+  const safeBucket = bucket
+    .split('/')
+    .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, ''))
+    .filter(Boolean)
+    .join('/');
+  const fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
   
   res.json({
     message: 'File uploaded successfully',
