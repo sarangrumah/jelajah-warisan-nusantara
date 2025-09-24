@@ -73,7 +73,17 @@ export const ImageUpload = ({
       }
 
       if (response.data?.url) {
-        onChange(response.data.url);
+        let url = response.data.url;
+        // If url is just a filename, prepend /uploads/{bucket}/
+        if (
+          url &&
+          !url.startsWith('/') &&
+          !url.startsWith('http') &&
+          !url.startsWith('/assets/')
+        ) {
+          url = `/uploads/${bucket}/${url}`;
+        }
+        onChange(url);
         setLocalPreview(null); // Switch to uploaded image preview
         toast({
           title: 'Success',
