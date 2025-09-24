@@ -203,7 +203,13 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, ''))
     .filter(Boolean)
     .join('/');
-  const fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
+  // If uploading to images/hero-section, return /assets/images/hero-section/filename as the URL
+  let fileUrl;
+  if (safeBucket === 'images/hero-section') {
+    fileUrl = `/assets/images/hero-section/${req.file.filename}`;
+  } else {
+    fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
+  }
 
   res.json({
     message: 'File uploaded successfully',
