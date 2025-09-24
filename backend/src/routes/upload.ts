@@ -214,6 +214,9 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
   }
 
+  // Debug: print absolute file path and existence
+  console.log('[UPLOAD DEBUG] req.file.path:', req.file.path, 'exists:', fs.existsSync(req.file.path));
+
   // Debug: log the fileUrl being returned
   console.log('[UPLOAD DEBUG] Returning fileUrl:', fileUrl);
 
