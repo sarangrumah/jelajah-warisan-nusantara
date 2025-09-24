@@ -67,6 +67,20 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
     };
   });
 
+  // Validation: Only allow uploaded images (not asset-relative) for production
+  const isAssetRelativeImage = formData.image?.startsWith('../src/assets/')
+    || formData.image?.startsWith('/src/assets/')
+    || formData.image?.startsWith('src/assets/');
+  const [imageError, setImageError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAssetRelativeImage) {
+      setImageError('Asset-relative images (../src/assets/...) are not allowed for production banners. Please upload an image.');
+    } else {
+      setImageError(null);
+    }
+  }, [formData.image]);
+
   // Keep form in sync when editing a different banner
   useEffect(() => {
     const b = banner || emptyBanner;
@@ -142,6 +156,11 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
         bucket="hero-section"
       />
+      {imageError && (
+        <div style={{ color: 'red', fontWeight: 'bold', marginTop: 8 }}>
+          {imageError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -202,7 +221,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
           <X className="w-4 h-4 mr-2" />
           Cancel
         </Button>
-        <Button type="submit" disabled={saving}>
+        <Button type="submit" disabled={saving || !!imageError}>
           {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           <Save className="w-4 h-4 mr-2" />
           Save
