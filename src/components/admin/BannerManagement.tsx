@@ -634,17 +634,17 @@ function BannerImagePreview({ image }: { image: string }) {
     return `/src/assets/${rel}`;
   }
 
+  // Detect static asset path (make available in render and effect)
+  const isStaticAsset = typeof image === 'string' && (
+    image.startsWith('../src/assets/') ||
+    image.startsWith('/src/assets/') ||
+    image.startsWith('src/assets/') ||
+    image.startsWith('./src/assets/')
+  );
+
   useEffect(() => {
     let isMounted = true;
     setError(null);
-
-    // Detect static asset path
-    const isStaticAsset = typeof image === 'string' && (
-      image.startsWith('../src/assets/') ||
-      image.startsWith('/src/assets/') ||
-      image.startsWith('src/assets/') ||
-      image.startsWith('./src/assets/')
-    );
 
     if (isStaticAsset) {
       setLoading(true);
@@ -678,7 +678,7 @@ function BannerImagePreview({ image }: { image: string }) {
       setLoading(false);
     }
     return () => { isMounted = false; };
-  }, [image]);
+  }, [image, isStaticAsset]);
 
   // Error/fallback UI
   if (loading) {
