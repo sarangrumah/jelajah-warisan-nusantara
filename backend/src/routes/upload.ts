@@ -190,8 +190,11 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  
+
   const bucket = resolveBucket(req.body.bucket);
+  // Debug log: where is the file being saved?
+  console.log('[UPLOAD DEBUG] bucket:', bucket, 'req.file.path:', req.file.path, 'req.file.filename:', req.file.filename);
+
   // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
   // Return the public URL for the uploaded file (for frontend preview)
   // If bucket is nested (e.g., images/hero-section), reflect that in the URL
@@ -201,7 +204,7 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
     .filter(Boolean)
     .join('/');
   const fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
-  
+
   res.json({
     message: 'File uploaded successfully',
     file: {
