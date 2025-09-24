@@ -3,7 +3,7 @@ import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 /* import { VITE_API_URL } from '@/lib/env'; */ // No longer used
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+/* import { Textarea } from '@/components/ui/textarea'; */
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -428,7 +428,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {banner != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {banner !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
                   <DialogTitle>
@@ -613,24 +613,44 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
  */
 const staticAssetGlob = import.meta.glob('/src/assets/**/*.{jpg,jpeg,png,gif,webp}');
 
+/**
+ * BannerImagePreview: Robustly handles previewing both static assets (via import.meta.glob) and uploaded images.
+ * - Static asset paths supported: '../src/assets/...', '/src/assets/...', 'src/assets/...', './src/assets/...'
+ * - Uploaded images: '/uploads/images/filename.jpg' or any absolute/relative URL
+ */
 function BannerImagePreview({ image }: { image: string }) {
   // useState and useEffect are already imported at the top
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper: Normalize any static asset path variant to the Vite glob key
+  function normalizeStaticAssetPath(path: string): string {
+    // Remove leading ../, ./, /, or src/assets/ to get the relative part
+    const rel = path.replace(/^(\.\.\/)+src\/assets\//, '') // ../src/assets/
+                   .replace(/^\.\/src\/assets\//, '')     // ./src/assets/
+                   .replace(/^\/src\/assets\//, '')       // /src/assets/
+                   .replace(/^src\/assets\//, '');        // src/assets/
+    return `/src/assets/${rel}`;
+  }
+
   useEffect(() => {
     let isMounted = true;
     setError(null);
 
-    // Helper: is this a static asset path?
-    const isStaticAsset = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
+    // Detect static asset path
+    const isStaticAsset = typeof image === 'string' && (
+      image.startsWith('../src/assets/') ||
+      image.startsWith('/src/assets/') ||
+      image.startsWith('src/assets/') ||
+      image.startsWith('./src/assets/')
+    );
+
     if (isStaticAsset) {
       setLoading(true);
-      // Normalize to /src/assets/...
-      const possibleGlobKey = '/src/assets/' + image.replace(/^(\.\/|\/|..\/src\/assets\/|src\/assets\/)/, '');
-      if (staticAssetGlob[possibleGlobKey]) {
-        staticAssetGlob[possibleGlobKey]().then((mod: any) => {
+      const globKey = normalizeStaticAssetPath(image);
+      if (staticAssetGlob[globKey]) {
+        staticAssetGlob[globKey]().then((mod: any) => {
           if (isMounted) {
             setImgUrl(mod.default);
             setLoading(false);
@@ -645,11 +665,12 @@ function BannerImagePreview({ image }: { image: string }) {
         setError('Static asset not found');
         setLoading(false);
       }
-    } else if (image?.startsWith('http') || image?.startsWith('/')) {
+    } else if (typeof image === 'string' && (image.startsWith('http') || image.startsWith('/'))) {
+      // Uploaded image or absolute/relative URL
       setImgUrl(image);
       setLoading(false);
     } else if (image) {
-      // Assume backend upload
+      // Fallback: treat as uploaded image filename (legacy)
       setImgUrl(`/uploads/images/${image}`);
       setLoading(false);
     } else {
@@ -659,24 +680,19 @@ function BannerImagePreview({ image }: { image: string }) {
     return () => { isMounted = false; };
   }, [image]);
 
+  // Error/fallback UI
   if (loading) {
     return <div>Loading image preview...</div>;
   }
   if (error) {
-    // Print available keys and attempted key for debugging
+    // Show attempted glob key and available keys for debugging
     let debugInfo = null;
     if (typeof window !== "undefined") {
       debugInfo = (
         <details style={{ fontSize: '0.8em', color: '#888', marginTop: 8 }}>
           <summary>Debug Info</summary>
           <div>
-            <div><strong>Attempted glob key:</strong> {(() => {
-              const isStaticAsset = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
-              if (isStaticAsset) {
-                return '/src/assets/' + image.replace(/^(\.\/|\/|..\/src\/assets\/|src\/assets\/)/, '');
-              }
-              return '(not a static asset)';
-            })()}</div>
+            <div><strong>Attempted glob key:</strong> {normalizeStaticAssetPath(image)}</div>
             <div><strong>Available static asset keys:</strong>
               <ul style={{ maxHeight: 120, overflow: 'auto', background: '#f8f8f8', border: '1px solid #eee', padding: 4 }}>
                 {Object.keys(staticAssetGlob).map(k => <li key={k}>{k}</li>)}
@@ -687,13 +703,12 @@ function BannerImagePreview({ image }: { image: string }) {
       );
     }
     // If the error is "Static asset not found" and the image is asset-relative, show a more helpful message
-    const isAssetRelative = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
-    if (error === 'Static asset not found' && isAssetRelative) {
+    if (error === 'Static asset not found' && isStaticAsset) {
       return (
         <div style={{ color: 'red', fontWeight: 'bold' }}>
           Image preview error: The selected static asset does not exist.<br />
           <span>
-            Please upload a new image for this banner. Asset-relative images are not supported in production.
+            Please check the path or upload a new image for this banner.
           </span>
           {debugInfo}
         </div>
@@ -709,6 +724,7 @@ function BannerImagePreview({ image }: { image: string }) {
   if (!imgUrl) {
     return <div>No image to preview.</div>;
   }
+  // Add onError fallback for broken images
   return (
     <div>
       <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
@@ -718,6 +734,10 @@ function BannerImagePreview({ image }: { image: string }) {
         src={imgUrl}
         alt="Banner image"
         className="w-full h-auto rounded-md"
+        onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none';
+          setError('Image failed to load (broken link or missing file)');
+        }}
       />
     </div>
   );
