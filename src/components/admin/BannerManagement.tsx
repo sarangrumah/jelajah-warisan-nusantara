@@ -160,7 +160,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         label="Banner Image"
         value={formData.image}
         onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
-        bucket="images/hero-section"
+        bucket="images"
       />
       {imageError && (
         <div style={{ color: 'red', fontWeight: 'bold', marginTop: 8 }}>
