@@ -638,7 +638,35 @@ function BannerImagePreview({ image }: { image: string }) {
     return <div>Loading image preview...</div>;
   }
   if (error) {
-    return <div style={{ color: 'red' }}>Image preview error: {error}</div>;
+    // Print available keys and attempted key for debugging
+    let debugInfo = null;
+    if (typeof window !== "undefined") {
+      debugInfo = (
+        <details style={{ fontSize: '0.8em', color: '#888', marginTop: 8 }}>
+          <summary>Debug Info</summary>
+          <div>
+            <div><strong>Attempted glob key:</strong> {(() => {
+              const isStaticAsset = image?.startsWith('../src/assets/') || image?.startsWith('/src/assets/') || image?.startsWith('src/assets/');
+              if (isStaticAsset) {
+                return '/src/assets/' + image.replace(/^(\.\/|\/|..\/src\/assets\/|src\/assets\/)/, '');
+              }
+              return '(not a static asset)';
+            })()}</div>
+            <div><strong>Available static asset keys:</strong>
+              <ul style={{ maxHeight: 120, overflow: 'auto', background: '#f8f8f8', border: '1px solid #eee', padding: 4 }}>
+                {Object.keys(staticAssetGlob).map(k => <li key={k}>{k}</li>)}
+              </ul>
+            </div>
+          </div>
+        </details>
+      );
+    }
+    return (
+      <div style={{ color: 'red' }}>
+        Image preview error: {error}
+        {debugInfo}
+      </div>
+    );
   }
   if (!imgUrl) {
     return <div>No image to preview.</div>;
