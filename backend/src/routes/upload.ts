@@ -241,6 +241,53 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   });
 });
 
+// API: Copy an uploaded image to src/assets/images/hero-section for static asset use
+router.post('/copy-to-assets', authenticateToken, (req, res) => {
+  try {
+    const { filename } = req.body;
+    if (!filename || typeof filename !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid filename' });
+    }
+
+    // Only allow copying from backend/uploads/images
+    const sourceDir = path.resolve(__dirname, '../../uploads/images');
+    const sourcePath = path.join(sourceDir, filename);
+
+    if (!fs.existsSync(sourcePath)) {
+      return res.status(404).json({ error: 'Source file not found' });
+    }
+
+    // Target: src/assets/images/hero-section
+    const targetDir = path.resolve(__dirname, '../../../src/assets/images/hero-section');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    // Ensure unique filename in target
+    const ext = path.extname(filename);
+    const base = path.basename(filename, ext);
+    let targetFilename = filename;
+    let counter = 1;
+    while (fs.existsSync(path.join(targetDir, targetFilename))) {
+      targetFilename = `${base}-${counter}${ext}`;
+      counter += 1;
+    }
+    const targetPath = path.join(targetDir, targetFilename);
+
+    fs.copyFileSync(sourcePath, targetPath);
+
+    // Return the new static asset path
+    const assetPath = `/assets/images/hero-section/${targetFilename}`;
+    return res.json({
+      message: 'File copied to static assets',
+      assetPath,
+      filename: targetFilename
+    });
+  } catch (err) {
+    console.error('[copy-to-assets] Error:', err);
+    return res.status(500).json({ error: 'Failed to copy file to static assets' });
+  }
+});
+
 // Upload routes
 router.post('/documents', authenticateToken, uploadPDF.single('file'), (req, res) => {
   if (!req.file) {

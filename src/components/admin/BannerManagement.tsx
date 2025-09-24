@@ -272,12 +272,54 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const saveBanner = async (formData: Banner) => {
     setSaving(true);
     try {
+      let imagePath = formData.image;
+
+      // If the image is from /uploads/images/, copy it to static assets before saving
+      if (typeof imagePath === 'string' && imagePath.startsWith('/uploads/images/')) {
+        try {
+          // Extract filename from path
+          const filename = imagePath.split('/').pop();
+          if (filename) {
+            const res = await fetch('/api/upload/copy-to-assets', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                // Add auth header if needed
+              },
+              body: JSON.stringify({ filename }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.assetPath) {
+                imagePath = data.assetPath;
+              }
+            } else {
+              // If copy fails, show warning but proceed with original image
+              toast({
+                title: 'Warning',
+                description: 'Failed to copy image to static assets. Using uploaded image path.',
+                variant: 'destructive',
+              });
+            }
+          }
+        } catch (err) {
+          // If copy fails, show warning but proceed with original image
+          toast({
+            title: 'Warning',
+            description: 'Failed to copy image to static assets. Using uploaded image path.',
+            variant: 'destructive',
+          });
+        }
+      }
+
+      const bannerData = { ...formData, image: imagePath };
+
       if (editingBanner?.id) {
-        const response = await bannerService.update(editingBanner.id, formData);
+        const response = await bannerService.update(editingBanner.id, bannerData);
         if (response.error) {throw new Error(response.error)};
         
-        setBanners(prev => prev.map(b => 
-          b.id === editingBanner.id ? { ...b, ...formData } : b
+        setBanners(prev => prev.map(b =>
+          b.id === editingBanner.id ? { ...b, ...bannerData } : b
         ));
         
         toast({
@@ -285,7 +327,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
           description: 'Banner updated successfully',
         });
       } else {
-        const response = await bannerService.create(formData);
+        const response = await bannerService.create(bannerData);
         if (response.error) {throw new Error(response.error)};
         
         fetchBanners()
