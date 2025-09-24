@@ -72,20 +72,10 @@ export const ImageUpload = ({
         throw new Error(response.error);
       }
 
-      if (response.data?.url) {
-        let url = response.data.url;
-        if (url && url.startsWith('/assets/')) {
-          // Use as-is for preview
-          console.log('[ImageUpload] Upload response url:', url, 'Used as-is for preview');
-          onChange(url);
-        } else if (url) {
-          // Remove any directory path, keep only the filename
-          const originalUrl = url;
-          url = url.split('/').pop() || url;
-          url = `/uploads/${bucket}/${url}`;
-          console.log('[ImageUpload] Upload response url:', originalUrl, 'Normalized preview url:', url);
-          onChange(url);
-        }
+      if (response.data?.name) {
+        // Always use the backend's returned filename for all further operations
+        const backendFilename = response.data.name;
+        onChange(backendFilename);
         setLocalPreview(null); // Switch to uploaded image preview
         toast({
           title: 'Success',
@@ -173,6 +163,13 @@ export const ImageUpload = ({
     if (!value) {
       setPreviewUrl(null);
       setDebugPreview({uploadsUrl: '', fallbackUrl: '', used: ''});
+      return;
+    }
+    // If value is a backend filename (no slashes), always use /uploads/images/value
+    if (value && !value.includes('/')) {
+      const uploadsUrl = `/uploads/images/${value}`;
+      setPreviewUrl(uploadsUrl);
+      setDebugPreview({uploadsUrl, fallbackUrl: '', used: uploadsUrl});
       return;
     }
     const filename = extractFilename(value);
