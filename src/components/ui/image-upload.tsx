@@ -74,13 +74,10 @@ export const ImageUpload = ({
 
       if (response.data?.url) {
         let url = response.data.url;
-        // If url is just a filename, prepend /uploads/{bucket}/
-        if (
-          url &&
-          !url.startsWith('/') &&
-          !url.startsWith('http') &&
-          !url.startsWith('/assets/')
-        ) {
+        // Always extract just the filename (strip any path, including ../src/assets/images/)
+        if (url) {
+          // Remove any directory path, keep only the filename
+          url = url.split('/').pop() || url;
           url = `/uploads/${bucket}/${url}`;
         }
         onChange(url);
