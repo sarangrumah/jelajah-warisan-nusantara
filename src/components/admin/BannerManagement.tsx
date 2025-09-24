@@ -533,36 +533,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(banner.id, checked)}
                       />
                     </div>
-                    {banner.image ? (
-                      <Dialog open={previewBannerId === banner.id} onOpenChange={(open) => setPreviewBannerId(open ? banner.id! : null)}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" title="Preview Image" onClick={() => setPreviewBannerId(banner.id!)}>
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        {previewBannerId === banner.id && (
-                          <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                              <DialogTitle>Banner Image Preview</DialogTitle>
-                              <DialogDescription>
-                                Preview of the selected banner image. Asset-relative images may not work in production.
-                              </DialogDescription>
-                            </DialogHeader>
-                            {banner.image?.startsWith('../src/assets/') && (
-                              <div style={{ color: 'orange', fontWeight: 'bold', marginBottom: 12 }}>
-                                Warning: Asset-relative images (../src/assets/...) may not work in production. Please use uploaded images for production banners.
-                              </div>
-                            )}
-                            {/* BannerImagePreview component handles both static and uploaded images */}
-                            {/* Visually hidden DialogTitle for accessibility */}
-                            <VisuallyHidden>
-                              <DialogTitle>Banner Image Preview</DialogTitle>
-                            </VisuallyHidden>
-                            <BannerImagePreview image={banner.image} />
-                          </DialogContent>
-                        )}
-                      </Dialog>
-                    ) : null}
+                    {/* Preview removed as per user request */}
                     {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved ? (
                       <Button
                         variant="success"
@@ -650,74 +621,6 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   );
 };
 
-/**
- * BannerImagePreview: Handles previewing both static assets (via import.meta.glob) and uploaded images.
- */
-const staticAssetGlob = import.meta.glob('/src/assets/**/*.{jpg,jpeg,png,gif,webp}');
 
-/**
- * BannerImagePreview: Robustly handles previewing both static assets (via import.meta.glob) and uploaded images.
- * - Static asset paths supported: '../src/assets/...', '/src/assets/...', 'src/assets/...', './src/assets/...'
- * - Uploaded images: '/uploads/images/filename.jpg' or any absolute/relative URL
- */
-/**
- * BannerImagePreview: Always preview from /uploads/images/filename if possible (admin view),
- * fallback to static asset path if not found.
- */
-function BannerImagePreview({ image }: { image: string }) {
-  // Always preview from /uploads/images/filename if image is a filename, or use as-is if already a path
-  let imgUrl: string | null = null;
-  if (!image) {
-    imgUrl = null;
-  } else if (typeof image === 'string' && !image.includes('/')) {
-    // If image is just a filename, use /uploads/images/filename
-    imgUrl = `/uploads/images/${image}`;
-  } else if (typeof image === 'string' && image.startsWith('/uploads/images/')) {
-    imgUrl = image;
-  } else {
-    // Fallback: use as-is
-    imgUrl = image;
-  }
-
-  if (!imgUrl) {
-    return <div>No image to preview.</div>;
-  }
-  return (
-    <div>
-      <div style={{wordBreak: 'break-all', fontSize: '0.8em', color: '#888', marginBottom: 8}}>
-        Preview URL: <a href={imgUrl} target="_blank" rel="noopener noreferrer">{imgUrl}</a>
-      </div>
-      <img
-        src={imgUrl}
-        alt="Banner image"
-        className="w-full h-auto rounded-md"
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = 'none';
-        }}
-      />
-    </div>
-  );
-}
-
-/**
- * VisuallyHidden: Utility component for accessibility (screen readers only).
- */
-function VisuallyHidden({ children }: { children: React.ReactNode }) {
-  return (
-    <span style={{
-      border: 0,
-      clip: 'rect(0 0 0 0)',
-      height: '1px',
-      margin: '-1px',
-      overflow: 'hidden',
-      padding: 0,
-      position: 'absolute',
-      width: '1px',
-      whiteSpace: 'nowrap'
-    }}>
-      {children}
-    </span>
-  );
-}
 
 export default BannerManagement;

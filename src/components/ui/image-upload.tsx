@@ -1,13 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { X, Image, Loader2, Eye } from 'lucide-react';
+import { Image, Loader2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
-import { assetUrl } from '@/lib/asset-url';
 
 interface ImageUploadProps {
   label: string;
@@ -17,7 +15,6 @@ interface ImageUploadProps {
   accept?: string;
   maxSize?: number; // in MB
   className?: string;
-  preview?: boolean;
 }
 
 export const ImageUpload = ({
@@ -28,19 +25,16 @@ export const ImageUpload = ({
   accept = 'image/*',
   maxSize = 5,
   className = '',
-  preview = true
 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [localPreview, setLocalPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
     if (!file) {return;}
 
-    // Show local preview immediately
-    setLocalPreview(URL.createObjectURL(file));
+    // No preview logic
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -49,7 +43,7 @@ export const ImageUpload = ({
         description: 'Please select an image file',
         variant: 'destructive',
       });
-      setLocalPreview(null);
+      // No preview logic
       return;
     }
 
@@ -60,7 +54,7 @@ export const ImageUpload = ({
         description: `File size must be less than ${maxSize}MB`,
         variant: 'destructive',
       });
-      setLocalPreview(null);
+      // No preview logic
       return;
     }
 
@@ -76,7 +70,7 @@ export const ImageUpload = ({
         // Always use the backend's returned filename for all further operations
         const backendFilename = response.data.name;
         onChange(backendFilename);
-        setLocalPreview(null); // Switch to uploaded image preview
+        // No preview logic
         toast({
           title: 'Success',
           description: 'Image uploaded successfully',
@@ -89,7 +83,7 @@ export const ImageUpload = ({
         description: 'Failed to upload image',
         variant: 'destructive',
       });
-      setLocalPreview(null);
+      // No preview logic
     } finally {
       setUploading(false);
       // Clear the file input to prevent issues
@@ -139,69 +133,14 @@ export const ImageUpload = ({
 
   // Helper: Extract filename from any path
   // Robust filename extraction: handles /assets/images/hero-section/filename.jpg, /uploads/images/filename.jpg, etc.
-  function extractFilename(path: string | undefined | null): string | null {
-    if (!path) { return null; }
-    // Remove any query/hash
-    const clean = path.split(/[?#]/)[0];
-    // Remove any trailing slash
-    const noSlash = clean.replace(/\/$/, '');
-    // Get last segment
-    const parts = noSlash.split('/');
-    return parts[parts.length - 1] || null;
-  }
+  // No preview logic
 
   // Admin preview: always try /uploads/images/filename first, fallback to assetUrl(value)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [debugPreview, setDebugPreview] = useState<{uploadsUrl: string, fallbackUrl: string, used: string}>({uploadsUrl: '', fallbackUrl: '', used: ''});
-
-  useEffect(() => {
-    if (localPreview) {
-      setPreviewUrl(localPreview);
-      setDebugPreview({uploadsUrl: '', fallbackUrl: '', used: localPreview});
-      return;
-    }
-    if (!value) {
-      setPreviewUrl(null);
-      setDebugPreview({uploadsUrl: '', fallbackUrl: '', used: ''});
-      return;
-    }
-    // If value is a backend filename (no slashes), always use /uploads/images/value
-    if (value && !value.includes('/')) {
-      const uploadsUrl = `/uploads/images/${value}`;
-      setPreviewUrl(uploadsUrl);
-      setDebugPreview({uploadsUrl, fallbackUrl: '', used: uploadsUrl});
-      return;
-    }
-    const filename = extractFilename(value);
-    if (filename) {
-      const uploadsUrl = `/uploads/images/${filename}`;
-      const fallbackUrl = assetUrl(value);
-      // Try loading uploads image
-      const testImg = new window.Image();
-      testImg.onload = () => {
-        setPreviewUrl(uploadsUrl);
-        setDebugPreview({uploadsUrl, fallbackUrl, used: uploadsUrl});
-        // eslint-disable-next-line no-console
-        console.log('[ImageUpload] Preview using uploads:', uploadsUrl);
-      };
-      testImg.onerror = () => {
-        setPreviewUrl(fallbackUrl);
-        setDebugPreview({uploadsUrl, fallbackUrl, used: fallbackUrl});
-        // eslint-disable-next-line no-console
-        console.log('[ImageUpload] Preview fallback to assetUrl:', fallbackUrl);
-      };
-      testImg.src = uploadsUrl;
-    } else {
-      const fallbackUrl = assetUrl(value);
-      setPreviewUrl(fallbackUrl);
-      setDebugPreview({uploadsUrl: '', fallbackUrl, used: fallbackUrl});
-    }
-  }, [value, localPreview]);
+  // No preview logic: just upload controls and validation
 
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
-      
       <Card
         className={`border-2 border-dashed cursor-pointer transition-colors ${
           dragOver
@@ -214,76 +153,22 @@ export const ImageUpload = ({
         onClick={openFileDialog}
       >
         <CardContent className="p-6">
-          {previewUrl && preview ? (
-            <div className="relative group">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="w-full h-32 object-cover rounded-md"
-              />
-              {/* Debug info for preview URLs */}
-              <div style={{ fontSize: '0.7em', color: '#888', marginTop: 2 }}>
-                <div>Attempted uploads: <code>{debugPreview.uploadsUrl}</code></div>
-                <div>Fallback: <code>{debugPreview.fallbackUrl}</code></div>
-                <div>Used: <code>{debugPreview.used}</code></div>
-              </div>
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <img
-                      src={previewUrl}
-                      alt="Full preview"
-                      className="w-full h-auto rounded-md"
-                    />
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearImage();
-                    setLocalPreview(null);
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              {localPreview && uploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-md">
-                  <Loader2 className="w-8 h-8 animate-spin text-white" />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center">
-              {uploading ? (
-                <>
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
-                  <p className="text-sm text-muted-foreground">Uploading...</p>
-                </>
-              ) : (
-                <>
-                  <Image className="w-8 h-8 text-muted-foreground mb-2" />
-                  <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG, GIF up to {maxSize}MB
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+          <div className="flex flex-col items-center justify-center text-center">
+            {uploading ? (
+              <>
+                <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
+                <p className="text-sm text-muted-foreground">Uploading...</p>
+              </>
+            ) : (
+              <>
+                <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                <p className="text-xs text-muted-foreground">
+                  PNG, JPG, GIF up to {maxSize}MB
+                </p>
+              </>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -296,7 +181,7 @@ export const ImageUpload = ({
         disabled={uploading}
       />
 
-      {value && !preview && (
+      {value && (
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground truncate flex-1">
             {value}
