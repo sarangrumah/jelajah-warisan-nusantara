@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { memoryWorldService } from '@/lib/api-services';
+import { collectionCategoryService, memoryWorldService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,8 +12,14 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import QuillEditor from '@/components/ui/quill-editor';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ImageItem { path: string; sites?: string }
+
+interface CollectionCategory {
+  id: string;
+  name: string;
+}
 
 interface MemoryWorldItem {
   id?: string;
@@ -30,6 +36,8 @@ interface MemoryWorldItem {
   updated_at?: string;
   is_approved?: boolean;
   is_rejected?: boolean;
+  categories_id?: string | null;
+  category?: CollectionCategory | null;
 }
 
 const emptyItem: MemoryWorldItem = {
@@ -43,6 +51,7 @@ const emptyItem: MemoryWorldItem = {
   thumbnails: '',
   gallery: [],
   is_rejected: false,
+  categories_id: '',
 };
 
 // Convert to input[type=date] value (YYYY-MM-DD)
@@ -61,14 +70,17 @@ const toDateInput = (v?: string) => {
 // From input[type=date] back to payload string (keep YYYY-MM-DD)
 const fromDateInput = (v?: string) => v || '';
 
-const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
+const MemoryWorldForm = ({ value, onSave, onCancel, saving, categories, categoryLoading } : {
   value: MemoryWorldItem,
   onSave: (data: MemoryWorldItem) => void,
   onCancel: () => void,
   saving: boolean,
+  categories: CollectionCategory[],
+  categoryLoading: boolean,
 }) => {
   const [formData, setFormData] = useState<MemoryWorldItem>({
     ...value,
+    categories_id: value.categories_id ?? '',
     date: toDateInput(value.date),
     start_publish_date: toDateInput(value.start_publish_date),
     end_publish_date: toDateInput(value.end_publish_date),
@@ -77,6 +89,7 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
   useEffect(() => {
     setFormData({
       ...value,
+      categories_id: value.categories_id ?? '',
       date: toDateInput(value.date),
       start_publish_date: toDateInput(value.start_publish_date),
       end_publish_date: toDateInput(value.end_publish_date),
@@ -103,7 +116,38 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
         <div className="space-y-2">
           <Label htmlFor="subtitle">Subtitle</Label>
           <Input id="subtitle" value={formData.subtitle} onChange={(e) => setFormData(p => ({...p, subtitle: e.target.value}))} />
-        </div>
+      </div>
+    </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="categories_id">Category</Label>
+        {categoryLoading ? (
+          <div className="flex items-center justify-center p-4">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : (
+          <Select
+            value={formData.categories_id ?? ''}
+            onValueChange={(value) => setFormData(p => ({ ...p, categories_id: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.length === 0 ? (
+                <SelectItem value="" disabled>
+                  No categories available
+                </SelectItem>
+              ) : (
+                categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -171,14 +215,19 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<CollectionCategory[]>([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    fetchAll();
+    fetchCategories();
+  }, []);
 
   const fetchAll = async () => {
     try {
       const res = await memoryWorldService.getAll();
-      if (res.error) {throw new Error(res.error);}
+      if (res.error) {throw new Error(res.error);} 
       setItems(res.data || []);
     } catch (error) {
       console.error('Error fetch memory of world:', error);
@@ -188,11 +237,26 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      setCategoryLoading(true);
+      const res = await collectionCategoryService.getAll();
+      if (res.error) {throw new Error(res.error);} 
+      setCategories(res.data || []);
+    } catch (error) {
+      console.error('Error fetch collection categories:', error);
+      toast({ title: 'Error', description: 'Failed to load categories', variant: 'destructive' });
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
   const saveItem = async (data: MemoryWorldItem) => {
     setSaving(true);
     try {
       const payload: MemoryWorldItem = {
         ...data,
+        categories_id: data.categories_id ? data.categories_id : null,
         is_rejected: false,
       };
 
@@ -310,7 +374,14 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
             <DialogDescription>Manage Memory of The World content</DialogDescription>
           </DialogHeader>
           {editing && (
-            <MemoryWorldForm value={editing} onSave={saveItem} onCancel={() => { setOpen(false); setEditing(null); }} saving={saving} />
+            <MemoryWorldForm
+              value={editing}
+              onSave={saveItem}
+              onCancel={() => { setOpen(false); setEditing(null); }}
+              saving={saving}
+              categories={categories}
+              categoryLoading={categoryLoading}
+            />
           )}
         </DialogContent>
       </Dialog>
@@ -364,7 +435,19 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                         </Button>
                       </>
                     ) : null}
-                    <Button variant="outline" size="sm" onClick={() => { setEditing({ ...it, gallery: it.galleries?.map((g: any) => ({ id: g.id, path: g.upload_file })) || [], thumbnails: it.thumbnails }); setOpen(true); }}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditing({
+                          ...it,
+                          categories_id: it.categories_id ?? it.category?.id ?? '',
+                          gallery: it.galleries?.map((g: any) => ({ id: g.id, path: g.upload_file })) || [],
+                          thumbnails: it.thumbnails,
+                        });
+                        setOpen(true);
+                      }}
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => deleteItem(it.id)}>
@@ -382,6 +465,10 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                   <div>
                     <span className="font-medium">Period:</span>
                     <p className="text-muted-foreground">{it.start_publish_date || '-'} → {it.end_publish_date || '-'}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Category:</span>
+                    <p className="text-muted-foreground">{it.category?.name || '-'}</p>
                   </div>
                 </div>
               </CardContent>

@@ -17,6 +17,13 @@ export const signInValidation = [
   body('password').isLength({ min: 1 })
 ];
 
+export const changePasswordValidation = [
+  body('current_password').isLength({ min: 1 }).withMessage('Current password is required'),
+  body('new_password').isLength({ min: 8 }).withMessage('New password must be at least 8 characters'),
+  body('confirm_password').custom((value, { req }) => value === req.body.new_password)
+    .withMessage('Confirmation password must match the new password')
+];
+
 interface User {
   id: string;
   email: string;
@@ -283,6 +290,49 @@ export const getAllProfile = async (req: AuthRequest, res: Response) => {
     res.json(profiles);
   } catch (error) {
     console.error('Get profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { current_password, new_password } = req.body;
+    const userId = req.user.id;
+
+    const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { password_hash } = userResult.rows[0];
+
+    const isCurrentValid = await bcrypt.compare(current_password, password_hash);
+    if (!isCurrentValid) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    const isSamePassword = await bcrypt.compare(new_password, password_hash);
+    if (isSamePassword) {
+      return res.status(400).json({ error: 'New password must be different from the current password' });
+    }
+
+    const newHash = await bcrypt.hash(new_password, 12);
+
+    await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, userId]);
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

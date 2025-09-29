@@ -24,6 +24,7 @@ import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
+import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -172,10 +173,15 @@ const AdminDashboard = () => {
           </DialogHeader>
           <ChangePasswordForm
             onSubmit={async (payload) => {
-              await new Promise((resolve) => setTimeout(resolve, 800));
+              const response = await authService.changePassword(payload);
+
+              if (response.error) {
+                throw new Error(response.error);
+              }
+
               toast({
                 title: 'Berhasil',
-                description: 'Password berhasil diperbarui.',
+                description: response.data?.message ?? 'Password berhasil diperbarui.',
               });
               setIsChangePasswordOpen(false);
             }}

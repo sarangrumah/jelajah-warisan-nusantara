@@ -1,6 +1,11 @@
 import { get } from 'http';
 import { apiClient } from './api-client';
 
+export const authService = {
+  changePassword: (data: { current_password: string; new_password: string; confirm_password: string }) =>
+    apiClient.changePassword(data),
+};
+
 // Hero Slides
 export const heroSlideService = {
   getAll: () => apiClient.getAll('hero_slides'),
@@ -128,6 +133,10 @@ export const memoryWorldService = {
   delete: (id: string) => apiClient.delete('tb_memoryoftheworld', id),
   approve: (id: string) => apiClient.approve('tb_memoryoftheworld', id),
   reject: (id: string) => apiClient.reject('tb_memoryoftheworld', id),
+};
+
+export const collectionCategoryService = {
+  getAll: () => apiClient.getAll('tb_categories_collections'),
 };
 
 // FAQs

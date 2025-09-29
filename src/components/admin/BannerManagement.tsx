@@ -460,7 +460,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {banner != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {banner != null  ? 
+        <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
                   <DialogTitle>
@@ -526,9 +527,9 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     {banner.image ? (
                       <Dialog open={previewBannerId === banner.id} onOpenChange={(open) => setPreviewBannerId(open ? banner.id! : null)}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" title="Preview Image" onClick={() => setPreviewBannerId(banner.id!)}>
+                          {/* <Button variant="outline" size="sm" title="Preview Image" onClick={() => setPreviewBannerId(banner.id!)}>
                             <Eye className="w-4 h-4" />
-                          </Button>
+                          </Button> */}
                         </DialogTrigger>
                         {previewBannerId === banner.id && (
                           <DialogContent className="max-w-3xl">

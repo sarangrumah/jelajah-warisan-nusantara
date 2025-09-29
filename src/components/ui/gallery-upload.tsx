@@ -23,6 +23,32 @@ interface GalleryUploadProps {
   className?: string;
 }
 
+const sanitizeFileName = (url?: string) => {
+  if (!url) return '';
+
+  const scrub = (raw: string) => raw.replace(/[\s\\/:*?"<>|]+/g, ' ').trim();
+  const safeDecode = (raw: string) => {
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
+  };
+
+  try {
+    const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+    const parsed = new URL(url, base);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    const fileName = segments.pop() || '';
+    return scrub(safeDecode(fileName));
+  } catch {
+    const cleaned = url.split(/[?#]/)[0];
+    const segments = cleaned.split('/').filter(Boolean);
+    const fileName = segments.pop() || cleaned;
+    return scrub(safeDecode(fileName));
+  }
+};
+
 export const GalleryUpload = ({
   label,
   value = [], // ✅ Fixed: default to empty array
@@ -157,11 +183,14 @@ export const GalleryUpload = ({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {value.map((image, index) => (
             <div key={index} className="relative group">
-              <img
+              <span className="block text-xs font-medium text-muted-foreground break-words">
+                {sanitizeFileName(image.path) || 'Image'}
+              </span>
+              {/* <img
                 src={assetUrl(image.path)}
                 alt={`Gallery image ${index + 1}`}
                 className="w-full h-24 object-cover rounded-md"
-              />
+              /> */}
               <Button
                 type="button"
                 variant="destructive"
@@ -198,7 +227,7 @@ export const GalleryUpload = ({
                 </>
               ) : (
                 <>
-                  <Plus className="w-8 h-8 text-muted-foreground mb-2" />
+                  {/* <Plus className="w-8 h-8 text-muted-foreground mb-2" /> */}
                   <p className="text-sm font-medium mb-1">Add more images</p>
                   <p className="text-xs text-muted-foreground">
                     PNG, JPG, GIF up to {maxSize}MB ({value.length}/{maxImages})

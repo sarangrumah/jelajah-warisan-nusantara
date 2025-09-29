@@ -108,6 +108,13 @@ class ApiClient {
     return this.request<string[]>('/api/auth/roles');
   }
 
+  async changePassword(data: { current_password: string; new_password: string; confirm_password: string }): Promise<ApiResponse<{ message: string }>> {
+    return this.request<{ message: string }>('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem('auth_token', token);

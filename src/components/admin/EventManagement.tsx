@@ -250,7 +250,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-3">
           <Label htmlFor="name">Name</Label>
@@ -331,7 +331,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         <QuillEditor
           value={formData.description || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
-          height={180}
+          height={100}
           placeholder="Describe the event"
         />
       </div>
@@ -341,7 +341,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         <QuillEditor
           value={formData.address || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
-          height={140}
+          height={100}
           placeholder="Enter venue address"
         />
       </div>
@@ -351,7 +351,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         <QuillEditor
           value={formData.location || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, location: html }))}
-          height={140}
+          height={100}
           placeholder="Enter location details"
         />
       </div>
@@ -517,7 +517,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         label="Banner Image"
         value={formData.banner_img}
         onChange={handleImageUpload}
-        bucket="events"
+        bucket="hero-sections"
       /> 
 
       <div className="flex items-center space-x-2">

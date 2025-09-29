@@ -1,7 +1,7 @@
 import { FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// import { publications } from '@/../database/default-data';
+import { publications } from '@/../database/default-data';
 
 const PublicationSection = () => {
   // const budgetData = [
@@ -10,16 +10,16 @@ const PublicationSection = () => {
   //   { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
   // ];
 
-  // const downloadFromUrl = (url) => {
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   // link.download = filename || "download";
-  //   link.rel="noopener noreferrer";
-  //   link.target="_blank";
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  const downloadFromUrl = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -41,7 +41,7 @@ const PublicationSection = () => {
             </h2>
           </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
-            {/* {publications.map((pub, index) => (
+            {publications.map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -83,7 +83,7 @@ const PublicationSection = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))} */}
+            ))}
           </div>
         </div>
       </div>

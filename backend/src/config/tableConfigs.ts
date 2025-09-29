@@ -109,6 +109,7 @@ export const tableConfigs = {
     'updated_by',
     'updated_at'
   ],
+  
   tb_memoryoftheworld: [
     'id',
     'title',
@@ -124,7 +125,8 @@ export const tableConfigs = {
     'created_by',
     'created_at',
     'updated_by',
-    'updated_at'
+    'updated_at',
+    'categories_id'
   ],
 
   tb_memoryoftheworld_gallery: [
@@ -179,6 +181,13 @@ export const tableRelationships = {
       type: 'has_many', 
        fields: ['id', 'upload_file', ]
     },
+    category: {
+      table: 'tb_categories_collections',
+      localKey: 'categories_id',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name']
+    }
   },
   tb_career_submission_management: {
     career: {

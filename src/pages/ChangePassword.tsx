@@ -1,15 +1,20 @@
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
 import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/api-services';
 
 const ChangePasswordPage = () => {
   const { toast } = useToast();
 
   const handleSubmit = async (payload: { current_password: string; new_password: string; confirm_password: string }) => {
-    // TODO: Integrate with real API once available
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const response = await authService.changePassword(payload);
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
     toast({
       title: 'Berhasil',
-      description: 'Password berhasil diperbarui.',
+      description: response.data?.message ?? 'Password berhasil diperbarui.',
     });
   };
 
