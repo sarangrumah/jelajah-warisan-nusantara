@@ -3,11 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Upload, X, Image, Loader2, Eye } from 'lucide-react';
+import { Image, Loader2, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
-import { assetUrl } from '@/lib/asset-url';
 
 interface ImageUploadProps {
   label: string;
@@ -17,7 +15,6 @@ interface ImageUploadProps {
   accept?: string;
   maxSize?: number; // in MB
   className?: string;
-  preview?: boolean;
 }
 
 export const ImageUpload = ({
@@ -28,7 +25,6 @@ export const ImageUpload = ({
   accept = 'image/*',
   maxSize = 5,
   className = '',
-  preview = true
 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -36,7 +32,9 @@ export const ImageUpload = ({
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
-    if (!file) return;
+    if (!file) {return;}
+
+    // No preview logic
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -45,6 +43,7 @@ export const ImageUpload = ({
         description: 'Please select an image file',
         variant: 'destructive',
       });
+      // No preview logic
       return;
     }
 
@@ -55,6 +54,7 @@ export const ImageUpload = ({
         description: `File size must be less than ${maxSize}MB`,
         variant: 'destructive',
       });
+      // No preview logic
       return;
     }
 
@@ -66,8 +66,11 @@ export const ImageUpload = ({
         throw new Error(response.error);
       }
 
-      if (response.data?.url) {
-        onChange(response.data.url);
+      if (response.data?.name) {
+        // Always use the backend's returned filename for all further operations
+        const backendFilename = response.data.name;
+        onChange(backendFilename);
+        // No preview logic
         toast({
           title: 'Success',
           description: 'Image uploaded successfully',
@@ -80,6 +83,7 @@ export const ImageUpload = ({
         description: 'Failed to upload image',
         variant: 'destructive',
       });
+      // No preview logic
     } finally {
       setUploading(false);
       // Clear the file input to prevent issues
@@ -127,16 +131,20 @@ export const ImageUpload = ({
     fileInputRef.current?.click();
   };
 
-  const displayUrl = assetUrl(value);
+  // Helper: Extract filename from any path
+  // Robust filename extraction: handles /assets/images/hero-section/filename.jpg, /uploads/images/filename.jpg, etc.
+  // No preview logic
+
+  // Admin preview: always try /uploads/images/filename first, fallback to assetUrl(value)
+  // No preview logic: just upload controls and validation
 
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
-      
       <Card
         className={`border-2 border-dashed cursor-pointer transition-colors ${
-          dragOver 
-            ? 'border-primary bg-primary/5' 
+          dragOver
+            ? 'border-primary bg-primary/5'
             : 'border-border hover:border-primary/50'
         }`}
         onDrop={handleDrop}
@@ -145,64 +153,22 @@ export const ImageUpload = ({
         onClick={openFileDialog}
       >
         <CardContent className="p-6">
-          {value && preview ? (
-            <div className="relative group">
-              <img
-                src={displayUrl}
-                alt="Preview"
-                className="w-full h-32 object-cover rounded-md"
-              />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <img
-                      src={displayUrl}
-                      alt="Full preview"
-                      className="w-full h-auto rounded-md"
-                    />
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearImage();
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center">
-              {uploading ? (
-                <>
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
-                  <p className="text-sm text-muted-foreground">Uploading...</p>
-                </>
-              ) : (
-                <>
-                  <Image className="w-8 h-8 text-muted-foreground mb-2" />
-                  <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG, GIF up to {maxSize}MB
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+          <div className="flex flex-col items-center justify-center text-center">
+            {uploading ? (
+              <>
+                <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
+                <p className="text-sm text-muted-foreground">Uploading...</p>
+              </>
+            ) : (
+              <>
+                <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                <p className="text-xs text-muted-foreground">
+                  PNG, JPG, GIF up to {maxSize}MB
+                </p>
+              </>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -215,7 +181,7 @@ export const ImageUpload = ({
         disabled={uploading}
       />
 
-      {value && !preview && (
+      {value && (
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground truncate flex-1">
             {value}

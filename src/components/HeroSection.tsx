@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { defaultSlides } from '@/../database/default-data';
-// import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
@@ -19,23 +17,31 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
+const heroImages = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp,mp4}', { eager: true, import: 'default' });
 
-/*
-// Disabled due to missing images causing Vite errors
-const images = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
-*/
-
-/*
-// Disabled due to missing images causing Vite errors
 function getImageOrVideoUrl(p: string) {
-  return '/placeholder.svg'; // fallback to a placeholder image
+  if (typeof p !== 'string' || p.length === 0) { return ''; }
+  // If it's an uploaded image (backend), use the API assetUrl helper
+  if (p.startsWith('/uploads/') || p.startsWith('../uploads') || p.startsWith('/uploads/images/hero-section/') || p.startsWith('uploads/images/hero-section/')) {
+    return assetUrl(p);
+  }
+  // Try to resolve using import.meta.glob mapping
+  const filename = p.split('/').pop();
+  if (filename && heroImages) {
+    for (const [key, value] of Object.entries(heroImages)) {
+      if (key.endsWith('/' + filename)) {
+        return value as string;
+      }
+    }
+  }
+  // Fallback: return as is (will likely 404)
+  return p;
 }
-*/
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
     asset: slide.image?.split('/').pop() || slide.image,
-    image: '/placeholder.svg', // fallback to a placeholder image
+    image: getImageOrVideoUrl(slide.image),
   }));
 
 import { useRef } from 'react';
@@ -141,46 +147,44 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     }
   };
   
-  const fetchSlides = async () => {
-    try {
-      const response = await bannerService.getAll();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching slides:', response.error);
-        setSlides(mapSlidesWithImageUrl(defaultSlides));
-      } else {
-        const filteredSlides = response.data.filter((slide: any) => (
-          slide.is_active === true 
-          && slide.is_approved === true 
-          && new Date(slide.start_publish_date) <= new Date()
-          && new Date(slide.end_publish_date) >= new Date()
-        ));
-        setSlides(mapSlidesWithImageUrl(filteredSlides));
-      }
-    } catch (error) {
-      console.error('Error fetching slides:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await bannerService.getAll();
+        if (response.error) {
+          console.error('Error fetching slides:', response.error);
+          // setSlides(mapSlidesWithImageUrl(defaultSlides));
+        } else {
+          const filteredSlides = response.data.filter((slide: any) => (
+            slide.is_active === true 
+            && slide.is_approved === true 
+            && new Date(slide.start_publish_date) <= new Date()
+            && new Date(slide.end_publish_date) >= new Date()
+          ));
+          setSlides(mapSlidesWithImageUrl(filteredSlides));
+        }
+      } catch (error) {
+        console.error('Error fetching slides:', error);
+      }
+    };
     fetchSlides();
-  },[]);
-
-  const fetchTypeSites = async () => {
-    try {
-      const response = await TypesAndCategoriesSites.getAllTypes();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching types:', response.error);
-      } else {
-        setTypes(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  }
+  }, []);
 
   useEffect(() => {
+    const fetchTypeSites = async () => {
+      try {
+        const response = await TypesAndCategoriesSites.getAllTypes();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching types:', response.error);
+        } else {
+          setTypes(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching museums:', error);
+      }
+    }
     fetchTypeSites();
-  },[]);
+  }, []);
 
   const linkTo = (slides: string) => {
     const type = types.find((type) => type.name === slides)?.id;

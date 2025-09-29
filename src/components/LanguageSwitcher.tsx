@@ -19,15 +19,20 @@ const LanguageSwitcher = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/translations/languages')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setLanguages(data);
-        }
-      })
-      .catch(() => {/* fallback to default */})
-      .finally(() => setLoading(false));
+    // Only attempt to fetch dynamic languages in development
+    if (process.env.NODE_ENV !== 'production') {
+      fetch('/api/translations/languages')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setLanguages(data);
+          }
+        })
+        .catch(() => {/* fallback to default */})
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
