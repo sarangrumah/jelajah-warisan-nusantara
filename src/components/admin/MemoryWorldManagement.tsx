@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { memoryWorldService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +11,7 @@ import { MediaGalleryUpload } from '@/components/ui/media-gallery-upload';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface ImageItem { path: string; sites?: string }
 
@@ -29,6 +29,7 @@ interface MemoryWorldItem {
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
+  is_rejected?: boolean;
 }
 
 const emptyItem: MemoryWorldItem = {
@@ -41,6 +42,7 @@ const emptyItem: MemoryWorldItem = {
   is_active: true,
   thumbnails: '',
   gallery: [],
+  is_rejected: false,
 };
 
 // Convert to input[type=date] value (YYYY-MM-DD)
@@ -106,7 +108,12 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" rows={3} value={formData.description} onChange={(e) => setFormData(p => ({...p, description: e.target.value}))} />
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(p => ({ ...p, description: html }))}
+          height={200}
+          placeholder="Describe this memory"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -184,12 +191,17 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (data: MemoryWorldItem) => {
     setSaving(true);
     try {
+      const payload: MemoryWorldItem = {
+        ...data,
+        is_rejected: false,
+      };
+
       if (editing?.id) {
-        const res = await memoryWorldService.update(editing.id, data);
+        const res = await memoryWorldService.update(editing.id, payload);
         if (res.error) {throw new Error(res.error);}
         toast({ title: 'Updated', description: 'Updated successfully' });
       } else {
-        const res = await memoryWorldService.create(data);
+        const res = await memoryWorldService.create(payload);
         if (res.error) {throw new Error(res.error);}
         toast({ title: 'Created', description: 'Created successfully' });
       }
@@ -213,6 +225,56 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
     } catch (error) {
       console.error('Error publish memory of world:', error);
       toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
+    }
+  };
+
+  const toggleApproved = async (id: string) => {
+    try {
+      const res = await memoryWorldService.approve(id);
+      if (res.error) {throw new Error(res.error);}
+
+      const updated = (res.data || {}) as Partial<MemoryWorldItem>;
+      setItems(prev => prev.map(it =>
+        it.id === id
+          ? {
+              ...it,
+              is_approved: updated.is_approved ?? true,
+              is_rejected: updated.is_rejected ?? false,
+              is_active: updated.is_active ?? it.is_active,
+            }
+          : it
+      ));
+
+      toast({ title: 'Approved', description: 'Item approved successfully' });
+      await fetchAll();
+    } catch (error) {
+      console.error('Error approving memory of world:', error);
+      toast({ title: 'Error', description: 'Failed to approve item', variant: 'destructive' });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const res = await memoryWorldService.reject(id);
+      if (res.error) {throw new Error(res.error);}
+
+      const updated = (res.data || {}) as Partial<MemoryWorldItem>;
+      setItems(prev => prev.map(it =>
+        it.id === id
+          ? {
+              ...it,
+              is_approved: updated.is_approved ?? false,
+              is_rejected: updated.is_rejected ?? true,
+              is_active: updated.is_active ?? it.is_active,
+            }
+          : it
+      ));
+
+      toast({ title: 'Rejected', description: 'Item rejected successfully' });
+      await fetchAll();
+    } catch (error) {
+      console.error('Error rejecting memory of world:', error);
+      toast({ title: 'Error', description: 'Failed to reject item', variant: 'destructive' });
     }
   };
 
@@ -282,8 +344,8 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={it.is_active ? 'default' : 'secondary'}>
                         {it.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={it.is_approved ? 'success' : 'secondary'}>
-                        {it.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={it.is_approved ? 'success' : it.is_rejected ? 'destructive' : 'secondary'}>
+                        {it.is_approved ? 'Approved' : it.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{it.subtitle}</CardDescription>
@@ -292,13 +354,15 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                     <div className="flex items-center space-x-2">
                       <Switch id="is_active" checked={!!it.is_active} onCheckedChange={(checked) => togglePublished(it.id, checked)} />
                     </div>
-                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved ? (
-                      <Button variant="success" size="sm" onClick={async () => {
-                        const res = await memoryWorldService.approve(it.id);
-                        if (!res.error) {
-                          setItems(prev => prev.map(x => x.id === it.id ? { ...x, is_approved: true, is_active: true } : x));
-                        }
-                      }}>Approve</Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved && !it.is_rejected ? (
+                      <>
+                        <Button variant="success" size="sm" onClick={() => toggleApproved(it.id)}>
+                          Approve
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => toggleRejected(it.id)}>
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
                     <Button variant="outline" size="sm" onClick={() => { setEditing({ ...it, gallery: it.galleries?.map((g: any) => ({ id: g.id, path: g.upload_file })) || [], thumbnails: it.thumbnails }); setOpen(true); }}>
                       <Edit className="w-4 h-4" />

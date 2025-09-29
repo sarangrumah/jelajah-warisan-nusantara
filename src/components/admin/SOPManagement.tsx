@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { sopService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +11,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
+import QuillEditor from '@/components/ui/quill-editor';
 
 type SopCategory = 'Peraturan' | 'SOP';
 
@@ -26,6 +26,7 @@ interface SOPItem {
   author: string;
   is_active: boolean;
   is_approved?: boolean;
+  is_rejected?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -40,6 +41,7 @@ const emptySOP: SOPItem = {
   author: '',
   is_active: true,
   is_approved: false,
+  is_rejected: false,
 };
 
 const SOPForm = ({ sop, onSave, onCancel, saving }: {
@@ -101,11 +103,11 @@ const SOPForm = ({ sop, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          rows={4}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+          height={220}
+          placeholder="Write SOP description"
         />
       </div>
 
@@ -214,13 +216,17 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (formData: SOPItem) => {
     setSaving(true);
     try {
+      const payload: SOPItem = {
+        ...formData,
+        is_rejected: false,
+      };
       if (editingItem?.id) {
-        const response = await sopService.update(editingItem.id, formData);
+        const response = await sopService.update(editingItem.id, payload);
         if (response.error) {throw new Error(response.error);}
-        setItems(prev => prev.map(i => (i.id === editingItem.id ? { ...i, ...formData } : i)));
+        setItems(prev => prev.map(i => (i.id === editingItem.id ? { ...i, ...payload } : i)));
         toast({ title: 'Success', description: 'SOP updated successfully' });
       } else {
-        const response = await sopService.create(formData);
+        const response = await sopService.create(payload);
         if (response.error) {throw new Error(response.error);}
         setItems(prev => [response.data as unknown as SOPItem, ...prev]);
         toast({ title: 'Success', description: 'SOP created successfully' });
@@ -251,12 +257,35 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     try {
       const response = await sopService.approve(id);
       if (response.error) {throw new Error(response.error);}
-      setItems(prev => prev.map(i => (i.id === id ? { ...i, is_approved: (response as any).data?.is_approved } : i)));
+      const updated = (response.data || {}) as Partial<SOPItem>;
+      setItems(prev => prev.map(i => (i.id === id ? {
+        ...i,
+        is_approved: updated.is_approved ?? true,
+        is_rejected: updated.is_rejected ?? false,
+      } : i)));
       toast({ title: 'Success', description: 'SOP approved' });
       fetchItems();
     } catch (error) {
       console.error('Error approving SOP:', error);
       toast({ title: 'Error', description: 'Failed to approve SOP', variant: 'destructive' });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const response = await sopService.reject(id);
+      if (response.error) {throw new Error(response.error);}
+      const updated = (response.data || {}) as Partial<SOPItem>;
+      setItems(prev => prev.map(i => (i.id === id ? {
+        ...i,
+        is_approved: updated.is_approved ?? false,
+        is_rejected: updated.is_rejected ?? true,
+      } : i)));
+      toast({ title: 'Success', description: 'SOP rejected' });
+      fetchItems();
+    } catch (error) {
+      console.error('Error rejecting SOP:', error);
+      toast({ title: 'Error', description: 'Failed to reject SOP', variant: 'destructive' });
     }
   };
 
@@ -363,8 +392,8 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={item.is_active ? 'default' : 'secondary'}>
                         {item.is_active ? 'Active' : 'Inactive'}
                       </Badge>
-                      <Badge variant={item.is_approved ? 'success' : 'secondary'}>
-                        {item.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                        {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{item.subtitle}</CardDescription>
@@ -378,10 +407,15 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => toggleActive(item.id!, checked)}
                         />
                       </div>
-                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
-                        <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
-                          Approve
-                        </Button>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved && !item.is_rejected ? (
+                        <>
+                          <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
+                            Approve
+                          </Button>
+                          <Button variant="destructive" size="sm" onClick={() => toggleRejected(item.id!)}>
+                            Reject
+                          </Button>
+                        </>
                       ) : null}
                       <Button
                         variant="outline"
@@ -404,10 +438,13 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                         <Trash className="w-4 h-4" />
                       </Button>
                     </div>
-                  ) : userRole === 'approver' && !item.is_approved ? (
+                  ) : userRole === 'approver' && !item.is_approved && !item.is_rejected ? (
                     <div className="flex items-center space-x-2">
                       <Button variant="success" className="w-full" onClick={() => toggleApproved(item.id!)}>
                         Approve
+                      </Button>
+                      <Button variant="destructive" className="w-full" onClick={() => toggleRejected(item.id!)}>
+                        Reject
                       </Button>
                     </div>
                   ) : (

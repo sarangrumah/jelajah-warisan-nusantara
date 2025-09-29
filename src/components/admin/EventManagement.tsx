@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EventsService, TypesAndCategoriesEvent, museumService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { map, string } from 'zod';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface EventItem {
   id?: string;
@@ -34,8 +34,10 @@ interface EventItem {
   banner_img?: string;
   ticket_price?: string;
   ticket_url?: string;
+  is_free?: boolean;
   is_active: boolean;
   is_approved: boolean;
+  is_rejected?: boolean;
   created_at?: string;
   updated_at?: string;
   created_by?: string;
@@ -63,6 +65,7 @@ interface SitesItem {
   img_banner: string;
   ticket_price:string;
   is_approved: boolean;
+  is_rejected?: boolean;
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
@@ -110,22 +113,29 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
   const [formData, setFormData] = useState<EventItem>({
     ...museum,
+    is_free: museum.is_free ?? false,
     start_published_date: toDateTimeInput(museum.start_published_date),
     end_published_date: toDateTimeInput(museum.end_published_date),
     start_date: toDateInput(museum.start_date),
     end_date: toDateInput(museum.end_date),
   });
 
+  const previousTicketPriceRef = useRef<string>('');
+
   // Keep inputs in sync when switching edited event
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
       ...museum,
+      is_free: museum.is_free ?? false,
       start_published_date: toDateTimeInput(museum.start_published_date),
       end_published_date: toDateTimeInput(museum.end_published_date),
       start_date: toDateInput(museum.start_date),
       end_date: toDateInput(museum.end_date),
     }));
+    if (museum.is_free) {
+      previousTicketPriceRef.current = museum.ticket_price || '';
+    }
   }, [museum]);
 
   const [sites, setSites] = useState<SitesItem[]>()
@@ -318,31 +328,31 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          rows={3}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+          height={180}
+          placeholder="Describe the event"
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
-        <Textarea
-          id="address"
-          value={formData.address}
-          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-          rows={2}
+        <QuillEditor
+          value={formData.address || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
+          height={140}
+          placeholder="Enter venue address"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="address">Location</Label>
-        <Textarea
-          id="address"
-          value={formData.location}
-          onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-          rows={2}
+        <Label htmlFor="location">Location</Label>
+        <QuillEditor
+          value={formData.location || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, location: html }))}
+          height={140}
+          placeholder="Enter location details"
         />
       </div>
 
@@ -414,7 +424,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       {/* <div className="space-y-2">
         <Label htmlFor="opening_hours">Opening Hours (JSON format)</Label>
-        <Textarea
+        <QuillEditor
           id="opening_hours"
           value={JSON.stringify(formData.opening_hours, null, 1)}
           onChange={(e) => {
@@ -460,15 +470,34 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_free"
+          checked={!!formData.is_free}
+          onCheckedChange={(checked) => {
+            setFormData(prev => {
+              const next = { ...prev, is_free: checked } as EventItem;
+              if (checked) {
+                previousTicketPriceRef.current = prev.ticket_price || '';
+                next.ticket_price = '0';
+              } else {
+                next.ticket_price = previousTicketPriceRef.current || '';
+              }
+              return next;
+            });
+          }}
+        />
+        <Label htmlFor="is_free">Mark as Free Event</Label>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="ticket_price">Ticket Price</Label>
         <Input
           id="ticket_price"
-          type='number'
           value={formData.ticket_price}
-            onChange={(e) => setFormData(prev => ({ ...prev,
-            ticket_price: e.target.value
-          }))}
+          onChange={(e) => setFormData(prev => ({ ...prev, ticket_price: e.target.value }))}
+          disabled={formData.is_free}
+          placeholder={formData.is_free ? 'Free event' : 'e.g., 50000'}
         />
       </div>
 
@@ -478,6 +507,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
           id="ticket_url"
           value={formData.ticket_url || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, ticket_url: e.target.value }))}
+          disabled={formData.is_free}
+          placeholder={formData.is_free ? 'Free event (no ticket link)' : 'https://example.com'}
         />
       </div>
 
@@ -500,7 +531,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       
       {/* <div className="space-y-2">
         <Label htmlFor="facilities">Facilities (JSON format)</Label>
-        <Textarea
+        <QuillEditor
           id="facilities"
           value={JSON.stringify(formData.facilities, null, 1)}
           onChange={(e) => {
@@ -561,10 +592,12 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   contact: '',
   website: '',
   banner_img: '',
-    ticket_price: '',
-    ticket_url: '',
+  ticket_price: '',
+  ticket_url: '',
+  is_free: false,
   is_active: true,
   is_approved: false,
+  is_rejected: false,
   created_at: '',
   updated_at: '',
   created_by: '',
@@ -593,7 +626,11 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       if (response.error) {
         throw new Error(response.error);
       }
-      setEvents(response.data as EventItem[] || []);
+      const normalized = (response.data as EventItem[] || []).map((item) => ({
+        ...item,
+        is_free: item.is_free ?? false,
+      }));
+      setEvents(normalized);
     } catch (error) {
       console.error('Error fetching events:', error);
       toast({
@@ -610,17 +647,20 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     setSaving(true);
     let response 
     try {
+      const payload: EventItem = {
+        ...formData,
+        is_rejected: false,
+      };
     
       if (editingEvent?.id) {
-        console.log("ini data form", formData)
-        const response = await EventsService.update(editingEvent.id, formData);
+        const response = await EventsService.update(editingEvent.id, payload);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
         setEvents(prev => prev.map(m => 
-          m.id === editingEvent.id ? { ...m, ...formData } : m
+          m.id === editingEvent.id ? { ...m, ...payload, is_free: payload.is_free ?? false } : m
         ));
         
         toast({
@@ -628,13 +668,14 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
           description: 'Event updated successfully',
         });
       } else {
-        response = await EventsService.create(formData);
+        response = await EventsService.create(payload);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
-        setEvents(prev => [response.data, ...prev]);
+        const created = response.data as EventItem;
+        setEvents(prev => [{ ...created, is_free: created?.is_free ?? false }, ...prev]);
         
         toast({
           title: 'Success',
@@ -687,8 +728,16 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       const response = await EventsService.approve(id);
       if (response.error) {throw new Error(response.error)};
       
+      const updated = (response.data || {}) as Partial<EventItem>;
+
       setEvents(prev => prev.map(events => 
-        events.id === id ? { ...events, is_approved: response.data["is_approved"] } : events
+        events.id === id
+          ? {
+              ...events,
+              is_approved: updated.is_approved ?? true,
+              is_rejected: updated.is_rejected ?? false,
+            }
+          : events
       ));
       
       toast({
@@ -701,6 +750,38 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       toast({
         title: 'Error',
         description: 'Failed to update banner status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const response = await EventsService.reject(id);
+      if (response.error) {throw new Error(response.error)};
+
+      const updated = (response.data || {}) as Partial<EventItem>;
+
+      setEvents(prev => prev.map(events =>
+        events.id === id
+          ? {
+              ...events,
+              is_approved: updated.is_approved ?? false,
+              is_rejected: updated.is_rejected ?? true,
+            }
+          : events
+      ));
+
+      toast({
+        title: 'Success',
+        description: `Event Rejected`,
+      });
+      fetchEvents();
+    } catch (error) {
+      console.error('Error rejecting event:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject event',
         variant: 'destructive',
       });
     }
@@ -826,8 +907,13 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={museum.is_active ? 'default' : 'secondary'}>
                         {museum.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={museum.is_approved ? 'success' : 'secondary'}>
-                        {museum.is_approved ? 'Approved' : 'Pending'}
+                      {museum.is_free ? (
+                        <Badge variant="outline">
+                          Free
+                        </Badge>
+                      ) : null}
+                      <Badge variant={museum.is_approved ? 'success' : museum.is_rejected ? 'destructive' : 'secondary'}>
+                        {museum.is_approved ? 'Approved' : museum.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{museum.subtitle}</CardDescription>                    
@@ -842,14 +928,23 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                       />
                     </div>
-                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={() => toggleApproved(museum.id)}
-                      >
-                        Approve
-                      </Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved && !museum.is_rejected ? (
+                      <>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => toggleApproved(museum.id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => toggleRejected(museum.id)}
+                        >
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
                     <Button
                       variant="outline"
@@ -872,13 +967,20 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole === "approver" && !museum.is_approved ? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !museum.is_approved && !museum.is_rejected ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"
                           onClick={() => toggleApproved(museum.id)}
                         >
                           Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="w-full"
+                          onClick={() => toggleRejected(museum.id)}
+                        >
+                          Reject
                         </Button>
                     </div> : <div></div>
                 }
@@ -896,6 +998,12 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     <span className="font-medium">Last updated:</span>
                     <p className="text-muted-foreground">
                       {new Date(museum.updated_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium">Ticket:</span>
+                    <p className="text-muted-foreground">
+                      {museum.is_free ? 'Free' : museum.ticket_price ? museum.ticket_price : 'Not set'}
                     </p>
                   </div>
                 </div>

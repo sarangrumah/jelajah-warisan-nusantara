@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,6 +18,7 @@ import {
   Trash2 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface ContentSection {
   id: string;
@@ -214,10 +214,11 @@ const ContentManagement = () => {
                         </div>
                         <div>
                           <Label htmlFor="hero-description">Deskripsi</Label>
-                          <Textarea
-                            id="hero-description"
+                          <QuillEditor
                             value={section.content.description || ''}
-                            onChange={(e) => updateContent(section.id, 'description', e.target.value)}
+                            onChange={(html) => updateContent(section.id, 'description', html)}
+                            height={200}
+                            placeholder="Tulis deskripsi hero"
                           />
                         </div>
                       </>
@@ -235,11 +236,11 @@ const ContentManagement = () => {
                         </div>
                         <div>
                           <Label htmlFor="about-description">Deskripsi</Label>
-                          <Textarea
-                            id="about-description"
-                            rows={4}
+                          <QuillEditor
                             value={section.content.description || ''}
-                            onChange={(e) => updateContent(section.id, 'description', e.target.value)}
+                            onChange={(html) => updateContent(section.id, 'description', html)}
+                            height={220}
+                            placeholder="Tulis deskripsi tentang kami"
                           />
                         </div>
                       </>
@@ -266,10 +267,11 @@ const ContentManagement = () => {
                         </div>
                         <div>
                           <Label htmlFor="contact-address">Alamat</Label>
-                          <Textarea
-                            id="contact-address"
+                          <QuillEditor
                             value={section.content.address || ''}
-                            onChange={(e) => updateContent(section.id, 'address', e.target.value)}
+                            onChange={(html) => updateContent(section.id, 'address', html)}
+                            height={180}
+                            placeholder="Tulis alamat kontak"
                           />
                         </div>
                       </>

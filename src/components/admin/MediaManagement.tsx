@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { mediaService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +11,7 @@ import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface Media {
   id: string; 
@@ -25,6 +25,7 @@ interface Media {
   author: string[] ; 
   is_active: boolean; 
   is_approved: boolean; 
+  is_rejected: boolean;
   created_at: string; 
   updated_at: string ; 
   published_date : string;
@@ -94,11 +95,10 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          rows={2}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+          height={100}
           placeholder="Brief summary of the content"
         />
       </div>
@@ -241,6 +241,7 @@ const emptyMedia: Media = {
   author: [],
   is_active: false,
   is_approved: false,
+  is_rejected: false,
   created_at: "", // ISO string will be filled later, e.g., new Date().toISOString()
   updated_at: "",
   published_date: ""
@@ -284,22 +285,27 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const saveMediaItem = async (item: Partial<Media>) => {
     setSaving(true);
     try {
+      const payload: Partial<Media> = {
+        ...item,
+        is_rejected: false,
+      };
+
       let response;
 
-      if (item.id) {
+      if (payload.id) {
         // Update existing media item
-        response = await mediaService.update(item.id, item);
+        response = await mediaService.update(payload.id, payload);
         if (response.error) {throw new Error(response.error);}
 
         setMediaItems(prev =>
           prev.map(existing =>
-            existing.id === item.id ? { ...existing, ...item } as Media : existing
+            existing.id === payload.id ? { ...existing, ...payload } as Media : existing
           )
         );
       } else {
         // Create new media item
 
-        response = await mediaService.create(item);
+        response = await mediaService.create(payload);
         if (response.error) {throw new Error(response.error);}
 
         setMediaItems(prev => [response.data, ...prev]);
@@ -307,7 +313,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
 
       toast({
         title: 'Success',
-        description: item.id
+        description: payload.id
           ? 'Media item updated successfully'
           : 'Media item created successfully',
       });
@@ -382,8 +388,16 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
       const response = await mediaService.approve(id);
       if (response.error) {throw new Error(response.error);}
       
+      const updated = (response.data || {}) as Partial<Media>;
+
       setMediaItems(prev => prev.map(media => 
-        media.id === id ? { ...media, is_approved: response.data["is_approved"] } : media
+        media.id === id
+          ? {
+              ...media,
+              is_approved: updated.is_approved ?? true,
+              is_rejected: updated.is_rejected ?? false,
+            }
+          : media
       ));
       
       toast({
@@ -396,6 +410,38 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
       toast({
         title: 'Error',
         description: 'Failed to update Media status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const response = await mediaService.reject(id);
+      if (response.error) {throw new Error(response.error);}
+
+      const updated = (response.data || {}) as Partial<Media>;
+
+      setMediaItems(prev => prev.map(media =>
+        media.id === id
+          ? {
+              ...media,
+              is_approved: updated.is_approved ?? false,
+              is_rejected: updated.is_rejected ?? true,
+            }
+          : media
+      ));
+
+      toast({
+        title: 'Success',
+        description: `Media Rejected`,
+      });
+      fetchMediaItems();
+    } catch (error) {
+      console.error('Error rejecting media:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject media item',
         variant: 'destructive',
       });
     }
@@ -496,6 +542,9 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={item.is_active ? 'default' : 'secondary'}>
                         {item.is_active ? 'Published' : 'Draft'}
                       </Badge>
+                      <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                        {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
+                      </Badge>
                     </CardTitle>
                     <CardDescription>{item.subtitle}</CardDescription>
                   </div>
@@ -508,14 +557,23 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(item.id, checked)}
                       />
                     </div>
-                    {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={() => toggleApproved(item.id)}
-                      >
-                        Approve
-                      </Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved && !item.is_rejected ? (
+                      <>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => toggleApproved(item.id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => toggleRejected(item.id)}
+                        >
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
                     <Button
                       variant="outline"
@@ -538,13 +596,20 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole === "approver" && !item.is_approved ? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !item.is_approved && !item.is_rejected ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"
                           onClick={() => toggleApproved(item.id)}
                         >
                           Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="w-full"
+                          onClick={() => toggleRejected(item.id)}
+                        >
+                          Reject
                         </Button>
                     </div> : <div></div>
                 }

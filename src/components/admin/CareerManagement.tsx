@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { careerService, careerApplicationService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Edit, Save, X, Plus, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import QuillEditor from '@/components/ui/quill-editor';
 
 const CareerManagement = () => {
   const [opportunities, setOpportunities] = useState<any[]>([]);
@@ -204,31 +204,31 @@ const CareerManagement = () => {
 
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            rows={4}
+          <QuillEditor
+            value={formData.description || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+            height={220}
+            placeholder="Describe the opportunity"
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="requirements">Requirements</Label>
-          <Textarea
-            id="requirements"
-            value={formData.requirements}
-            onChange={(e) => setFormData(prev => ({ ...prev, requirements: e.target.value }))}
-            rows={3}
+          <QuillEditor
+            value={formData.requirements || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, requirements: html }))}
+            height={200}
+            placeholder="List the requirements"
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="benefits">Benefits</Label>
-          <Textarea
-            id="benefits"
-            value={formData.benefits}
-            onChange={(e) => setFormData(prev => ({ ...prev, benefits: e.target.value }))}
-            rows={3}
+          <QuillEditor
+            value={formData.benefits || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, benefits: html }))}
+            height={200}
+            placeholder="Outline the benefits"
           />
         </div>
 

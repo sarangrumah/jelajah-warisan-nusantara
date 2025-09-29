@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +15,8 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { map, string } from 'zod';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { da } from 'zod/v4/locales';
+import QuillEditor from '@/components/ui/quill-editor';
 interface SitesItem {
   id?: string;
   name: string;
@@ -38,6 +39,7 @@ interface SitesItem {
   ticket_price:string;
   ticket_url?: string;
   is_approved: boolean;
+  is_rejected?: boolean;
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
@@ -80,19 +82,20 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
   const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
 
   // Opening hours (Senin..Minggu) state and helpers
-  const DAYS = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'] as const;
+  const DAYS = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu', "Tutup"] as const;
   type DayName = typeof DAYS[number];
   type DayEntry = { enabled: boolean; value: string };
 
   const initOpenHours = (): Record<DayName, DayEntry> => {
     const base: Record<DayName, DayEntry> = {
-      Senin: { enabled: false, value: '' },
-      Selasa: { enabled: false, value: '' },
-      Rabu: { enabled: false, value: '' },
-      Kamis: { enabled: false, value: '' },
-      Jumat: { enabled: false, value: '' },
-      Sabtu: { enabled: false, value: '' },
-      Minggu: { enabled: false, value: '' },
+      Senin: { enabled: false, value: '08.00-17.00' },
+      Selasa: { enabled: false, value: '08.00-17.00' },
+      Rabu: { enabled: false, value: '08.00-17.00' },
+      Kamis: { enabled: false, value: '08.00-17.00' },
+      Jumat: { enabled: false, value: '08.00-17.00' },
+      Sabtu: { enabled: false, value: '08.00-17.00' },
+      Minggu: { enabled: false, value: '08.00-17.00' },
+      Tutup: {enabled: false, value: ''}
     };
     try {
       if (formData.opening_hours) {
@@ -274,11 +277,11 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          rows={3}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+          height={100}
+          placeholder="Brief summary of the content"
         />
       </div>
 
@@ -307,15 +310,14 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
-        <Textarea
-          id="address"
-          value={formData.address}
-          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-          rows={2}
+        <QuillEditor
+          value={formData.address || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
+          height={100}
+          placeholder="Brief summary of the content"
         />
       </div>
 
-      {console.log('ImageUpload value (img_banner):', formData.img_banner)}
       <ImageUpload
         label="Main Image"
         value={formData.img_banner}
@@ -342,7 +344,9 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
                 onCheckedChange={(checked) =>
                   setOpenHours((prev) => ({
                     ...prev,
-                    [day]: { ...prev[day], enabled: !!checked },
+                    [day]: { ...prev[day], 
+                      enabled: !!checked,
+                     }
                   }))
                 }
               />
@@ -350,7 +354,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
                 {day}
               </Label>
               <Input
-                placeholder="08.00-17.00"
+                placeholder={day === "Tutup" ? "" : "08.00-17.00"}
                 value={openHours[day].value}
                 onChange={(e) =>
                   setOpenHours((prev) => ({
@@ -434,15 +438,11 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
             </TooltipContent>
           </Tooltip>
         </div>
-        <Textarea
-          id="facilities"
-          value={formData.facilities}
-          // placeholder=''
-          placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
-           onChange={(e) => setFormData(prev => ({ ...prev,
-            facilities: e.target.value
-          }))}
-          rows={3}
+        <QuillEditor
+          value={formData.facilities || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, facilities: html }))}
+          height={100}
+           placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
         />
         {errors.opening_hours && (
           <p className="text-sm text-red-500">{errors.opening_hours}</p>
@@ -451,14 +451,11 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="collection">Collection</Label>
-        <Textarea
-          id="collection"
-          value={formData.collection}
-          // placeholder=''
-          onChange={(e) => setFormData(prev => ({ ...prev,
-            collection: e.target.value
-          }))}
-          rows={3}
+        <QuillEditor
+          value={formData.collection || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, facilities: html }))}
+          height={100}
+          // placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
         />
         {errors.opening_hours && (
           <p className="text-sm text-red-500">{errors.opening_hours}</p>
@@ -510,6 +507,7 @@ const emptySites: SitesItem = {
   ticket_price: '',
   ticket_url: '',
   is_approved: false, // reasonable default
+  is_rejected: false,
   is_active: true,    // often default to active
 };
 
@@ -551,17 +549,20 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     setSaving(true);
     let response 
     try {
+      const payload: SitesItem = {
+        ...formData,
+        is_rejected: false,
+      };
     
       if (editingSites?.id) {
-        console.log("ini data form", formData)
-        const response = await museumService.update(editingSites.id, formData);
+        const response = await museumService.update(editingSites.id, payload);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
         setSitess(prev => prev.map(m => 
-          m.id === editingSites.id ? { ...m, ...formData } : m
+          m.id === editingSites.id ? { ...m, ...payload } : m
         ));
         
         toast({
@@ -569,7 +570,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           description: 'Sites updated successfully',
         });
       } else {
-        response = await museumService.create(formData);
+        response = await museumService.create(payload);
         
         if (response.error) {
           throw new Error(response.error);
@@ -627,10 +628,18 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
   const toggleApproved = async (id: string) => {
     try {
       const response = await museumService.approve(id);
-      if (response.error) {throw new Error(response.error);}
+      if (response.error) {throw new Error(response.error);} 
       
+      const updated = (response.data || {}) as Partial<SitesItem>;
+
       setSitess(prev => prev.map(events => 
-        events.id === id ? { ...events, is_approved: response.data["is_approved"] } : events
+        events.id === id
+          ? {
+              ...events,
+              is_approved: updated.is_approved ?? true,
+              is_rejected: updated.is_rejected ?? false,
+            }
+          : events
       ));
       
       toast({
@@ -643,6 +652,38 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       toast({
         title: 'Error',
         description: 'Failed to update banner status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const response = await museumService.reject(id);
+      if (response.error) {throw new Error(response.error);}
+
+      const updated = (response.data || {}) as Partial<SitesItem>;
+
+      setSitess(prev => prev.map(events =>
+        events.id === id
+          ? {
+              ...events,
+              is_approved: updated.is_approved ?? false,
+              is_rejected: updated.is_rejected ?? true,
+            }
+          : events
+      ));
+
+      toast({
+        title: 'Success',
+        description: `Museum Rejected`,
+      });
+      fetchSites();
+    } catch (error) {
+      console.error('Error rejecting museum:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject museum',
         variant: 'destructive',
       });
     }
@@ -771,8 +812,8 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={museum.is_active ? 'default' : 'secondary'}>
                         {museum.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={museum.is_approved ? 'success' : 'secondary'}>
-                        {museum.is_approved ? 'Approved' : 'Draft'}
+                      <Badge variant={museum.is_approved ? 'success' : museum.is_rejected ? 'destructive' : 'secondary'}>
+                        {museum.is_approved ? 'Approved' : museum.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                   </div>
@@ -785,14 +826,23 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                         />
                       </div>
-                      {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved ? (
-                        <Button
-                          variant="success"
-                          size="sm"
-                          onClick={() => toggleApproved(museum.id)}
-                        >
-                          Approve
-                        </Button>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved && !museum.is_rejected ? (
+                        <>
+                          <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => toggleApproved(museum.id)}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => toggleRejected(museum.id)}
+                          >
+                            Reject
+                          </Button>
+                        </>
                       ) : null}
                       <Button
                         variant="outline"
@@ -816,7 +866,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                       <Trash className="w-4 h-4" />
                     </Button>
                       </div> : 
-                      userRole === "approver" && !museum.is_approved ? 
+                      userRole === "approver" && !museum.is_approved && !museum.is_rejected ? 
                       <div className="flex items-center space-x-2">
                           <Button
                             variant="success"
@@ -824,6 +874,13 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                             onClick={() => toggleApproved(museum.id)}
                           >
                             Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="w-full"
+                          onClick={() => toggleRejected(museum.id)}
+                        >
+                          Reject
                         </Button>
                       </div> 
                     : <div></div>

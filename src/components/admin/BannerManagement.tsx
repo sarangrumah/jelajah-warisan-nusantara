@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { bannerService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +21,9 @@ interface Banner {
   end_publish_date?: string;
   is_active: boolean;
   is_approved?: boolean;
+  is_rejected?: boolean;
+  button_label_1: string;
+  button_label_2: string;
   button_url_1?: string;
   button_url_2?: string;
   created_at?: string;
@@ -42,6 +44,9 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
     end_publish_date: '',
     is_active: true,
     is_approved: false,
+    is_rejected: false,
+    button_label_1: '',
+    button_label_2: '',
     button_url_1: '',
     button_url_2: ''
   };
@@ -104,23 +109,34 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      {/* <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          rows={3}
-        />
-      </div> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="button_url_1">Button Label 1</Label>
+          <Input
+            id="button_url_1"
+            value={formData.button_label_1}
+            onChange={(e) => setFormData(prev => ({ ...prev, button_label_1: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="button_url_2">Button Url 1</Label>
+          <Input
+            id="button_url_2"
+            value={formData.button_url_1}
+            onChange={(e) => setFormData(prev => ({ ...prev, button_url_1: e.target.value }))}
+            required
+          />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="button_url_1">Button Url 1</Label>
+          <Label htmlFor="button_url_1">Button Label 2</Label>
           <Input
             id="button_url_1"
-            value={formData.button_url_1}
-            onChange={(e) => setFormData(prev => ({ ...prev, button_url_1: e.target.value }))}
+            value={formData.button_label_2}
+            onChange={(e) => setFormData(prev => ({ ...prev, button_label_2: e.target.value }))}
             required
           />
         </div>
@@ -246,12 +262,14 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const saveBanner = async (formData: Banner) => {
     setSaving(true);
     try {
+      const payload = { ...formData, is_rejected: false };
+
       if (editingBanner?.id) {
-        const response = await bannerService.update(editingBanner.id, formData);
+        const response = await bannerService.update(editingBanner.id, payload);
         if (response.error) {throw new Error(response.error)};
         
         setBanners(prev => prev.map(b => 
-          b.id === editingBanner.id ? { ...b, ...formData } : b
+          b.id === editingBanner.id ? { ...b, ...payload } : b
         ));
         
         toast({
@@ -259,7 +277,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
           description: 'Banner updated successfully',
         });
       } else {
-        const response = await bannerService.create(formData);
+        const response = await bannerService.create(payload);
         if (response.error) {throw new Error(response.error)};
         
         fetchBanners()
@@ -312,8 +330,16 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
       const response = await bannerService.approve(id);
       if (response.error) {throw new Error(response.error)};
       
+      const updated = (response.data || {}) as Partial<Banner>;
+
       setBanners(prev => prev.map(banner => 
-        banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
+        banner.id === id
+          ? {
+              ...banner,
+              is_approved: updated.is_approved ?? true,
+              is_rejected: updated.is_rejected ?? false,
+            }
+          : banner
       ));
       
       toast({
@@ -326,6 +352,38 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
       toast({
         title: 'Error',
         description: 'Failed to update banner status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const response = await bannerService.reject(id);
+      if (response.error) {throw new Error(response.error)};
+
+      const updated = (response.data || {}) as Partial<Banner>;
+
+      setBanners(prev => prev.map(banner =>
+        banner.id === id
+          ? {
+              ...banner,
+              is_approved: updated.is_approved ?? false,
+              is_rejected: updated.is_rejected ?? true,
+            }
+          : banner
+      ));
+
+      toast({
+        title: 'Success',
+        description: `Banner Rejected`,
+      });
+      fetchBanners();
+    } catch (error) {
+      console.error('Error rejecting banner:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject banner',
         variant: 'destructive',
       });
     }
@@ -450,8 +508,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                       <Badge variant={banner.is_active ? 'default' : 'secondary'}>
                         {banner.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={banner.is_approved ? 'success' : 'secondary'}>
-                        {banner.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={banner.is_approved ? 'success' : banner.is_rejected ? 'destructive' : 'secondary'}>
+                        {banner.is_approved ? 'Approved' : banner.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{banner.subtitle}</CardDescription>
@@ -508,14 +566,23 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         )}
                       </Dialog>
                     ) : null}
-                    {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved ? (
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={() => toggleApproved(banner.id)}
-                      >
-                        Approve
-                      </Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved && !banner.is_rejected ? (
+                      <>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => toggleApproved(banner.id)}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => toggleRejected(banner.id)}
+                        >
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
                     <Button
                       variant="outline"
@@ -538,13 +605,20 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
-                    </div> : userRole === "approver" && !banner.is_approved ? <div className="flex items-center space-x-2">
+                    </div> : userRole === "approver" && !banner.is_approved && !banner.is_rejected ? <div className="flex items-center space-x-2">
                         <Button
                           variant="success"
                           className="w-full"
                           onClick={() => toggleApproved(banner.id)}
                         >
                           Approve
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="w-full"
+                          onClick={() => toggleRejected(banner.id)}
+                        >
+                          Reject
                         </Button>
                     </div> : <div></div>
                 }

@@ -274,6 +274,14 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         insertData.created_at = new Date();
         insertData.updated_at = new Date();
 
+        if (fields.includes('is_approved') && insertData.is_approved === undefined) {
+          insertData.is_approved = false;
+        }
+
+        if (fields.includes('is_rejected') && insertData.is_rejected === undefined) {
+          insertData.is_rejected = false;
+        }
+
         if (fields.includes('created_by') && req.user) {
           insertData.created_by = req.user.id;
         }
@@ -432,14 +440,25 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           data.updated_by = req.user.id;
         }
 
-        // Approval logic: only approver/admin (and super-admin) may change is_approved
+        // Approval logic: only approver/admin (and super-admin) may change moderation flags
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
         if (approvalSettings?.requiresApproval) {
           const userRoles = req.user?.roles || [];
-          const canChangeApproval = userRoles.includes('approver') || userRoles.includes('admin') || userRoles.includes('super-admin');
-          if (!canChangeApproval && Object.prototype.hasOwnProperty.call(data, 'is_approved')) {
-            // Strip attempted changes from non-approver/admin edits so regular updates don't fail
-            delete (data as any).is_approved;
+          const canModerate = userRoles.includes('approver') || userRoles.includes('admin') || userRoles.includes('super-admin');
+
+          if (!canModerate) {
+            if (Object.prototype.hasOwnProperty.call(data, 'is_approved')) {
+              // Strip attempted changes from non-approver/admin edits so regular updates don't fail
+              delete (data as any).is_approved;
+            }
+
+            if (Object.prototype.hasOwnProperty.call(data, 'is_rejected')) {
+              delete (data as any).is_rejected;
+            }
+
+            if (fields.includes('is_rejected')) {
+              (data as any).is_rejected = false;
+            }
           }
         }
 
@@ -742,7 +761,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           UPDATE ${tableName}
           SET 
             is_approved = true,
-
+            is_rejected = false,
             is_active = CASE WHEN $2 THEN true ELSE is_active END,
             updated_by = $3,
             updated_at = $4
@@ -759,6 +778,76 @@ export const createCrudController = (tableName: string, fields: string[]) => {
       } catch (error) {
         console.error(`Approve ${tableName} error:`, error);
         res.status(500).json({ error: 'Failed to approve record' });
+      }
+    },
+
+    // === REJECT ===
+    reject: async (req: AuthRequest, res: Response) => {
+      try {
+        const { id } = req.params;
+        const idUser = req.user?.id;
+
+        const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
+        if (!approvalSettings?.requiresApproval) {
+          return res.status(400).json({ error: `Rejection not supported for table: ${tableName}` });
+        }
+
+        const userRoles = req.user?.roles || [];
+        if (!userRoles.includes('approver') && !userRoles.includes('super-admin')) {
+          return res.status(403).json({ error: 'You do not have permission to reject records.' });
+        }
+
+        const checkQuery = await query(
+          `SELECT is_approved, is_rejected FROM ${tableName} WHERE id = $1`,
+          [id]
+        );
+
+        if (checkQuery.rows.length === 0) {
+          return res.status(404).json({ error: 'Record not found' });
+        }
+
+        const { is_approved, is_rejected } = checkQuery.rows[0];
+
+        if (is_rejected) {
+          return res.status(400).json({ error: 'Record is already rejected' });
+        }
+
+        if (is_approved) {
+          return res.status(400).json({ error: 'Record is already approved' });
+        }
+
+        const now = new Date().toISOString();
+        const hasIsActive = fields.includes('is_active');
+
+        const setClauses = [
+          'is_rejected = true',
+          'is_approved = false',
+          'updated_by = $2',
+          'updated_at = $3'
+        ];
+
+        if (hasIsActive) {
+          setClauses.splice(2, 0, 'is_active = false');
+        }
+
+        const result = await query(
+          `
+          UPDATE ${tableName}
+          SET 
+            ${setClauses.join(',\n            ')}
+          WHERE id = $1
+          RETURNING *
+          `,
+          [id, idUser, now]
+        );
+
+        res.json({
+          message: 'Record rejected successfully',
+          data: result.rows[0]
+        });
+      } catch (error) {
+        console.error(`Reject ${tableName} error:`, error);
+        res.status(500).json({ error: 'Failed to reject record' });
       }
     }
   };

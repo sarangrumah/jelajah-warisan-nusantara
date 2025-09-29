@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { masterCollectionService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import QuillEditor from '@/components/ui/quill-editor';
 
 interface MasterCollection {
   id?: string;
@@ -28,6 +28,7 @@ interface MasterCollection {
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
+  is_rejected?: boolean;
 }
 
 const emptyCollection: MasterCollection = {
@@ -42,6 +43,7 @@ const emptyCollection: MasterCollection = {
   origin: '',
   image_url: '',
   is_active: true,
+  is_rejected: false,
 };
 
 const CollectionForm = ({
@@ -90,11 +92,11 @@ const CollectionForm = ({
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          rows={3}
-          value={formData.description}
-          onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData((p) => ({ ...p, description: html }))}
+          height={200}
+          placeholder="Describe the collection"
         />
       </div>
 
@@ -214,12 +216,17 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
   const handleSave = async (data: MasterCollection) => {
     setSaving(true);
     try {
+      const payload: MasterCollection = {
+        ...data,
+        is_rejected: false,
+      };
+
       if (editing?.id) {
-        const res = await masterCollectionService.update(editing.id, data);
+        const res = await masterCollectionService.update(editing.id, payload);
         if (res.error) {throw new Error(res.error)};
         toast({ title: 'Updated', description: 'Collection updated successfully' });
       } else {
-        const res = await masterCollectionService.create(data);
+        const res = await masterCollectionService.create(payload);
         if (res.error) {throw new Error(res.error)};
         toast({ title: 'Created', description: 'Collection created successfully' });
       }
@@ -262,11 +269,37 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
     try {
       const res = await masterCollectionService.approve(id);
       if (res.error) {throw new Error(res.error)};
-      setItems(prev => prev.map(it => it.id === id ? { ...it, is_approved: true, is_active: true } : it));
+      const updated = (res.data || {}) as Partial<MasterCollection>;
+      setItems(prev => prev.map(it => it.id === id ? {
+        ...it,
+        is_approved: updated.is_approved ?? true,
+        is_rejected: updated.is_rejected ?? false,
+        is_active: updated.is_active ?? true,
+      } : it));
       toast({ title: 'Approved', description: 'Collection approved' });
+      await fetchAll();
     } catch (error) {
       console.error('Error approve collection:', error);
       toast({ title: 'Error', description: 'Failed to approve', variant: 'destructive' });
+    }
+  };
+
+  const rejectItem = async (id: string) => {
+    try {
+      const res = await masterCollectionService.reject(id);
+      if (res.error) {throw new Error(res.error)};
+      const updated = (res.data || {}) as Partial<MasterCollection>;
+      setItems(prev => prev.map(it => it.id === id ? {
+        ...it,
+        is_approved: updated.is_approved ?? false,
+        is_rejected: updated.is_rejected ?? true,
+        is_active: updated.is_active ?? it.is_active,
+      } : it));
+      toast({ title: 'Rejected', description: 'Collection rejected' });
+      await fetchAll();
+    } catch (error) {
+      console.error('Error reject collection:', error);
+      toast({ title: 'Error', description: 'Failed to reject', variant: 'destructive' });
     }
   };
 
@@ -329,8 +362,8 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={it.is_active ? 'default' : 'secondary'}>
                         {it.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={it.is_approved ? 'success' : 'secondary'}>
-                        {it.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={it.is_approved ? 'success' : it.is_rejected ? 'destructive' : 'secondary'}>
+                        {it.is_approved ? 'Approved' : it.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{it.subtitle}</CardDescription>
@@ -345,10 +378,15 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
                         />
                       </div>
                     ) : null}
-                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved ? (
-                      <Button variant="success" size="sm" onClick={() => it.id && approveItem(it.id)}>
-                        Approve
-                      </Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved && !it.is_rejected ? (
+                      <>
+                        <Button variant="success" size="sm" onClick={() => it.id && approveItem(it.id)}>
+                          Approve
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => it.id && rejectItem(it.id)}>
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
                     <Button variant="outline" size="sm" onClick={() => { setEditing(it); setOpen(true); }}>
                       <Edit className="w-4 h-4" />

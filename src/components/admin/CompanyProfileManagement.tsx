@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -374,19 +373,21 @@ const ProfileForm = ({
 
       <div className="space-y-2">
         <Label>Address</Label>
-        <Textarea
+        <QuillEditor
           value={profile.address || ''}
-          onChange={(e) => handleFieldChange('address', e.target.value)}
-          rows={2}
+          onChange={(html) => handleFieldChange('address', html)}
+          height={100}
+          placeholder="Company address"
         />
       </div>
 
       <div className="space-y-2">
         <Label>About Us</Label>
-        <Textarea
+        <QuillEditor
           value={profile.aboutus || ''}
-          onChange={(e) => handleFieldChange('aboutus', e.target.value)}
-          rows={3}
+          onChange={(html) => handleFieldChange('aboutus', html)}
+          height={200}
+          placeholder="Describe the company"
         />
       </div>
 
@@ -402,10 +403,11 @@ const ProfileForm = ({
 
       <div className="space-y-2">
         <Label>Mission</Label>
-        <Textarea
+        <QuillEditor
           value={profile.mission || ''}
-          onChange={(e) => handleFieldChange('mission', e.target.value)}
-          rows={4}
+          onChange={(html) => handleFieldChange('mission', html)}
+          height={200}
+          placeholder="Write mission…"
         />
       </div>
 

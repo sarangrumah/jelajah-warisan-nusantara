@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { careerMgmtService, careerSubmissionService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +27,7 @@ interface CareerPosting {
   location?: string;
   is_active: boolean;
   is_approved?: boolean;
+  is_rejected?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -46,6 +46,7 @@ const emptyPosting: CareerPosting = {
   location: '',
   is_active: true,
   is_approved: false,
+  is_rejected: false,
 };
 
 const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
@@ -117,16 +118,21 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" rows={3} value={formData.description} onChange={(e) => setFormData(p => ({...p, description: e.target.value}))} />
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(p => ({ ...p, description: html }))}
+          height={100}
+          placeholder="Write a brief description"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
         <div className="space-y-2">
           <Label htmlFor="requirement">Requirement</Label>
           <QuillEditor
             value={formData.requirement || ''}
             onChange={(html) => setFormData(p => ({ ...p, requirement: html }))}
-            height={180}
+            height={100}
             placeholder="Write requirements…"
           />
         </div>
@@ -135,11 +141,11 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
           <QuillEditor
             value={formData.responsibility || ''}
             onChange={(html) => setFormData(p => ({ ...p, responsibility: html }))}
-            height={180}
+            height={100}
             placeholder="Write responsibilities…"
           />
         </div>
-      </div>
+      {/* </div> */}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
@@ -302,13 +308,17 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (formData: CareerPosting) => {
     setSaving(true);
     try {
+      const payload: CareerPosting = {
+        ...formData,
+        is_rejected: false,
+      };
       if (editingItem?.id) {
-        const res = await careerMgmtService.update(editingItem.id, formData);
+        const res = await careerMgmtService.update(editingItem.id, payload);
         if (res.error) {throw new Error(res.error)};
-        setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...formData } : i));
+        setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...payload } : i));
         toast({ title: 'Success', description: 'Posting updated' });
       } else {
-        const res = await careerMgmtService.create(formData);
+        const res = await careerMgmtService.create(payload);
         if (res.error) {throw new Error(res.error)};
         setItems(prev => [res.data as any, ...prev]);
         toast({ title: 'Success', description: 'Posting created' });
@@ -339,12 +349,35 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       const res = await careerMgmtService.approve(id);
       if (res.error) {throw new Error(res.error)};
-      setItems(prev => prev.map(i => i.id === id ? { ...i, is_approved: (res as any).data?.is_approved } : i));
+      const updated = (res.data || {}) as Partial<CareerPosting>;
+      setItems(prev => prev.map(i => i.id === id ? {
+        ...i,
+        is_approved: updated.is_approved ?? true,
+        is_rejected: updated.is_rejected ?? false,
+      } : i));
       toast({ title: 'Success', description: 'Posting approved' });
       fetchItems();
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to approve posting', variant: 'destructive' });
+    }
+  };
+
+  const toggleRejected = async (id: string) => {
+    try {
+      const res = await careerMgmtService.reject(id);
+      if (res.error) {throw new Error(res.error)};
+      const updated = (res.data || {}) as Partial<CareerPosting>;
+      setItems(prev => prev.map(i => i.id === id ? {
+        ...i,
+        is_approved: updated.is_approved ?? false,
+        is_rejected: updated.is_rejected ?? true,
+      } : i));
+      toast({ title: 'Success', description: 'Posting rejected' });
+      fetchItems();
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Error', description: 'Failed to reject posting', variant: 'destructive' });
     }
   };
 
@@ -442,8 +475,8 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={item.is_active ? 'default' : 'secondary'}>
                         {item.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={item.is_approved ? 'success' : 'secondary'}>
-                        {item.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                        {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{item.subtitle}</CardDescription>
@@ -460,10 +493,15 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => toggleActive(item.id!, checked)}
                         />
                       </div>
-                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
-                        <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
-                          Approve
-                        </Button>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved && !item.is_rejected ? (
+                        <>
+                          <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
+                            Approve
+                          </Button>
+                          <Button variant="destructive" size="sm" onClick={() => toggleRejected(item.id!)}>
+                            Reject
+                          </Button>
+                        </>
                       ) : null}
                       <Button variant="outline" size="sm" onClick={() => { setEditingItem(item); setIsDialogOpen(true); }}>
                         <Edit className="w-4 h-4" />
@@ -472,10 +510,13 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                         <Trash className="w-4 h-4" />
                       </Button>
                     </div>
-                  ) : userRole === 'approver' && !item.is_approved ? (
+                  ) : userRole === 'approver' && !item.is_approved && !item.is_rejected ? (
                     <div className="flex items-center space-x-2">
                       <Button variant="success" className="w-full" onClick={() => toggleApproved(item.id!)}>
                         Approve
+                      </Button>
+                      <Button variant="destructive" className="w-full" onClick={() => toggleRejected(item.id!)}>
+                        Reject
                       </Button>
                     </div>
                   ) : null}
@@ -572,7 +613,12 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
             </div>
             <div className="space-y-2">
               <Label>Motivasi & Tujuan</Label>
-              <Textarea rows={4} value={submissionData.motivation} onChange={(e) => setSubmissionData(p => ({...p, motivation: e.target.value}))} />
+              <QuillEditor
+                value={submissionData?.motivation ?? ''}
+                onChange={(html) => setSubmissionData(p => (p ? { ...p, motivation: html } : p))}
+                height={100}
+                placeholder="Volunteer motivation"
+              />
             </div>
 
             <FileUploadPDF bucket="cv-uploads" label="CV Upload (PDF)" onUploadComplete={(url) => setSubmissionData(p => ({...p, cv_url: url}))} />
