@@ -1,14 +1,11 @@
 import Header from '@/components/Header';
 import CompanyProfile from '@/components/about/CompanyProfile';
 import Services from '@/components/about/Services';
-// import RulesAndSOP from '@/components/about/RulesAndSOP';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
-
-// import { MapPin, Users, Building, Award} from 'lucide-react';
-// import { Card, CardContent} from '@/components/ui/card';
 import { useLocation } from 'react-router-dom';
+import RulesAndSOP from '@/components/about/RulesAndSOP';
 
 const TentangKami = () => {
   const { pathname } = useLocation();
@@ -42,6 +39,7 @@ const TentangKami = () => {
       <div className='py-10 px-5 bg-background'>
         <CompanyProfile />
         <Services />
+        <RulesAndSOP />
       </div>
       <Footer />
       <FloatingButtons />

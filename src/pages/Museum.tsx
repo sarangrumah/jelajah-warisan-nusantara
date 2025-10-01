@@ -26,12 +26,12 @@ function getMuseumsImageUrl(filename: string) {
   // Try museums first
   let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Try images as fallback
   match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Fallback: try public/assets/museums/ or public/assets/images/ for production
   if (justFile) {
@@ -47,6 +47,7 @@ const Museum = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [types, setTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const { pathname } = useLocation();
       
@@ -61,13 +62,14 @@ const Museum = () => {
         if (response.error || response.data.length === 0) {
           console.error('Error fetching museums:', response.error);
         } else {
-          const filteredMuseums = response.data.filter((museum: any) => (
-            museum.is_active === true 
-            && museum.is_approved === true
-            // && new Date(museum.start_publish_date) <= new Date()
-            // && new Date(museum.end_publish_date) >= new Date()
+          const filteredMuseums = response.data.filter((museum: {
+            is_active: boolean;
+            is_approved: boolean;
+          }) => (
+            museum.is_active === true && 
+            museum.is_approved === true
           ));
-          setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
+          setMuseums(mapSlidesWithImageUrl(filteredMuseums));
         }
       } catch (error) {
         console.error('Error fetching museums:', error);
@@ -75,28 +77,48 @@ const Museum = () => {
     };
     fetchMuseums();
   }, []);
-
-  const fetchType = async () => {
-    try {
-      const response = await TypesAndCategoriesSites.getAllTypes();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching tyes:', response.error);
-      } else {
-        setTypes(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  };
+  
   useEffect(() => {
+    const fetchType = async () => {
+      try {
+        const response = await TypesAndCategoriesSites.getAllTypes();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching tyes:', response.error);
+        } else {
+          setTypes(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching museums:', error);
+      }
+    };
     fetchType();
   }, []);
 
+  useEffect(() => {
+    if(types.length > 0) {
+      const fetchCategory = async () => {
+        try {
+          const museumId = types.find((t) => t.name.toLowerCase() === 'museum')?.id;
+          const response = await TypesAndCategoriesSites.getAllCategories(museumId);
+          if (response.error || response.data.length === 0) {
+            console.error('Error fetching categories:', response.error);
+          } else {
+            setCategories(response.data);
+          }
+        } catch (error) {
+          console.error('Error fetching museums:', error);
+        }
+      };
+      fetchCategory();
+    }
+  }, [types]);
+
+  const museumId = types.find((t) => t.name.toLowerCase() === 'museum')?.id;
   const filteredMuseums = museums.filter(museum => {
     const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || types.length > 0 && types.find((type) => type.id === museum.type).name === filterType;
-    return matchesSearch && matchesFilter;
+    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;
+    return museum.type === museumId && matchesSearch && matchesFilter;
   });
   
   useEffect(() => {
@@ -118,9 +140,6 @@ const Museum = () => {
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
             {t('Museum & Cagar Budaya')}
           </h1>
-          {/* <p className="text-xl">
-            {t('Explore Indonesia\'s rich cultural heritage')}
-          </p> */}
         </div>
       </section>
 
@@ -142,9 +161,10 @@ const Museum = () => {
               <SelectValue placeholder={t('Filter by type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filter.museum.categoryAll')}</SelectItem>
-              <SelectItem value="museum">{t('filter.museum.categoryMuseum')}</SelectItem>
-              <SelectItem value="heritage">{t('filter.museum.categoryHeritage')}</SelectItem>
+              <SelectItem value="all">{'Semua'}</SelectItem>
+              {categories.length > 0 && categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -174,20 +194,6 @@ const Museum = () => {
                     <CardDescription>{item.subtitle}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
-                    {/* <div className="flex items-center text-sm text-muted-foreground mb-2">
-                      <MapPin size={16} className="mr-1" />
-                      {item.location}
-                    </div>
-                    <p className="text-sm">{item.description}</p>
-                    <div className="mt-4">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                        item.type === 'museum'
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-secondary/10 text-secondary'
-                      }`}>
-                        {item.type === 'museum' ? t('Museum') : t('Heritage Site')}
-                      </span>
-                    </div> */}
                     <div className="flex-1" />
                     <div className="flex gap-2 mt-6">
                       <button

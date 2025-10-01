@@ -35,7 +35,7 @@ function getMuseumImageUrl(filename: string | undefined | null) {
   }
   // Try to resolve using Vite's import
   const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : PLACEHOLDER_IMAGE;
+  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
 
 const MuseumDetail = () => {
@@ -56,7 +56,7 @@ const MuseumDetail = () => {
         if (response.error || response.data.length === 0) {
           console.error('Error fetching museums:', response.error);
         } else {
-          setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
+          setMuseums(mapSlidesWithImageUrl(response.data));
         }
       } catch (error) {
         console.error('Error fetching museums:', error);
@@ -80,17 +80,6 @@ const MuseumDetail = () => {
     );
   }
 
-  // const parseStringToJSON = (openingHoursString) => {
-  //   try {
-  //     const jsonString = openingHoursString
-  //     .replace(/'/g, '"')
-  //     console.log(jsonString);
-  //     return JSON.parse(jsonString);
-  //   } catch (error) {
-  //     return { days_hours: openingHoursString, error }; // Fallback
-  //   }
-  // };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -101,7 +90,7 @@ const MuseumDetail = () => {
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getMuseumImageUrl(museum.image_url?.split('/').pop() || museum.image_url)}
+            src={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
             alt={museum.name}
             className="w-full h-full object-cover"
           />
@@ -140,11 +129,6 @@ const MuseumDetail = () => {
                         {facility}
                       </Badge>
                     ))}
-                    {/* {typeof museum.facilities === 'string' && Object.entries(parseStringToJSON(museum.facilities)).map(([key, value]) => (
-                      <Badge key={key} variant="outline" className='p-2'>
-                        {key.charAt(0).toUpperCase() + key.slice(1)+' '}: {(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}
-                      </Badge>
-                    ))} */}
                   </div>
                 </CardContent>
               </Card>
@@ -154,7 +138,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    <GalleryCollection museum={museum.id} />
+                    <GalleryCollection museum={museum.name} />
                   </div>
                 </CardContent>
               </Card>
@@ -183,7 +167,6 @@ const MuseumDetail = () => {
                         {museum.opening_hours.map((openingHour, index) => (
                           <p key={index}>{`${Object.keys(openingHour)} : ${Object.values(openingHour)}`}</p>
                         ))}
-                        {/* {parseStringToJSON(museum.opening_hours).days_hours} */}
                       </div>
                     </div>
                   </div>
@@ -201,11 +184,6 @@ const MuseumDetail = () => {
                     <div>
                       <p className="font-semibold">{t('museumDetail.website')}</p>
                       <p className="text-sm text-muted-foreground">{museum.website}</p>
-                      {/* <button 
-                        onClick={() => window.open(`https://${museum.website}`, '_blank')} 
-                        className="bg-gradient-to-r from-primary to-secondary to-primary-glowx text-primary-foreground px-2 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
-                        Kunjungi Situs
-                      </button> */}
                     </div>
                   </div>
 
@@ -231,7 +209,7 @@ const MuseumDetail = () => {
                     <Button 
                       variant="outline" 
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                      onClick={() => shareEventHandler(`https://${museum.website}`)}
                     >
                       <Globe size={20} className="mr-2" />
                       {t('Kunjungi Situs Web')}

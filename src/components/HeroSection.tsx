@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { bannerService } from '@/lib/api-services';
 import { assetUrl } from '@/lib/asset-url';
 
 // <<<<<<< HEAD
@@ -104,15 +104,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
-  // const [videoList, setVideoList] = useState([]);
-  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
-  const [types, setTypes] = useState([]);
-
-  // const handleVideoEnded = () => {
-  //   setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
-  // };
-  // const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -155,7 +146,12 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
           console.error('Error fetching slides:', response.error);
           // setSlides(mapSlidesWithImageUrl(defaultSlides));
         } else {
-          const filteredSlides = response.data.filter((slide: any) => (
+          const filteredSlides = response.data.filter((slide: {
+            is_active: boolean;
+            is_approved: boolean;
+            start_publish_date: Date;
+            end_publish_date: Date;
+          }) => (
             slide.is_active === true 
             && slide.is_approved === true 
             && new Date(slide.start_publish_date) <= new Date()
@@ -170,26 +166,11 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     fetchSlides();
   }, []);
 
-  useEffect(() => {
-    const fetchTypeSites = async () => {
-      try {
-        const response = await TypesAndCategoriesSites.getAllTypes();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching types:', response.error);
-        } else {
-          setTypes(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
-      }
-    }
-    fetchTypeSites();
-  }, []);
-
   const linkTo = (slides: string) => {
-    const type = types.find((type) => type.name === slides)?.id;
-    if(slides === 'museum' || slides === 'heritage') {      
-      return `/museums/${type}`;
+    if(slides === 'museum') {      
+      return `/museums`;
+    } else if(slides === 'heritage') {
+      return `/heritage`
     } else {
       return `/collection`;
     }

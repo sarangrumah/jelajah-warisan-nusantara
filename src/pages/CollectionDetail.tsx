@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { collectionService } from '@/lib/api-services';
+import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 const CollectionDetail = () => {
@@ -24,7 +24,7 @@ const CollectionDetail = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const response = await collectionService.getAll();
+        const response = await masterCollectionService.getAll();
         if (response.error) {
           console.error('Error fetching collections:', response.error);
         }
@@ -36,7 +36,6 @@ const CollectionDetail = () => {
     fetchCollections();
   }, []);
 
-  // const collection = collections[parseInt(id as string) as keyof typeof collections];
   const filteredCollection = collections.filter(collection => collection.id.toString() === id);
 
   if (filteredCollection.length === 0) {
@@ -59,7 +58,7 @@ const CollectionDetail = () => {
       {/* Breadcrumb */}
       {filteredCollection.map(collection => (
        <div key={collection.id}> 
-          <section className="border-b">
+          <section className="border-b hidden">
             <div className="container mx-auto px-4 py-4">
               <Link to="/collection">
                 <Button variant="ghost" className="p-0 hidden">
@@ -71,7 +70,7 @@ const CollectionDetail = () => {
           </section>
 
           {/* Content */}
-          <section className="container mx-auto px-4 py-8">
+          <section className="container mx-auto px-4 py-16">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image */}
               <div className="space-y-4">
@@ -87,7 +86,7 @@ const CollectionDetail = () => {
               {/* Details */}
               <div className="space-y-6">
                 <div>
-                  <Badge className="mb-2">{t(collection.category)}</Badge>
+                  <Badge className="mb-2 hidden">{t(collection.category)}</Badge>
                   <h1 className="text-4xl font-bold mb-2">{collection.title}</h1>
                   <p className="text-xl text-muted-foreground">{collection.subtitle}</p>
                 </div>
@@ -109,7 +108,7 @@ const CollectionDetail = () => {
                       <Building className="text-primary" size={20} />
                       <div>
                         <p className="font-semibold">{t('Museum')}</p>
-                        <p className="text-sm text-muted-foreground">{collection.museum}</p>
+                        <p className="text-sm text-muted-foreground">{collection.museum_name}</p>
                       </div>
                     </div>
 
@@ -117,8 +116,7 @@ const CollectionDetail = () => {
                       <Calendar className="text-primary" size={20} />
                       <div>
                         <p className="font-semibold">{t('Discovered Year')}</p>
-                        <p className="text-sm text-muted-foreground">{collection.discoveredYear}</p>
-                        {/* <p><span className="font-semibold">{t('Condition')}:</span> {collection.condition}</p> */}
+                        <p className="text-sm text-muted-foreground">{collection.discovered_year}</p>
                       </div>
                     </div>
 
@@ -157,55 +155,6 @@ const CollectionDetail = () => {
                 </Card>
               </div>
             </div>
-
-            {/* Additional Information */}
-            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Historical Significance')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed mb-4">
-                    {collection.significance}
-                  </p>
-                  <div className="space-y-2">
-                    <p><span className="font-semibold">{t('Discovered Year')}:</span> {collection.discoveredYear}</p>
-                    <p><span className="font-semibold">{t('Condition')}:</span> {collection.condition}</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('Cultural Context')}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {collection.cultural_context}
-                  </p>
-                </CardContent>
-              </Card>
-            </div> */}
-
-            {/* <Card className="mt-8">
-              <CardHeader>
-                <CardTitle>{t('Related Artifacts')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {typeof collection.related_artifacts === 'string' ? collection.related_artifacts.slice(1, -1).split(',').map((artifact, index) => (
-                    <Badge key={index} variant="outline">
-                      {artifact.trim()}
-                    </Badge>
-                  )) : collection.related_artifacts.map((artifact, index) => (
-
-                    <Badge key={index} variant="outline">
-                      {artifact}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card> */}
           </section>
         </div>
       ))}

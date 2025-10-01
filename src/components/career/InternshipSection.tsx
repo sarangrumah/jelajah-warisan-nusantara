@@ -476,7 +476,7 @@ const InternshipSection = () => {
                             <FormItem>
                               <FormLabel>Program Magang *</FormLabel>
                               <FormControl>
-                                <select {...field} className="w-full p-2 border border-input rounded-md">
+                                <select {...field} className="w-full p-2 border border-input rounded-md bg-background">
                                   <option value="">Pilih program magang</option>
                                   {internshipPrograms.map((program) => (
                                     <option key={program.id} value={program.id}>

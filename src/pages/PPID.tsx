@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import PPIDSection from '@/components/ppid/PPIDSection';
-import RulesAndSOP from '@/components/about/RulesAndSOP';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
@@ -38,7 +37,6 @@ const PPID = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <PPIDSection />
-      <RulesAndSOP />
       <Footer />
       <FloatingButtons />
     </div>

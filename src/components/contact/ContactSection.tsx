@@ -4,13 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 
 const ContactSection = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<L.Map | null>(null);
+  // const mapContainer = useRef<HTMLDivElement>(null);
+  // const map = useRef<L.Map | null>(null);
   const { toast } = useToast();
   const { pathname } = useLocation();
   
@@ -125,9 +125,9 @@ const ContactSection = () => {
     },
     {
       icon: Phone,
-      title: 'Telepon',
+      title: 'Whatsapp',
       details: [
-        '+6281295953929 (WhatsApp)'
+        '+6281295953929'
       ]
     },
     {

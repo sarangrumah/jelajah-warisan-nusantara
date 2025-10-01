@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { masterCollectionService } from '@/lib/api-services';
+import React, { useEffect, useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { memoryOfWorldGalleryService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
-import { mapSlidesWithImageUrl } from "../helper";
 
 const collectionImages = import.meta.glob('../../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
-function getCollectionImageUrl(filename: string | undefined | null) {
+function getMowImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
   if (
     typeof filename === 'string' &&
@@ -21,34 +20,41 @@ function getCollectionImageUrl(filename: string | undefined | null) {
   }
   // Try to resolve using Vite's import
   const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
+  return match ? (match[1] as { default : string }).default : PLACEHOLDER_IMAGE;
 }
 
-const GalleryCollection = ({museum}) => {
+const MemoryOfWorldGallery = ({ mowId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [collections, setCollections] = useState([]);
+  const [mowGalleries, setMowGalleries] = useState([]);
 
   useEffect(() => {
-    const fetchCollections = async () => {
+    const fetchMemories = async () => {
       try {
-        const response = await masterCollectionService.getAll();
-  
+        const response = await memoryOfWorldGalleryService.getAll();
         if (response.error || response.data.length === 0) {
-          console.error('Error fetching collections:', response.error);
+          console.error('Error fetching memories:', response.error);
         } else {
-          setCollections(mapSlidesWithImageUrl(response.data));
+          const filteredGalleries = response.data.filter((gallery: {
+            is_active: boolean;
+            is_approved: boolean;
+            is_rejected: boolean;
+          }) => (
+            gallery.is_active === true && 
+            gallery.is_approved === true &&
+            gallery.is_rejected === false
+          ));
+          setMowGalleries(filteredGalleries);
         }
-  
       } catch (error) {
-        console.error('Error fetching collections:', error);
+        console.error('Error fetching memories:', error);
       }
     };
-    fetchCollections();
+    fetchMemories();
   }, []);
 
-  const galleries = collections.filter(collection => collection.museum_name === museum);
-  const images = galleries.map((gallery) => gallery.image_url);
+  const galleries = mowGalleries.filter(gallery => gallery.id_memoryoftheworld === mowId);
+  const images = galleries.map((gallery) => gallery.upload_file);
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {
@@ -81,9 +87,9 @@ const GalleryCollection = ({museum}) => {
         <div className="relative flex items-center justify-center w-full h-[320px] overflow-hidden pt-5">
           {images.length === 1 ? (
             <img
-              src={getCollectionImageUrl(images[0])}
+              src={getMowImageUrl(images[0])}
               alt="gallery"
-              onClick={() => setSelectedImage(getCollectionImageUrl(images[0]))}
+              onClick={() => setSelectedImage(getMowImageUrl(images[0]))}
               className="absolute rounded-2xl object-cover cursor-pointer max-h-[90%] max-w-[90%] opacity-100"
             />
           ) : (
@@ -93,12 +99,13 @@ const GalleryCollection = ({museum}) => {
                 const isCenter = offset === 0;
                 const isSide = Math.abs(offset) === 1;
                 const isFar = Math.abs(offset) === 2;
+
                 return (
                   <img
                     key={index}
-                    src={getCollectionImageUrl(images[index])}
+                    src={getMowImageUrl(images[index])}
                     alt={`gallery-${index}`}
-                    onClick={() => isCenter && setSelectedImage(getCollectionImageUrl(images[index]))}
+                    onClick={() => isCenter && setSelectedImage(getMowImageUrl(images[index]))}
                     className={`absolute rounded-2xl object-cover cursor-pointer transition-all duration-500 ${
                       isCenter
                         ? "max-w-[80%] max-h-[95%] z-20 opacity-100"
@@ -165,8 +172,7 @@ const GalleryCollection = ({museum}) => {
           open={!!selectedImage}
           onOpenChange={() => setSelectedImage(null)}
         >
-          <DialogContent className="[&>button]:hidden outline-none p-0 bg-transparent border-0 shadow-none flex justify-center items-center" aria-describedby={undefined}>
-            <DialogTitle className="hidden">Fullscreen</DialogTitle>
+          <DialogContent className="[&>button]:hidden outline-none p-0 bg-transparent border-0 shadow-none flex justify-center items-center">
             <img
               src={selectedImage || ""}
               alt="fullscreen"
@@ -176,7 +182,7 @@ const GalleryCollection = ({museum}) => {
         </Dialog>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default GalleryCollection;
+export default MemoryOfWorldGallery
