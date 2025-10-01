@@ -44,7 +44,13 @@ const MemoryOfWorld = () => {
         if (response.error || !response.data) {
           console.error('Error fetching memories:', response);
         } else {
-          const filteredMemories = response.data.filter((memory: any) => (
+          const filteredMemories = response.data.filter((memory: {
+            is_active: boolean;
+            is_approved: boolean;
+            is_rejected: boolean;
+            start_publish_date: Date;
+            end_publish_date: Date;
+          }) => (
             memory.is_active === true && 
             memory.is_approved === true &&
             memory.is_rejected === false &&
