@@ -13,8 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { map, string } from 'zod';
 import QuillEditor from '@/components/ui/quill-editor';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 interface EventItem {
   id?: string;
@@ -38,6 +40,7 @@ interface EventItem {
   is_active: boolean;
   is_approved: boolean;
   is_rejected?: boolean;
+  reason_rejected?: string;
   created_at?: string;
   updated_at?: string;
   created_by?: string;
@@ -342,7 +345,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
           value={formData.address || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
           height={100}
-          placeholder="Enter venue address"
+          placeholder="Enter address"
         />
       </div>
 
@@ -585,8 +588,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   sites_id: null,                     // Will be set when selecting a site
   location: '',
   address: '',
-  start_published_date: new Date().toISOString(),        // e.g., new Date().toISOString()
-  end_published_date: new Date().toISOString(),
+  start_published_date:"",        // e.g.,""
+  end_published_date:"",
   start_date: '',
   end_date: '',
   contact: '',
@@ -598,6 +601,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   is_active: true,
   is_approved: false,
   is_rejected: false,
+  reason_rejected: '',
   created_at: '',
   updated_at: '',
   created_by: '',
@@ -614,6 +618,10 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -629,6 +637,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       const normalized = (response.data as EventItem[] || []).map((item) => ({
         ...item,
         is_free: item.is_free ?? false,
+        reason_rejected: item.reason_rejected ?? '',
       }));
       setEvents(normalized);
     } catch (error) {
@@ -650,6 +659,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       const payload: EventItem = {
         ...formData,
         is_rejected: false,
+        reason_rejected: '',
       };
     
       if (editingEvent?.id) {
@@ -675,7 +685,11 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         }
         
         const created = response.data as EventItem;
-        setEvents(prev => [{ ...created, is_free: created?.is_free ?? false }, ...prev]);
+        setEvents(prev => [{
+          ...created,
+          is_free: created?.is_free ?? false,
+          reason_rejected: created?.reason_rejected ?? '',
+        }, ...prev]);
         
         toast({
           title: 'Success',
@@ -736,6 +750,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
               ...events,
               is_approved: updated.is_approved ?? true,
               is_rejected: updated.is_rejected ?? false,
+              reason_rejected: '',
             }
           : events
       ));
@@ -755,27 +770,56 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({
+        title: 'Reason required',
+        description: 'Please enter a rejection reason.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const response = await EventsService.reject(id);
+      setRejectSubmitting(true);
+      const response = await EventsService.reject(rejectingId, trimmedReason);
       if (response.error) {throw new Error(response.error)};
 
       const updated = (response.data || {}) as Partial<EventItem>;
 
       setEvents(prev => prev.map(events =>
-        events.id === id
+        events.id === rejectingId
           ? {
               ...events,
               is_approved: updated.is_approved ?? false,
               is_rejected: updated.is_rejected ?? true,
+              reason_rejected: updated.reason_rejected ?? trimmedReason,
             }
           : events
       ));
 
       toast({
         title: 'Success',
-        description: `Event Rejected`,
+        description: 'Event rejected',
       });
+      closeRejectDialog();
       fetchEvents();
     } catch (error) {
       console.error('Error rejecting event:', error);
@@ -784,6 +828,8 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
         description: 'Failed to reject event',
         variant: 'destructive',
       });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -823,6 +869,16 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
 
   return (
     <div className="space-y-6">
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Event"
+      />
+
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Event Management</h2>
@@ -917,7 +973,12 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                       </Badge>
                     </CardTitle>
                     <CardDescription>{museum.subtitle}</CardDescription>                    
-                    <CardDescription>{museum.location}</CardDescription>
+                    <CardDescription>
+                        <div
+                      className="text-muted-foreground line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(museum.location || 'No Location') }}
+                    />
+                    </CardDescription>
                   </div>
                 { 
                   userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
@@ -940,7 +1001,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => toggleRejected(museum.id)}
+                          onClick={() => openRejectDialog(museum.id)}
                         >
                           Reject
                         </Button>
@@ -978,7 +1039,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           className="w-full"
-                          onClick={() => toggleRejected(museum.id)}
+                          onClick={() => openRejectDialog(museum.id)}
                         >
                           Reject
                         </Button>
@@ -990,14 +1051,15 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Description:</span>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {museum.description || 'No description'}
-                    </p>
+                    <div
+                      className="text-muted-foreground line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(museum.description || 'No description') }}
+                    />
                   </div>
                   <div>
                     <span className="font-medium">Last updated:</span>
                     <p className="text-muted-foreground">
-                      {new Date(museum.updated_at).toLocaleDateString()}
+                      {new Date(museum.updated_at ?? museum.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
@@ -1007,6 +1069,12 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                     </p>
                   </div>
                 </div>
+                {museum.is_rejected && museum.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{museum.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

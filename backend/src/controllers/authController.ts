@@ -18,7 +18,6 @@ export const signInValidation = [
 ];
 
 export const changePasswordValidation = [
-  body('current_password').isLength({ min: 1 }).withMessage('Current password is required'),
   body('new_password').isLength({ min: 8 }).withMessage('New password must be at least 8 characters'),
   body('confirm_password').custom((value, { req }) => value === req.body.new_password)
     .withMessage('Confirmation password must match the new password')
@@ -305,7 +304,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ error: 'Validation failed', details: errors.array() });
     }
 
-    const { current_password, new_password } = req.body;
+    const { new_password } = req.body;
     const userId = req.user.id;
 
     const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [userId]);
@@ -315,11 +314,6 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
     }
 
     const { password_hash } = userResult.rows[0];
-
-    const isCurrentValid = await bcrypt.compare(current_password, password_hash);
-    if (!isCurrentValid) {
-      return res.status(400).json({ error: 'Current password is incorrect' });
-    }
 
     const isSamePassword = await bcrypt.compare(new_password, password_hash);
     if (isSamePassword) {

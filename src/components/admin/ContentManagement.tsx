@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 interface ContentSection {
   id: string;
@@ -27,6 +28,7 @@ interface ContentSection {
   content: any;
   is_published: boolean;
   updated_at: string;
+  created_at?: string;
 }
 
 const ContentManagement = () => {
@@ -154,7 +156,10 @@ const ContentManagement = () => {
                       </Badge>
                     </CardTitle>
                     <CardDescription>
-                      Terakhir diperbarui: {new Date(section.updated_at).toLocaleDateString('id-ID')}
+                      Terakhir diperbarui:{' '}
+                      {(section.updated_at ?? section.created_at)
+                        ? new Date(section.updated_at ?? section.created_at).toLocaleDateString('id-ID')
+                        : '-'}
                     </CardDescription>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -310,14 +315,20 @@ const ContentManagement = () => {
                         <div className="text-center space-y-2">
                           <h1 className="text-2xl font-bold">{section.content.title}</h1>
                           <p className="text-lg text-muted-foreground">{section.content.subtitle}</p>
-                          <p className="text-sm">{section.content.description}</p>
+                          <p
+                            className="text-sm"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content.description || '') }}
+                          />
                         </div>
                       )}
                       
                       {section.section_key === 'about' && (
                         <div className="space-y-2">
                           <h2 className="text-xl font-semibold">{section.content.title}</h2>
-                          <p className="text-muted-foreground">{section.content.description}</p>
+                          <p
+                            className="text-muted-foreground"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(section.content.description || '') }}
+                          />
                         </div>
                       )}
                       

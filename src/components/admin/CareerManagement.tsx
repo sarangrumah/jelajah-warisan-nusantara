@@ -12,6 +12,7 @@ import { Loader2, Edit, Save, X, Plus, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 const CareerManagement = () => {
   const [opportunities, setOpportunities] = useState<any[]>([]);
@@ -408,9 +409,10 @@ const CareerManagement = () => {
                       </div>
                     </div>
                     <div className="mt-2">
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {opportunity.description}
-                      </p>
+                      <div
+                        className="text-sm text-muted-foreground line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(opportunity.description || '') }}
+                      />
                     </div>
                   </CardContent>
                 </Card>

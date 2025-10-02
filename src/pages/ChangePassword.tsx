@@ -5,7 +5,7 @@ import { authService } from '@/lib/api-services';
 const ChangePasswordPage = () => {
   const { toast } = useToast();
 
-  const handleSubmit = async (payload: { current_password: string; new_password: string; confirm_password: string }) => {
+  const handleSubmit = async (payload: { new_password: string; confirm_password: string }) => {
     const response = await authService.changePassword(payload);
 
     if (response.error) {

@@ -7,11 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 interface ChangePasswordFormProps {
-  onSubmit: (payload: { current_password: string; new_password: string; confirm_password: string }) => Promise<void>;
+  onSubmit: (payload: { new_password: string; confirm_password: string }) => Promise<void>;
 }
 
 const ChangePasswordForm = ({ onSubmit }: ChangePasswordFormProps) => {
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,11 +40,9 @@ const ChangePasswordForm = ({ onSubmit }: ChangePasswordFormProps) => {
     try {
       setIsSubmitting(true);
       await onSubmit({
-        current_password: currentPassword,
         new_password: newPassword,
         confirm_password: confirmPassword,
       });
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
@@ -66,17 +63,7 @@ const ChangePasswordForm = ({ onSubmit }: ChangePasswordFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="current_password">Password Saat Ini</Label>
-            <Input
-              id="current_password"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
+           <div className="space-y-2">
             <Label htmlFor="new_password">Password Baru</Label>
             <Input
               id="new_password"

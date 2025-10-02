@@ -20,6 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { ImageUpload } from '@/components/ui/image-upload';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 interface AgendaItem {
   id?: string;
@@ -349,7 +350,12 @@ const AgendaManagement = () => {
                       {item.is_published ? 'Published' : 'Draft'}
                     </Badge>
                   </div>
-                  <CardDescription>{item.description}</CardDescription>
+                  <CardDescription>
+                    <span
+                      className="block"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description || '') }}
+                    />
+                  </CardDescription>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch

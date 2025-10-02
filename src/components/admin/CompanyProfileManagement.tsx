@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ImageUpload } from '@/components/ui/image-upload';
 import RichTextEditor from '../ui/rich-text-editor';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 // Helper to render a plain text preview from potential HTML input
 function stripHtml(input?: string): string {
@@ -386,7 +387,7 @@ const ProfileForm = ({
         <QuillEditor
           value={profile.aboutus || ''}
           onChange={(html) => handleFieldChange('aboutus', html)}
-          height={200}
+          height={100}
           placeholder="Describe the company"
         />
       </div>
@@ -396,7 +397,7 @@ const ProfileForm = ({
         <QuillEditor
           value={profile.vision || ''}
           onChange={(html) => handleFieldChange('vision', html)}
-          height={200}
+          height={100}
           placeholder="Write vision…"
         />
       </div>
@@ -406,7 +407,7 @@ const ProfileForm = ({
         <QuillEditor
           value={profile.mission || ''}
           onChange={(html) => handleFieldChange('mission', html)}
-          height={200}
+          height={100}
           placeholder="Write mission…"
         />
       </div>
@@ -731,7 +732,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                         <span className="font-medium">Vision</span>
                         <div
                           className="rich-content text-muted-foreground"
-                          dangerouslySetInnerHTML={{ __html: profile.vision || 'No description' }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(profile.vision || 'No description') }}
                         />
                       </div>
                       <div className='pb-2'>

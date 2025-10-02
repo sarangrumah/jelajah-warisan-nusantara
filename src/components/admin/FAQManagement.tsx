@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '../ErrorHandling';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 interface Faq {
   id: string;
@@ -468,9 +469,10 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
               <CardContent>
                 <div className="text-sm">
                   <span className="font-medium">Answer:</span>
-                  <p className="text-muted-foreground mt-1 line-clamp-3">
-                    {faq.answer}
-                  </p>
+                  <div
+                    className="text-muted-foreground mt-1 line-clamp-3"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer || '') }}
+                  />
                 </div>
               </CardContent>
             </Card>

@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Upload, X, Image, Loader2, Eye } from 'lucide-react';
+import { X, Image, Loader2 } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
 import { assetUrl } from '@/lib/asset-url';
@@ -156,6 +156,7 @@ export const ImageUpload = ({
   };
 
   const displayName = extractSafeFileName(displayUrl);
+  const safeDisplayName = sanitizeHtml(displayName || 'Image selected');
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -174,39 +175,16 @@ export const ImageUpload = ({
       >
         <CardContent className="p-6">
           {value && preview ? (
-            <div className="relative group">
-              <span className="block text-sm font-medium text-muted-foreground break-words">
-                {displayName || 'Image selected'}
-              </span>
-              {/* <img
-                src={displayUrl}
-                alt="Preview"
-                className="w-full h-32 object-cover rounded-md"
-              /> */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <img
-                      src={displayUrl}
-                      alt="Full preview"
-                      className="w-full h-auto rounded-md"
-                    />
-                  </DialogContent>
-                </Dialog>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="block text-sm font-medium text-muted-foreground break-words">
+                  {safeDisplayName}
+                </span>
                 <Button
                   type="button"
                   variant="destructive"
-                  size="sm"
+                  size="icon"
+                  className="ml-auto"
                   onClick={(e) => {
                     e.stopPropagation();
                     clearImage();

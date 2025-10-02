@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,10 +13,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { map, string } from 'zod';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { da } from 'zod/v4/locales';
 import QuillEditor from '@/components/ui/quill-editor';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 interface SitesItem {
   id?: string;
   name: string;
@@ -38,8 +40,10 @@ interface SitesItem {
   img_banner: string;
   ticket_price:string;
   ticket_url?: string;
+  is_free?: boolean;
   is_approved: boolean;
   is_rejected?: boolean;
+  reason_rejected?: string;
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
@@ -72,7 +76,20 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
 }) => {
   const [formData, setFormData] = useState<SitesItem>({
     ...museum,
+    is_free: museum.is_free ?? false,
   });
+  const previousTicketPriceRef = useRef<string>('');
+
+  useEffect(() => {
+    setFormData({
+      ...museum,
+      is_free: museum.is_free ?? false,
+      images: museum.images == null ? [] : museum.images
+    });
+    if (museum.is_free) {
+      previousTicketPriceRef.current = museum.ticket_price || '';
+    }
+  }, [museum]);
 
   const [types, setTypes] = useState<Types[]>()
   const [categories, setCategories] = useState<Categories[]>()
@@ -406,6 +423,26 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="is_free"
+          checked={!!formData.is_free}
+          onCheckedChange={(checked) => {
+            setFormData(prev => {
+              const next = { ...prev, is_free: checked } as SitesItem;
+              if (checked) {
+                previousTicketPriceRef.current = prev.ticket_price || '';
+                next.ticket_price = '0';
+              } else {
+                next.ticket_price = previousTicketPriceRef.current || '';
+              }
+              return next;
+            });
+          }}
+        />
+        <Label htmlFor="is_free">Mark as Free Event</Label>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="ticket_price">Ticket Price</Label>
         <Input
@@ -414,6 +451,8 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           onChange={(e) => setFormData(prev => ({ ...prev,
             ticket_price: e.target.value
           }))}
+          disabled={formData.is_free}
+          placeholder={formData.is_free ? 'Free entry' : 'e.g., 50000'}
         />
       </div>
 
@@ -423,6 +462,8 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           id="ticket_url"
           value={formData.ticket_url || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, ticket_url: e.target.value }))}
+          disabled={formData.is_free}
+          placeholder={formData.is_free ? 'Free entry (no ticket link)' : 'https://example.com'}
         />
       </div>
 
@@ -453,7 +494,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         <Label htmlFor="collection">Collection</Label>
         <QuillEditor
           value={formData.collection || ''}
-          onChange={(html) => setFormData(prev => ({ ...prev, facilities: html }))}
+          onChange={(html) => setFormData(prev => ({ ...prev, collection: html }))}
           height={100}
           // placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
         />
@@ -506,8 +547,10 @@ const emptySites: SitesItem = {
   img_banner: '',
   ticket_price: '',
   ticket_url: '',
+  is_free: false,
   is_approved: false, // reasonable default
   is_rejected: false,
+  reason_rejected: '',
   is_active: true,    // often default to active
 };
 
@@ -520,6 +563,10 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchSites();
@@ -532,7 +579,12 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       if (response.error) {
         throw new Error(response.error);
       }
-      setSitess(response.data as SitesItem[] || []);
+      const normalized = (response.data as SitesItem[] || []).map((item) => ({
+        ...item,
+        is_free: item.is_free ?? false,
+        reason_rejected: item.reason_rejected ?? '',
+      }));
+      setSitess(normalized);
     } catch (error) {
       console.error('Error fetching museums:', error);
       toast({
@@ -551,7 +603,9 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     try {
       const payload: SitesItem = {
         ...formData,
+        is_free: formData.is_free ?? false,
         is_rejected: false,
+        reason_rejected: '',
       };
     
       if (editingSites?.id) {
@@ -562,7 +616,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         }
         
         setSitess(prev => prev.map(m => 
-          m.id === editingSites.id ? { ...m, ...payload } : m
+          m.id === editingSites.id ? { ...m, ...payload, is_free: payload.is_free ?? false } : m
         ));
         
         toast({
@@ -576,7 +630,12 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           throw new Error(response.error);
         }
         
-        setSitess(prev => [response.data, ...prev]);
+        const created = response.data as SitesItem;
+        setSitess(prev => [{
+          ...created,
+          is_free: created?.is_free ?? false,
+          reason_rejected: created?.reason_rejected ?? '',
+        }, ...prev]);
         toast({
           title: 'Success',
           description: 'Sites created successfully',
@@ -638,6 +697,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
               ...events,
               is_approved: updated.is_approved ?? true,
               is_rejected: updated.is_rejected ?? false,
+              reason_rejected: '',
             }
           : events
       ));
@@ -657,27 +717,56 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({
+        title: 'Reason required',
+        description: 'Please enter a rejection reason.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const response = await museumService.reject(id);
+      setRejectSubmitting(true);
+      const response = await museumService.reject(rejectingId, trimmedReason);
       if (response.error) {throw new Error(response.error);}
 
       const updated = (response.data || {}) as Partial<SitesItem>;
 
       setSitess(prev => prev.map(events =>
-        events.id === id
+        events.id === rejectingId
           ? {
               ...events,
               is_approved: updated.is_approved ?? false,
               is_rejected: updated.is_rejected ?? true,
+              reason_rejected: updated.reason_rejected ?? trimmedReason,
             }
           : events
       ));
 
       toast({
         title: 'Success',
-        description: `Museum Rejected`,
+        description: `Museum rejected`,
       });
+      closeRejectDialog();
       fetchSites();
     } catch (error) {
       console.error('Error rejecting museum:', error);
@@ -686,6 +775,8 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         description: 'Failed to reject museum',
         variant: 'destructive',
       });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -746,7 +837,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
-                {editingSites.id ? 'Edit Museum' : 'Add New Sites'}
+                {editingSites.id ? 'Edit Museum' : 'Add New Museum'}
               </DialogTitle>
               <DialogDescription>
                 {editingSites.id ? 'Update museum information' : 'Create a new museum or heritage site'}
@@ -789,7 +880,17 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           </DialogContent>
         </Dialog > : <div></div>}
       </div>
-      
+
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Museum"
+      />
+
       {museums.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -816,6 +917,9 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                         {museum.is_approved ? 'Approved' : museum.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
+                    {museum.subtitle ? (
+                      <CardDescription>{museum.subtitle}</CardDescription>
+                    ) : null}
                   </div>
                   { 
                     userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
@@ -835,11 +939,11 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                           >
                             Approve
                           </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => toggleRejected(museum.id)}
-                          >
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => openRejectDialog(museum.id)}
+                        >
                             Reject
                           </Button>
                         </>
@@ -878,7 +982,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           className="w-full"
-                          onClick={() => toggleRejected(museum.id)}
+                          onClick={() => openRejectDialog(museum.id)}
                         >
                           Reject
                         </Button>
@@ -901,32 +1005,42 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Description:</span>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {museum.description || 'No description'}
-                    </p>
+                    <div
+                      className="text-muted-foreground line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(museum.description || 'No description') }}
+                    />
                   </div>
                   <div>
                     <span className="font-medium">Last updated:</span>
                     <p className="text-muted-foreground">
-                      {new Date(museum.updated_at).toLocaleDateString()}
+                      {(museum.updated_at ?? museum.created_at)
+                        ? new Date(museum.updated_at ?? museum.created_at).toLocaleDateString()
+                        : '-'}
                     </p>
                   </div>
                 </div>
                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2">
-                  <div>
-                    <span className="font-medium">Address:</span>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {museum.address || 'No description'}
-                    </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2">
+                 <div>
+                   <span className="font-medium">Address:</span>
+                   <div
+                     className="text-muted-foreground line-clamp-2"
+                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(museum.address || 'No description') }}
+                   />
+                 </div>
+                 <div>
+                   <span className="font-medium">Website:</span>
+                   <p className="text-muted-foreground">
+                     {museum.website}
+                   </p>
+                 </div>
+               </div>
+                {museum.is_rejected && museum.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{museum.reason_rejected}</p>
                   </div>
-                  <div>
-                    <span className="font-medium">Website:</span>
-                    <p className="text-muted-foreground">
-                      {museum.website}
-                    </p>
-                  </div>
-                </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

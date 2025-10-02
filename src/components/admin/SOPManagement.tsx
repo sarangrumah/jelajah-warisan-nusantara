@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 type SopCategory = 'Peraturan' | 'SOP';
 
@@ -27,6 +29,7 @@ interface SOPItem {
   is_active: boolean;
   is_approved?: boolean;
   is_rejected?: boolean;
+  reason_rejected?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -42,6 +45,7 @@ const emptySOP: SOPItem = {
   is_active: true,
   is_approved: false,
   is_rejected: false,
+  reason_rejected: '',
 };
 
 const SOPForm = ({ sop, onSave, onCancel, saving }: {
@@ -106,7 +110,7 @@ const SOPForm = ({ sop, onSave, onCancel, saving }: {
         <QuillEditor
           value={formData.description || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
-          height={220}
+          height={100}
           placeholder="Write SOP description"
         />
       </div>
@@ -195,6 +199,10 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogDelete, setIsDialogDelete] = useState(false);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -204,7 +212,11 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     try {
       const response = await sopService.getAll();
       if (response.error) {throw new Error(response.error);}
-      setItems((response.data as unknown as SOPItem[]) || []);
+      const data = (response.data as unknown as SOPItem[] | undefined) || [];
+      setItems(data.map((item) => ({
+        ...item,
+        reason_rejected: item.reason_rejected ?? '',
+      })));
     } catch (error) {
       console.error('Error fetching SOP items:', error);
       toast({ title: 'Error', description: 'Failed to load SOP items', variant: 'destructive' });
@@ -219,6 +231,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
       const payload: SOPItem = {
         ...formData,
         is_rejected: false,
+        reason_rejected: '',
       };
       if (editingItem?.id) {
         const response = await sopService.update(editingItem.id, payload);
@@ -228,7 +241,13 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
       } else {
         const response = await sopService.create(payload);
         if (response.error) {throw new Error(response.error);}
-        setItems(prev => [response.data as unknown as SOPItem, ...prev]);
+        setItems(prev => [
+          {
+            ...(response.data as unknown as SOPItem),
+            reason_rejected: (response.data as SOPItem)?.reason_rejected ?? '',
+          },
+          ...prev,
+        ]);
         toast({ title: 'Success', description: 'SOP created successfully' });
       }
       setEditingItem(null);
@@ -262,6 +281,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
         ...i,
         is_approved: updated.is_approved ?? true,
         is_rejected: updated.is_rejected ?? false,
+        reason_rejected: '',
       } : i)));
       toast({ title: 'Success', description: 'SOP approved' });
       fetchItems();
@@ -271,21 +291,48 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({ title: 'Reason required', description: 'Please enter a rejection reason.', variant: 'destructive' });
+      return;
+    }
+
     try {
-      const response = await sopService.reject(id);
+      setRejectSubmitting(true);
+      const response = await sopService.reject(rejectingId, trimmedReason);
       if (response.error) {throw new Error(response.error);}
       const updated = (response.data || {}) as Partial<SOPItem>;
-      setItems(prev => prev.map(i => (i.id === id ? {
+      setItems(prev => prev.map(i => (i.id === rejectingId ? {
         ...i,
         is_approved: updated.is_approved ?? false,
         is_rejected: updated.is_rejected ?? true,
+        reason_rejected: updated.reason_rejected ?? trimmedReason,
       } : i)));
       toast({ title: 'Success', description: 'SOP rejected' });
+      closeRejectDialog();
       fetchItems();
     } catch (error) {
       console.error('Error rejecting SOP:', error);
       toast({ title: 'Error', description: 'Failed to reject SOP', variant: 'destructive' });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -370,6 +417,16 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
         )}
       </div>
 
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject SOP"
+      />
+
       {items.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -386,18 +443,18 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
             <Card key={item.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {item.title}
-                      <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                        {item.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                      <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
-                        {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription>{item.subtitle}</CardDescription>
-                  </div>
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    {item.title}
+                    <Badge variant={item.is_active ? 'default' : 'secondary'}>
+                      {item.is_active ? 'Active' : 'Inactive'}
+                    </Badge>
+                    <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                      {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>{item.subtitle}</CardDescription>
+                </div>
                   {userRole === 'admin' || userRole === 'super-admin' ? (
                     <div className="flex items-center space-x-2">
                       <div className="flex items-center space-x-2">
@@ -412,7 +469,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                           <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
                             Approve
                           </Button>
-                          <Button variant="destructive" size="sm" onClick={() => toggleRejected(item.id!)}>
+                          <Button variant="destructive" size="sm" onClick={() => item.id && openRejectDialog(item.id)}>
                             Reject
                           </Button>
                         </>
@@ -443,7 +500,7 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                       <Button variant="success" className="w-full" onClick={() => toggleApproved(item.id!)}>
                         Approve
                       </Button>
-                      <Button variant="destructive" className="w-full" onClick={() => toggleRejected(item.id!)}>
+                      <Button variant="destructive" className="w-full" onClick={() => item.id && openRejectDialog(item.id)}>
                         Reject
                       </Button>
                     </div>
@@ -484,9 +541,18 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
                 {item.description && (
                   <div className="mt-4">
                     <span className="font-medium">Description:</span>
-                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                    <div
+                      className="text-sm text-muted-foreground mt-1"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description) }}
+                    />
                   </div>
                 )}
+                {item.is_rejected && item.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{item.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

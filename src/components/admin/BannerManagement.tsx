@@ -10,6 +10,7 @@ import { Loader2, Edit, Save, X, Plus, Trash, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 // Banner data shape used in this module
 interface Banner {
@@ -22,6 +23,7 @@ interface Banner {
   is_active: boolean;
   is_approved?: boolean;
   is_rejected?: boolean;
+  reason_rejected?: string;
   button_label_1: string;
   button_label_2: string;
   button_url_1?: string;
@@ -45,6 +47,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
     is_active: true,
     is_approved: false,
     is_rejected: false,
+    reason_rejected: '',
     button_label_1: '',
     button_label_2: '',
     button_url_1: '',
@@ -109,7 +112,7 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="button_url_1">Button Label 1</Label>
           <Input
@@ -237,6 +240,10 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const [isDialogDelete, setIsDialogDelete] = useState(false);
   const [previewBannerId, setPreviewBannerId] = useState<string | null>(null);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchBanners();
@@ -246,7 +253,13 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     try {
       const response = await bannerService.getAll();
       if (response.error) {throw new Error(response.error)};
-      setBanners((response.data as Banner[]) || []);
+      const data = (response.data as Banner[] | undefined) || [];
+      setBanners(
+        data.map((item) => ({
+          ...item,
+          reason_rejected: item.reason_rejected ?? '',
+        }))
+      );
     } catch (error) {
       console.error('Error fetching banners:', error);
       toast({
@@ -262,7 +275,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const saveBanner = async (formData: Banner) => {
     setSaving(true);
     try {
-      const payload = { ...formData, is_rejected: false };
+      const payload = { ...formData, is_rejected: false, reason_rejected: '' };
 
       if (editingBanner?.id) {
         const response = await bannerService.update(editingBanner.id, payload);
@@ -338,6 +351,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
               ...banner,
               is_approved: updated.is_approved ?? true,
               is_rejected: updated.is_rejected ?? false,
+              reason_rejected: '',
             }
           : banner
       ));
@@ -357,27 +371,56 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({
+        title: 'Reason required',
+        description: 'Please enter a rejection reason.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const response = await bannerService.reject(id);
+      setRejectSubmitting(true);
+      const response = await bannerService.reject(rejectingId, trimmedReason);
       if (response.error) {throw new Error(response.error)};
 
       const updated = (response.data || {}) as Partial<Banner>;
 
       setBanners(prev => prev.map(banner =>
-        banner.id === id
+        banner.id === rejectingId
           ? {
               ...banner,
               is_approved: updated.is_approved ?? false,
               is_rejected: updated.is_rejected ?? true,
+              reason_rejected: updated.reason_rejected ?? trimmedReason,
             }
           : banner
       ));
 
       toast({
         title: 'Success',
-        description: `Banner Rejected`,
+        description: 'Banner rejected',
       });
+      closeRejectDialog();
       fetchBanners();
     } catch (error) {
       console.error('Error rejecting banner:', error);
@@ -386,6 +429,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         description: 'Failed to reject banner',
         variant: 'destructive',
       });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -486,6 +531,16 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         </Dialog > : <div></div>}
       </div>
       
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Banner"
+      />
+
       {banners.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -515,7 +570,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     </CardTitle>
                     <CardDescription>{banner.subtitle}</CardDescription>
                   </div>
-                { 
+                {
                   userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Switch
@@ -579,7 +634,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => toggleRejected(banner.id)}
+                          onClick={() => openRejectDialog(banner.id)}
                         >
                           Reject
                         </Button>
@@ -617,7 +672,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           className="w-full"
-                          onClick={() => toggleRejected(banner.id)}
+                          onClick={() => openRejectDialog(banner.id)}
                         >
                           Reject
                         </Button>
@@ -638,7 +693,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                   <div>
                     <span className="font-medium">Last updated:</span>
                     <p className="text-muted-foreground">
-                      {new Date(banner.updated_at).toLocaleDateString()}
+                      
+                      {new Date(banner.updated_at ?? banner.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -656,6 +712,12 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     </p>
                   </div>
                 </div>
+                {banner.is_rejected && banner.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{banner.reason_rejected}</p>
+                  </div>
+                ) : null}
                 {/* {banner.description && (
                   <div className="mt-4">
                     <p className="text-sm text-muted-foreground">{banner.description}</p>

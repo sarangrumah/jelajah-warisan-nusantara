@@ -108,7 +108,7 @@ class ApiClient {
     return this.request<string[]>('/api/auth/roles');
   }
 
-  async changePassword(data: { current_password: string; new_password: string; confirm_password: string }): Promise<ApiResponse<{ message: string }>> {
+  async changePassword(data: { new_password: string; confirm_password: string }): Promise<ApiResponse<{ message: string }>> {
     return this.request<{ message: string }>('/api/auth/change-password', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -161,9 +161,10 @@ class ApiClient {
     });
   }
 
-  async reject<T>(endpoint: string, id: string): Promise<ApiResponse<T>> {
+  async reject<T>(endpoint: string, id: string, reason: string): Promise<ApiResponse<T>> {
     return this.request<T>(`/api/${endpoint}/${id}/reject`, {
       method: 'POST',
+      body: JSON.stringify({ reason_rejected: reason }),
     });
   }
 

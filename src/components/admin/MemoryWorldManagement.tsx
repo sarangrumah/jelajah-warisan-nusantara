@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collectionCategoryService, memoryWorldService } from '@/lib/api-services';
+import { memoryWorldService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,14 +12,9 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import QuillEditor from '@/components/ui/quill-editor';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 interface ImageItem { path: string; sites?: string }
-
-interface CollectionCategory {
-  id: string;
-  name: string;
-}
 
 interface MemoryWorldItem {
   id?: string;
@@ -36,8 +31,7 @@ interface MemoryWorldItem {
   updated_at?: string;
   is_approved?: boolean;
   is_rejected?: boolean;
-  categories_id?: string | null;
-  category?: CollectionCategory | null;
+  reason_rejected?: string;
 }
 
 const emptyItem: MemoryWorldItem = {
@@ -51,7 +45,8 @@ const emptyItem: MemoryWorldItem = {
   thumbnails: '',
   gallery: [],
   is_rejected: false,
-  categories_id: '',
+  reason_rejected: '',
+  // categories_id: '',
 };
 
 // Convert to input[type=date] value (YYYY-MM-DD)
@@ -70,17 +65,14 @@ const toDateInput = (v?: string) => {
 // From input[type=date] back to payload string (keep YYYY-MM-DD)
 const fromDateInput = (v?: string) => v || '';
 
-const MemoryWorldForm = ({ value, onSave, onCancel, saving, categories, categoryLoading } : {
+const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
   value: MemoryWorldItem,
   onSave: (data: MemoryWorldItem) => void,
   onCancel: () => void,
   saving: boolean,
-  categories: CollectionCategory[],
-  categoryLoading: boolean,
 }) => {
   const [formData, setFormData] = useState<MemoryWorldItem>({
     ...value,
-    categories_id: value.categories_id ?? '',
     date: toDateInput(value.date),
     start_publish_date: toDateInput(value.start_publish_date),
     end_publish_date: toDateInput(value.end_publish_date),
@@ -89,7 +81,6 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving, categories, category
   useEffect(() => {
     setFormData({
       ...value,
-      categories_id: value.categories_id ?? '',
       date: toDateInput(value.date),
       start_publish_date: toDateInput(value.start_publish_date),
       end_publish_date: toDateInput(value.end_publish_date),
@@ -118,37 +109,6 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving, categories, category
           <Input id="subtitle" value={formData.subtitle} onChange={(e) => setFormData(p => ({...p, subtitle: e.target.value}))} />
       </div>
     </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="categories_id">Category</Label>
-        {categoryLoading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin" />
-          </div>
-        ) : (
-          <Select
-            value={formData.categories_id ?? ''}
-            onValueChange={(value) => setFormData(p => ({ ...p, categories_id: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.length === 0 ? (
-                <SelectItem value="" disabled>
-                  No categories available
-                </SelectItem>
-              ) : (
-                categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
@@ -215,20 +175,35 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
-  const [categories, setCategories] = useState<CollectionCategory[]>([]);
-  const [categoryLoading, setCategoryLoading] = useState(false);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchAll();
-    fetchCategories();
   }, []);
+
+  const formatDateTime = (value?: string | null) => {
+    if (!value) {return '-';}
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {return '-';}
+    return date.toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+  };
 
   const fetchAll = async () => {
     try {
       const res = await memoryWorldService.getAll();
       if (res.error) {throw new Error(res.error);} 
-      setItems(res.data || []);
+      const data = (res.data as MemoryWorldItem[] | undefined) || [];
+      setItems(data.map((item) => ({
+        ...item,
+        reason_rejected: item.reason_rejected ?? '',
+      })));
     } catch (error) {
       console.error('Error fetch memory of world:', error);
       toast({ title: 'Error', description: 'Failed to load items', variant: 'destructive' });
@@ -237,27 +212,14 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      setCategoryLoading(true);
-      const res = await collectionCategoryService.getAll();
-      if (res.error) {throw new Error(res.error);} 
-      setCategories(res.data || []);
-    } catch (error) {
-      console.error('Error fetch collection categories:', error);
-      toast({ title: 'Error', description: 'Failed to load categories', variant: 'destructive' });
-    } finally {
-      setCategoryLoading(false);
-    }
-  };
-
   const saveItem = async (data: MemoryWorldItem) => {
     setSaving(true);
     try {
       const payload: MemoryWorldItem = {
         ...data,
-        categories_id: data.categories_id ? data.categories_id : null,
+        // categories_id: data.categories_id ? data.categories_id : null,
         is_rejected: false,
+        reason_rejected: '',
       };
 
       if (editing?.id) {
@@ -305,6 +267,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
               is_approved: updated.is_approved ?? true,
               is_rejected: updated.is_rejected ?? false,
               is_active: updated.is_active ?? it.is_active,
+              reason_rejected: '',
             }
           : it
       ));
@@ -317,28 +280,55 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({ title: 'Reason required', description: 'Please enter a rejection reason.', variant: 'destructive' });
+      return;
+    }
+
     try {
-      const res = await memoryWorldService.reject(id);
+      setRejectSubmitting(true);
+      const res = await memoryWorldService.reject(rejectingId, trimmedReason);
       if (res.error) {throw new Error(res.error);}
 
       const updated = (res.data || {}) as Partial<MemoryWorldItem>;
       setItems(prev => prev.map(it =>
-        it.id === id
+        it.id === rejectingId
           ? {
               ...it,
               is_approved: updated.is_approved ?? false,
               is_rejected: updated.is_rejected ?? true,
               is_active: updated.is_active ?? it.is_active,
+              reason_rejected: updated.reason_rejected ?? trimmedReason,
             }
           : it
       ));
 
       toast({ title: 'Rejected', description: 'Item rejected successfully' });
+      closeRejectDialog();
       await fetchAll();
     } catch (error) {
       console.error('Error rejecting memory of world:', error);
       toast({ title: 'Error', description: 'Failed to reject item', variant: 'destructive' });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -361,10 +351,12 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Memory of The World Management</h2>
           <p className="text-muted-foreground"> Manage Memory of The World and Content</p>
         </div>
-        <Button onClick={() => { setEditing(emptyItem); setOpen(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Memory of The World
-        </Button>
+        {(userRole === 'admin' || userRole === 'super-admin') && (
+          <Button onClick={() => { setEditing(emptyItem); setOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Memory of The World
+          </Button>
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -379,12 +371,20 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
               onSave={saveItem}
               onCancel={() => { setOpen(false); setEditing(null); }}
               saving={saving}
-              categories={categories}
-              categoryLoading={categoryLoading}
             />
           )}
         </DialogContent>
       </Dialog>
+
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Memory Item"
+      />
 
       {loading ? (
         <div className="flex items-center justify-center p-8">
@@ -397,10 +397,12 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
             <CardDescription>Create your first item</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => { setEditing(emptyItem); setOpen(true); }}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create
-            </Button>
+            {(userRole === 'admin' || userRole === 'super-admin') && (
+              <Button onClick={() => { setEditing(emptyItem); setOpen(true); }}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -430,7 +432,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                         <Button variant="success" size="sm" onClick={() => toggleApproved(it.id)}>
                           Approve
                         </Button>
-                        <Button variant="destructive" size="sm" onClick={() => toggleRejected(it.id)}>
+                        <Button variant="destructive" size="sm" onClick={() => openRejectDialog(it.id)}>
                           Reject
                         </Button>
                       </>
@@ -441,7 +443,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                       onClick={() => {
                         setEditing({
                           ...it,
-                          categories_id: it.categories_id ?? it.category?.id ?? '',
+                          // categories_id: it.categories_id ?? it.category?.id ?? '',
                           gallery: it.galleries?.map((g: any) => ({ id: g.id, path: g.upload_file })) || [],
                           thumbnails: it.thumbnails,
                         });
@@ -460,17 +462,25 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Date:</span>
-                    <p className="text-muted-foreground">{it.date ? new Date(it.date).toLocaleDateString() : '-'}</p>
+                    <p className="text-muted-foreground">{formatDateTime(it.date)}</p>
                   </div>
                   <div>
                     <span className="font-medium">Period:</span>
-                    <p className="text-muted-foreground">{it.start_publish_date || '-'} → {it.end_publish_date || '-'}</p>
+                    <p className="text-muted-foreground">
+                      {formatDateTime(it.start_publish_date)} → {formatDateTime(it.end_publish_date)}
+                    </p>
                   </div>
                   <div>
                     <span className="font-medium">Category:</span>
                     <p className="text-muted-foreground">{it.category?.name || '-'}</p>
                   </div>
                 </div>
+                {it.is_rejected && it.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{it.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

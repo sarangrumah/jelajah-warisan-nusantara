@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 interface Media {
   id: string; 
@@ -26,6 +28,7 @@ interface Media {
   is_active: boolean; 
   is_approved: boolean; 
   is_rejected: boolean;
+  reason_rejected?: string;
   created_at: string; 
   updated_at: string ; 
   published_date : string;
@@ -242,6 +245,7 @@ const emptyMedia: Media = {
   is_active: false,
   is_approved: false,
   is_rejected: false,
+  reason_rejected: '',
   created_at: "", // ISO string will be filled later, e.g., new Date().toISOString()
   updated_at: "",
   published_date: ""
@@ -256,6 +260,10 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchMediaItems();
@@ -269,7 +277,13 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         throw new Error(response.error);
       }
       
-      setMediaItems(response.data as Media[] || []);
+      const items = (response.data as Media[] | undefined) || [];
+      setMediaItems(
+        items.map((item) => ({
+          ...item,
+          reason_rejected: item.reason_rejected ?? '',
+        }))
+      );
     } catch (error) {
       console.error('Error fetching media items:', error);
       toast({
@@ -288,6 +302,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
       const payload: Partial<Media> = {
         ...item,
         is_rejected: false,
+        reason_rejected: '',
       };
 
       let response;
@@ -299,7 +314,9 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
 
         setMediaItems(prev =>
           prev.map(existing =>
-            existing.id === payload.id ? { ...existing, ...payload } as Media : existing
+            existing.id === payload.id
+              ? { ...existing, ...payload } as Media
+              : existing
           )
         );
       } else {
@@ -308,7 +325,13 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         response = await mediaService.create(payload);
         if (response.error) {throw new Error(response.error);}
 
-        setMediaItems(prev => [response.data, ...prev]);
+        setMediaItems(prev => [
+          {
+            ...(response.data as Media),
+            reason_rejected: (response.data as Media)?.reason_rejected ?? '',
+          },
+          ...prev,
+        ]);
       }
 
       toast({
@@ -396,6 +419,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
               ...media,
               is_approved: updated.is_approved ?? true,
               is_rejected: updated.is_rejected ?? false,
+              reason_rejected: '',
             }
           : media
       ));
@@ -415,27 +439,56 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({
+        title: 'Reason required',
+        description: 'Please enter a rejection reason.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
-      const response = await mediaService.reject(id);
+      setRejectSubmitting(true);
+      const response = await mediaService.reject(rejectingId, trimmedReason);
       if (response.error) {throw new Error(response.error);}
 
       const updated = (response.data || {}) as Partial<Media>;
 
       setMediaItems(prev => prev.map(media =>
-        media.id === id
+        media.id === rejectingId
           ? {
               ...media,
               is_approved: updated.is_approved ?? false,
               is_rejected: updated.is_rejected ?? true,
+              reason_rejected: updated.reason_rejected ?? trimmedReason,
             }
           : media
       ));
 
       toast({
         title: 'Success',
-        description: `Media Rejected`,
+        description: 'Media rejected',
       });
+      closeRejectDialog();
       fetchMediaItems();
     } catch (error) {
       console.error('Error rejecting media:', error);
@@ -444,6 +497,8 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         description: 'Failed to reject media item',
         variant: 'destructive',
       });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
   
@@ -457,6 +512,16 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
 
   return (
     <div className="space-y-6">
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Media Item"
+      />
+
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Media & Publication Management</h2>
@@ -548,7 +613,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     </CardTitle>
                     <CardDescription>{item.subtitle}</CardDescription>
                   </div>
-                { 
+                {
                   userRole === "admin" || userRole === "super-admin" ? <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Switch
@@ -569,7 +634,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => toggleRejected(item.id)}
+                          onClick={() => openRejectDialog(item.id)}
                         >
                           Reject
                         </Button>
@@ -607,7 +672,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="destructive"
                           className="w-full"
-                          onClick={() => toggleRejected(item.id)}
+                          onClick={() => openRejectDialog(item.id)}
                         >
                           Reject
                         </Button>
@@ -619,9 +684,10 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium">Description:</span>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {item.description || 'No excerpt'}
-                    </p>
+                    <div
+                      className="text-muted-foreground line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description || 'No excerpt') }}
+                    />
                   </div>
                   <div>
                     <span className="font-medium">Published:</span>
@@ -630,6 +696,12 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                     </p>
                   </div>
                 </div>
+                {item.is_rejected && item.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{item.reason_rejected}</p>
+                  </div>
+                ) : null}
 
               </CardContent>
             </Card>

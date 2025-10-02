@@ -8,9 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { Loader2, Edit, Save, X, Plus, Trash, UserPlus } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import QuillEditor from '@/components/ui/quill-editor';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 interface CareerPosting {
   id?: string;
@@ -28,6 +30,7 @@ interface CareerPosting {
   is_active: boolean;
   is_approved?: boolean;
   is_rejected?: boolean;
+  reason_rejected?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -47,6 +50,7 @@ const emptyPosting: CareerPosting = {
   is_active: true,
   is_approved: false,
   is_rejected: false,
+  reason_rejected: '',
 };
 
 const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
@@ -208,6 +212,10 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const [submissionFor, setSubmissionFor] = useState<CareerPosting | null>(null);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -215,7 +223,11 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       const response = await careerMgmtService.getAll();
       if (response.error) {throw new Error(response.error)};
-      setItems((response.data as any) || []);
+      const data = (response.data as CareerPosting[] | undefined) || [];
+      setItems(data.map((item) => ({
+        ...item,
+        reason_rejected: item.reason_rejected ?? '',
+      })));
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to load career postings', variant: 'destructive' });
@@ -311,6 +323,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
       const payload: CareerPosting = {
         ...formData,
         is_rejected: false,
+        reason_rejected: '',
       };
       if (editingItem?.id) {
         const res = await careerMgmtService.update(editingItem.id, payload);
@@ -320,7 +333,13 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
       } else {
         const res = await careerMgmtService.create(payload);
         if (res.error) {throw new Error(res.error)};
-        setItems(prev => [res.data as any, ...prev]);
+        setItems(prev => [
+          {
+            ...(res.data as CareerPosting),
+            reason_rejected: (res.data as CareerPosting)?.reason_rejected ?? '',
+          },
+          ...prev,
+        ]);
         toast({ title: 'Success', description: 'Posting created' });
       }
       setEditingItem(null);
@@ -354,6 +373,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
         ...i,
         is_approved: updated.is_approved ?? true,
         is_rejected: updated.is_rejected ?? false,
+        reason_rejected: '',
       } : i));
       toast({ title: 'Success', description: 'Posting approved' });
       fetchItems();
@@ -363,21 +383,48 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const toggleRejected = async (id: string) => {
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({ title: 'Reason required', description: 'Please enter a rejection reason.', variant: 'destructive' });
+      return;
+    }
+
     try {
-      const res = await careerMgmtService.reject(id);
+      setRejectSubmitting(true);
+      const res = await careerMgmtService.reject(rejectingId, trimmedReason);
       if (res.error) {throw new Error(res.error)};
       const updated = (res.data || {}) as Partial<CareerPosting>;
-      setItems(prev => prev.map(i => i.id === id ? {
+      setItems(prev => prev.map(i => i.id === rejectingId ? {
         ...i,
         is_approved: updated.is_approved ?? false,
         is_rejected: updated.is_rejected ?? true,
+        reason_rejected: updated.reason_rejected ?? trimmedReason,
       } : i));
       toast({ title: 'Success', description: 'Posting rejected' });
+      closeRejectDialog();
       fetchItems();
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to reject posting', variant: 'destructive' });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -405,6 +452,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Career Posting Management</h2>
           <p className="text-muted-foreground">Manage career postings</p>
         </div>
+          {userRole === 'admin' || userRole === 'super-admin' ?
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingItem(emptyPosting)}>
@@ -426,7 +474,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
               saving={saving}
             />
           </DialogContent>
-        </Dialog>
+        </Dialog> : <></>}
       </div>
 
       <div className="flex justify-between items-center">
@@ -453,6 +501,16 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
         ) : null}
       </div>
 
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Career Posting"
+      />
+
       {items.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -469,18 +527,18 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
             <Card key={item.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {item.title}
-                      <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                        {item.is_active ? 'Published' : 'Draft'}
-                      </Badge>
-                      <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
-                        {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription>{item.subtitle}</CardDescription>
-                  </div>
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    {item.title}
+                    <Badge variant={item.is_active ? 'default' : 'secondary'}>
+                      {item.is_active ? 'Published' : 'Draft'}
+                    </Badge>
+                    <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                      {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>{item.subtitle}</CardDescription>
+                </div>
                   {userRole === 'admin' || userRole === 'super-admin' ? (
                     <div className="flex items-center space-x-2">
                       {/* <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
@@ -498,7 +556,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                           <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
                             Approve
                           </Button>
-                          <Button variant="destructive" size="sm" onClick={() => toggleRejected(item.id!)}>
+                          <Button variant="destructive" size="sm" onClick={() => item.id && openRejectDialog(item.id)}>
                             Reject
                           </Button>
                         </>
@@ -515,7 +573,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                       <Button variant="success" className="w-full" onClick={() => toggleApproved(item.id!)}>
                         Approve
                       </Button>
-                      <Button variant="destructive" className="w-full" onClick={() => toggleRejected(item.id!)}>
+                      <Button variant="destructive" className="w-full" onClick={() => item.id && openRejectDialog(item.id)}>
                         Reject
                       </Button>
                     </div>
@@ -549,21 +607,36 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                 {item.description && (
                   <div className="mt-4">
                     <span className="font-medium">Description:</span>
-                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                    <div
+                      className="text-sm text-muted-foreground mt-1"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description) }}
+                    />
                   </div>
                 )}
                 {(item.requirement || item.responsibility) && (
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-medium">Requirements:</span>
-                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.requirement || '' }} />
+                      <div
+                        className="prose prose-sm text-muted-foreground mt-1"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.requirement || '') }}
+                      />
                     </div>
                     <div>
                       <span className="font-medium">Responsibilities:</span>
-                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.responsibility || '' }} />
+                      <div
+                        className="prose prose-sm text-muted-foreground mt-1"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.responsibility || '') }}
+                      />
                     </div>
                   </div>
                 )}
+                {item.is_rejected && item.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{item.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

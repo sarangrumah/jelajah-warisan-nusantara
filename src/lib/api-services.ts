@@ -2,7 +2,7 @@ import { get } from 'http';
 import { apiClient } from './api-client';
 
 export const authService = {
-  changePassword: (data: { current_password: string; new_password: string; confirm_password: string }) =>
+  changePassword: (data: { new_password: string; confirm_password: string }) =>
     apiClient.changePassword(data),
 };
 
@@ -60,7 +60,7 @@ export const agendaService = {
 // Museums
 export const museumService = {
   approve: (id: string) => apiClient.approve('tb_sites', id),
-  reject: (id: string) => apiClient.reject('tb_sites', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_sites', id, reason),
   getAll: () => apiClient.getAll('tb_sites'),
   getById: (id: string) => apiClient.getById('tb_sites', id),
   create: (data: any) => apiClient.create('tb_sites', data),
@@ -82,7 +82,7 @@ export const TypesAndCategoriesEvent = {
 // Banners
 export const bannerService = {
   approve: (id: string) => apiClient.approve('tb_banner', id),
-  reject: (id: string) => apiClient.reject('tb_banner', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_banner', id, reason),
   getAll: () => apiClient.getAll('tb_banner'), // Get all for admin, filtering happens in components
   getPublished: () => apiClient.getAll('tb_banner'),
   getById: (id: string) => apiClient.getById('tb_banner', id),
@@ -93,7 +93,7 @@ export const bannerService = {
 
 export const EventsService = {
   approve: (id: string) => apiClient.approve('tb_events', id),
-  reject: (id: string) => apiClient.reject('tb_events', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_events', id, reason),
   getAll: () => apiClient.getAll('tb_events'), // Get all for admin, filtering happens in components
   getPublished: () => apiClient.getAll('tb_events'),
   getById: (id: string) => apiClient.getById('tb_events', id),
@@ -121,7 +121,7 @@ export const mediaService = {
   update: (id: string, data: any) => apiClient.update('tb_media', id, data),
   delete: (id: string) => apiClient.delete('tb_media', id),
   approve: (id: string) => apiClient.approve('tb_media', id),
-  reject: (id: string) => apiClient.reject('tb_media', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_media', id, reason),
 };
 
 // Memory of The World
@@ -132,7 +132,7 @@ export const memoryWorldService = {
   update: (id: string, data: any) => apiClient.update('tb_memoryoftheworld', id, data),
   delete: (id: string) => apiClient.delete('tb_memoryoftheworld', id),
   approve: (id: string) => apiClient.approve('tb_memoryoftheworld', id),
-  reject: (id: string) => apiClient.reject('tb_memoryoftheworld', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_memoryoftheworld', id, reason),
 };
 
 export const collectionCategoryService = {
@@ -147,7 +147,7 @@ export const faqService = {
   update: (id: string, data: any) => apiClient.update('tb_faqs', id, data),
   delete: (id: string) => apiClient.delete('tb_faqs', id),
   approve: (id: string) => apiClient.approve('tb_faqs', id),
-  reject: (id: string) => apiClient.reject('tb_faqs', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_faqs', id, reason),
 };
 
 // Content Sections
@@ -162,7 +162,7 @@ export const contentService = {
 // SOP (Standard Operating Procedures)
 export const sopService = {
   approve: (id: string) => apiClient.approve('tb_sop', id),
-  reject: (id: string) => apiClient.reject('tb_sop', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_sop', id, reason),
   getAll: () => apiClient.getAll('tb_sop'),
   getById: (id: string) => apiClient.getById('tb_sop', id),
   create: (data: any) => apiClient.create('tb_sop', data),
@@ -178,13 +178,13 @@ export const masterCollectionService = {
   update: (id: string, data: any) => apiClient.update('tb_master_collection', id, data),
   delete: (id: string) => apiClient.delete('tb_master_collection', id),
   approve: (id: string) => apiClient.approve('tb_master_collection', id),
-  reject: (id: string) => apiClient.reject('tb_master_collection', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_master_collection', id, reason),
 };
 
 // Career Management (new postings table separate from career_opportunities)
 export const careerMgmtService = {
   approve: (id: string) => apiClient.approve('tb_career_management', id),
-  reject: (id: string) => apiClient.reject('tb_career_management', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_career_management', id, reason),
   getAll: () => apiClient.getAll('tb_career_management'),
   getById: (id: string) => apiClient.getById('tb_career_management', id),
   create: (data: any) => apiClient.create('tb_career_management', data),

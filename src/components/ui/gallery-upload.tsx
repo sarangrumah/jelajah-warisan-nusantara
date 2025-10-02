@@ -3,10 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, X, Image, Loader2, Plus } from 'lucide-react';
+import { X, Image, Loader2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
-import { assetUrl } from '@/lib/asset-url';
 
 interface ImageItem {
   path: string;  // URL or path to image
@@ -51,7 +50,7 @@ const sanitizeFileName = (url?: string) => {
 
 export const GalleryUpload = ({
   label,
-  value = [], // ✅ Fixed: default to empty array
+  value = [],
   onChange,
   bucket = 'images',
   maxImages = 10,
@@ -62,9 +61,6 @@ export const GalleryUpload = ({
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-
-  console.log(value === null || value.length < maxImages)
   const handleFileSelect = async (files: FileList) => {
     if (!files.length) return;
 
@@ -79,7 +75,7 @@ export const GalleryUpload = ({
     }
 
     setUploading(true);
-    const newImages: ImageItem[] = []; // ✅ Will store objects
+    const newImages: ImageItem[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -112,11 +108,9 @@ export const GalleryUpload = ({
         }
 
         if (response.data?.url) {
-          // ✅ Push object matching ImageItem interface
-          // ⚠️ You need to define what "sites" means — placeholder used here
           newImages.push({
             path: response.data.url,
-            sites: '', // TODO: Replace with actual logic if needed
+            sites: '',
           });
         }
       }
@@ -178,24 +172,18 @@ export const GalleryUpload = ({
     <div className={`space-y-4 ${className}`}>
       <Label>{label}</Label>
 
-      {/* Existing images grid */}
       {value !== null && value.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="space-y-2">
           {value.map((image, index) => (
-            <div key={index} className="relative group">
-              <span className="block text-xs font-medium text-muted-foreground break-words">
-                {sanitizeFileName(image.path) || 'Image'}
+            <div key={index} className="flex items-center gap-3 rounded-md border border-border bg-muted/10 px-3 py-2">
+              <span className="text-sm font-medium text-muted-foreground break-all flex-1">
+                {sanitizeFileName(image.path) || image.path}
               </span>
-              {/* <img
-                src={assetUrl(image.path)}
-                alt={`Gallery image ${index + 1}`}
-                className="w-full h-24 object-cover rounded-md"
-              /> */}
               <Button
                 type="button"
                 variant="destructive"
-                size="sm"
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                size="icon"
+                className="shrink-0"
                 onClick={() => removeImage(index)}
               >
                 <X className="w-3 h-3" />
