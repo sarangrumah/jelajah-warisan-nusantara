@@ -2,23 +2,55 @@ import { FileText, Scale, CheckCircle, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { sopService } from '@/lib/api-services';
 
 const RulesAndSOP = () => {
   const { t } = useTranslation();
-  
-  const regulationsData = t('about.rules.regulations', { returnObjects: true }) as any[];
-  const proceduresData = t('about.rules.procedures', { returnObjects: true }) as any[];
-  
-  const regulations = regulationsData.map(reg => ({
-    ...reg,
-    status: 'Aktif'
-  }));
+  const [proceduresAndRegulations, setProceduresAndRegulations] = useState([]);
 
-  const procedures = proceduresData.map((proc, index) => ({
-    ...proc,
-    steps: [5, 4, 8, 6][index],
-    duration: ['30-60 hari', '14-21 hari', 'Berkelanjutan', '45-90 hari'][index]
-  }));
+  useEffect(() => {
+    const fetchRegulationsAndProcedures = async () => {
+      try {
+        const response = await sopService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching procedures:', response.error);
+        } else {
+          const filteredRegulationsAndProcedures = response.data.filter((procedure: {
+            is_active: boolean;
+            is_approved: boolean;
+            is_rejected: boolean;
+            category: string;
+          }) => (
+            procedure.is_active === true 
+            && procedure.is_approved === true 
+            && procedure.is_rejected === false
+          ));
+          setProceduresAndRegulations(filteredRegulationsAndProcedures);
+        }
+      } catch (error) {
+        console.error('Error fetching procedures:', error);
+      }
+    }
+
+    fetchRegulationsAndProcedures();
+  }, []);
+  
+  // const regulationsData = t('about.rules.regulations', { returnObjects: true }) as any[];
+  // const proceduresData = t('about.rules.procedures', { returnObjects: true }) as any[];
+  
+  // const regulations = regulationsData.map(reg => ({
+  //   ...reg,
+  //   status: 'Aktif'
+  // }));
+
+  // const procedures = proceduresData.map((proc, index) => ({
+  //   ...proc,
+  //   steps: [5, 4, 8, 6][index],
+  //   duration: ['30-60 hari', '14-21 hari', 'Berkelanjutan', '45-90 hari'][index]
+  // }));
+  const regulationsData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'peraturan');
+  const proceduresData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'sop');
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -36,9 +68,9 @@ const RulesAndSOP = () => {
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
             {t('about.rules.regulationsTitle')}
           </h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {regulations.map((regulation, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+          <div className="grid md:grid-cols-2 gap-6 scroll-reveal">
+            {regulationsData.map((regulation, index) => (
+              <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -49,7 +81,7 @@ const RulesAndSOP = () => {
                       </div>
                     </div>
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                      {regulation.status}
+                      {regulation.is_active ? 'Aktif' : 'Tidak Aktif'}
                     </span>
                   </div>
                 </CardHeader>
@@ -69,9 +101,9 @@ const RulesAndSOP = () => {
           <h3 className="text-2xl font-bold text-center mb-8 scroll-reveal">
             {t('about.rules.sopTitle')}
           </h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {procedures.map((procedure, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
+          <div className="grid md:grid-cols-2 gap-6 scroll-reveal">
+            {proceduresData.length > 0 && proceduresData.map((procedure, index) => (
+              <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
                   <div className="flex items-center gap-3">
                     <FileText size={24} className="text-primary" />
@@ -82,12 +114,12 @@ const RulesAndSOP = () => {
                   <p className="text-muted-foreground mb-4">{procedure.description}</p>
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Tahapan:</span>
-                      <span className="font-semibold">{procedure.steps} langkah</span>
+                      <span className="text-muted-foreground">Author:</span>
+                      <span className="font-semibold">{procedure.author}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Estimasi Waktu:</span>
-                      <span className="font-semibold">{procedure.duration}</span>
+                      <span className="text-muted-foreground">Kategori:</span>
+                      <span className="font-semibold">{procedure.category}</span>
                     </div>
                   </div>
                   <Button variant="outline" size="sm" className="w-full">

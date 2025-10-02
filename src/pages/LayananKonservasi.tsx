@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import ConservationSection from '@/components/layanan-konservasi/ConservationSection';
 import { useLocation } from 'react-router-dom';
@@ -48,7 +47,6 @@ const LayananKonservasi = () => {
         </CardContent>
       </Card>
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

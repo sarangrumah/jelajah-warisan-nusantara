@@ -1,7 +1,6 @@
 import Header from '@/components/Header';
 import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 
 import { useLocation } from 'react-router-dom';
@@ -38,7 +37,6 @@ const PPID = () => {
       <Header />
       <PPIDSection />
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

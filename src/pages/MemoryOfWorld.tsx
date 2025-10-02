@@ -23,7 +23,7 @@ function getCollectionImageUrl(filename: string) {
   // Always extract the filename and match against imported images
   const justFile = filename.split('/').pop();
   const match = Object.entries(collectionImages).find(([path]) => path.endsWith(justFile || ''));
-  return match ? (match[1] as any).default : filename;
+  return match ? (match[1] as { default: string }).default : filename;
 }
 const MemoryOfWorld = () => {
   const { t } = useTranslation();

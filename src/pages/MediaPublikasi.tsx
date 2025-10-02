@@ -2,7 +2,6 @@ import Header from '@/components/Header';
 import NewsListSection from '@/components/media/NewsListSection';
 import PublicationSection from '@/components/media/PublicationSection';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -39,7 +38,6 @@ const MediaPublikasi = () => {
       <NewsListSection />
       <PublicationSection />
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

@@ -2,7 +2,6 @@ import Header from '@/components/Header';
 import CompanyProfile from '@/components/about/CompanyProfile';
 import Services from '@/components/about/Services';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import RulesAndSOP from '@/components/about/RulesAndSOP';
@@ -42,7 +41,6 @@ const TentangKami = () => {
         <RulesAndSOP />
       </div>
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

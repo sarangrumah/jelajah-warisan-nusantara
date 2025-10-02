@@ -3,8 +3,7 @@ import { Search, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { newsService } from '@/lib/api-services';
-import { publications } from '@/../database/default-data';
+import { mediaService } from '@/lib/api-services';
 
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
 
@@ -20,7 +19,7 @@ function getNewsImageUrl(filename: string) {
   const justFile = filename?.split('/').pop() || filename;
   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Fallback: try public/assets/news/ for production
   if (justFile) {
@@ -48,17 +47,23 @@ const NewsListSection = () => {
 
   const fetchArticles = async () => {
     try {
-      const response = await newsService.getAll();
+      const response = await mediaService.getAll();
 
-      if (response.error) {
+      if (response.error || response.data.length === 0) {
         console.error('Error fetching articles:', response.error);
-        setArticles(publications);
-      }
-
-      if(response.data.length === 0) {
-        setArticles(publications);
       } else {
-        setArticles(response.data);
+        const filteredArticles = response.data.filter((article: {
+          is_active: boolean;
+          is_approved: boolean;
+          is_rejected: boolean;
+          published_date: Date;
+        }) => (
+          article.is_active === true
+          && article.is_approved === true
+          && article.is_rejected === false
+          && new Date(article.published_date) <= new Date()
+        ));
+        setArticles(filteredArticles);
       }
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -71,9 +76,10 @@ const NewsListSection = () => {
                            article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     } else {
-      const matchesSearch = article.category.toLowerCase() === activeCategory.toLowerCase() && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchesSearch && article.category === activeCategory;
+      const matchesSearch = article.categories.toLowerCase() === activeCategory.toLocaleLowerCase() 
+          && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) 
+          || article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSearch;
     }
   });
 
@@ -161,7 +167,7 @@ const NewsListSection = () => {
                     <span>Admin</span>
                   </div>
                 </div>
-                  <button onClick={() => handleReadMoreClick(article.url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+                  <button onClick={() => handleReadMoreClick(article.file_url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
                     Baca Selengkapnya
                     <ArrowRight size={16} />
                   </button>
