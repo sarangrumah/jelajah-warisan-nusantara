@@ -5,19 +5,50 @@ import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { news } from '@/../database/default-data';
-import { useEffect } from 'react';
+import { mediaService } from '@/lib/api-services';
+import { useEffect, useState } from 'react';
 
 const NewsDetail = () => {
   const { pathname } = useLocation();
-        
+  const { id } = useParams();
+  const [article, setArticle] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  const { id } = useParams();
 
-  // const article = id && news[id as keyof typeof news] ? news[id as keyof typeof news] : null;
-  const article = news.find((item) => item.id.toString() === id );
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    if (id) {
+      mediaService.getById(id)
+        .then((response) => {
+          if (mounted) {
+            if (response.error) {
+              setArticle(null);
+            } else {
+              setArticle(response.data);
+            }
+          }
+        })
+        .catch(() => {
+          if (mounted) setArticle(null);
+        })
+        .finally(() => {
+          if (mounted) setLoading(false);
+        });
+    }
+    return () => { mounted = false; };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <span className="text-lg text-muted-foreground">Memuat artikel...</span>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
