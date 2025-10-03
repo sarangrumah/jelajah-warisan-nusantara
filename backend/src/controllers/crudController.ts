@@ -436,7 +436,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const companyVisitor = Array.isArray(rawCompanyVisitor) ? rawCompanyVisitor : [];
 
         // Add metadata
-        const data = {
+        const data: Record<string, any> = {
           ...mainData,
           updated_at: new Date()
         };
