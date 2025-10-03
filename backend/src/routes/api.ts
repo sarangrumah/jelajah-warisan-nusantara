@@ -4,6 +4,13 @@ import { createCrudController } from '../controllers/crudController';
 import { tableConfigs, tableRelationships, autoJoinRelations } from '../config/tableConfigs';
 
 const router = Router();
+// Language list endpoint for frontend language switcher
+router.get('/translations/languages', (req, res) => {
+  res.json([
+    { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
+    { code: 'en', name: 'English', flag: '🇺🇸' }
+  ]);
+});
 
 // Table configurations
 
