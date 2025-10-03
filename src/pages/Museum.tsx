@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
 
@@ -55,26 +56,28 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMuseums = async () => {
-      try {
-        const response = await museumService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching museums:', response.error);
-        } else {
-          const filteredMuseums = response.data.filter((museum: {
-            is_active: boolean;
-            is_approved: boolean;
-          }) => (
-            museum.is_active === true && 
-            museum.is_approved === true
-          ));
-          setMuseums(mapSlidesWithImageUrl(filteredMuseums));
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching museums:', response.error);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
+      } else {
+        const filteredMuseums = response.data.filter((museum: any) => (
+          museum.is_active === true 
+          && museum.is_approved === true
+          // && new Date(museum.start_publish_date) <= new Date()
+          // && new Date(museum.end_publish_date) >= new Date()
+        ));
+        setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchMuseums();
   }, []);
   

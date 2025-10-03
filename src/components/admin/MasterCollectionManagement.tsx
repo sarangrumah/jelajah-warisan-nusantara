@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { masterCollectionService } from '@/lib/api-services';
+import { collectionCategoryService, masterCollectionService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import QuillEditor from '@/components/ui/quill-editor';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
 interface MasterCollection {
   id?: string;
@@ -28,6 +30,15 @@ interface MasterCollection {
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
+  is_rejected?: boolean;
+  reason_rejected?: string;
+  categories_id?: string | null;
+  category?: CollectionCategory | null;
+}
+
+interface CollectionCategory {
+  id: string;
+  name: string;
 }
 
 const emptyCollection: MasterCollection = {
@@ -42,6 +53,9 @@ const emptyCollection: MasterCollection = {
   origin: '',
   image_url: '',
   is_active: true,
+  is_rejected: false,
+  reason_rejected: '',
+  categories_id: '',
 };
 
 const CollectionForm = ({
@@ -49,11 +63,15 @@ const CollectionForm = ({
   onSave,
   onCancel,
   saving,
+  categories,
+  categoryLoading,
 }: {
   value: MasterCollection;
   onSave: (data: MasterCollection) => void;
   onCancel: () => void;
   saving: boolean;
+  categories: CollectionCategory[];
+  categoryLoading: boolean;
 }) => {
   const [formData, setFormData] = useState<MasterCollection>({ ...value });
 
@@ -89,12 +107,48 @@ const CollectionForm = ({
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="categories_id">Category</Label>
+        {categoryLoading ? (
+          <div className="flex items-center justify-center p-4">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : (
+          <Select
+            value={formData.categories_id && formData.categories_id !== '' ? formData.categories_id : 'none'}
+            onValueChange={(value) =>
+              setFormData((p) => ({ ...p, categories_id: value === 'none' ? '' : value }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.length === 0 ? (
+                <SelectItem value="none" disabled>
+                  No categories available
+                </SelectItem>
+              ) : (
+                <>
+                  <SelectItem value="none">No category</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          rows={3}
-          value={formData.description}
-          onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData((p) => ({ ...p, description: html }))}
+          height={100}
+          placeholder="Describe the collection"
         />
       </div>
 
@@ -192,17 +246,28 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<CollectionCategory[]>([]);
+  const [categoryLoading, setCategoryLoading] = useState(false);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => {
     fetchAll();
+    fetchCategories();
   }, []);
 
   const fetchAll = async () => {
     try {
       const res = await masterCollectionService.getAll();
       if (res.error) {throw new Error(res.error)};
-      setItems((res.data as MasterCollection[]) || []);
+      const collections = (res.data as MasterCollection[] | undefined) || [];
+      setItems(collections.map((item) => ({
+        ...item,
+        reason_rejected: item.reason_rejected ?? '',
+      })));
     } catch (error) {
       console.error('Error toggling FAQ:', error);
       toast({ title: 'Error', description: 'Failed to load collections', variant: 'destructive' });
@@ -211,15 +276,36 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      setCategoryLoading(true);
+      const res = await collectionCategoryService.getAll();
+      if (res.error) {throw new Error(res.error);} 
+      setCategories(res.data || []);
+    } catch (error) {
+      console.error('Error fetch collection categories:', error);
+      toast({ title: 'Error', description: 'Failed to load categories', variant: 'destructive' });
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
   const handleSave = async (data: MasterCollection) => {
     setSaving(true);
     try {
+      const payload: MasterCollection = {
+        ...data,
+        is_rejected: false,
+        reason_rejected: '',
+        categories_id: data.categories_id ? data.categories_id : null,
+      };
+
       if (editing?.id) {
-        const res = await masterCollectionService.update(editing.id, data);
+        const res = await masterCollectionService.update(editing.id, payload);
         if (res.error) {throw new Error(res.error)};
         toast({ title: 'Updated', description: 'Collection updated successfully' });
       } else {
-        const res = await masterCollectionService.create(data);
+        const res = await masterCollectionService.create(payload);
         if (res.error) {throw new Error(res.error)};
         toast({ title: 'Created', description: 'Collection created successfully' });
       }
@@ -262,11 +348,65 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
     try {
       const res = await masterCollectionService.approve(id);
       if (res.error) {throw new Error(res.error)};
-      setItems(prev => prev.map(it => it.id === id ? { ...it, is_approved: true, is_active: true } : it));
+      const updated = (res.data || {}) as Partial<MasterCollection>;
+      setItems(prev => prev.map(it => it.id === id ? {
+        ...it,
+        is_approved: updated.is_approved ?? true,
+        is_rejected: updated.is_rejected ?? false,
+        is_active: updated.is_active ?? true,
+        reason_rejected: '',
+      } : it));
       toast({ title: 'Approved', description: 'Collection approved' });
+      await fetchAll();
     } catch (error) {
       console.error('Error approve collection:', error);
       toast({ title: 'Error', description: 'Failed to approve', variant: 'destructive' });
+    }
+  };
+
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({ title: 'Reason required', description: 'Please enter a rejection reason.', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      setRejectSubmitting(true);
+      const res = await masterCollectionService.reject(rejectingId, trimmedReason);
+      if (res.error) {throw new Error(res.error)};
+      const updated = (res.data || {}) as Partial<MasterCollection>;
+      setItems(prev => prev.map(it => it.id === rejectingId ? {
+        ...it,
+        is_approved: updated.is_approved ?? false,
+        is_rejected: updated.is_rejected ?? true,
+        is_active: updated.is_active ?? it.is_active,
+        reason_rejected: updated.reason_rejected ?? trimmedReason,
+      } : it));
+      toast({ title: 'Rejected', description: 'Collection rejected' });
+      closeRejectDialog();
+      await fetchAll();
+    } catch (error) {
+      console.error('Error reject collection:', error);
+      toast({ title: 'Error', description: 'Failed to reject', variant: 'destructive' });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -295,10 +435,22 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
               onSave={handleSave}
               onCancel={() => { setOpen(false); setEditing(null); }}
               saving={saving}
+              categories={categories}
+              categoryLoading={categoryLoading}
             />
           )}
         </DialogContent>
       </Dialog>
+
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Collection"
+      />
 
       {loading ? (
         <div className="flex items-center justify-center p-8">
@@ -329,8 +481,8 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
                       <Badge variant={it.is_active ? 'default' : 'secondary'}>
                         {it.is_active ? 'Published' : 'Draft'}
                       </Badge>
-                      <Badge variant={it.is_approved ? 'success' : 'secondary'}>
-                        {it.is_approved ? 'Approved' : 'Pending'}
+                      <Badge variant={it.is_approved ? 'success' : it.is_rejected ? 'destructive' : 'secondary'}>
+                        {it.is_approved ? 'Approved' : it.is_rejected ? 'Rejected' : 'Pending'}
                       </Badge>
                     </CardTitle>
                     <CardDescription>{it.subtitle}</CardDescription>
@@ -345,12 +497,27 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
                         />
                       </div>
                     ) : null}
-                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved ? (
-                      <Button variant="success" size="sm" onClick={() => it.id && approveItem(it.id)}>
-                        Approve
-                      </Button>
+                    {(userRole === 'super-admin' || userRole === 'approver') && !it.is_approved && !it.is_rejected ? (
+                      <>
+                        <Button variant="success" size="sm" onClick={() => it.id && approveItem(it.id)}>
+                          Approve
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => it.id && openRejectDialog(it.id)}>
+                          Reject
+                        </Button>
+                      </>
                     ) : null}
-                    <Button variant="outline" size="sm" onClick={() => { setEditing(it); setOpen(true); }}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditing({
+                          ...it,
+                          categories_id: it.categories_id ?? it.category?.id ?? '',
+                        });
+                        setOpen(true);
+                      }}
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => it.id && handleDelete(it.id)}>
@@ -369,7 +536,17 @@ const MasterCollectionManagement = ({ userRole }: { userRole: string }) => {
                     <span className="font-medium">Discovered Year:</span>
                     <p className="text-muted-foreground">{it.discovered_year || '-'}</p>
                   </div>
+                  <div>
+                    <span className="font-medium">Category:</span>
+                    <p className="text-muted-foreground">{it.category?.name || '-'}</p>
+                  </div>
                 </div>
+                {it.is_rejected && it.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{it.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}

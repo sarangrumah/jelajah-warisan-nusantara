@@ -1,4 +1,3 @@
-// import { useState } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
@@ -52,24 +51,9 @@ const ProfileSection = () => {
           <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
             {t('profile.title')}
           </h2>
-          {loading && (
-            <div className="text-center text-muted-foreground">Loading company profile...</div>
-          )}
-          {error && (
-            <div className="text-center text-red-500">Error: {error}</div>
-          )}
-          {profile ? (
-            <p
-              className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify"
-              dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }}
-            />
-          ) : (!loading && !error) ? (
-            <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
-              No company profile data available.
-            </p>
-          ) : null}
-            {/* {t('profile.description')} */}
-          
+          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
+            {t('profile.description')}
+          </p>
         </div>
 
         {loading && (
@@ -80,7 +64,7 @@ const ProfileSection = () => {
         )}
         {profile && (
           <div className="grid gap-12 items-center mb-16">
-            <div className="space-y-6 scroll-revealx">
+            <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
@@ -99,6 +83,22 @@ const ProfileSection = () => {
                       <b>Debug:</b> Mission is missing or empty from backend.
                     </div>
                   )}
+                </div>
+              </div>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold text-primary mb-2">About Us</h4>
+                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+                </div>
+                <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold text-primary mb-2">Contact</h4>
+                  <ul className="text-muted-foreground space-y-1">
+                    <li><b>Address:</b> {profile.address || '-'}</li>
+                    <li><b>Phone:</b> {profile.phone || '-'}</li>
+                    <li><b>WhatsApp:</b> {profile.whatsapp || '-'}</li>
+                    <li><b>Email:</b> {profile.email || '-'}</li>
+                    <li><b>Website:</b> {profile.website || '-'}</li>
+                  </ul>
                 </div>
               </div>
             </div>

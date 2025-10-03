@@ -20,7 +20,6 @@ const resources = {
         strukturOrganisasi: "Organizational structure",
         layananKonservasi: "Conservation Services",
         mediaPublikasi: "Media & Publications",
-        pemanfaatanAset: "Asset Utilization",
         hubungiKami: "Contact Us",
         career: "Career",
         ppid: "PPID",
@@ -484,18 +483,11 @@ const resources = {
           categoryPreHistorical: "PreHistorical",
           categoryGeographic: "Geographic",
         },
-        pemanfaatanAset: {
-          search: "Search assets...",
-        }
       },
       mow: {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
-      },
-      pemanfaatanAset: {
-        title: "Asset Utilization Services",
-        subtitle: "Managing and preserving national heritage for future generations"
       }
     }
   },
@@ -515,7 +507,6 @@ const resources = {
         strukturOrganisasi: "Struktur Organisasi",
         layananKonservasi: "Laboratorium Konservasi",
         mediaPublikasi: "Berita & Publikasi",
-        pemanfaatanAset: "Pemanfaatan Aset",
         hubungiKami: "Hubungi Kami",
         career: "Karir",
         ppid: "PPID",
@@ -981,18 +972,11 @@ const resources = {
           categoryPreHistorical: "PraSejarah",
           categoryGeographic: "Geographic",
         },
-        pemanfaatanAset: {
-          search: "Cari aset...",
-        }
       },
       mow: {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
-      },
-      pemanfaatanAset: {
-        title: "Layanan Pemanfaatan Aset",
-        subtitle: "Mengelola dan melestarikan warisan nasional untuk generasi mendatang"
       }
     }
   }

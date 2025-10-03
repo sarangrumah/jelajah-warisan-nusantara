@@ -23,12 +23,18 @@ import CareerSubmissionManagement from '@/components/admin/CareerSubmissionManag
 import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
+import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
+import { authService } from '@/lib/api-services';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string>('viewer');
   const [activeTab, setActiveTab] = useState('overview');
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -72,6 +78,7 @@ const AdminDashboard = () => {
         isAdmin={isAdmin}
         canEdit={canEdit}
         onSignOut={handleSignOut}
+        onOpenChangePassword={() => setIsChangePasswordOpen(true)}
       />
 
       {/* Main Content */}
@@ -158,6 +165,29 @@ const AdminDashboard = () => {
           {activeTab === 'users' && <UserManagement />}
         </div>
       </main>
+
+      <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Ubah Kata Sandi</DialogTitle>
+          </DialogHeader>
+          <ChangePasswordForm
+            onSubmit={async (payload) => {
+              const response = await authService.changePassword(payload);
+
+              if (response.error) {
+                throw new Error(response.error);
+              }
+
+              toast({
+                title: 'Berhasil',
+                description: response.data?.message ?? 'Password berhasil diperbarui.',
+              });
+              setIsChangePasswordOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
