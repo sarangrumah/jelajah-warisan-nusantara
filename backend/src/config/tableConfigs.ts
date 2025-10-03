@@ -152,9 +152,8 @@ export const tableConfigs = {
     "updated_by",
     "created_at",
     "updated_at"
-  ]
+  ],
 
-  tb_categories_collections: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
   tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
 
 };
