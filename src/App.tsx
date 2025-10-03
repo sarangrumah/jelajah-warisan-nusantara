@@ -33,6 +33,7 @@ import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 import FloatingButtons from "@/components/FloatingButtons";
+import PemanfaatanAset from "./pages/PemanfaatanAset";
 import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
 import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
 
