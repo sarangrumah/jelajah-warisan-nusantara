@@ -8,7 +8,25 @@ import { Card, CardContent } from '@/components/ui/card';
 import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
-import { mapSlidesWithImageUrl, getImageUrl } from '@/components/helper';
+import { mapSlidesWithImageUrl } from '@/components/helper';
+
+const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
+function getImageUrl(filename: string | undefined | null) {
+  if (!filename) { return PLACEHOLDER_IMAGE };
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  // Try to resolve using Vite's import
+  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
+}
 
 const HeritageDetail = () => {
   const { id } = useParams();
@@ -69,7 +87,7 @@ const HeritageDetail = () => {
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl(heritage.img_banner)}
+            src={getImageUrl(heritage.img_banner?.split('/').pop() || heritage.img_banner)}
             alt={heritage.name}
             className="w-full h-full object-cover"
           />
@@ -90,31 +108,9 @@ const HeritageDetail = () => {
                   <h2 className="text-2xl font-bold mb-4">{t('About')}</h2>
                   <div className="space-y-4 text-muted-foreground">
                     {heritage.description}
-                    {/* {heritage.full_description.split('\n\n').map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))} */}
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Details */}
-              {/* <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4">{t('Technical Details')}</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {typeof heritage.details === 'string' ? Object.entries(JSON.parse(heritage.details.replace(/'/g, '"'))).map(([key, value]) => (
-                      <div key={key} className="flex justify-start">
-                        <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')+' ' }:</span>
-                        <span className="font-semibold ps-1">{ `${value}` }</span>
-                      </div>)) : Object.entries(heritage.details).map(([key, value]) => (
-                      <div key={key} className="flex justify-start">
-                        <span className="text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')+' ' }:</span>
-                        <span className="font-semibold ps-1">{ `${value}` }</span>
-                      </div>))
-                    }
-                  </div>
-                </CardContent>
-              </Card> */}
             </div>
 
             {/* Sidebar */}

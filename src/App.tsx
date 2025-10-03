@@ -33,6 +33,8 @@ import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 import FloatingButtons from "@/components/FloatingButtons";
+import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
+import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
 
 const queryClient = new QueryClient();
 
@@ -59,15 +61,18 @@ const App = () => {
               <Route path="/hubungi-kami" element={<HubungiKami />} />
               <Route path="/career" element={<Career />} />
               <Route path="/ppid" element={<PPID />} />
+              <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
+              <Route path="/pemanfaatan-aset/:id" element={<PemanfaatanAsetDetail />} />
               <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
               <Route path="/peraturan" element={<Peraturan />} />
-              <Route path="/museums/:type?" element={<Museum />} />
+              <Route path="/museums" element={<Museum />} />
               <Route path="/museum/:id" element={<MuseumDetail />} />
               <Route path="/heritage" element={<Heritage />} />
               <Route path="/heritage/:id" element={<HeritageDetail />} />
               <Route path="/collection" element={<Collection />} />
               <Route path="/collection/:id" element={<CollectionDetail />} />
               <Route path="/mow" element={<MemoryOfWorld />} />
+              <Route path="/mow/:id" element={<MemoryOfWorldDetail />} />
               <Route path="/sites" element={<NotFound />} />
               <Route path="/sites/:id" element={<NotFound />} />
               <Route path="/event/:id" element={<EventDetail />} />

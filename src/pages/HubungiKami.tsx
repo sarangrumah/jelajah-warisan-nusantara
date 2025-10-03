@@ -1,7 +1,6 @@
 import Header from '@/components/Header';
 import ContactSection from '@/components/contact/ContactSection';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 
 const HubungiKami = () => {
   // Updated with FAQ and enhanced contact form
@@ -10,7 +9,6 @@ const HubungiKami = () => {
       <Header />
       <ContactSection />
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

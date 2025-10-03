@@ -1,7 +1,6 @@
 import Header from '@/components/Header';
 import AgendaList from '@/components/agenda/AgendaList';
 import Footer from '@/components/Footer';
-import FloatingButtons from '@/components/FloatingButtons';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -37,7 +36,6 @@ const Agenda = () => {
       <Header />
       <AgendaList />
       <Footer />
-      <FloatingButtons />
     </div>
   );
 };

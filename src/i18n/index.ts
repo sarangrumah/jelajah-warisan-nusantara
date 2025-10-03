@@ -9,7 +9,9 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Home",
-        museum: "Destination",
+        destinasi: "Destination",
+        museum: "Museum",
+        heritage: "Heritage",
         collection: "Collection",
         koleksi: "MCB Collection",
         mow: "Memory Of the World",
@@ -189,7 +191,7 @@ const resources = {
           consultationButton: "Free Consultation"
         },
         rules: {
-          title: "Regulations & Operational Standards",
+          title: "Regulations",
           subtitle: "Legal basis and standard procedures governing museum management and cultural heritage preservation in Indonesia.",
           regulationsTitle: "Regulations & Laws",
           sopTitle: "Standard Operating Procedures (SOP)",
@@ -494,7 +496,9 @@ const resources = {
       // Navigation
       nav: {
         beranda: "Beranda",
-        museum: "Destinasi",
+        destinasi: "Destinasi",
+        museum: "Museum",
+        heritage: "Cagar Budaya",
         collection: "Koleksi",
         koleksi: "Koleksi MCB",
         mow: "Memori Dunia",
@@ -676,7 +680,7 @@ const resources = {
           consultationButton: "Konsultasi Gratis"
         },
         rules: {
-          title: "Regulasi & Standar Operasional",
+          title: "Regulasi",
           subtitle: "Dasar hukum dan prosedur standar yang mengatur pengelolaan museum dan pelestarian cagar budaya di Indonesia.",
           regulationsTitle: "Regulasi & Peraturan",
           sopTitle: "Standar Operasional Prosedur (SOP)",

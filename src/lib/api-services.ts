@@ -68,7 +68,6 @@ export const museumService = {
   delete: (id: string) => apiClient.delete('tb_sites', id),
 };
 
-
 export const TypesAndCategoriesSites = {
   getAllTypes: () => apiClient.getAll('tb_type_sites'),
   getAllCategories: (id : string) => apiClient.getAll('tb_categories_sites', {type_id: id}),
@@ -241,4 +240,16 @@ export const userService = {
     return apiClient.create('user_roles', { user_id: userId, role });
   },
   getProfiles: () => apiClient.getAllProfile(),
+};
+
+export const categoriesCollection = {
+  getAllCategories: () => apiClient.getAll('tb_categories_collections'),
+};
+
+export const categoriesMOW = {
+  getAllCategories: () => apiClient.getAll('tb_categories_mow'),
+};
+
+export const memoryOfWorldGalleryService = {
+  getAll: () => apiClient.getAll('tb_memoryoftheworld_gallery'),
 };

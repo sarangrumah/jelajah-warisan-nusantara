@@ -1,7 +1,6 @@
 
 import { FieldConfigs, RelationshipConfig } from '../helper/types'; // Optional: define types
 
-
 export const tableConfigs = {
   banners: ['id', 'title', 'subtitle', 'description', 'image_url', 'start_date', 'end_date', 'is_published', 'created_by', 'created_at', 'updated_at'],
   news_articles: ['id', 'title', 'slug', 'excerpt', 'content', 'featured_image_url', 'is_published', 'published_at', 'created_by', 'created_at', 'updated_at'],
@@ -155,6 +154,8 @@ export const tableConfigs = {
     "updated_at"
   ]
 
+  tb_categories_collections: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
+  tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
 
 };
 

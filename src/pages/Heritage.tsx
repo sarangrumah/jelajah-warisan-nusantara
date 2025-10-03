@@ -11,11 +11,42 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { defaultHeritages } from '@/../database/default-data';
 import { heritageService } from '@/lib/api-services';
 
+const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
+const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
+
+function getMuseumsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  // Try museums first
+  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Try images as fallback
+  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Fallback: try public/assets/museums/ or public/assets/images/ for production
+  if (justFile) {
+    return `/assets/museums/${justFile}`;
+  }
+  return '/placeholder.svg';
+}
 const Heritage = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [heritages, setHeritages] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -57,11 +88,12 @@ const Heritage = () => {
     return () => observer.disconnect();
   }, []);
 
+  const heritageId = types.find((t) => t.name.toLowerCase() === 'cagar budaya')?.id;
   const filteredHeritages = heritages.filter(heritage => {
-    const matchesSearch = heritage.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = heritage.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          heritage.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || heritage.type === filterType;
-    return matchesSearch && matchesFilter;
+    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType;
+    return heritage.type === heritageId && matchesSearch && matchesFilter;
   });
 
   return (
@@ -98,10 +130,10 @@ const Heritage = () => {
               <SelectValue placeholder={t('Filter by type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filter.heritage.categoryAll')}</SelectItem>
-              <SelectItem value="temple">{t('filter.heritage.categoryTemple')}</SelectItem>
-              <SelectItem value="archaeological">{t('filter.heritage.categoryArcheological')}</SelectItem>
-              <SelectItem value="fortress">{t('filter.heritage.categoryFortress')}</SelectItem>
+              <SelectItem value="all">{'Semua'}</SelectItem>
+              {categories.length > 0 && categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -113,13 +145,20 @@ const Heritage = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url}
-                    alt={item.title}
+                    src={(() => {
+                      const imageCandidate = item.img_banner || '';
+                      const resolved = getMuseumsImageUrl(imageCandidate);
+                      // Use logo as placeholder if no image
+                      return (resolved && resolved !== '/placeholder.svg')
+                        ? resolved
+                        : '/src/assets/MCB-Logo.png';
+                    })()}
+                    alt={item.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -136,7 +175,7 @@ const Heritage = () => {
                   <p className="text-sm mt-3">{item.description}</p>
                   <div className="mt-4">
                     <span className="inline-block px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">
-                      {t(item.type)}
+                      {types.find((t) => t.id === item.type)?.name}
                     </span>
                   </div>
                 </CardContent>

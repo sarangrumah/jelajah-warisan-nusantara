@@ -4611,3 +4611,39 @@ export const defaultMemories = [
     image_url: '/src/assets/collections/20063.jpg',
   },
 ]
+export const defaultAssets = [
+  {
+    id: 1,
+    title: 'Pengambilan Gambar Menggunakan Drone Area Candi Borobudur, Candi Mendut, atau Candi Pawon',
+    description: 'Layanan pengambilan gambar menggunakan drone di area Candi Borobudur, Candi Mendut, atau Candi Pawon dapat dimanfaatkan untuk keperluan produksi video profesional, promosi pariwisata, penelitian, maupun peliputan kegiatan resmi.',
+    location: 'Candi Borobudur, Candi Mendut, Candi Pawon',
+    category: 'Fotografi/Videografi',
+    imageUrl: '/src/assets/images/venue.png',
+    shortLocation: 'Magelang',
+    area: 'outdoor',
+    facilities: [],
+    tarif: 'Rp2.500.000 s/d Rp3.500.000/jam',
+    overtime: '',
+    fasilitasTambahan: [],
+    ketentuanUmum: ['Penggunaan drone hanya diperbolehkan di batas area dan waktu yang telah disetujui.','Operator drone wajib memiliki izin terbang resmi dan mengikuti panduan teknis dari petugas.','Pengambilan gambar menggunakan drone tidak diperkenankan mengganggu pengunjung atau aktivitas ibadah di kawasan candi.'],
+    kapasitas: '',
+    ukuran: ''
+  },
+  {
+    id: 2,
+    title: 'Pelataran Candi Mendut',
+    description: 'Pelataran Candi Mendut menawarkan suasana sakral dengan latar arsitektur candi yang kaya nilai sejarah dan spiritual. Lokasi ini diperuntukkan bagi kegiatan spiritual dan keagamaan, khususnya perayaan besar agama Buddha, serta dapat digunakan untuk pertunjukan seni budaya dengan persyaratan tertentu. Selain itu, area ini juga menjadi tempat penerimaan kunjungan tamu kenegaraan.',
+    location: 'Candi Mendut',
+    category: 'Fotografi/Videografi',
+    imageUrl: '/src/assets/images/Candi Pawon.jpg',
+    shortLocation: 'Magelang',
+    area: 'semi-outdoor',
+    facilities: ['Sound system ± 25 ribu watt (disewakan terpisah)', 'Lampu panorama candi (disewakan terpisah)', 'Genset (disewakan terpisah)'],
+    tarif: 'Rp 15.000.000/hari',
+    overtime: 'Rp 3.500.000/hari',
+    fasilitasTambahan: ['Sound System', 'Genset', 'Lampu Panorama'],
+    ketentuanUmum: [],
+    kapasitas: '1150 orang',
+    ukuran: '3637 m2'
+  }
+]

@@ -4,15 +4,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
+import { faqService } from '@/lib/api-services';
 
 const ContactSection = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<L.Map | null>(null);
+  // const mapContainer = useRef<HTMLDivElement>(null);
+  // const map = useRef<L.Map | null>(null);
   const { toast } = useToast();
   const { pathname } = useLocation();
+  const [faqs, setFaqs] = useState([]);
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,6 +38,32 @@ const ContactSection = () => {
     scrollRevealElements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const response = await faqService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching FAQs:', response.error);
+        } else {
+          const filteredFaqs = response.data.filter((faq: { 
+            is_active: boolean 
+            is_published: boolean
+            is_rejected: boolean
+          }) => (
+            faq.is_active === true
+            && faq.is_published === true
+            && faq.is_rejected === false
+          ));
+          setFaqs(filteredFaqs);
+        }
+      } catch (error) {
+        console.error('Error fetching FAQs:', error);
+      }
+    };
+
+    fetchFaqs();
   }, []);
 
   const [formData, setFormData] = useState({
@@ -78,40 +106,40 @@ const ContactSection = () => {
     }
   };
 
-  const faqData = [
-    {
-      question: "Bagaimana cara mengunjungi museum?",
-      answer: "Sebagian besar museum buka Selasa-Minggu, 09:00-16:00 WIB. Kami menyarankan untuk memeriksa jadwal khusus setiap museum di website resmi mereka atau menghubungi langsung sebelum berkunjung."
-    },
-    {
-      question: "Apakah ada tiket masuk untuk museum?",
-      answer: "Tarif tiket bervariasi per museum. Museum Nasional: Rp 10.000, Museum Gajah: Rp 5.000. Banyak museum memberikan diskon untuk pelajar, kelompok, dan lansia."
-    },
-    {
-      question: "Bisakah mengadakan acara atau penelitian di museum?",
-      answer: "Ya, kami menerima proposal untuk acara edukasi, penelitian akademis, dan kegiatan budaya. Silakan ajukan permohonan melalui email dengan proposal lengkap minimal 30 hari sebelumnya."
-    },
-    {
-      question: "Bagaimana cara melaporkan penemuan benda cagar budaya?",
-      answer: "Segera hubungi Balai Pelestarian Cagar Budaya (BPCB) setempat atau langsung ke kantor pusat kami. Jangan memindahkan benda tersebut dan dokumentasikan lokasi dengan foto."
-    },
-    {
-      question: "Apakah ada program edukasi untuk sekolah?",
-      answer: "Ya, kami memiliki program 'Museum Goes to School' dan kunjungan edukasi untuk siswa. Sekolah dapat mendaftar melalui website atau menghubungi divisi edukasi untuk mengatur kunjungan."
-    },
-    {
-      question: "Bagaimana cara menjadi volunteer museum?",
-      answer: "Kami membuka program relawan untuk mahasiswa dan umum. Daftar melalui email dengan CV dan motivation letter. Program volunteer biasanya berlangsung 3-6 bulan."
-    },
-    {
-      question: "Bisakah mendonasikan koleksi ke museum?",
-      answer: "Museum menerima donasi koleksi yang sesuai dengan misi pelestarian budaya. Tim kurator akan mengevaluasi nilai sejarah dan kondisi artefak sebelum menerima donasi."
-    },
-    {
-      question: "Bagaimana cara mengakses arsip dan dokumen sejarah?",
-      answer: "Peneliti dapat mengajukan akses ke arsip dengan mengisi formulir penelitian dan menyertakan proposal. Akses diberikan setelah persetujuan kurator dan sesuai prosedur keamanan."
-    }
-  ];
+  // const faqData = [
+  //   {
+  //     question: "Bagaimana cara mengunjungi museum?",
+  //     answer: "Sebagian besar museum buka Selasa-Minggu, 09:00-16:00 WIB. Kami menyarankan untuk memeriksa jadwal khusus setiap museum di website resmi mereka atau menghubungi langsung sebelum berkunjung."
+  //   },
+  //   {
+  //     question: "Apakah ada tiket masuk untuk museum?",
+  //     answer: "Tarif tiket bervariasi per museum. Museum Nasional: Rp 10.000, Museum Gajah: Rp 5.000. Banyak museum memberikan diskon untuk pelajar, kelompok, dan lansia."
+  //   },
+  //   {
+  //     question: "Bisakah mengadakan acara atau penelitian di museum?",
+  //     answer: "Ya, kami menerima proposal untuk acara edukasi, penelitian akademis, dan kegiatan budaya. Silakan ajukan permohonan melalui email dengan proposal lengkap minimal 30 hari sebelumnya."
+  //   },
+  //   {
+  //     question: "Bagaimana cara melaporkan penemuan benda cagar budaya?",
+  //     answer: "Segera hubungi Balai Pelestarian Cagar Budaya (BPCB) setempat atau langsung ke kantor pusat kami. Jangan memindahkan benda tersebut dan dokumentasikan lokasi dengan foto."
+  //   },
+  //   {
+  //     question: "Apakah ada program edukasi untuk sekolah?",
+  //     answer: "Ya, kami memiliki program 'Museum Goes to School' dan kunjungan edukasi untuk siswa. Sekolah dapat mendaftar melalui website atau menghubungi divisi edukasi untuk mengatur kunjungan."
+  //   },
+  //   {
+  //     question: "Bagaimana cara menjadi volunteer museum?",
+  //     answer: "Kami membuka program relawan untuk mahasiswa dan umum. Daftar melalui email dengan CV dan motivation letter. Program volunteer biasanya berlangsung 3-6 bulan."
+  //   },
+  //   {
+  //     question: "Bisakah mendonasikan koleksi ke museum?",
+  //     answer: "Museum menerima donasi koleksi yang sesuai dengan misi pelestarian budaya. Tim kurator akan mengevaluasi nilai sejarah dan kondisi artefak sebelum menerima donasi."
+  //   },
+  //   {
+  //     question: "Bagaimana cara mengakses arsip dan dokumen sejarah?",
+  //     answer: "Peneliti dapat mengajukan akses ke arsip dengan mengisi formulir penelitian dan menyertakan proposal. Akses diberikan setelah persetujuan kurator dan sesuai prosedur keamanan."
+  //   }
+  // ];
 
   const contactInfo = [
     {
@@ -125,9 +153,9 @@ const ContactSection = () => {
     },
     {
       icon: Phone,
-      title: 'Telepon',
+      title: 'Whatsapp',
       details: [
-        '+6281295953929 (WhatsApp)'
+        '+6281295953929'
       ]
     },
     {
@@ -287,7 +315,7 @@ const ContactSection = () => {
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
-                {faqData.map((faq, index) => (
+                {faqs.length > 0 && faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left">
                       {faq.question}

@@ -11,10 +11,6 @@ import { defaultMemories } from '@/../database/default-data';
 import { collectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
-interface Memory {
-  type: string;
-}
-
 const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
 function getCollectionImageUrl(filename: string) {
   if (
@@ -34,6 +30,7 @@ const MemoryOfWorld = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [memories, setMemories] = useState([]);
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterCategoriesMow, setFilterCategoriesMow] = useState([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -56,6 +53,22 @@ const MemoryOfWorld = () => {
   }
   useEffect(() => {
     fetchMemories();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategoriesMow = async () => {
+      try {
+        const response = await categoriesMOW.getAllCategories();
+        if (response.error || !response.data) {
+          console.error('Error fetching categories:', response);
+        } else {
+          setFilterCategoriesMow(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    }
+    fetchCategoriesMow();
   }, []);
 
   const filteredMemories = memories.filter(item => {
@@ -99,18 +112,19 @@ const MemoryOfWorld = () => {
               <SelectValue placeholder={t('Filter by category')} />
             </SelectTrigger>
             <SelectContent>
-              {/* <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
-              <SelectItem value="sculpture">{t('filter.collection.categorySculpture')}</SelectItem>
-              <SelectItem value="manuscript">{t('filter.collection.categoryManuscript')}</SelectItem>
-              <SelectItem value="textile">{t('filter.collection.categoryTextile')}</SelectItem>
-              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>*/}
-              <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
+              <SelectItem value="all">{'Semua Kategori'}</SelectItem> 
+              {filterCategoriesMow.length > 0 && filterCategoriesMow.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+              {/* <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
               <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
               <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>
               <SelectItem value="history">{t('filter.collection.categoryHistory')}</SelectItem>
               <SelectItem value="numismatic">{t('filter.collection.categoryNumismatic')}</SelectItem>
               <SelectItem value="prehistorical">{t('filter.collection.categoryPreHistorical')}</SelectItem>
-              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem>
+              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
@@ -118,11 +132,11 @@ const MemoryOfWorld = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMemories.map((item) => (
-            <Link key={item.id} to={`/collection/${item.id}`}>
+            <Link key={item.id} to={`/mow/${item.id}`}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
                   <img
-                    src={item.image_url ? getCollectionImageUrl(item.image_url.split('/').pop() || item.image_url) : logo}
+                    src={item.image ? getCollectionImageUrl(item.image.split('/').pop() || item.image) : logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />
@@ -132,7 +146,7 @@ const MemoryOfWorld = () => {
                     {item.title}
                   </CardTitle>
                   <CardDescription>
-                    {item.subtitle}
+                    {item.description}
                   </CardDescription>
                 </CardHeader>
               </Card>

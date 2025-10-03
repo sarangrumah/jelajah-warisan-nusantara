@@ -24,14 +24,15 @@ function getCollectionImageUrl(filename: string) {
   }
   // Try to resolve using Vite's import
   const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  return match ? (match[1] as { default: string }).default : filename;
 }
 
 const Collection = () => {
   const { t } = useTranslation();
   const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterCategories, setFilterCategories] = useState('all');
+  const [filterCategoriesCollection, setFilterCategoriesCollection] = useState([]);
   const { pathname } = useLocation();
     
   useEffect(() => {
@@ -56,10 +57,26 @@ const Collection = () => {
     fetchCollections();
   }, []);
 
+  useEffect(() => {
+    const fetchCategoriesCollection = async () => {
+      try {
+        const response = await categoriesCollection.getAllCategories();
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching categories:', response.error);
+        } else {
+          setFilterCategoriesCollection(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategoriesCollection();
+  }, []);
+
   const filteredCollections = collections.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
+    const matchesFilter = filterCategories === 'all' || item.categories_id === filterCategories;
     return matchesSearch && matchesFilter;
   });
 
@@ -91,25 +108,18 @@ const Collection = () => {
               className="pl-10"
             />
           </div>
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <Select value={filterCategories} onValueChange={setFilterCategories}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
               <SelectValue placeholder={t('Filter by category')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filter.collection.categoryAll')}</SelectItem>
-              {/* <SelectItem value="weapons">{t('filter.collection.categoryWeapon')}</SelectItem>
-              <SelectItem value="sculpture">{t('filter.collection.categorySculpture')}</SelectItem>
-              <SelectItem value="manuscript">{t('filter.collection.categoryManuscript')}</SelectItem>
-              <SelectItem value="textile">{t('filter.collection.categoryTextile')}</SelectItem>
-              <SelectItem value="jewelry">{t('filter.collection.categoryJewelry')}</SelectItem>*/}
-              <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
-              <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
-              <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>
-              <SelectItem value="history">{t('filter.collection.categoryHistory')}</SelectItem>
-              <SelectItem value="numismatic">{t('filter.collection.categoryNumismatic')}</SelectItem>
-              <SelectItem value="prehistorical">{t('filter.collection.categoryPreHistorical')}</SelectItem>
-              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem>
+              <SelectItem value="all">{'Semua Kategori'}</SelectItem>
+              {filterCategoriesCollection.length > 0 && filterCategoriesCollection.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

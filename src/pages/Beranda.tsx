@@ -6,11 +6,9 @@ import ManagementSection from '@/components/ManagementSection';
 import AgendaSection from '@/components/AgendaSection';
 import DistributionSection from '@/components/DistributionSection';
 import NewsSection from '@/components/NewsSection';
-// import FloatingButtons from '@/components/FloatingButtons';
 import Footer from '@/components/Footer';
 import SectionWrapper from '@/components/SectionWrapper';
 import { useLocation } from 'react-router-dom';
-// import BannerManagement from '@/components/admin/BannerManagement';
 
 const Beranda = () => {
   const { pathname } = useLocation();
@@ -41,7 +39,7 @@ const Beranda = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
       <SectionWrapper id="hero-section" nextId="profile-section">
         <HeroSection />
@@ -62,7 +60,6 @@ const Beranda = () => {
         <NewsSection />
       </SectionWrapper>
       <Footer />
-      {/* <FloatingButtons /> */}
     </div>
   );
 };

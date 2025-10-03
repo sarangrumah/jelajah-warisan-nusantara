@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 // import { defaultVideos } from '@/../database/default-data';
@@ -98,15 +99,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
-  // const [videoList, setVideoList] = useState([]);
-  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-
-  const [types, setTypes] = useState([]);
-
-  // const handleVideoEnded = () => {
-  //   setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoList.length);
-  // };
-  // const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -183,9 +175,10 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   },[]);
 
   const linkTo = (slides: string) => {
-    const type = types.find((type) => type.name === slides)?.id;
-    if(slides === 'museum' || slides === 'heritage') {      
-      return `/museums/${type}`;
+    if(slides === 'museum') {      
+      return `/museums`;
+    } else if(slides === 'heritage') {
+      return `/heritage`
     } else {
       return `/collection`;
     }
