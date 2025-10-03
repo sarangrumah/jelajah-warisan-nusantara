@@ -67,6 +67,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     // === GET ALL ===
     getAll: async (req: AuthRequest, res: Response) => {
       try {
+        console.log(`[getAll] Table: ${tableName}, Query:`, req.query);
         const { limit = 50, offset = 0, ...filters } = req.query;
 
         // Start with base fields
@@ -154,7 +155,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         res.json(result.rows);
       } catch (error) {
         console.error(`Get all ${tableName} error:`, error);
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+          console.error(error.stack);
+        }
+        res.status(500).json({ error: 'Internal server error', details: error?.message });
       }
     },
 
