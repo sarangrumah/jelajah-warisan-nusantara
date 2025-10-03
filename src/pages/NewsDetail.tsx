@@ -11,7 +11,33 @@ import { useEffect, useState } from 'react';
 const NewsDetail = () => {
   const { pathname } = useLocation();
   const { id } = useParams();
-  const [article, setArticle] = useState<any>(null);
+  interface MediaArticle {
+    id: string;
+    title: string;
+    image_url?: string;
+    file_url?: string;
+    categories?: string;
+    subtitle?: string;
+    description?: string;
+    source?: string;
+    author?: string[] | string;
+    published_date?: string;
+    is_active?: boolean;
+    is_approved?: boolean;
+    created_at?: string;
+    updated_at?: string;
+    created_by?: string;
+    updated_by?: string;
+    is_published?: boolean;
+    is_rejected?: boolean;
+    reason_rejected?: string;
+    excerpt?: string;
+    content?: string;
+    image?: string;
+    category?: string;
+    date?: string;
+  }
+  const [article, setArticle] = useState<MediaArticle | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +54,13 @@ const NewsDetail = () => {
             if (response.error) {
               setArticle(null);
             } else {
-              setArticle(response.data);
+              // Only show if active and approved
+              const data = response.data as MediaArticle;
+              if (data && data.is_active === true && data.is_approved === true) {
+                setArticle(data);
+              } else {
+                setArticle(null);
+              }
             }
           }
         })

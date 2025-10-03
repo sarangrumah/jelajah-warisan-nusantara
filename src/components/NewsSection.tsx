@@ -53,7 +53,10 @@ const NewsSection = () => {
             console.error('Error fetching news:', response.error);
             setNews([]);
           } else {
-            setNews(response.data || []);
+            // Only show news that are active and approved
+            setNews((response.data || []).filter(
+              (item: any) => item.is_active === true && item.is_approved === true
+            ));
           }
         }
       })
