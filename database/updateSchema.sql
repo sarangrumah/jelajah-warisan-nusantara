@@ -160,3 +160,31 @@ CREATE TRIGGER update_tb_career_sub_mgmt_updated_at
     BEFORE UPDATE ON tb_career_submission_management
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- Ensure rejection reason columns exist on moderated tables
+ALTER TABLE IF EXISTS tb_banner
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_media
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_sites
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_events
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_sop
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_career_management
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_master_collection
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_memoryoftheworld
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';
+
+ALTER TABLE IF EXISTS tb_memoryoftheworld_gallery
+  ADD COLUMN IF NOT EXISTS reason_rejected TEXT DEFAULT '';

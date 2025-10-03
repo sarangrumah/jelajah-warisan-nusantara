@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -20,6 +19,8 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImageUpload } from '@/components/ui/image-upload';
+import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 interface AgendaItem {
   id?: string;
@@ -232,15 +233,16 @@ const AgendaManagement = () => {
                   <Label htmlFor="description" className="text-right">
                     Deskripsi
                   </Label>
-                  <Textarea
-                    id="description"
-                    value={editingItem.description}
-                    onChange={(e) =>
-                      setEditingItem(prev => ({ ...prev, description: e.target.value }))
-                    }
-                    className="col-span-3"
-                    rows={3}
-                  />
+                  <div className="col-span-3">
+                    <QuillEditor
+                      value={editingItem.description || ''}
+                      onChange={(html) =>
+                        setEditingItem(prev => ({ ...prev, description: html }))
+                      }
+                      height={200}
+                      placeholder="Tulis deskripsi agenda"
+                    />
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -348,7 +350,12 @@ const AgendaManagement = () => {
                       {item.is_published ? 'Published' : 'Draft'}
                     </Badge>
                   </div>
-                  <CardDescription>{item.description}</CardDescription>
+                  <CardDescription>
+                    <span
+                      className="block"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description || '') }}
+                    />
+                  </CardDescription>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch

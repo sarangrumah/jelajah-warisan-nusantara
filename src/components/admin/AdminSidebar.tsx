@@ -12,7 +12,9 @@ import {
   Shield,
   Home,
   BarChart3,
-  Menu} from 'lucide-react';
+  Menu,
+  Key
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminSidebarProps {
@@ -22,6 +24,7 @@ interface AdminSidebarProps {
   isAdmin: boolean;
   canEdit: boolean;
   onSignOut: () => void;
+  onOpenChangePassword: () => void;
 }
 
 const menuItems = [
@@ -41,7 +44,7 @@ const menuItems = [
   { id: 'users', label: 'Users', icon: Shield },
 ];
 
-const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onSignOut }: AdminSidebarProps) => {
+const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onSignOut, onOpenChangePassword }: AdminSidebarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -111,6 +114,17 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
 
       {/* Bottom actions */}
       <div className="p-4 border-t border-border space-y-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={() => {
+            onOpenChangePassword();
+            setIsMobileMenuOpen(false);
+          }}
+        >
+          <Key className="w-4 h-4 mr-3" />
+          Ubah Kata Sandi
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start"

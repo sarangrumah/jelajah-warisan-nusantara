@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Image, Loader2, X } from 'lucide-react';
+import { X, Image, Loader2 } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
+import { assetUrl } from '@/lib/asset-url';
 
 interface ImageUploadProps {
   label: string;
@@ -15,6 +17,7 @@ interface ImageUploadProps {
   accept?: string;
   maxSize?: number; // in MB
   className?: string;
+  preview?: boolean;
 }
 
 export const ImageUpload = ({
@@ -25,6 +28,7 @@ export const ImageUpload = ({
   accept = 'image/*',
   maxSize = 5,
   className = '',
+  preview = true
 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -32,9 +36,7 @@ export const ImageUpload = ({
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
-    if (!file) {return;}
-
-    // No preview logic
+    if (!file) return;
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -43,7 +45,6 @@ export const ImageUpload = ({
         description: 'Please select an image file',
         variant: 'destructive',
       });
-      // No preview logic
       return;
     }
 
@@ -54,7 +55,6 @@ export const ImageUpload = ({
         description: `File size must be less than ${maxSize}MB`,
         variant: 'destructive',
       });
-      // No preview logic
       return;
     }
 
@@ -66,11 +66,8 @@ export const ImageUpload = ({
         throw new Error(response.error);
       }
 
-      if (response.data?.name) {
-        // Always use the backend's returned filename for all further operations
-        const backendFilename = response.data.name;
-        onChange(backendFilename);
-        // No preview logic
+      if (response.data?.url) {
+        onChange(response.data.url);
         toast({
           title: 'Success',
           description: 'Image uploaded successfully',
@@ -83,7 +80,6 @@ export const ImageUpload = ({
         description: 'Failed to upload image',
         variant: 'destructive',
       });
-      // No preview logic
     } finally {
       setUploading(false);
       // Clear the file input to prevent issues
@@ -131,20 +127,45 @@ export const ImageUpload = ({
     fileInputRef.current?.click();
   };
 
-  // Helper: Extract filename from any path
-  // Robust filename extraction: handles /assets/images/hero-section/filename.jpg, /uploads/images/filename.jpg, etc.
-  // No preview logic
+  const displayUrl = assetUrl(value);
 
-  // Admin preview: always try /uploads/images/filename first, fallback to assetUrl(value)
-  // No preview logic: just upload controls and validation
+  const extractSafeFileName = (url?: string) => {
+    if (!url) return '';
+
+    const sanitize = (raw: string) => raw.replace(/[\s\\/:*?"<>|]+/g, ' ').trim();
+    const safeDecode = (raw: string) => {
+      try {
+        return decodeURIComponent(raw);
+      } catch {
+        return raw;
+      }
+    };
+
+    try {
+      const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+      const parsed = new URL(url, base);
+      const segments = parsed.pathname.split('/').filter(Boolean);
+      const fileName = segments.pop() || '';
+      return sanitize(safeDecode(fileName));
+    } catch (error) {
+      const cleaned = url.split(/[?#]/)[0];
+      const segments = cleaned.split('/').filter(Boolean);
+      const fileName = segments.pop() || cleaned;
+      return sanitize(safeDecode(fileName));
+    }
+  };
+
+  const displayName = extractSafeFileName(displayUrl);
+  const safeDisplayName = sanitizeHtml(displayName || 'Image selected');
 
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
+      
       <Card
         className={`border-2 border-dashed cursor-pointer transition-colors ${
-          dragOver
-            ? 'border-primary bg-primary/5'
+          dragOver 
+            ? 'border-primary bg-primary/5' 
             : 'border-border hover:border-primary/50'
         }`}
         onDrop={handleDrop}
@@ -153,22 +174,44 @@ export const ImageUpload = ({
         onClick={openFileDialog}
       >
         <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center text-center">
-            {uploading ? (
-              <>
-                <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
-                <p className="text-sm text-muted-foreground">Uploading...</p>
-              </>
-            ) : (
-              <>
-                <Image className="w-8 h-8 text-muted-foreground mb-2" />
-                <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                <p className="text-xs text-muted-foreground">
-                  PNG, JPG, GIF up to {maxSize}MB
-                </p>
-              </>
-            )}
-          </div>
+          {value && preview ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="block text-sm font-medium text-muted-foreground break-words">
+                  {safeDisplayName}
+                </span>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="ml-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearImage();
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center">
+              {uploading ? (
+                <>
+                  <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
+                  <p className="text-sm text-muted-foreground">Uploading...</p>
+                </>
+              ) : (
+                <>
+                  <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG, GIF up to {maxSize}MB
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -181,7 +224,7 @@ export const ImageUpload = ({
         disabled={uploading}
       />
 
-      {value && (
+      {value && !preview && (
         <div className="flex items-center gap-2">
           <p className="text-sm text-muted-foreground truncate flex-1">
             {value}

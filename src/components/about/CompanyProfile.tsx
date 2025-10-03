@@ -6,46 +6,20 @@ import compProfile from '@/assets/museum-interior.jpg'
 import { contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 
-type CompanyProfile = {
-  id: string;
-  name: string;
-  brand?: string;
-  aboutus?: string;
-  vision?: string;
-  mission?: string;
-  address?: string;
-  phone?: string;
-  whatsapp?: string;
-  email?: string;
-  website?: string;
-  latitude?: string;
-  longitude?: string;
-  // Add other fields as needed
-};
-
 const CompanyProfile = () => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<CompanyProfile | null>(null);
+  const [companies, setCompanies] = useState([]);
+
+  const fetchCompanies = async () => {
+    const response = await contentService.getAll();
+    if (response.error || response.data.length === 0) {
+      console.error('Error fetching companies:', response.error);
+    } 
+    setCompanies(response.data);
+  };
   
   useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await contentService.getAll();
-        if (response.error) { throw new Error(response.error); }
-        // Use the first profile (or adjust as needed)
-        const data = response.data as CompanyProfile[];
-        setProfile(data && data.length > 0 ? data[0] : null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load profile');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
+    fetchCompanies();
   }, []);
 
   const highlights = [
@@ -77,25 +51,21 @@ const CompanyProfile = () => {
     { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
+  console.log(companies)
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            {t('profile.title')}
+            {/* {t('about.companyProfile.title')} */}
+            {companies.length > 0 && companies[0].name}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xlx mx-auto leading-relaxed">
-            {t('profile.description')}
+            {/* {t('about.companyProfile.subtitle')} */}
+            {companies.length > 0 && companies[0].aboutus}
           </p>
         </div>
-
-        {loading && (
-          <div className="text-center text-muted-foreground">Loading company profile...</div>
-        )}
-        {error && (
-          <div className="text-center text-red-500">Error: {error}</div>
-        )}
 
         <div className="mb-16 mx-auto gap-12 px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -148,43 +118,46 @@ const CompanyProfile = () => {
         <div className="gap-12 mb-16 mx-auto px-4 pt-6 scroll-reveal">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
-            {profile && (
-              <div className="space-y-8">
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Eye className="h-6 w-6 text-primary" />
-                      {t('profile.vision')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
-                    {!profile.vision && (
-                      <div style={{ color: 'red', fontSize: '0.9em' }}>
-                        <b>Debug:</b> Vision is missing or empty from backend.
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+            <div className="space-y-8">
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-6 w-6 text-primary" />
+                    {t('profile.vision')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
+                    {/* "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
+                    yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat." */}
+                    {/* {t('profile.visionText')} */}
+                    {companies.length > 0 && companies[0].vision}
+                  </p>
+                </CardContent>
+              </Card>
 
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="h-6 w-6 text-primary" />
-                      {t('profile.mission')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
-                    {!profile.mission && (
-                      <div style={{ color: 'red', fontSize: '0.9em' }}>
-                        <b>Debug:</b> Mission is missing or empty from backend.
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-6 w-6 text-primary" />
+                    {t('profile.mission')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* <ul className="space-y-3 text-muted-foreground">
+                    {(t('profile.missionItems', { returnObjects: true }) as string[]).map((item, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul> */}
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
+                    {companies.length > 0 && companies[0].mission}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
