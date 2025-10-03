@@ -100,6 +100,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [types, setTypes] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
