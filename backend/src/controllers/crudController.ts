@@ -154,18 +154,13 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const result = await query(queryText, [...params, limit, offset]);
         res.json(result.rows);
       } catch (error) {
-        // Diagnostic log for error type and structure
         console.error(`Get all ${tableName} error:`, error);
-        console.error('Type of error:', typeof error, 'Keys:', error && typeof error === 'object' ? Object.keys(error) : 'N/A', 'Value:', error);
         if (error instanceof Error) {
           console.error(error.stack);
         }
         res.status(500).json({
           error: 'Internal server error',
-          details: (error && typeof error === 'object' && 'message' in error) ? (error as any).message : String(error),
-          errorType: typeof error,
-          errorKeys: error && typeof error === 'object' ? Object.keys(error) : 'N/A',
-          errorValue: error
+          details: error instanceof Error ? error.message : String(error)
         });
       }
     },

@@ -88,11 +88,27 @@ const Heritage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const heritageId = types.find((t) => t.name.toLowerCase() === 'cagar budaya')?.id;
+  // Defensive: prefer .name, fallback to .title for legacy data
+  const heritageId = types.find((t) => {
+    const name = typeof t.name === 'string' ? t.name : (typeof t.title === 'string' ? t.title : undefined);
+    if (!name) {
+      console.warn('Type item missing name/title:', t);
+      return false;
+    }
+    return name.toLowerCase() === 'cagar budaya';
+  })?.id;
+
   const filteredHeritages = heritages.filter(heritage => {
-    const matchesSearch = heritage.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         heritage.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType;
+    // Defensive: prefer .name, fallback to .title for legacy data
+    const name = typeof heritage.name === 'string' ? heritage.name : (typeof heritage.title === 'string' ? heritage.title : undefined);
+    const subtitle = typeof heritage.subtitle === 'string' ? heritage.subtitle : '';
+    if (!name) {
+      console.warn('Heritage item missing name:', heritage);
+      return false;
+    }
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || (categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType);
     return heritage.type === heritageId && matchesSearch && matchesFilter;
   });
 
