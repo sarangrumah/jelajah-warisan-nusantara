@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
@@ -67,8 +67,35 @@ export default function ActivityLogManagement({ userRole }: { userRole: string }
     const params = new URLSearchParams({
       ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
     });
-    const url = `/api/activity-log/export/${type}?${params.toString()}`;
-    window.open(url, "_blank");
+    const token = localStorage.getItem("token");
+    
+    // For exports, we need to fetch with auth and trigger download
+    try {
+      const res = await fetch(`/api/activity-log/export/${type}?${params.toString()}`, {
+        credentials: "include",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Export failed: ${res.statusText}`);
+      }
+      
+      // Get the blob and create download link
+      const blob = await res.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `activity_logs.${type}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Failed to export logs. Please try again.');
+    }
   };
 
   // Pagination
