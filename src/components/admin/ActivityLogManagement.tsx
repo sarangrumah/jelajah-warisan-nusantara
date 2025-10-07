@@ -47,7 +47,7 @@ export default function ActivityLogManagement({ userRole }: { userRole: string }
         sort: sort.field,
         order: sort.order,
       });
-      const token = localStorage.getItem("token"); // or sessionStorage, depending on where you store it
+      const token = localStorage.getItem("auth_token");
       const res = await fetch(`/api/activity-log?${params.toString()}`, {
         credentials: "include",
         headers: {
@@ -67,7 +67,7 @@ export default function ActivityLogManagement({ userRole }: { userRole: string }
     const params = new URLSearchParams({
       ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
     });
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth_token");
     
     // For exports, we need to fetch with auth and trigger download
     try {
