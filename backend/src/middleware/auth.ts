@@ -4,9 +4,11 @@ import { query } from '../config/database';
 
 export interface AuthRequest extends Request {
   user?: {
-    id: string;
-    email: string;
-    roles: string[];
+    id?: number | string;
+    email?: string;
+    role?: string;
+    roles?: string[];
+    [key: string]: any;
   };
 }
 

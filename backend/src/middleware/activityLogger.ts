@@ -21,7 +21,7 @@ export async function logActivity(options: {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user_type = req.user?.role || 'visitor';
-      const user_id = req.user?.id || null;
+      const user_id = req.user?.id ? Number(req.user.id) : null;
       const session_id = req.sessionID || null;
       const ip_address = getIp(req);
       const activity: ActivityLog = {
@@ -49,7 +49,7 @@ export async function globalActivityLogger(req: Request, res: Response, next: Ne
   // Example: log all GET/POST/PUT/DELETE requests for visitors/admins
   try {
     const user_type = req.user?.role || 'visitor';
-    const user_id = req.user?.id || null;
+    const user_id = req.user?.id ? Number(req.user.id) : null;
     const session_id = req.sessionID || null;
     const ip_address = getIp(req);
     const activity: ActivityLog = {
