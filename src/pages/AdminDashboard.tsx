@@ -28,6 +28,8 @@ import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+import ActivityLogManagement from "@/components/admin/ActivityLogManagement";
+
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -161,6 +163,7 @@ const AdminDashboard = () => {
           {activeTab === 'career-mgmt' && <CareerPostingManagement userRole={userRole} />}
           {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
           {activeTab === 'memoryworld' && <MemoryWorldManagement userRole={userRole} />}
+          {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {/* {activeTab === 'career' && <CareerManagement />} */}
           {activeTab === 'users' && <UserManagement />}
         </div>

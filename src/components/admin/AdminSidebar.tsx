@@ -40,6 +40,7 @@ const menuItems = [
   { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
   { id: 'career-submissions', label: 'Submissions', icon: Users },
   { id: 'faq', label: 'FAQ', icon: Settings },
+  { id: 'activity-log', label: 'Activity Log', icon: FileText },
   // { id: 'career', label: 'Karir', icon: Users },
   { id: 'users', label: 'Users', icon: Shield },
 ];

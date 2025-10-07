@@ -12,12 +12,15 @@ import authRoutes from './routes/auth';
 import apiRoutes from './routes/api';
 import uploadRoutes from './routes/upload';
 import usersRoutes from './routes/users';
+import activityLogRoutes from './routes/activityLog';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+import { globalActivityLogger } from './middleware/activityLogger';
 
 // Security middleware
 app.use(helmet({
@@ -33,7 +36,7 @@ app.use(cors({
 //    'http://127.0.0.1:5173',
 //    'http://127.0.0.1:8080'
 //  ],
-  origin: '*',  
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -61,6 +64,9 @@ app.use(cors({
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Global activity logger (logs all requests)
+app.use(globalActivityLogger);
 
 // Serve static files for uploaded contents
 // Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
@@ -90,6 +96,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/activity-log', activityLogRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

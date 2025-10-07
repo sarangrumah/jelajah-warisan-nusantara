@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
     server: {
       base: './',
       host: "::",
-      port: DEV_PORT,
+      port: 5173,
       watch: {
         // Only ignore heavy system folders so asset buckets trigger reloads
         ignored: ['**/node_modules/**', '**/.git/**'],
