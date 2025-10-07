@@ -75,7 +75,7 @@ export const requireRole = (roles: string[]) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const hasRole = roles.some(role => req.user!.roles.includes(role));
+    const hasRole = req.user?.roles?.some(role => roles.includes(role)) ?? false;
     if (!hasRole) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
