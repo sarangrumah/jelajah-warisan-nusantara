@@ -5,7 +5,7 @@ const AgendaBanner = () => {
   const slides = [
     {
       image: heroBorobudur,
-      title: 'Agenda Kegiatan Museum & Cagar Budaya',
+      title: 'Agenda Kegiatan Museum dan Cagar Budaya',
       subtitle: 'Ikuti berbagai kegiatan menarik yang diselenggarakan oleh museum dan situs cagar budaya di seluruh Indonesia',
     }
   ];

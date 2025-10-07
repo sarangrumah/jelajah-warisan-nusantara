@@ -17,7 +17,7 @@ const DistributionSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal hidden">
           <h2 className="text-4xl md:text-4xl font-bold pb-3 text-heritage-gradient">
-            Sebaran Museum & Cagar Budaya
+            Sebaran Museum dan Cagar Budaya
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Distribusi museum dan situs cagar budaya di seluruh Indonesia yang dikelola 

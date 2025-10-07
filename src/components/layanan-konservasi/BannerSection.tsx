@@ -9,17 +9,17 @@ const BannerSection = () => {
   const defaultSlides = [
     {
       title: 'Laboratorium Uji Sampel',
-      subtitle: 'Museum & Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
+      subtitle: 'Museum dan Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
       image: getImageUrl('berita1.jpg'),
     },
     {
       title: 'Penyewaan Alat',
-      subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
+      subtitle: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
       image: getImageUrl('berita3.jpeg'),
     },
     {
       title: 'Edukasi',
-      subtitle: 'Museum & Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
+      subtitle: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
       image: getImageUrl('berita2.jpg'),
     }
   ]
