@@ -68,12 +68,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Global activity logger (logs all requests)
 app.use(globalActivityLogger);
 
+
 // Serve static files for uploaded contents
 // Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
 const uploadBase = process.env.UPLOAD_PATH
   ? path.resolve(process.env.UPLOAD_PATH)
   : path.resolve(__dirname, '../../uploads');
 app.use('/uploads', express.static(uploadBase));
+
+// Serve frontend static files (production build)
+const frontendDir = path.resolve(__dirname, '../../public');
+app.use(express.static(frontendDir));
 
 // Serve assets from project root src/assets (outside backend)
 const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
@@ -82,15 +87,19 @@ const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
 
 app.use('/assets', express.static(assetsDir));
 
+// Fallback: serve index.html for any non-API route (client-side routing)
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(frontendDir, 'index.html'));
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
 });
-
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
