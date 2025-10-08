@@ -24,11 +24,14 @@ class TranslationService {
 
   constructor() {
     // Use public LibreTranslate instance (free)
-    // Can be changed to self-hosted instance: process.env.LIBRETRANSLATE_URL
-    this.baseUrl = process.env.LIBRETRANSLATE_URL || 'https://libretranslate.com';
+    // Force public instance if localhost is configured
+    const envUrl = process.env.LIBRETRANSLATE_URL || 'https://libretranslate.com';
+    this.baseUrl = envUrl.includes('localhost') ? 'https://libretranslate.com' : envUrl;
     this.apiKey = process.env.LIBRETRANSLATE_API_KEY; // Optional, for self-hosted instances
     this.retryAttempts = 3;
     this.retryDelay = 1000; // 1 second
+    
+    console.log(`🌐 Translation Service initialized with: ${this.baseUrl}`);
   }
 
   /**

@@ -165,8 +165,8 @@ async function addUITranslations() {
     try {
       // Insert Indonesian (source language)
       await pool.query(`
-        INSERT INTO translations (module, page, key, language_code, text, auto_translated)
-        VALUES ('translation', $1, $2, 'id', $3, false)
+        INSERT INTO translations (module, page, key, language_code, text, auto_translated, last_updated, created_at)
+        VALUES ('translation', $1, $2, 'id', $3, false, NOW(), NOW())
         ON CONFLICT (module, page, key, language_code) 
         DO UPDATE SET text = EXCLUDED.text, last_updated = NOW()
       `, [translation.page, translation.key, translation.indonesianText]);
@@ -182,8 +182,8 @@ async function addUITranslations() {
 
       if (englishTranslation.success) {
         await pool.query(`
-          INSERT INTO translations (module, page, key, language_code, text, auto_translated)
-          VALUES ('translation', $1, $2, 'en', $3, true)
+          INSERT INTO translations (module, page, key, language_code, text, auto_translated, last_updated, created_at)
+          VALUES ('translation', $1, $2, 'en', $3, true, NOW(), NOW())
           ON CONFLICT (module, page, key, language_code) 
           DO UPDATE SET text = EXCLUDED.text, last_updated = NOW()
         `, [translation.page, translation.key, englishTranslation.translatedText]);
