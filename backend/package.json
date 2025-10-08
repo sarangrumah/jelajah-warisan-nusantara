@@ -9,6 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:translations": "tsx src/scripts/migrate-translations.ts",
+    "add:ui-translations": "tsx src/scripts/add-ui-translations.ts",
     "test-db": "tsx src/scripts/test-db-connection.ts",
     "fix-password": "tsx src/scripts/fix-admin-password.ts"
   },
