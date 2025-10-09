@@ -24,7 +24,7 @@ export const getLanguages = async (req: Request, res: Response) => {
   }
 };
 
-// Get all translations for a specific language (with caching)
+// Get all translations for a specific language (with caching and optimization)
 export const getTranslationsByLanguage = async (req: Request, res: Response) => {
   const { lang } = req.params;
 
@@ -37,31 +37,33 @@ export const getTranslationsByLanguage = async (req: Request, res: Response) => 
       console.log(`✅ Cache hit for language: ${lang}`);
       // Set cache headers
       res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
+      res.set('X-Cache-Status', 'HIT');
       return res.json(cached.data);
     }
 
     console.log(`🔄 Cache miss for language: ${lang}, fetching from database...`);
+    const startTime = Date.now();
 
+    // Optimized query - only select needed fields, no sorting
     const result = await pool.query(
-      `SELECT module, page, key, text, auto_translated, last_updated 
+      `SELECT module, page, key, text 
        FROM translations 
-       WHERE language_code = $1 
-       ORDER BY module, page, key`,
+       WHERE language_code = $1`,
       [lang]
     );
 
+    console.log(`📊 Query took ${Date.now() - startTime}ms, got ${result.rows.length} rows`);
+
     // Convert flat array to nested object structure for i18n
-    const translations: any = {};
+    const translations: any = { translation: {} };
     
     result.rows.forEach(row => {
-      if (!translations[row.module]) {
-        translations[row.module] = {};
-      }
-      if (!translations[row.module][row.page]) {
-        translations[row.module][row.page] = {};
-      }
-      translations[row.module][row.page][row.key] = row.text;
+      // Flatten structure for i18n: module.page.key -> text
+      const fullKey = `${row.module}.${row.page}.${row.key}`;
+      translations.translation[fullKey] = row.text;
     });
+
+    console.log(`📊 Object building took ${Date.now() - startTime}ms total`);
 
     // Cache the result
     translationCache.set(cacheKey, {
@@ -73,10 +75,12 @@ export const getTranslationsByLanguage = async (req: Request, res: Response) => 
 
     // Set cache headers
     res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
+    res.set('X-Cache-Status', 'MISS');
     res.json(translations);
   } catch (error) {
     console.error('Error fetching translations:', error);
-    res.status(500).json({ error: 'Failed to fetch translations' });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Failed to fetch translations', details: errorMessage });
   }
 };
 
