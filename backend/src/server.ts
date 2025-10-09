@@ -13,6 +13,11 @@ import apiRoutes from './routes/api';
 import uploadRoutes from './routes/upload';
 import usersRoutes from './routes/users';
 import activityLogRoutes from './routes/activityLog';
+import translationCacheRoutes from './routes/translationCache';
+
+// Import translation utilities
+import { warmUpCache, getCacheStats, clearTranslationCache } from './middleware/translateResponse';
+import { pool } from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -106,6 +111,7 @@ app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/activity-log', activityLogRoutes);
+app.use('/api/translation-cache', translationCacheRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -136,12 +142,22 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
   console.log(`📱 Main API: http://localhost:${PORT}/api`);
   console.log(`📁 Upload API: http://localhost:${PORT}/api/upload`);
+  console.log(`🌐 Translation middleware: Active (Local LibreTranslate)`);
+  
+  // Warm up translation cache with popular content
+  try {
+    await warmUpCache(pool);
+    const stats = getCacheStats();
+    console.log(`💾 Translation cache ready: ${stats.totalTranslations} translations (${stats.cacheSizeKB} KB)`);
+  } catch (error) {
+    console.error('⚠️  Failed to warm up cache:', error);
+  }
 });
 
 export default app;
