@@ -23,15 +23,21 @@ class TranslationService {
   private retryDelay: number;
 
   constructor() {
-    // Use public LibreTranslate instance (free)
-    // Force public instance if localhost is configured
-    const envUrl = process.env.LIBRETRANSLATE_URL || 'https://libretranslate.com';
-    this.baseUrl = envUrl.includes('localhost') ? 'https://libretranslate.com' : envUrl;
+    // Use local LibreTranslate instance (Docker) or fallback to public
+    const envUrl = process.env.LIBRETRANSLATE_URL || 'http://localhost:5000';
+    this.baseUrl = envUrl;
     this.apiKey = process.env.LIBRETRANSLATE_API_KEY; // Optional, for self-hosted instances
     this.retryAttempts = 3;
     this.retryDelay = 1000; // 1 second
     
     console.log(`🌐 Translation Service initialized with: ${this.baseUrl}`);
+    
+    // Log whether using local or public instance
+    if (this.baseUrl.includes('localhost') || this.baseUrl.includes('127.0.0.1')) {
+      console.log(`✅ Using LOCAL LibreTranslate instance (no API key needed)`);
+    } else {
+      console.log(`⚠️  Using PUBLIC LibreTranslate instance (may require API key)`);
+    }
   }
 
   /**
