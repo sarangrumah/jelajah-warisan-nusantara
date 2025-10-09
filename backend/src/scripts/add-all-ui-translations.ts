@@ -365,8 +365,8 @@ async function addAllUITranslations() {
 
         // Insert or update translation
         await pool.query(
-          `INSERT INTO translations (module, page, key, language_code, text, auto_translated, last_updated) 
-           VALUES ($1, $2, $3, $4, $5, $6, NOW()) 
+          `INSERT INTO translations (module, page, key, language_code, text, auto_translated) 
+           VALUES ($1, $2, $3, $4, $5, $6) 
            ON CONFLICT (module, page, key, language_code) 
            DO UPDATE SET text = $5, auto_translated = $6, last_updated = NOW()`,
           [module, page, translationKey, langCode, text, autoTranslated]
