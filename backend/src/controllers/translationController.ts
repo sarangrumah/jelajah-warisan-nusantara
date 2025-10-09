@@ -7,6 +7,10 @@ import translationService from '../services/translationService';
  * Handles CRUD operations for translations with automatic translation support
  */
 
+// In-memory cache for translations
+const translationCache: Map<string, { data: any; timestamp: number }> = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 // Get all active languages
 export const getLanguages = async (req: Request, res: Response) => {
   try {
@@ -20,11 +24,24 @@ export const getLanguages = async (req: Request, res: Response) => {
   }
 };
 
-// Get all translations for a specific language
+// Get all translations for a specific language (with caching)
 export const getTranslationsByLanguage = async (req: Request, res: Response) => {
   const { lang } = req.params;
 
   try {
+    // Check cache first
+    const cacheKey = `translations_${lang}`;
+    const cached = translationCache.get(cacheKey);
+    
+    if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+      console.log(`✅ Cache hit for language: ${lang}`);
+      // Set cache headers
+      res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
+      return res.json(cached.data);
+    }
+
+    console.log(`🔄 Cache miss for language: ${lang}, fetching from database...`);
+
     const result = await pool.query(
       `SELECT module, page, key, text, auto_translated, last_updated 
        FROM translations 
@@ -46,11 +63,27 @@ export const getTranslationsByLanguage = async (req: Request, res: Response) => 
       translations[row.module][row.page][row.key] = row.text;
     });
 
+    // Cache the result
+    translationCache.set(cacheKey, {
+      data: translations,
+      timestamp: Date.now()
+    });
+
+    console.log(`✅ Cached translations for language: ${lang} (${result.rows.length} entries)`);
+
+    // Set cache headers
+    res.set('Cache-Control', 'public, max-age=300'); // 5 minutes
     res.json(translations);
   } catch (error) {
     console.error('Error fetching translations:', error);
     res.status(500).json({ error: 'Failed to fetch translations' });
   }
+};
+
+// Clear translation cache (call this when translations are updated)
+export const clearTranslationCache = () => {
+  translationCache.clear();
+  console.log('🗑️  Translation cache cleared');
 };
 
 // Get specific translation
@@ -117,6 +150,9 @@ export const createOrUpdateTranslation = async (req: Request, res: Response) => 
        RETURNING id, text, auto_translated`,
       [module, page, key, language_code, translatedText, autoTranslated]
     );
+
+    // Clear cache when translations are updated
+    clearTranslationCache();
 
     res.json({ 
       success: true, 
@@ -208,6 +244,9 @@ export const updateTranslation = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Translation not found' });
     }
 
+    // Clear cache when translations are updated
+    clearTranslationCache();
+
     res.json({ 
       success: true, 
       translation: result.rows[0],
@@ -232,6 +271,9 @@ export const deleteTranslation = async (req: Request, res: Response) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Translation not found' });
     }
+
+    // Clear cache when translations are deleted
+    clearTranslationCache();
 
     res.json({ 
       success: true, 
