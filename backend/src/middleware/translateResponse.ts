@@ -26,22 +26,25 @@ export const translateResponse = async (req: Request, res: Response, next: NextF
   const originalJson = res.json.bind(res);
 
   // Override json method to translate before sending
-  res.json = async function(data: any) {
-    try {
-      const startTime = Date.now();
-      const translatedData = await translateObject(data, lang);
-      const duration = Date.now() - startTime;
-      
-      // Add translation time header for monitoring
-      res.setHeader('X-Translation-Time', `${duration}ms`);
-      
-      return originalJson(translatedData);
-    } catch (error) {
-      console.error('Translation error:', error);
-      // Fallback to original data if translation fails
-      return originalJson(data);
-    }
-  };
+  res.json = function(data: any) {
+    (async () => {
+      try {
+        const startTime = Date.now();
+        const translatedData = await translateObject(data, lang);
+        const duration = Date.now() - startTime;
+        
+        // Add translation time header for monitoring
+        res.setHeader('X-Translation-Time', `${duration}ms`);
+        
+        originalJson(translatedData);
+      } catch (error) {
+        console.error('Translation error:', error);
+        // Fallback to original data if translation fails
+        originalJson(data);
+      }
+    })();
+    return res;
+  } as any;
 
   next();
 };

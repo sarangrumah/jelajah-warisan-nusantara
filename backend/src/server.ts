@@ -17,7 +17,7 @@ import translationCacheRoutes from './routes/translationCache';
 
 // Import translation utilities
 import { warmUpCache, getCacheStats, clearTranslationCache } from './middleware/translateResponse';
-import { pool } from './config/database';
+import pool from './config/database';
 
 // Load environment variables
 dotenv.config();
