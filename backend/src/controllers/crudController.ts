@@ -2,7 +2,8 @@ import { Response } from 'express';
 import { query, getClient } from '../config/database';
 import { AuthRequest } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
-import { tableConfigs, tableRelationships, autoJoinRelations, approvalConfig } from '../config/tableConfigs';
+import { tableConfigs, tableRelationships, approvalConfig } from '../config/tableConfigs';
+import contentTranslationService from '../services/contentTranslationService';
 
 // Define relation config shape
 interface JoinConfig {
@@ -11,6 +12,26 @@ interface JoinConfig {
   foreignKey: string;
   type: 'left' | 'inner' | 'has_many';
   fields?: string[];
+}
+
+/**
+ * Get translatable fields for a table
+ * Returns array of field names that should be translated
+ */
+function getTranslatableFields(tableName: string): string[] {
+  const translatableFieldsMap: Record<string, string[]> = {
+    'tb_sites': ['name', 'subtitle', 'description', 'address'],
+    'tb_media': ['title', 'content', 'excerpt'],
+    'tb_events': ['title', 'description', 'location'],
+    'tb_master_collection': ['name', 'description'],
+    'tb_faqs': ['question', 'answer'],
+    'tb_banner': ['title', 'subtitle', 'description'],
+    'tb_memoryoftheworld': ['title', 'description'],
+    'tb_company': ['name', 'description', 'vision', 'mission'],
+    'tb_pemanfaatan_aset': ['title', 'description', 'location'],
+  };
+
+  return translatableFieldsMap[tableName] || [];
 }
 
 // Generic CRUD controller factory
@@ -68,7 +89,8 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     getAll: async (req: AuthRequest, res: Response) => {
       try {
         console.log(`[getAll] Table: ${tableName}, Query:`, req.query);
-        const { limit = 50, offset = 0, ...filters } = req.query;
+        const { limit = 50, offset = 0, lang, ...filters } = req.query;
+        const targetLang = (lang as string) || 'id';
 
         // Start with base fields
         let selectFields = `${tableName}.*`;
@@ -152,7 +174,23 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         `;
 
         const result = await query(queryText, [...params, limit, offset]);
-        res.json(result.rows);
+        
+        // Translate content if language is not Indonesian
+        let rows = result.rows;
+        if (targetLang !== 'id') {
+          // Define translatable fields per table
+          const translatableFields = getTranslatableFields(tableName);
+          if (translatableFields.length > 0) {
+            rows = await contentTranslationService.translateContentArray(
+              rows,
+              translatableFields,
+              targetLang,
+              'id'
+            );
+          }
+        }
+        
+        res.json(rows);
       } catch (error) {
         console.error(`Get all ${tableName} error:`, error);
         if (error instanceof Error) {
@@ -169,6 +207,8 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     getById: async (req: AuthRequest, res: Response) => {
       try {
         const { id } = req.params;
+        const { lang } = req.query;
+        const targetLang = (lang as string) || 'id';
 
         // Base query
         const baseResult = await query(`SELECT * FROM ${tableName} WHERE id = $1`, [id]);
@@ -221,6 +261,20 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             }
           }
         }
+        
+        // Translate content if language is not Indonesian
+        if (targetLang !== 'id') {
+          const translatableFields = getTranslatableFields(tableName);
+          if (translatableFields.length > 0) {
+            record = await contentTranslationService.translateContent(
+              record,
+              translatableFields,
+              targetLang,
+              'id'
+            );
+          }
+        }
+        
         res.json(record);
       } catch (error) {
         console.error(`Get ${tableName} by ID error:`, error);
@@ -252,10 +306,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           ({ gallery = [], ...insertData } = data);
         }
 
-        if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string' ) {
+        if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string') {
           try {
             insertData.opening_hours = JSON.parse(insertData.opening_hours);
-          } catch (e) {
+          } catch (_e) {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -263,7 +317,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         } else if (tableName === 'tb_sites' && typeof insertData.facilities === 'string') {
           try {
             insertData.facilities = JSON.parse(insertData.facilities);
-          } catch (e) {
+          } catch (_e) {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -540,7 +594,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         // 🔹 2. Handle companyLeadership (Update, Insert)
         if (tableName === 'tb_company') {
           for (const item of companyLeadership) {
-           
             if (item.is_deleted && item.id) {
               // 🚫 DELETE
               await client.query(
@@ -565,7 +618,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               );
             } else {
               // ➕ INSERT new
-               console.log(item, id)
               await client.query(
                 `INSERT INTO tb_company_leadership (
                   id, name, position, is_active, company_id, created_by, updated_by, created_at, updated_at
@@ -609,7 +661,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               );
             } else {
               // ➕ INSERT
-               console.log(item, id)
               await client.query(
                 `INSERT INTO tb_company_visitor (
                   id, visitor_count, year, is_active, company_id, created_by, updated_by, created_at, updated_at
@@ -760,7 +811,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
       try {
         const { id } = req.params;
         const result = await query(`DELETE FROM ${tableName} WHERE id = $1 RETURNING id`, [id]);
-        if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Not found' });
+        }
         res.json({ message: 'Deleted successfully', id });
       } catch (error) {
         console.error(`Delete ${tableName} error:`, error);
@@ -772,8 +825,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     approve: async (req: AuthRequest, res: Response) => {
       try {
         const { id } = req.params;
-        const userName = req.user?.email;
-        const idUser = req.user?.id
+        const idUser = req.user?.id;
 
         // Check if table requires approval
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
