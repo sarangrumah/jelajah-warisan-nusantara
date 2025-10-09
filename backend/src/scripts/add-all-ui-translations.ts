@@ -368,7 +368,7 @@ async function addAllUITranslations() {
           `INSERT INTO translations (module, page, key, language_code, text, auto_translated) 
            VALUES ($1, $2, $3, $4, $5, $6) 
            ON CONFLICT (module, page, key, language_code) 
-           DO UPDATE SET text = $5, auto_translated = $6, last_updated = NOW()`,
+           DO UPDATE SET text = EXCLUDED.text, auto_translated = EXCLUDED.auto_translated`,
           [module, page, translationKey, langCode, text, autoTranslated]
         );
 
