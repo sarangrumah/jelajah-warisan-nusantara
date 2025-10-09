@@ -37,6 +37,11 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    // Add Accept-Language header for automatic translation
+    // Get current language from i18n or localStorage
+    const currentLang = localStorage.getItem('i18nextLng') || 'id';
+    headers['Accept-Language'] = currentLang;
+
     return headers;
   }
 

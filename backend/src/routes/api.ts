@@ -3,8 +3,13 @@ import { authenticateToken, requireAdminOrEditor } from '../middleware/auth';
 import { createCrudController } from '../controllers/crudController';
 import { tableConfigs } from '../config/tableConfigs';
 import translationRoutes from './translations';
+import { translateResponse } from '../middleware/translateResponse';
 
 const router = Router();
+
+// Apply translation middleware to all API routes
+// This will automatically translate responses based on Accept-Language header
+router.use(translateResponse);
 
 // Translation routes (includes language list endpoint)
 router.use('/translations', translationRoutes);
