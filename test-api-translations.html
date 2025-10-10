@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Translation API</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .section { margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+        h2 { color: #333; }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Translation API Test</h1>
+    
+    <div class="section">
+        <h2>Test 1: Fetch Indonesian Translations</h2>
+        <button onclick="testIndonesian()">Test ID</button>
+        <div id="result-id"></div>
+    </div>
+
+    <div class="section">
+        <h2>Test 2: Fetch English Translations</h2>
+        <button onclick="testEnglish()">Test EN</button>
+        <div id="result-en"></div>
+    </div>
+
+    <div class="section">
+        <h2>Test 3: Check Specific Keys</h2>
+        <button onclick="checkKeys()">Check Keys</button>
+        <div id="result-keys"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://museumcagarbudaya.kemenbud.go.id/api/translations/by-language';
+
+        async function testIndonesian() {
+            const resultDiv = document.getElementById('result-id');
+            resultDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/id`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ API Response received</p>
+                    <p><strong>Total keys:</strong> ${Object.keys(data.translation || {}).length}</p>
+                    <p><strong>Sample keys:</strong></p>
+                    <pre>${JSON.stringify(Object.keys(data.translation || {}).slice(0, 10), null, 2)}</pre>
+                    <p><strong>Full response structure:</strong></p>
+                    <pre>${JSON.stringify(data, null, 2).substring(0, 2000)}...</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testEnglish() {
+            const resultDiv = document.getElementById('result-en');
+            resultDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/en`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ API Response received</p>
+                    <p><strong>Total keys:</strong> ${Object.keys(data.translation || {}).length}</p>
+                    <p><strong>Sample keys:</strong></p>
+                    <pre>${JSON.stringify(Object.keys(data.translation || {}).slice(0, 10), null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        async function checkKeys() {
+            const resultDiv = document.getElementById('result-keys');
+            resultDiv.innerHTML = '<p>Checking specific keys...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/id`);
+                const data = await response.json();
+                const translations = data.translation || {};
+                
+                const keysToCheck = [
+                    'translation.nav.beranda',
+                    'translation.profile.title',
+                    'translation.profile.description',
+                    'translation.hero.watchVideo',
+                    'nav.beranda',
+                    'profile.title',
+                    'profile.description',
+                    'hero.watchVideo',
+                    'home.profile.title',
+                    'home.hero.watchVideo',
+                    'common.nav.beranda'
+                ];
+                
+                let html = '<table border="1" cellpadding="5" style="border-collapse: collapse; width: 100%;">';
+                html += '<tr><th>Key</th><th>Exists?</th><th>Value</th></tr>';
+                
+                keysToCheck.forEach(key => {
+                    const exists = translations.hasOwnProperty(key);
+                    const value = translations[key] || '-';
+                    const status = exists ? '✅' : '❌';
+                    const color = exists ? 'green' : 'red';
+                    
+                    html += `<tr style="color: ${color}">
+                        <td><code>${key}</code></td>
+                        <td>${status}</td>
+                        <td>${value.substring(0, 50)}${value.length > 50 ? '...' : ''}</td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+                
+                html += '<h3>Transformation Test</h3>';
+                html += '<p>If API returns <code>translation.nav.beranda</code>, after transformation it should become <code>nav.beranda</code></p>';
+                
+                // Test transformation
+                const testKey = Object.keys(translations).find(k => k.startsWith('translation.'));
+                if (testKey) {
+                    const cleanKey = testKey.substring(12); // Remove "translation."
+                    html += `<p class="success">✅ Found key with prefix: <code>${testKey}</code></p>`;
+                    html += `<p>After removing prefix: <code>${cleanKey}</code></p>`;
+                } else {
+                    html += `<p class="warning">⚠️ No keys found with "translation." prefix</p>`;
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

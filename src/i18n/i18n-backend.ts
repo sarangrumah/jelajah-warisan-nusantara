@@ -40,34 +40,39 @@ class TranslationBackend implements BackendModule<BackendOptions> {
         return response.json();
       })
       .then(data => {
-        // The API returns { translation: { "translation.nav.beranda": "Home", ... } }
-        // We need to transform it to { nav: { beranda: "Home" }, ... }
+        // The API returns { translation: { "module.page.key": "value", ... } }
+        // Examples: "translation.nav.beranda", "common.profile.title", "home.hero.watchVideo"
+        // We need to transform to { page: { key: "value" }, ... }
+        // Examples: { nav: { beranda: "..." }, profile: { title: "..." }, hero: { watchVideo: "..." } }
         
         let translations = data[namespace] || data.translation || data;
         
-        // If translations is an object with keys like "translation.nav.beranda"
-        // Transform it to nested structure
+        // If translations is an object with keys like "module.page.key"
+        // Transform it to nested structure by removing module prefix
         if (typeof translations === 'object' && translations !== null) {
           const transformed: any = {};
           
           Object.entries(translations).forEach(([key, value]) => {
-            // Remove "translation." prefix if it exists
-            const cleanKey = key.startsWith('translation.') ? key.substring(12) : key;
+            // Split by dots: ["module", "page", "key"] or ["page", "key"]
+            const parts = key.split('.');
             
-            // Split by dots to create nested structure
-            const parts = cleanKey.split('.');
+            // Remove the first part (module) if there are 3+ parts
+            // This handles: "translation.nav.beranda" -> ["nav", "beranda"]
+            //               "common.profile.title" -> ["profile", "title"]
+            //               "home.hero.watchVideo" -> ["hero", "watchVideo"]
+            const relevantParts = parts.length >= 3 ? parts.slice(1) : parts;
+            
+            // Build nested structure from remaining parts
             let current = transformed;
-            
-            // Navigate/create nested structure
-            for (let i = 0; i < parts.length - 1; i++) {
-              if (!current[parts[i]]) {
-                current[parts[i]] = {};
+            for (let i = 0; i < relevantParts.length - 1; i++) {
+              if (!current[relevantParts[i]]) {
+                current[relevantParts[i]] = {};
               }
-              current = current[parts[i]];
+              current = current[relevantParts[i]];
             }
             
             // Set the final value
-            current[parts[parts.length - 1]] = value;
+            current[relevantParts[relevantParts.length - 1]] = value;
           });
           
           translations = transformed;
