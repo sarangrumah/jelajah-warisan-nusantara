@@ -259,7 +259,6 @@ export const autoJoinRelations = {
   tb_company: ['company_leadership', 'company_visitor']
 } as const;
 
-
 export const approvalConfig = {
   tb_banner: {
     requiresApproval: true,

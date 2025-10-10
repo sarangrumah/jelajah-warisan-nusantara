@@ -753,7 +753,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                     <div>
                       <span className="font-medium">Address:</span>
                       <p className="text-muted-foreground line-clamp-2">
-                        {profile.address || 'No longitude'}
+                        {stripHtml(profile.address) || 'No longitude'}
                       </p>
                     </div>
                     <div className="flex gap-4 text-m">
