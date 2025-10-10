@@ -24,10 +24,24 @@ cp -r "$PROJECT_DIR/src/i18n" "$BACKUP_DIR/" 2>/dev/null || echo "No i18n folder
 echo "   ✅ Backup created at: $BACKUP_DIR"
 echo ""
 
-# Step 2: Pull latest code
-echo "🔄 Step 2: Pulling latest code from repository..."
+# Step 2: Handle unstaged changes and pull latest code
+echo "🔄 Step 2: Handling local changes and pulling latest code..."
 cd "$PROJECT_DIR"
+
+# Check for unstaged changes
+if ! git diff-index --quiet HEAD --; then
+    echo "   ⚠️  Found unstaged changes. Stashing them..."
+    git stash push -m "Auto-stash before deployment $(date +%Y%m%d_%H%M%S)"
+    echo "   ✅ Changes stashed"
+fi
+
+# Pull latest code
+echo "   Pulling latest code..."
 git pull origin main || git pull origin master
+
+# Optionally restore stashed changes (commented out for safety)
+# git stash pop
+
 echo "   ✅ Code updated"
 echo ""
 
