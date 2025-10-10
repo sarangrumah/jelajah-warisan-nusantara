@@ -65,7 +65,7 @@ echo ""
 
 # Step 5: Restart backend
 echo "🔄 Step 5: Restarting backend..."
-pm2 restart backend
+pm2 restart mcb-project
 echo "   ✅ Backend restarted"
 echo ""
 
@@ -104,7 +104,7 @@ echo ""
 
 # Step 8: Show logs
 echo "📋 Step 8: Recent backend logs..."
-pm2 logs backend --lines 20 --nostream
+pm2 logs mcb-project --lines 20 --nostream
 echo ""
 
 # Summary
@@ -121,6 +121,6 @@ echo "   2. Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)"
 echo "   3. Check if navbar shows actual text (not variables)"
 echo "   4. Test language switcher"
 echo ""
-echo "📝 Monitor logs with: pm2 logs backend"
+echo "📝 Monitor logs with: pm2 logs mcb-project"
 echo "🔙 Rollback if needed: cp -r $BACKUP_DIR/dist $PROJECT_DIR/"
 echo ""
