@@ -73,38 +73,56 @@ const resources = {
       management: {
         title: "Integrated National Management",
         description: "Professional management of museums and cultural heritage sites throughout Indonesia with modern and integrated systems.",
+        mainServices: "Main Services",
         museum: {
-          title: "Museum Management",
-          description: "Comprehensive management of museum collections, operations, and public services",
+          title: "Museum",
+          description: "Management of collections, exhibitions, and educational programs in museums throughout Indonesia",
           features: [
-            "Collection Management",
-            "Exhibition Programs",
-            "Educational Services",
-            "Digital Archives"
+            "Digital collection system",
+            "Regular exhibition programs",
+            "Public education services",
+            "Research and documentation"
           ],
           stats: {
-            museums: "Active Museums",
-            collections: "Collection Items",
-            visitors: "Annual Visitors"
+            museums: "Museums",
+            visitors: "Visitors",
+            programs: "Programs"
           }
         },
         heritage: {
-          title: "Cultural Heritage Management",
-          description: "Conservation and protection of cultural heritage sites and historical artifacts",
+          title: "Cultural Heritage",
+          description: "Preservation and protection of historical sites and national cultural heritage",
           features: [
-            "Site Conservation",
-            "Archaeological Research",
-            "Heritage Documentation",
-            "Community Programs"
+            "Historical site conservation",
+            "Condition monitoring",
+            "Restoration programs",
+            "Archaeological research"
           ],
           stats: {
-            sites: "Heritage Sites",
-            artifacts: "Protected Artifacts",
-            programs: "Active Programs"
+            sites: "Sites",
+            provinces: "Provinces",
+            projects: "Projects"
           }
         },
         manage: "Manage",
         viewAgenda: "View Agenda"
+      },
+      // Distribution Section
+      distribution: {
+        title: "Distribution of Museums and Cultural Heritage",
+        subtitle: "Distribution of museums and cultural heritage sites throughout Indonesia managed by the Directorate of Museums and Cultural Heritage.",
+        regions: {
+          sumatera: "Sumatra",
+          jawa: "Java",
+          kalimantan: "Kalimantan",
+          sulawesi: "Sulawesi",
+          papua: "Papua",
+          malukuNusaTenggara: "Maluku & Nusa Tenggara"
+        },
+        labels: {
+          museum: "Museum",
+          heritage: "Cultural Heritage"
+        }
       },
       // Agenda Section
       agenda: {
@@ -562,38 +580,56 @@ const resources = {
       management: {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
+        mainServices: "Layanan Utama",
         museum: {
-          title: "Pengelolaan Museum",
-          description: "Pengelolaan komprehensif koleksi museum, operasional, dan layanan publik",
+          title: "Museum",
+          description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
           features: [
-            "Manajemen Koleksi",
-            "Program Pameran",
-            "Layanan Edukasi",
-            "Arsip Digital"
+            "Sistem koleksi digital",
+            "Program pameran berkala",
+            "Layanan edukasi publik",
+            "Penelitian dan dokumentasi"
           ],
           stats: {
-            museums: "Museum Aktif",
-            collections: "Item Koleksi", 
-            visitors: "Pengunjung per Tahun"
+            museums: "Museum",
+            visitors: "Pengunjung",
+            programs: "Program"
           }
         },
         heritage: {
-          title: "Pengelolaan Cagar Budaya",
-          description: "Konservasi dan perlindungan situs cagar budaya serta artefak bersejarah",
+          title: "Cagar Budaya",
+          description: "Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional",
           features: [
-            "Konservasi Situs",
-            "Penelitian Arkeologi",
-            "Dokumentasi Warisan",
-            "Program Komunitas"
+            "Konservasi situs bersejarah",
+            "Monitoring kondisi",
+            "Program restorasi",
+            "Penelitian arkeologi"
           ],
           stats: {
-            sites: "Situs Cagar Budaya",
-            artifacts: "Artefak Terlindungi",
-            programs: "Program Aktif"
+            sites: "Situs",
+            provinces: "Provinsi",
+            projects: "Proyek"
           }
         },
         manage: "Kelola",
         viewAgenda: "Lihat Agenda"
+      },
+      // Distribution Section
+      distribution: {
+        title: "Sebaran Museum dan Cagar Budaya",
+        subtitle: "Distribusi museum dan situs cagar budaya di seluruh Indonesia yang dikelola oleh Direktorat Museum dan Cagar Budaya.",
+        regions: {
+          sumatera: "Sumatera",
+          jawa: "Jawa",
+          kalimantan: "Kalimantan",
+          sulawesi: "Sulawesi",
+          papua: "Papua",
+          malukuNusaTenggara: "Maluku & Nusa Tenggara"
+        },
+        labels: {
+          museum: "Museum",
+          heritage: "Cagar Budaya"
+        }
       },
       // Agenda Section
       agenda: {
