@@ -40,8 +40,39 @@ class TranslationBackend implements BackendModule<BackendOptions> {
         return response.json();
       })
       .then(data => {
-        // The API returns nested structure, extract the translation namespace
-        const translations = data[namespace] || data;
+        // The API returns { translation: { "translation.nav.beranda": "Home", ... } }
+        // We need to transform it to { nav: { beranda: "Home" }, ... }
+        
+        let translations = data[namespace] || data.translation || data;
+        
+        // If translations is an object with keys like "translation.nav.beranda"
+        // Transform it to nested structure
+        if (typeof translations === 'object' && translations !== null) {
+          const transformed: any = {};
+          
+          Object.entries(translations).forEach(([key, value]) => {
+            // Remove "translation." prefix if it exists
+            const cleanKey = key.startsWith('translation.') ? key.substring(12) : key;
+            
+            // Split by dots to create nested structure
+            const parts = cleanKey.split('.');
+            let current = transformed;
+            
+            // Navigate/create nested structure
+            for (let i = 0; i < parts.length - 1; i++) {
+              if (!current[parts[i]]) {
+                current[parts[i]] = {};
+              }
+              current = current[parts[i]];
+            }
+            
+            // Set the final value
+            current[parts[parts.length - 1]] = value;
+          });
+          
+          translations = transformed;
+        }
+        
         callback(null, translations);
       })
       .catch(error => {
