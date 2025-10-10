@@ -3,13 +3,13 @@ import { authenticateToken, requireAdminOrEditor } from '../middleware/auth';
 import { createCrudController } from '../controllers/crudController';
 import { tableConfigs } from '../config/tableConfigs';
 import translationRoutes from './translations';
-import { translateResponse } from '../middleware/translateResponse';
+// import { translateResponse } from '../middleware/translateResponse'; // DISABLED - using frontend i18n instead
 
 const router = Router();
 
-// Apply translation middleware to all API routes
-// This will automatically translate responses based on Accept-Language header
-router.use(translateResponse);
+// DISABLED: translateResponse middleware causes 504 timeouts on large datasets
+// We now use frontend i18n with database translations instead
+// router.use(translateResponse);
 
 // Translation routes (includes language list endpoint)
 router.use('/translations', translationRoutes);
