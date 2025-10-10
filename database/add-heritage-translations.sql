@@ -6,41 +6,21 @@
 
 INSERT INTO translations (module, page, key, language_code, text, auto_translated, created_at, updated_at)
 VALUES 
-    -- Heritage page - Indonesian
-    ('heritage', 'common', 'title', 'id', 'Cagar Budaya', false, NOW(), NOW()),
-    ('heritage', 'common', 'subtitle', 'id', 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional', false, NOW(), NOW()),
-    ('heritage', 'search', 'placeholder', 'id', 'Cari cagar budaya...', false, NOW(), NOW()),
-    ('heritage', 'filter', 'all', 'id', 'Semua', false, NOW(), NOW()),
-    ('heritage', 'filter', 'sortBy', 'id', 'Urutkan', false, NOW(), NOW()),
-    ('heritage', 'card', 'viewDetails', 'id', 'Lihat Detail', false, NOW(), NOW()),
-    ('heritage', 'card', 'location', 'id', 'Lokasi', false, NOW(), NOW()),
+    -- Heritage page - Indonesian (EXACT keys from Heritage.tsx)
+    ('heritage', 'heritage', 'title', 'id', 'Cagar Budaya', false, NOW(), NOW()),
+    ('heritage', 'heritage', 'subtitle', 'id', 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional', false, NOW(), NOW()),
+    ('filter', 'heritage', 'search', 'id', 'Cari cagar budaya...', false, NOW(), NOW()),
     
-    -- Heritage page - English
-    ('heritage', 'common', 'title', 'en', 'Cultural Heritage', false, NOW(), NOW()),
-    ('heritage', 'common', 'subtitle', 'en', 'Preservation and protection of historical sites and national cultural heritage', false, NOW(), NOW()),
-    ('heritage', 'search', 'placeholder', 'en', 'Search heritage sites...', false, NOW(), NOW()),
-    ('heritage', 'filter', 'all', 'en', 'All', false, NOW(), NOW()),
-    ('heritage', 'filter', 'sortBy', 'en', 'Sort By', false, NOW(), NOW()),
-    ('heritage', 'card', 'viewDetails', 'en', 'View Details', false, NOW(), NOW()),
-    ('heritage', 'card', 'location', 'en', 'Location', false, NOW(), NOW()),
+    -- Heritage page - English (EXACT keys from Heritage.tsx)
+    ('heritage', 'heritage', 'title', 'en', 'Cultural Heritage', false, NOW(), NOW()),
+    ('heritage', 'heritage', 'subtitle', 'en', 'Preservation and protection of historical sites and national cultural heritage', false, NOW(), NOW()),
+    ('filter', 'heritage', 'search', 'en', 'Search heritage sites...', false, NOW(), NOW()),
     
-    -- Museum page - Indonesian
-    ('museum', 'common', 'title', 'id', 'Museum', false, NOW(), NOW()),
-    ('museum', 'common', 'subtitle', 'id', 'Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia', false, NOW(), NOW()),
-    ('museum', 'search', 'placeholder', 'id', 'Cari museum...', false, NOW(), NOW()),
-    ('museum', 'filter', 'all', 'id', 'Semua', false, NOW(), NOW()),
-    ('museum', 'filter', 'sortBy', 'id', 'Urutkan', false, NOW(), NOW()),
-    ('museum', 'card', 'viewDetails', 'id', 'Lihat Detail', false, NOW(), NOW()),
-    ('museum', 'card', 'location', 'id', 'Lokasi', false, NOW(), NOW()),
+    -- Museum page - Indonesian (EXACT keys from Museum.tsx)
+    ('filter', 'museum', 'search', 'id', 'Cari museum...', false, NOW(), NOW()),
     
-    -- Museum page - English
-    ('museum', 'common', 'title', 'en', 'Museums', false, NOW(), NOW()),
-    ('museum', 'common', 'subtitle', 'en', 'Management of collections, exhibitions, and educational programs across Indonesian museums', false, NOW(), NOW()),
-    ('museum', 'search', 'placeholder', 'en', 'Search museums...', false, NOW(), NOW()),
-    ('museum', 'filter', 'all', 'en', 'All', false, NOW(), NOW()),
-    ('museum', 'filter', 'sortBy', 'en', 'Sort By', false, NOW(), NOW()),
-    ('museum', 'card', 'viewDetails', 'en', 'View Details', false, NOW(), NOW()),
-    ('museum', 'card', 'location', 'en', 'Location', false, NOW(), NOW()),
+    -- Museum page - English (EXACT keys from Museum.tsx)
+    ('filter', 'museum', 'search', 'en', 'Search museums...', false, NOW(), NOW()),
     
     -- Collection page - Indonesian
     ('collection', 'common', 'title', 'id', 'Koleksi', false, NOW(), NOW()),

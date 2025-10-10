@@ -3,6 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
+import { useTranslation } from 'react-i18next';
 
 import {
   Carousel,
@@ -36,6 +37,7 @@ function getNewsImageUrl(filename: string) {
 }
 
 const NewsSection = () => {
+  const { t } = useTranslation();
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
@@ -118,18 +120,17 @@ const NewsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            Berita & Artikel
+            {t('news.news.title', 'Berita & Artikel')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian
-            warisan budaya Indonesia.
+            {t('news.news.subtitle', 'Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian warisan budaya Indonesia')}
           </p>
         </div>
 
         <div className="relative mb-12">
           {loading ? (
             <div className="flex items-center justify-center h-64">
-              <span className="text-lg text-muted-foreground">Memuat berita...</span>
+              <span className="text-lg text-muted-foreground">{t('news.news.loading', 'Memuat berita...')}</span>
             </div>
           ) : (
             <Carousel
@@ -200,7 +201,7 @@ const NewsSection = () => {
                           </div>
                         </div>
                         <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
-                          Baca Selengkapnya
+                          {t('news.button.readMore', 'Baca Selengkapnya')}
                           <ArrowRight size={16} />
                         </Link>
                       </CardContent>
@@ -233,7 +234,7 @@ const NewsSection = () => {
         <div className="text-center scroll-reveal">
           <Link to={'/media-publikasi'}>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              Lihat Semua Berita
+              {t('news.button.viewAll', 'Lihat Semua Berita')}
             </button>
           </Link>
         </div>

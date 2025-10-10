@@ -123,10 +123,10 @@ const AgendaSection = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'upcoming': return 'Akan Datang';
-      case 'ongoing': return 'Berlangsung';
-      case 'registration': return 'Pendaftaran';
-      default: return 'Selesai';
+      case 'upcoming': return t('agenda.status.upcoming', 'Akan Datang');
+      case 'ongoing': return t('agenda.status.ongoing', 'Berlangsung');
+      case 'registration': return t('agenda.status.registration', 'Pendaftaran');
+      default: return t('agenda.status.finished', 'Selesai');
     }
   };
 
@@ -235,7 +235,7 @@ const AgendaSection = () => {
                     <div className='p-6 absolute left-0 bottom-0 right-0'>
                       <Link to={`/event/${event.id}`}>
                         <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
-                          Detail Event
+                          {t('agenda.button.detail', 'Detail Event')}
                           <ChevronRight size={16} className="ml-2" />
                         </Button>
                       </Link>

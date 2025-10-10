@@ -87,17 +87,17 @@ const ProfileSection = () => {
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">About Us</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.aboutUs', 'About Us')}</h4>
                   <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">Contact</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
                   <ul className="text-muted-foreground space-y-1">
-                    <li><b>Address:</b> {profile.address || '-'}</li>
-                    <li><b>Phone:</b> {profile.phone || '-'}</li>
-                    <li><b>WhatsApp:</b> {profile.whatsapp || '-'}</li>
-                    <li><b>Email:</b> {profile.email || '-'}</li>
-                    <li><b>Website:</b> {profile.website || '-'}</li>
+                    <li><b>{t('profile.contact.address', 'Address')}:</b> {profile.address || '-'}</li>
+                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {profile.phone || '-'}</li>
+                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {profile.whatsapp || '-'}</li>
+                    <li><b>{t('profile.contact.email', 'Email')}:</b> {profile.email || '-'}</li>
+                    <li><b>{t('profile.contact.website', 'Website')}:</b> {profile.website || '-'}</li>
                   </ul>
                 </div>
               </div>
