@@ -36,7 +36,7 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
     asset: slide.image?.split('/').pop() || slide.image,
-    image: '/placeholder.svg', // fallback to a placeholder image
+    image: slide.image_url || slide.image || '/placeholder.svg', // Use actual image URL
   }));
 
 import { useRef } from 'react';
