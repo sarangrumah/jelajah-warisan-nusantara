@@ -1,28 +1,21 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect } from 'react'
-const getImageUrl = (filename: string) => `/assets/conservation/${filename}`;
+import { assetUrl } from '@/lib/asset-url';
+// Remove old getImageUrl
 
 const BannerSection = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [slides, setSlides] = React.useState([]);
   const [currentSlide, setCurrentSlide] = React.useState(0);
+  // TODO: Replace this with API call to fetch banners from backend
+  // For now, use a sample with the correct image URL format
   const defaultSlides = [
     {
-      title: 'Laboratorium Uji Sampel',
-      subtitle: 'Museum dan Cagar Budaya (Indonesia Heritage Agency) menyediakan fasilitas analisis sampel untuk hasil yang akurat dan terpercaya. Kami berkomitmen untuk memberikan layanan pengujian yang profesional, tepat waktu, dan sesuai dengan standar yang berlaku.',
-      image: getImageUrl('berita1.jpg'),
-    },
-    {
-      title: 'Penyewaan Alat',
-      subtitle: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) menyediakan layanan penyewaan alat berbasis proyek. Untuk melihat alat yang kami sediakan anda dapat memeriksa halaman daftar peralatan.',
-      image: getImageUrl('berita3.jpeg'),
-    },
-    {
-      title: 'Edukasi',
-      subtitle: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai komitmen utama.',
-      image: getImageUrl('berita2.jpg'),
+      title: 'Contoh Banner',
+      subtitle: 'Ini adalah contoh banner dengan URL gambar dari upload admin.',
+      image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
     }
-  ]
+  ];
 
   useEffect(() => {
     if (slides.length > 0) {
@@ -77,7 +70,7 @@ const BannerSection = () => {
             }`}
           >
             <img
-              src={slide.image}
+              src={assetUrl(slide.image)}
               alt={slide.title}
               className="w-full h-full object-cover parallax"
               onLoad={() => {

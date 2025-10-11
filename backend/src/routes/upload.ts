@@ -172,6 +172,21 @@ const uploadMulter = multer({
 
 // Generic upload endpoint
 router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
+  // LOGGING: Print incoming upload details
+  console.log('---[UPLOAD DEBUG]---');
+  console.log('req.body.bucket:', req.body.bucket);
+  console.log('resolved bucket:', resolveBucket(req.body.bucket));
+  if (req.file) {
+    console.log('req.file.destination:', req.file.destination);
+    console.log('req.file.filename:', req.file.filename);
+    console.log('req.file.path:', req.file.path);
+    console.log('req.file.mimetype:', req.file.mimetype);
+    console.log('req.file.size:', req.file.size);
+  } else {
+    console.log('No file received!');
+  }
+  console.log('--------------------');
+
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
