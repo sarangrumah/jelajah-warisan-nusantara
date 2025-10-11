@@ -33,12 +33,23 @@ function getImageOrVideoUrl(p: string) {
 }
 */
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
-  slidesArr.map(slide => ({
-    ...slide,
-    asset: slide.image?.split('/').pop() || slide.image,
-    // Use assetUrl to transform paths for production compatibility
-    image: assetUrl(slide.image_url || slide.image) || '/placeholder.svg',
-  }));
+  slidesArr.map(slide => {
+    const originalPath = slide.image_url || slide.image;
+    const transformedPath = assetUrl(originalPath) || '/placeholder.svg';
+    
+    console.log('[mapSlidesWithImageUrl] Processing slide:', {
+      original: originalPath,
+      transformed: transformedPath,
+      slide: slide
+    });
+    
+    return {
+      ...slide,
+      asset: slide.image?.split('/').pop() || slide.image,
+      // Use assetUrl to transform paths for production compatibility
+      image: transformedPath,
+    };
+  });
 
 import { useRef } from 'react';
 
