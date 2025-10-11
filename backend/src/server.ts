@@ -25,6 +25,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// DEBUG: Log __dirname and uploadBase to verify static path resolution
+console.log('DEBUG __dirname:', __dirname);
+const uploadBase = process.env.UPLOAD_PATH
+  ? path.resolve(process.env.UPLOAD_PATH)
+  : path.resolve(__dirname, '../../uploads');
+console.log('DEBUG uploadBase:', uploadBase);
+
 import { globalActivityLogger } from './middleware/activityLogger';
 
 // Security middleware
@@ -91,9 +98,11 @@ app.use(globalActivityLogger);
 
 // Serve static files for uploaded contents
 // Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
+/* (moved above for debug logging)
 const uploadBase = process.env.UPLOAD_PATH
   ? path.resolve(process.env.UPLOAD_PATH)
   : path.resolve(__dirname, '../../uploads');
+*/
 app.use('/uploads', express.static(uploadBase));
 
 // Serve frontend static files (production build)
