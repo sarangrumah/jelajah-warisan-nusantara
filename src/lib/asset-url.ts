@@ -27,9 +27,21 @@ export function assetUrl(raw?: string): string {
     return trimmed;
   }
 
-  // Transform /src/assets/ paths to /assets/ for production compatibility
-  if (trimmed.startsWith('/src/assets/')) {
-    return trimmed.replace('/src/assets/', '/assets/');
+  // Clean up any path that contains /src/assets/ anywhere in it
+  // This handles cases like /assets/../src/assets/ or ../src/assets/
+  if (trimmed.includes('/src/assets/')) {
+    // Replace all occurrences of /src/assets/ with /assets/
+    let cleaned = trimmed.replace(/\/src\/assets\//g, '/assets/');
+    // Remove any ../ that might be left
+    cleaned = cleaned.replace(/\/\.\.\//g, '/');
+    // Remove leading ../ if present
+    cleaned = cleaned.replace(/^\.\.\//g, '/');
+    return cleaned;
+  }
+
+  // Handle src/assets/ without leading slash
+  if (trimmed.startsWith('src/assets/')) {
+    return '/' + trimmed.replace('src/assets/', 'assets/');
   }
 
   // If it starts with /assets/, it's already correct
