@@ -57,6 +57,15 @@ const BannerSection = () => {
     setSlides(defaultSlides);
   }, []);
 
+  // Log all slide image URLs on render for debugging
+  useEffect(() => {
+    if (slides && slides.length > 0) {
+      slides.forEach((slide, idx) => {
+        console.log(`[BannerSection] Slide ${idx} image URL:`, slide.image);
+      });
+    }
+  }, [slides]);
+
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
       <div className="absolute inset-0">
@@ -72,11 +81,11 @@ const BannerSection = () => {
               alt={slide.title}
               className="w-full h-full object-cover parallax"
               onLoad={() => {
-                console.log('Image loaded:', slide.image);
+                console.log('[BannerSection] Image loaded:', slide.image);
                 setIsLoading(false);
               }}
               onError={() => {
-                console.error('Image failed to load:', slide.image);
+                console.error('[BannerSection] Image failed to load:', slide.image);
                 setIsLoading(false);
               }}
             />

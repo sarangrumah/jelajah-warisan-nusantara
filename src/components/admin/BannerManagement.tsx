@@ -277,11 +277,16 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     try {
       const payload = { ...formData, is_rejected: false, reason_rejected: '' };
 
+      // Log the image URL being saved
+      if (payload.image) {
+        console.log('[BannerManagement] Saving banner with image URL:', payload.image);
+      }
+
       if (editingBanner?.id) {
         const response = await bannerService.update(editingBanner.id, payload);
         if (response.error) {throw new Error(response.error)};
         
-        setBanners(prev => prev.map(b => 
+        setBanners(prev => prev.map(b =>
           b.id === editingBanner.id ? { ...b, ...payload } : b
         ));
         
