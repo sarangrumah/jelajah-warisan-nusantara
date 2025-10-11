@@ -149,16 +149,24 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const fetchSlides = async () => {
     try {
       const response = await bannerService.getAll();
-      if (response.error || response.data.length === 0) {
+      if (response.error || !response.data || response.data.length === 0) {
         console.error('Error fetching slides:', response.error);
         setSlides(mapSlidesWithImageUrl(defaultSlides));
       } else {
-        const filteredSlides = response.data.filter((slide: any) => (
-          slide.is_active === true 
-          && slide.is_approved === true 
-          && new Date(slide.start_publish_date) <= new Date()
-          && new Date(slide.end_publish_date) >= new Date()
-        ));
+        // Ensure image path is always /uploads/hero-sections/filename.jpg
+        const filteredSlides = response.data
+          .filter((slide: any) => (
+            slide.is_active === true
+            && slide.is_approved === true
+            && new Date(slide.start_publish_date) <= new Date()
+            && new Date(slide.end_publish_date) >= new Date()
+          ))
+          .map((slide: any) => ({
+            ...slide,
+            image: slide.image && !slide.image.startsWith('/uploads/hero-sections/')
+              ? `/uploads/hero-sections/${slide.image.split('/').pop()}`
+              : slide.image
+          }));
         setSlides(mapSlidesWithImageUrl(filteredSlides));
       }
     } catch (error) {

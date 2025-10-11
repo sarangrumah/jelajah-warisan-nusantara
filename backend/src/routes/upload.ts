@@ -97,6 +97,7 @@ const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) 
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
         try {
+          // Always save to backend/uploads/{bucket}
           cb(null, ensureBucketPath(bucket));
         } catch (err) {
           cb(err as Error, uploadDir);
@@ -193,6 +194,7 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   
   const bucket = resolveBucket(req.body.bucket);
   // Return correct URL path that matches where backend serves files from
+  // Always return /uploads/{bucket}/{filename}
   const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
   
   res.json({
