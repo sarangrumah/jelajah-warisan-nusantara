@@ -20,38 +20,59 @@ echo "  Complete Fix Script - All Issues"
 echo "================================================"
 echo ""
 
-# Step 1: Fix Database
-echo -e "${BLUE}Step 1: Fixing Database Schema...${NC}"
+# Step 1: Fix Database (Aiven PostgreSQL)
+echo -e "${BLUE}Step 1: Fixing Database Schema (Aiven)...${NC}"
 echo ""
 
 # Get database credentials from .env
 if [ -f "backend/.env" ]; then
     source backend/.env
+    
+    if [ -z "$DATABASE_URL" ]; then
+        echo -e "${RED}✗ DATABASE_URL not found in backend/.env${NC}"
+        echo "Please set DATABASE_URL in backend/.env"
+        exit 1
+    fi
+    
+    # Parse Aiven DATABASE_URL
+    # Format: postgresql://user:password@host:port/database?sslmode=require
     DB_USER=$(echo $DATABASE_URL | sed -n 's/.*:\/\/\([^:]*\):.*/\1/p')
-    DB_NAME=$(echo $DATABASE_URL | sed -n 's/.*\/\([^?]*\).*/\1/p')
-    DB_HOST=$(echo $DATABASE_URL | sed -n 's/.*@\([^:\/]*\).*/\1/p')
-    DB_PORT=$(echo $DATABASE_URL | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
     DB_PASS=$(echo $DATABASE_URL | sed -n 's/.*:\/\/[^:]*:\([^@]*\)@.*/\1/p')
+    DB_HOST=$(echo $DATABASE_URL | sed -n 's/.*@\([^:]*\):.*/\1/p')
+    DB_PORT=$(echo $DATABASE_URL | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
+    DB_NAME=$(echo $DATABASE_URL | sed -n 's/.*\/\([^?]*\).*/\1/p')
     
     echo "Database: $DB_NAME"
-    echo "Host: $DB_HOST:$DB_PORT"
+    echo "Host: $DB_HOST:$DB_PORT (Aiven)"
     echo "User: $DB_USER"
     echo ""
     
-    # Run database fix
-    PGPASSWORD="$DB_PASS" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f fix-database-complete.sql
+    # Run database fix with SSL mode for Aiven
+    echo "Connecting to Aiven PostgreSQL..."
+    PGPASSWORD="$DB_PASS" psql "postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=require" -f fix-database-complete.sql
     
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ Database schema fixed${NC}"
+        echo -e "${GREEN}✓ Database schema fixed on Aiven${NC}"
     else
         echo -e "${RED}✗ Database fix failed${NC}"
-        echo "Please run manually:"
-        echo "  psql -U $DB_USER -d $DB_NAME -f fix-database-complete.sql"
+        echo ""
+        echo "Please run manually with your Aiven connection string:"
+        echo "  psql \"postgresql://$DB_USER:****@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=require\" -f fix-database-complete.sql"
+        echo ""
+        echo "Or use the Aiven web console to run the SQL from fix-database-complete.sql"
+        echo ""
+        echo -e "${YELLOW}Continuing with other fixes...${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ backend/.env not found, skipping database fix${NC}"
-    echo "Please run manually:"
-    echo "  psql -U your_user -d your_db -f fix-database-complete.sql"
+    echo -e "${YELLOW}⚠ backend/.env not found${NC}"
+    echo ""
+    echo "Please run the database fix manually:"
+    echo "  1. Get your DATABASE_URL from backend/.env"
+    echo "  2. Run: psql \"YOUR_DATABASE_URL\" -f fix-database-complete.sql"
+    echo ""
+    echo "Or use Aiven web console to run the SQL from fix-database-complete.sql"
+    echo ""
+    echo -e "${YELLOW}Continuing with other fixes...${NC}"
 fi
 
 echo ""
