@@ -16,8 +16,9 @@ export default defineConfig(({ mode }) => {
   ]);
   
   return {
+    // Base public path - use '/' for production to ensure correct asset paths
+    base: mode === 'production' ? '/' : './',
     server: {
-      base: './',
       host: "::",
       port: 5173,
       watch: {

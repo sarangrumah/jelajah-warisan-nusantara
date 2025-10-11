@@ -36,7 +36,8 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => ({
     ...slide,
     asset: slide.image?.split('/').pop() || slide.image,
-    image: slide.image_url || slide.image || '/placeholder.svg', // Use actual image URL
+    // Use assetUrl to transform paths for production compatibility
+    image: assetUrl(slide.image_url || slide.image) || '/placeholder.svg',
   }));
 
 import { useRef } from 'react';
@@ -214,10 +215,12 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
                   onLoad={() => {
-                    console.log('[HeroSection] Image loaded:', slide.image);
+                    console.log('[HeroSection] Image loaded successfully:', slide.image);
                   }}
-                  onError={() => {
+                  onError={(e) => {
                     console.error('[HeroSection] Image failed to load:', slide.image);
+                    // Fallback to placeholder on error
+                    (e.target as HTMLImageElement).src = '/placeholder.svg';
                   }}
                 />
               ) : isVideo(slide.asset) ? (
@@ -225,10 +228,13 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   src={slide.image}
                   controls
                   className="w-full h-full object-cover parallax"
+                  onError={() => {
+                    console.error('[HeroSection] Video failed to load:', slide.image);
+                  }}
                 />
               ) : (
                 <img
-                  src="/public/placeholder.svg"
+                  src="/placeholder.svg"
                   alt="Not found"
                   className="w-full h-full object-cover parallax"
                 />

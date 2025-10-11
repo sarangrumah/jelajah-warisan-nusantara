@@ -33,15 +33,30 @@ app.use(helmet({
 }));
 
 // CORS configuration
+// Original localhost-only config (commented for reference)
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   optionsSuccessStatus: 200
+// }));
+
+// Updated CORS configuration to support both development and production
 app.use(cors({
-//  origin: [
-//    'http://localhost:5173',
-//    'http://localhost:8080',
-//    'http://localhost:8081',
-//    'http://127.0.0.1:5173',
-//    'http://127.0.0.1:8080'
-//  ],
-  origin: 'http://localhost:5173',
+  origin: [
+    // Development origins
+    'http://localhost:5173',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:8080',
+    // Production origins
+    'https://museumcagarbudaya.kemenbud.go.id',
+    'https://www.museumcagarbudaya.kemenbud.go.id',
+    'http://museumcagarbudaya.kemenbud.go.id',
+    'http://www.museumcagarbudaya.kemenbud.go.id'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

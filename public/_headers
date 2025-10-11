@@ -5,9 +5,22 @@
   X-Permitted-Cross-Domain-Policies: none
   Cross-Origin-Embedder-Policy: require-corp
   Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Resource-Policy: same-origin
+  # Updated: Allow cross-origin for main routes (needed for assets)
+  # Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Resource-Policy: cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# Specific rules for assets - allow cross-origin loading
+/assets/*
+  Cross-Origin-Resource-Policy: cross-origin
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=31536000, immutable
+
+/uploads/*
+  Cross-Origin-Resource-Policy: cross-origin
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=31536000, immutable
 
 /*.js
   Cache-Control: public, max-age=31536000, immutable
