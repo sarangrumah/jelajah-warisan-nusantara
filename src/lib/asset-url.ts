@@ -30,12 +30,13 @@ export function assetUrl(raw?: string): string {
   // Clean up any path that contains /src/assets/ anywhere in it
   // This handles cases like /assets/../src/assets/ or ../src/assets/
   if (trimmed.includes('/src/assets/')) {
-    // Replace all occurrences of /src/assets/ with /assets/
-    let cleaned = trimmed.replace(/\/src\/assets\//g, '/assets/');
-    // Remove any ../ that might be left
-    cleaned = cleaned.replace(/\/\.\.\//g, '/');
-    // Remove leading ../ if present
+    // First, remove any ../ patterns
+    let cleaned = trimmed.replace(/\/\.\.\//g, '/');
     cleaned = cleaned.replace(/^\.\.\//g, '/');
+    // Then replace all occurrences of /src/assets/ with /assets/
+    cleaned = cleaned.replace(/\/src\/assets\//g, '/assets/');
+    // Remove duplicate /assets/ if any (e.g., /assets/assets/ -> /assets/)
+    cleaned = cleaned.replace(/\/assets\/assets\//g, '/assets/');
     return cleaned;
   }
 
