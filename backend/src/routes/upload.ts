@@ -177,8 +177,8 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   }
   
   const bucket = resolveBucket(req.body.bucket);
-  // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
-  const fileUrl = `../src/assets/${bucket}/${req.file.filename}`;
+  // Return correct URL path that matches where backend serves files from
+  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
   
   res.json({
     message: 'File uploaded successfully',
@@ -199,7 +199,7 @@ router.post('/documents', authenticateToken, uploadPDF.single('file'), (req, res
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/documents/${req.file.filename}`;
+  const fileUrl = `/uploads/documents/${req.file.filename}`;
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -217,7 +217,7 @@ router.post('/cv-uploads', uploadCV.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/cv-assets/${req.file.filename}`;
+  const fileUrl = `/uploads/cv-uploads/${req.file.filename}`;
   res.json({
     message: 'CV uploaded successfully',
     file: {
@@ -235,7 +235,7 @@ router.post('/transcripts', uploadTranscript.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/transcripts/${req.file.filename}`;
+  const fileUrl = `/uploads/transcripts/${req.file.filename}`;
   res.json({
     message: 'Transcript uploaded successfully',
     file: {
@@ -253,7 +253,7 @@ router.post('/cover-letters', uploadCoverLetter.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/cover-letters/${req.file.filename}`;
+  const fileUrl = `/uploads/cover-letters/${req.file.filename}`;
   res.json({
     message: 'Cover letter uploaded successfully',
     file: {
