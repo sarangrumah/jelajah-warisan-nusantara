@@ -67,7 +67,7 @@ const ProfileSection = () => {
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
         )}
-        {/* {profile && ( */}
+        {profile && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -108,7 +108,7 @@ const ProfileSection = () => {
               </div>
             </div>
           </div>
-        {/* )} */}
+        )}
 
         {/* Call to Action (optional) */}
         {/* <div className="text-center scroll-reveal">
