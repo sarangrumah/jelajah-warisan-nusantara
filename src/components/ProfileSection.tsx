@@ -90,7 +90,17 @@ const ProfileSection = () => {
                   )}
                 </div>
                 {/* Move debug line for vision outside the card */}
-                <div style={{ color: 'blue', fontSize: '1.1em', background: 'yellow', padding: '4px', margin: '4px 0' }}>
+                <div style={{
+                  color: 'blue',
+                  fontSize: '1.1em',
+                  background: 'yellow',
+                  padding: '4px',
+                  margin: '4px 0',
+                  position: 'fixed',
+                  top: '40px',
+                  left: '10px',
+                  zIndex: 9999
+                }}>
                   <b>DEBUG OUTSIDE CARD (raw vision):</b> {profile.vision}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
@@ -103,7 +113,17 @@ const ProfileSection = () => {
                   )}
                 </div>
                 {/* Move debug line for mission outside the card */}
-                <div style={{ color: 'blue', fontSize: '1.1em', background: 'yellow', padding: '4px', margin: '4px 0' }}>
+                <div style={{
+                  color: 'blue',
+                  fontSize: '1.1em',
+                  background: 'yellow',
+                  padding: '4px',
+                  margin: '4px 0',
+                  position: 'fixed',
+                  top: '10px',
+                  left: '10px',
+                  zIndex: 9999
+                }}>
                   <b>DEBUG OUTSIDE CARD (raw mission):</b> {profile.mission}
                 </div>
               </div>
