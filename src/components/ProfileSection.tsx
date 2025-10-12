@@ -67,33 +67,33 @@ const ProfileSection = () => {
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
         )}
-        {profile && (
+        {/* {profile && ( */}
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
+                  {/* <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
                   {!profile.vision && (
                     <div style={{ color: 'red', fontSize: '0.9em' }}>
                       <b>Debug:</b> Vision is missing or empty from backend.
                     </div>
-                  )}
+                  )} */}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
+                  {/* <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
                   {!profile.mission && (
                     <div style={{ color: 'red', fontSize: '0.9em' }}>
                       <b>Debug:</b> Mission is missing or empty from backend.
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.aboutUs', 'About Us')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+                  {/* <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} /> */}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
@@ -108,7 +108,7 @@ const ProfileSection = () => {
               </div>
             </div>
           </div>
-        )}
+        {/* )} */}
 
         {/* Call to Action (optional) */}
         {/* <div className="text-center scroll-reveal">
