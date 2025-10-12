@@ -89,17 +89,22 @@ const ProfileSection = () => {
                     </div>
                   )}
                 </div>
+                {/* Move debug line for vision outside the card */}
+                <div style={{ color: 'blue', fontSize: '1.1em', background: 'yellow', padding: '4px', margin: '4px 0' }}>
+                  <b>DEBUG OUTSIDE CARD (raw vision):</b> {profile.vision}
+                </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                   <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
-                  <div style={{ color: 'blue', fontSize: '0.9em' }}>
-                    <b>Debug (raw):</b> {profile.mission}
-                  </div>
                   {!profile.mission && (
                     <div style={{ color: 'red', fontSize: '0.9em' }}>
                       <b>Debug:</b> Mission is missing or empty from backend.
                     </div>
                   )}
+                </div>
+                {/* Move debug line for mission outside the card */}
+                <div style={{ color: 'blue', fontSize: '1.1em', background: 'yellow', padding: '4px', margin: '4px 0' }}>
+                  <b>DEBUG OUTSIDE CARD (raw mission):</b> {profile.mission}
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
