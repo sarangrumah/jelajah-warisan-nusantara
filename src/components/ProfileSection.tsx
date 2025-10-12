@@ -53,6 +53,35 @@ const ProfileSection = () => {
   if (profile) {
     console.log('[ProfileSection] Profile at render:', profile);
   }
+
+  // Set up scroll reveal observer after profile data is loaded
+  useEffect(() => {
+    if (!profile) {
+      return; // Only run when profile data is available
+    }
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          console.log('[ProfileSection ScrollReveal] Revealing:', entry.target);
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    // Query for scroll-reveal elements within this component
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    console.log('[ProfileSection] Found scroll-reveal elements:', scrollRevealElements.length);
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [profile]); // Re-run when profile data changes
+
   return (
     <>
       <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div>
