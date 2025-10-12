@@ -31,10 +31,15 @@ const ProfileSection = () => {
       setError(null);
       try {
         const response = await contentService.getAll();
+        console.log('[ProfileSection] Raw API response:', response);
         if (response.error) { throw new Error(response.error); }
         // Use the first profile (or adjust as needed)
         const data = response.data as CompanyProfile[];
+        console.log('[ProfileSection] Parsed data:', data);
         setProfile(data && data.length > 0 ? data[0] : null);
+        if (data && data.length > 0) {
+          console.log('[ProfileSection] Profile object:', data[0]);
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to load profile');
       } finally {
