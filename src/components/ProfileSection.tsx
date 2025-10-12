@@ -109,56 +109,15 @@ const ProfileSection = () => {
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                   <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
-                  <div style={{ color: 'blue', fontSize: '0.9em' }}>
-                    <b>Debug (raw):</b> {profile.vision}
-                  </div>
-                  {!profile.vision && (
-                    <div style={{ color: 'red', fontSize: '0.9em' }}>
-                      <b>Debug:</b> Vision is missing or empty from backend.
-                    </div>
-                  )}
-                </div>
-                {/* Move debug line for vision outside the card */}
-                <div style={{
-                  color: 'blue',
-                  fontSize: '1.1em',
-                  background: 'yellow',
-                  padding: '4px',
-                  margin: '4px 0',
-                  position: 'fixed',
-                  top: '40px',
-                  left: '10px',
-                  zIndex: 9999
-                }}>
-                  <b>DEBUG OUTSIDE CARD (raw vision):</b> {profile.vision}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
                   <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
-                  {!profile.mission && (
-                    <div style={{ color: 'red', fontSize: '0.9em' }}>
-                      <b>Debug:</b> Mission is missing or empty from backend.
-                    </div>
-                  )}
-                </div>
-                {/* Move debug line for mission outside the card */}
-                <div style={{
-                  color: 'blue',
-                  fontSize: '1.1em',
-                  background: 'yellow',
-                  padding: '4px',
-                  margin: '4px 0',
-                  position: 'fixed',
-                  top: '10px',
-                  left: '10px',
-                  zIndex: 9999
-                }}>
-                  <b>DEBUG OUTSIDE CARD (raw mission):</b> {profile.mission}
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.aboutUs', 'About Us')}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
                   {/* <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} /> */}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
