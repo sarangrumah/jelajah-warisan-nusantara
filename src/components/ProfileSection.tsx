@@ -54,7 +54,9 @@ const ProfileSection = () => {
     console.log('[ProfileSection] Profile at render:', profile);
   }
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-card">
+    <>
+      <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div>
+      <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
@@ -138,6 +140,7 @@ const ProfileSection = () => {
         </div> */}
       </div>
     </section>
+    </>
   );
 };
 
