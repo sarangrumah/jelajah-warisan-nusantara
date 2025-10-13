@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 
 type CompanyProfile = {
   id: string;
@@ -24,6 +25,9 @@ const ProfileSection = () => {
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Use content translation hook to translate all profile fields
+  const { translatedContent: translatedProfile, isTranslating } = useContentTranslation(profile);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -52,6 +56,8 @@ const ProfileSection = () => {
   // Debug log to check profile at render time
   if (profile) {
     console.log('[ProfileSection] Profile at render:', profile);
+    console.log('[ProfileSection] Translated profile:', translatedProfile);
+    console.log('[ProfileSection] Is translating:', isTranslating);
   }
 
   // Set up scroll reveal observer after profile data is loaded
@@ -84,7 +90,7 @@ const ProfileSection = () => {
 
   return (
     <>
-      <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div>
+      {/* <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div> */}
       <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
@@ -96,38 +102,40 @@ const ProfileSection = () => {
           </p>
         </div>
 
-        {loading && (
-          <div className="text-center text-muted-foreground">Loading company profile...</div>
+        {(loading || isTranslating) && (
+          <div className="text-center text-muted-foreground">
+            {loading ? 'Loading company profile...' : 'Translating content...'}
+          </div>
         )}
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
         )}
-        {profile && (
+        {translatedProfile && !isTranslating && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
+                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.vision || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
+                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.mission || '-' }} />
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.aboutus || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
                   <ul className="text-muted-foreground space-y-1">
-                    <li><b>{t('profile.contact.address', 'Address')}:</b> {profile.address || '-'}</li>
-                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {profile.phone || '-'}</li>
-                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {profile.whatsapp || '-'}</li>
-                    <li><b>{t('profile.contact.email', 'Email')}:</b> {profile.email || '-'}</li>
-                    <li><b>{t('profile.contact.website', 'Website')}:</b> {profile.website || '-'}</li>
+                    <li><b>{t('profile.contact.address', 'Address')}:</b> {translatedProfile.address || '-'}</li>
+                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {translatedProfile.phone || '-'}</li>
+                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {translatedProfile.whatsapp || '-'}</li>
+                    <li><b>{t('profile.contact.email', 'Email')}:</b> {translatedProfile.email || '-'}</li>
+                    <li><b>{t('profile.contact.website', 'Website')}:</b> {translatedProfile.website || '-'}</li>
                   </ul>
                 </div>
               </div>

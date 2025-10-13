@@ -3,6 +3,7 @@ import { authenticateToken, requireAdminOrEditor } from '../middleware/auth';
 import { createCrudController } from '../controllers/crudController';
 import { tableConfigs } from '../config/tableConfigs';
 import translationRoutes from './translations';
+import translateRoutes from './translate';
 // import { translateResponse } from '../middleware/translateResponse'; // DISABLED - using frontend i18n instead
 
 const router = Router();
@@ -13,6 +14,9 @@ const router = Router();
 
 // Translation routes (includes language list endpoint)
 router.use('/translations', translationRoutes);
+
+// Content translation route (LibreTranslate API)
+router.use('/translate', translateRoutes);
 
 // Create CRUD routes for each table
 Object.entries(tableConfigs).forEach(([tableName, fields]) => {
