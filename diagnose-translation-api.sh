@@ -13,18 +13,18 @@ NC='\033[0m' # No Color
 
 # Check 1: Backend Process
 echo "1. Checking Backend Process..."
-if pm2 list | grep -q "backend-app"; then
-  STATUS=$(pm2 list | grep "backend-app" | awk '{print $10}')
+if pm2 list | grep -q "mcb-project"; then
+  STATUS=$(pm2 list | grep "mcb-project" | awk '{print $10}')
   if [ "$STATUS" = "online" ]; then
     echo -e "${GREEN}✅ Backend is running${NC}"
-    pm2 list | grep "backend-app"
+    pm2 list | grep "mcb-project"
   else
     echo -e "${RED}❌ Backend is not online (Status: $STATUS)${NC}"
-    echo "Run: pm2 restart backend-app"
+    echo "Run: pm2 restart mcb-project"
   fi
 else
   echo -e "${RED}❌ Backend process not found in PM2${NC}"
-  echo "Run: cd backend && pm2 start npm --name backend-app -- start"
+  echo "Run: cd backend && pm2 start npm --name mcb-project -- start"
 fi
 echo ""
 
@@ -131,7 +131,7 @@ echo ""
 # Check 9: Backend Logs
 echo "9. Recent Backend Logs (last 20 lines)..."
 echo "----------------------------------------"
-pm2 logs backend-app --lines 20 --nostream 2>/dev/null || echo "Cannot retrieve PM2 logs"
+pm2 logs mcb-project --lines 20 --nostream 2>/dev/null || echo "Cannot retrieve PM2 logs"
 echo ""
 
 # Summary
@@ -143,7 +143,7 @@ echo "If you see any ❌ above, follow these steps:"
 echo ""
 echo "1. If backend is not running:"
 echo "   cd /var/www/jelajah-warisan-nusantara/backend"
-echo "   pm2 restart backend-app"
+echo "   pm2 restart mcb-project"
 echo ""
 echo "2. If nginx /api block is missing:"
 echo "   sudo bash add-nginx-api-proxy.sh"
@@ -152,5 +152,5 @@ echo "3. If LibreTranslate is not accessible:"
 echo "   docker run -d -p 5000:5000 libretranslate/libretranslate"
 echo ""
 echo "4. View full backend logs:"
-echo "   pm2 logs backend-app"
+echo "   pm2 logs mcb-project"
 echo ""
