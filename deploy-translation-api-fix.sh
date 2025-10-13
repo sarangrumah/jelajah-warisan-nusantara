@@ -57,10 +57,10 @@ echo ""
 
 # Step 5: Restart backend
 echo -e "${BLUE}Step 5: Restarting backend...${NC}"
-pm2 restart backend-app
+pm2 restart mcb-project
 if [ $? -ne 0 ]; then
   echo -e "${YELLOW}⚠️  PM2 restart failed, trying to start...${NC}"
-  pm2 start npm --name backend-app -- start
+  pm2 start npm --name mcb-project -- start
 fi
 
 # Wait for backend to start
@@ -68,11 +68,11 @@ echo "Waiting for backend to start..."
 sleep 5
 
 # Check if backend is running
-if pm2 list | grep -q "backend-app.*online"; then
+if pm2 list | grep -q "mcb-project.*online"; then
   echo -e "${GREEN}✅ Backend is running${NC}"
 else
   echo -e "${RED}❌ Backend failed to start${NC}"
-  echo "Check logs with: pm2 logs backend-app"
+  echo "Check logs with: pm2 logs mcb-project"
   exit 1
 fi
 echo ""
@@ -84,7 +84,7 @@ if [ "$HEALTH_CHECK" = "200" ]; then
   echo -e "${GREEN}✅ Backend health check passed${NC}"
 else
   echo -e "${RED}❌ Backend health check failed (HTTP $HEALTH_CHECK)${NC}"
-  echo "Check logs with: pm2 logs backend-app"
+  echo "Check logs with: pm2 logs mcb-project"
   exit 1
 fi
 echo ""
@@ -101,7 +101,7 @@ if echo "$TRANSLATE_RESPONSE" | grep -q "translatedText"; then
 else
   echo -e "${RED}❌ Translation endpoint failed (direct)${NC}"
   echo "Response: $TRANSLATE_RESPONSE"
-  echo "Check logs with: pm2 logs backend-app"
+  echo "Check logs with: pm2 logs mcb-project"
 fi
 echo ""
 
@@ -175,7 +175,7 @@ echo "    -H \"Content-Type: application/json\" \\"
 echo "    -d '{\"text\":\"Halo dunia\",\"targetLang\":\"en\",\"sourceLang\":\"id\"}'"
 echo ""
 echo "View logs:"
-echo "  pm2 logs backend-app"
+echo "  pm2 logs mcb-project"
 echo ""
 echo "Run diagnostics:"
 echo "  bash diagnose-translation-api.sh"
