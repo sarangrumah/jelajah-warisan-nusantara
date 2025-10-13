@@ -1,7 +1,7 @@
 import { FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// import { publications } from '@/../database/default-data';
+import { publications } from '@/../database/default-data';
 
 const PublicationSection = () => {
   // const budgetData = [
@@ -10,21 +10,21 @@ const PublicationSection = () => {
   //   { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
   // ];
 
-  // const downloadFromUrl = (url) => {
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   // link.download = filename || "download";
-  //   link.rel="noopener noreferrer";
-  //   link.target="_blank";
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  const downloadFromUrl = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal hidden">
+        {/* <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             Publikasi & Dokumen
           </h2>
@@ -32,16 +32,20 @@ const PublicationSection = () => {
             Akses dokumen resmi, laporan, dan publikasi ilmiah tentang 
             pengelolaan museum dan pelestarian cagar budaya.
           </p>
-        </div>
+        </div> */}
 
         <div className="mb-16">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
               Dokumen Publikasi
             </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Akses dokumen resmi, laporan, dan publikasi ilmiah tentang 
+              pengelolaan museum dan pelestarian cagar budaya.
+            </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
-            {/* {publications.map((pub, index) => (
+            {publications.map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -83,7 +87,7 @@ const PublicationSection = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))} */}
+            ))}
           </div>
         </div>
       </div>

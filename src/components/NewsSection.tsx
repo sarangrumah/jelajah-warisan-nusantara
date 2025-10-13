@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Search, Calendar, User, ArrowRight } from 'lucide-react';
+import { Search, Calendar, User, ArrowRight, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { newsService } from '@/lib/api-services';
+import { mediaService } from '@/lib/api-services';
+import { Link } from 'react-router-dom';
 
-const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
+const newsImages = import.meta.glob('../assets/news/*', { eager: true });
+const newsFiles = import.meta.glob('../assets/berita/*', { eager: true });
 
 function getNewsImageUrl(filename: string) {
   if (
@@ -19,11 +21,32 @@ function getNewsImageUrl(filename: string) {
   const justFile = filename?.split('/').pop() || filename;
   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Fallback: try public/assets/news/ for production
   if (justFile) {
     return `/assets/news/${justFile}`;
+  }
+  return undefined;
+}
+
+function getNewsFileUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Fallback: try public/assets/news/ for production
+  if (justFile) {
+    return `/assets/berita/${justFile}`;
   }
   return undefined;
 }
@@ -44,12 +67,23 @@ const NewsListSection = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await newsService.getAll();
+        const response = await mediaService.getAll();
   
-        if (response.error) {
+        if (response.error || response.data.length === 0) {
           console.error('Error fetching articles:', response.error);
         } else {
-          setArticles(response.data);
+          const filteredArticles = response.data.filter((article: {
+            is_active: boolean;
+            is_approved: boolean;
+            is_rejected: boolean;
+            published_date: Date;
+          }) => (
+            article.is_active === true
+            && article.is_approved === true
+            && article.is_rejected === false
+            && new Date(article.published_date) <= new Date()
+          ));
+          setArticles(filteredArticles);
         }
       } catch (error) {
         console.error('Error fetching articles:', error);
@@ -64,21 +98,26 @@ const NewsListSection = () => {
                            article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     } else {
-      const matchesSearch = article.category.toLowerCase() === activeCategory.toLowerCase() && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchesSearch && article.category === activeCategory;
+      const matchesSearch = article.categories.toLowerCase() === activeCategory.toLocaleLowerCase() 
+          && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) 
+          || article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSearch;
     }
   });
 
-  const handleReadMoreClick = (article) => {
-    const link = document.createElement('a');
-    link.href = article;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleOpenFile = (filename: string) => {
+    return getNewsFileUrl(filename);
   };
+
+  // const handleReadMoreClick = (article) => {
+  //   const link = document.createElement('a');
+  //   link.href = article;
+  //   link.target = '_blank';
+  //   link.rel = 'noopener noreferrer';
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   return (
     <section className="py-20 bg-background">
@@ -154,10 +193,20 @@ const NewsListSection = () => {
                     <span>Admin</span>
                   </div>
                 </div>
-                  <button onClick={() => handleReadMoreClick(article.url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+                {article.file_url && (
+                  <a href={handleOpenFile(article.file_url)} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:text-primary-glow transition-colors">
+                    <button className="py-5 flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+                      <Download size={16} />
+                      <span>Unduh Dokumen</span>
+                    </button>
+                  </a>
+                )}
+                <Link to={`/news/${article.id}`} className="text-sm text-primary hover:text-primary-glow transition-colors">
+                  <button className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
                     Baca Selengkapnya
                     <ArrowRight size={16} />
                   </button>
+                </Link>
               </CardContent>
             </Card>
           ))}

@@ -18,7 +18,7 @@ const resources = {
         agenda: "Agenda",
         tentangKami: "About Us",
         strukturOrganisasi: "Organizational structure",
-        layananKonservasi: "Conservation Services",
+        layananKonservasi: "Conservation Laboratory",
         mediaPublikasi: "Media & Publications",
         pemanfaatanAset: "Asset Utilization",
         hubungiKami: "Contact Us",

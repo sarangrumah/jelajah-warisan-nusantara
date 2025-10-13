@@ -56,11 +56,11 @@ const Header = () => {
         // { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
         { name: t('nav.tentangKami'), href: '/tentang-kami' },
         // { name: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
-        { name: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
+        { name: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
         { name: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
-        { name: t('nav.career'), href: '/career' },
+        { name: t('nav.career'), href: '/karir' },
       ]
     },
     { name: t('nav.ppid'), href: '/ppid' },

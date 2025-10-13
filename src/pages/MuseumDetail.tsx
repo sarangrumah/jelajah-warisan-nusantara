@@ -13,16 +13,24 @@ import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-  const shareEventHandler = (url) => {
-    const link = document.createElement("a");
-    link.href = url;
-    // link.download = filename || "download";
-    link.rel="noopener noreferrer";
-    link.target="_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+const shareEventHandler = (museumLink: string) => {
+  let url = `https://${museumLink}`;
+  if (
+    typeof museumLink === 'string' &&
+    (museumLink.startsWith('http://') ||
+      museumLink.startsWith('https://'))
+  ) {
+    url = museumLink;
+  }
+  const link = document.createElement("a");
+  link.href = url;
+  // link.download = filename || "download";
+  link.rel="noopener noreferrer";
+  link.target="_blank";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 function getMuseumImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
   if (
@@ -72,8 +80,8 @@ const MuseumDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Museum not found')}</h1>
-          <p className="text-muted-foreground">{t('The requested museum could not be found.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('Museum tidak ditemukan')}</h1>
+          <p className="text-muted-foreground">{t('Museum yang diminta tidak dapat ditemukan.')}</p>
         </div>
         <Footer />
       </div>
@@ -191,7 +199,7 @@ const MuseumDetail = () => {
                     <Calendar className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.ticketPrice')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.ticketPrice}</p>
+                      <p className="text-sm text-muted-foreground">{museum.ticket_price}</p>
                     </div>
                   </div>
                   {/* <button 

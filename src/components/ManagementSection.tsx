@@ -37,10 +37,9 @@ const ManagementSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {managementCards.map((card, index) => (
-            <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+          {managementCards &&managementCards.map((card, index) => (
+            <Link key={index} to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
               <div
-                key={index}
                 className="group bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce scroll-reveal"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >

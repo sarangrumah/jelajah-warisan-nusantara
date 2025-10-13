@@ -5,6 +5,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
@@ -130,6 +131,24 @@ const Museum = () => {
     }
   }, [type, types]);
 
+  const handleVisitMuseum = (museumLink: string) => {
+    let url = `https://${museumLink}`;
+    if (
+      typeof museumLink === 'string' &&
+      (museumLink.startsWith('http://') ||
+        museumLink.startsWith('https://'))
+    ) {
+      url = museumLink;
+    }
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -172,8 +191,8 @@ const Museum = () => {
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMuseums.map((item) => (
-            <Link key={item.id} to={`/museum/${item.id}`}>
-              <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:scale-105">
+            <Card key={item.id} className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:scale-105">
+              <Link to={`/museum/${item.id}`}>
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={(() => {
@@ -188,38 +207,38 @@ const Museum = () => {
                     className="w-full h-full object-cover object-bottom"
                   />
                 </div>
-                <div className="flex-1 flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{item.name}</CardTitle>
-                    <CardDescription>{item.subtitle}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <div className="flex-1" />
-                    <div className="flex gap-2 mt-6">
-                      <button
-                        className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
-                        type="button"
-                      >
-                        Beli Tiket
-                      </button>
-                      <Link
-                        to={`/museum/${item.id}`}
-                        className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
-                      >
-                        Kunjungi Museum
-                      </Link>
-                    </div>
-                  </CardContent>
-                </div>
-              </Card>
-            </Link>
+                <CardHeader>
+                  <CardTitle className="text-lg">{item.name}</CardTitle>
+                  <CardDescription>{item.subtitle}</CardDescription>
+                </CardHeader>
+              </Link>
+              <div className="flex-1 flex flex-col">
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="flex-1" />
+                  <div className="flex gap-2 mt-6">
+                    <Button
+                      className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
+                      type="button"
+                    >
+                      Beli Tiket
+                    </Button>
+                    <Button 
+                      onClick={() => handleVisitMuseum(item.website)}
+                      className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
+                    >
+                      Kunjungi Museum
+                    </Button>
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
           ))}
         </div>
 
         {filteredMuseums.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {t('No results found. Try adjusting your search or filter.')}
+              {t('Museum tidak ditemukan.')}
             </p>
           </div>
         )}

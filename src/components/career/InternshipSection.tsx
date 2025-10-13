@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import { useLocation } from 'react-router-dom';
 import InternshipProgram from './InternshipProgram';
+import { careerMgmtService } from '@/lib/api-services';
 
 const registrationSchema = z.object({
   fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
@@ -35,11 +36,41 @@ const InternshipSection = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const { pathname } = useLocation();
-    
+  const [internshipPrograms, setInternshipPrograms] = useState([]);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+  
+  useEffect(() => {
+    const fetchInternshipPrograms = async () => {
+      try {
+        const response = await careerMgmtService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching internship programs:', response.error);
+        } else {
+          const filteredInternshipPrograms = response.data.filter((program: { 
+              is_active: boolean;
+              is_approved: boolean;
+              is_rejected: boolean;
+              publish_date: Date;
+              end_publish_date: Date;
+          }) => (
+              program.is_active === true 
+              && program.is_approved === true 
+              && program.is_rejected === false 
+              && new Date(program.publish_date) <= new Date()
+              && new Date(program.end_publish_date) >= new Date()
+          ));
+          setInternshipPrograms(filteredInternshipPrograms);
+        }
+      } catch (error) {
+        console.error('Error fetching internship programs:', error);
+      }
+    };
 
+    fetchInternshipPrograms();
+  }, []);
   useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
@@ -591,7 +622,7 @@ const InternshipSection = () => {
             </Card>
           </div>
         </div>
-        <InternshipProgram form={form} onSetIsDialogOpen={setIsDialogOpen} />
+        <InternshipProgram internshipPrograms={internshipPrograms} form={form} onSetIsDialogOpen={setIsDialogOpen} />
 
         {/* Internship Programs */}
         {/* <div className="grid lg:grid-cols-2 gap-8 mb-16">
