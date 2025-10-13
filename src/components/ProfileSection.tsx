@@ -102,40 +102,43 @@ const ProfileSection = () => {
           </p>
         </div>
 
-        {(loading || isTranslating) && (
-          <div className="text-center text-muted-foreground">
-            {loading ? 'Loading company profile...' : 'Translating content...'}
-          </div>
+        {loading && (
+          <div className="text-center text-muted-foreground">Loading company profile...</div>
         )}
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
         )}
-        {translatedProfile && !isTranslating && (
+        {profile && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
+              {isTranslating && (
+                <div className="text-center text-sm text-muted-foreground mb-4">
+                  🌐 Translating content...
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.vision || '-' }} />
+                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.vision || profile.vision) || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.mission || '-' }} />
+                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.mission || profile.mission) || '-' }} />
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: translatedProfile.aboutus || '-' }} />
+                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.aboutus || profile.aboutus) || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
                   <ul className="text-muted-foreground space-y-1">
-                    <li><b>{t('profile.contact.address', 'Address')}:</b> {translatedProfile.address || '-'}</li>
-                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {translatedProfile.phone || '-'}</li>
-                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {translatedProfile.whatsapp || '-'}</li>
-                    <li><b>{t('profile.contact.email', 'Email')}:</b> {translatedProfile.email || '-'}</li>
-                    <li><b>{t('profile.contact.website', 'Website')}:</b> {translatedProfile.website || '-'}</li>
+                    <li><b>{t('profile.contact.address', 'Address')}:</b> {(translatedProfile?.address || profile.address) || '-'}</li>
+                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {(translatedProfile?.phone || profile.phone) || '-'}</li>
+                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {(translatedProfile?.whatsapp || profile.whatsapp) || '-'}</li>
+                    <li><b>{t('profile.contact.email', 'Email')}:</b> {(translatedProfile?.email || profile.email) || '-'}</li>
+                    <li><b>{t('profile.contact.website', 'Website')}:</b> {(translatedProfile?.website || profile.website) || '-'}</li>
                   </ul>
                 </div>
               </div>
