@@ -10,6 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
@@ -193,8 +199,20 @@ const Museum = () => {
                 </div>
                 <div className="flex-1 flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-lg">{item.name}</CardTitle>
-                    <CardDescription>{item.subtitle}</CardDescription>
+                    <CardTitle className="text-lg">
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags(item.name)
+                        }}
+                      />
+                    </CardTitle>
+                    <CardDescription>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags(item.subtitle)
+                        }}
+                      />
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1" />

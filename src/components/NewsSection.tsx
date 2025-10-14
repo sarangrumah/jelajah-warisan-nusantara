@@ -4,6 +4,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
 import { useTranslation } from 'react-i18next';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 import {
   Carousel,
@@ -175,10 +181,18 @@ const NewsSection = () => {
                       </div>
                       <CardContent className="p-6 flex-1 flex flex-col">
                         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-                          {article.title}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(article.title)
+                            }}
+                          />
                         </h3>
                         <p className="text-muted-foreground mb-4 line-clamp-3">
-                          {article.excerpt || article.subtitle || article.description}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(article.excerpt || article.subtitle || article.description)
+                            }}
+                          />
                         </p>
                         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                           <div className="flex items-center gap-2">

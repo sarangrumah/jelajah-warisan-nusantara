@@ -3,6 +3,12 @@ import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
@@ -210,11 +216,19 @@ const AgendaSection = () => {
                     {/* Event Content */}
                     <div className="p-6 mb-9 flex-1 flex flex-col">
                       <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
-                        {event.title}
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: fixBrokenHtmlTags(event.title)
+                          }}
+                        />
                       </h3>
                       
                       <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        {event.description}
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: fixBrokenHtmlTags(event.description)
+                          }}
+                        />
                       </p>
 
                       <div className="space-y-2 mb-6">

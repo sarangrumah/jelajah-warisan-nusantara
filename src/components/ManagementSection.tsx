@@ -2,6 +2,12 @@ import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
@@ -56,7 +62,11 @@ const ManagementSection = () => {
                     <h3 className="text-3xl font-bold">{card.title}</h3>
                   </div>
                   <p className="text-primary-foreground/90 text-lg">
-                    {card.description}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(card.description)
+                      }}
+                    />
                   </p>
                 </div>
 
@@ -71,7 +81,11 @@ const ManagementSection = () => {
                       {card.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-muted-foreground">
                           <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                          {feature}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(feature)
+                            }}
+                          />
                         </li>
                       ))}
                     </ul>
