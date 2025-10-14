@@ -1,3 +1,4 @@
+// Import must be at the very top
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { defaultSlides } from '@/../database/default-data';
 // import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
@@ -120,6 +122,9 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [types, setTypes] = useState([]);
+  // Use content translation for the current slide
+  const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
+  const { translatedContent: translatedSlide } = useContentTranslation(currentSlideObj);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -281,31 +286,31 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
-              {slides.length > 0 ? (
+              {currentSlideObj ? (
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: fixBrokenHtmlTags(t(slides[currentSlide].title))
+                    __html: fixBrokenHtmlTags(translatedSlide?.title || t(currentSlideObj.title))
                   }}
                 />
               ) : null}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {slides.length > 0 ? (
+              {currentSlideObj ? (
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: fixBrokenHtmlTags(t(slides[currentSlide].subtitle))
+                    __html: fixBrokenHtmlTags(translatedSlide?.subtitle || t(currentSlideObj.subtitle))
                   }}
                 />
               ) : null}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={slides.length > 0 ? linkTo(slides[currentSlide].button_url_1.split('.')[1]) : "/"}>
+              <Link to={currentSlideObj ? linkTo((translatedSlide?.button_url_1 || currentSlideObj.button_url_1).split('.')[1]) : "/"}>
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
-                  {slides.length > 0 && t(slides[currentSlide].button_url_1)}
+                  {currentSlideObj && (translatedSlide?.button_url_1 || t(currentSlideObj.button_url_1))}
                 </Button>
               </Link>
               

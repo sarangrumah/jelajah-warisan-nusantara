@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { DynamicComponent } from '../dynamic-components';
 import compProfile from '@/assets/museum-interior.jpg'
 import { contentService } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -16,6 +17,9 @@ import { useEffect, useState } from 'react';
 const CompanyProfile = () => {
   const { t } = useTranslation();
   const [companies, setCompanies] = useState([]);
+  // Use content translation for the first company profile
+  const company = companies.length > 0 ? companies[0] : null;
+  const { translatedContent, isTranslating } = useContentTranslation(company);
 
   const fetchCompanies = async () => {
     const response = await contentService.getAll();
@@ -70,10 +74,12 @@ const CompanyProfile = () => {
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xlx mx-auto leading-relaxed">
             {/* {t('about.companyProfile.subtitle')} */}
-            {companies.length > 0 ? (
+            {company ? (
               <span
                 dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(companies[0].aboutus || '')
+                  __html: fixBrokenHtmlTags(
+                    (translatedContent?.aboutus || company.aboutus) || ''
+                  )
                 }}
               />
             ) : null}
@@ -144,10 +150,12 @@ const CompanyProfile = () => {
                     {/* "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
                     yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat." */}
                     {/* {t('profile.visionText')} */}
-                    {companies.length > 0 ? (
+                    {company ? (
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags(companies[0].vision || '')
+                          __html: fixBrokenHtmlTags(
+                            (translatedContent?.vision || company.vision) || ''
+                          )
                         }}
                       />
                     ) : null}
@@ -172,10 +180,12 @@ const CompanyProfile = () => {
                     ))}
                   </ul> */}
                   <p className="text-lg text-muted-foreground leading-relaxed text-justify">
-                    {companies.length > 0 ? (
+                    {company ? (
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags(companies[0].mission || '')
+                          __html: fixBrokenHtmlTags(
+                            (translatedContent?.mission || company.mission) || ''
+                          )
                         }}
                       />
                     ) : null}
