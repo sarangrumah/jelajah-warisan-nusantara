@@ -15,26 +15,26 @@ const ManagementSection = () => {
   const managementCards = [
     {
       icon: Building2,
-      title: 'Museum',
-      description: 'Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia',
+      title: t('management.museum.title', 'Museum'),
+      description: t('management.museum.description', 'Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia'),
       features: [
-        'Sistem koleksi digital',
-        'Program pameran berkala',
-        'Layanan edukasi publik',
-        'Penelitian dan dokumentasi'
+        t('management.museum.feature1', 'Sistem koleksi digital'),
+        t('management.museum.feature2', 'Program pameran berkala'),
+        t('management.museum.feature3', 'Layanan edukasi publik'),
+        t('management.museum.feature4', 'Penelitian dan dokumentasi')
       ],
       stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
       gradient: 'from-primary to-primary-glow'
     },
     {
       icon: Landmark,
-      title: 'Cagar Budaya',
-      description: 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional',
+      title: t('management.heritage.title', 'Cagar Budaya'),
+      description: t('management.heritage.description', 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional'),
       features: [
-        'Konservasi situs bersejarah',
-        'Monitoring kondisi',
-        'Program restorasi',
-        'Penelitian arkeologi'
+        t('management.heritage.feature1', 'Konservasi situs bersejarah'),
+        t('management.heritage.feature2', 'Monitoring kondisi'),
+        t('management.heritage.feature3', 'Program restorasi'),
+        t('management.heritage.feature4', 'Penelitian arkeologi')
       ],
       stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
       gradient: 'from-accent to-secondary'
