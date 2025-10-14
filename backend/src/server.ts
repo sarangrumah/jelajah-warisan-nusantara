@@ -116,11 +116,6 @@ const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
 
 app.use('/assets', express.static(assetsDir));
 
-// Fallback: serve index.html for any non-API route (client-side routing)
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(frontendDir, 'index.html'));
-});
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -129,7 +124,8 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
-// API routes
+
+// API routes - MUST be registered BEFORE the fallback route
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
@@ -138,7 +134,7 @@ app.use('/api/activity-log', activityLogRoutes);
 app.use('/api/translation-cache', translationCacheRoutes);
 
 // Error handling middleware
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', error);
   
   if (error.code === 'LIMIT_FILE_SIZE') {
@@ -160,9 +156,16 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// Fallback: serve index.html for any non-API route (client-side routing)
+// IMPORTANT: This MUST be after all API routes and error handling to avoid catching API requests
+app.get('*', (req, res) => {
+  // Only serve index.html for non-API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(frontendDir, 'index.html'));
+  } else {
+    // If we somehow reach here for an API route, return 404
+    res.status(404).json({ error: 'API endpoint not found' });
+  }
 });
 
 // Start server
