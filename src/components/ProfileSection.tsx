@@ -119,7 +119,16 @@ const ProfileSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.vision || profile.vision) || '-' }} />
+                  {(() => {
+                    const visionHtml = (translatedProfile?.vision || profile.vision) || '-';
+                    console.log('[ProfileSection] Vision HTML to render:', visionHtml);
+                    return (
+                      <div
+                        className="text-muted-foreground"
+                        dangerouslySetInnerHTML={{ __html: visionHtml }}
+                      />
+                    );
+                  })()}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
