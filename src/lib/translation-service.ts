@@ -13,8 +13,9 @@ class TranslationService {
   private baseUrl: string;
   private cache: Map<string, string>;
 
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    constructor() {
+        // console.log(import.meta.env.VITE_API_URL);
+    this.baseUrl = import.meta.env.VITE_API_URL || 'https://museumcagarbudaya.kemenbud.go.id/api';
     this.cache = new Map();
   }
 
