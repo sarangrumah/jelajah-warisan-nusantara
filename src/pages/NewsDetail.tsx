@@ -7,6 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { mediaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const NewsDetail = () => {
   const { pathname } = useLocation();
@@ -65,10 +71,10 @@ const NewsDetail = () => {
           }
         })
         .catch(() => {
-          if (mounted) setArticle(null);
+          if (mounted) { setArticle(null); }
         })
         .finally(() => {
-          if (mounted) setLoading(false);
+          if (mounted) { setLoading(false); }
         });
     }
     return () => { mounted = false; };
@@ -184,7 +190,7 @@ const NewsDetail = () => {
           <div className="prose prose-lg max-w-none">
             <div 
               className="text-foreground leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.content }}
+              dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(article.content || '') }}
             />
           </div>
 

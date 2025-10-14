@@ -13,6 +13,12 @@ import { Loader2, Edit, Save, X, Plus, Trash, UserPlus } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 interface CareerPosting {
   id?: string;
@@ -609,7 +615,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                     <span className="font-medium">Description:</span>
                     <div
                       className="text-sm text-muted-foreground mt-1"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.description) }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.description || '')) }}
                     />
                   </div>
                 )}
@@ -619,14 +625,14 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                       <span className="font-medium">Requirements:</span>
                       <div
                         className="prose prose-sm text-muted-foreground mt-1"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.requirement || '') }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.requirement || '')) }}
                       />
                     </div>
                     <div>
                       <span className="font-medium">Responsibilities:</span>
                       <div
                         className="prose prose-sm text-muted-foreground mt-1"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.responsibility || '') }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.responsibility || '')) }}
                       />
                     </div>
                   </div>

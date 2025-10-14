@@ -150,11 +150,46 @@ const ProfileSection = () => {
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
                   <ul className="text-muted-foreground space-y-1">
-                    <li><b>{t('profile.contact.address', 'Address')}:</b> {(translatedProfile?.address || profile.address) || '-'}</li>
-                    <li><b>{t('profile.contact.phone', 'Phone')}:</b> {(translatedProfile?.phone || profile.phone) || '-'}</li>
-                    <li><b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b> {(translatedProfile?.whatsapp || profile.whatsapp) || '-'}</li>
-                    <li><b>{t('profile.contact.email', 'Email')}:</b> {(translatedProfile?.email || profile.email) || '-'}</li>
-                    <li><b>{t('profile.contact.website', 'Website')}:</b> {(translatedProfile?.website || profile.website) || '-'}</li>
+                    <li>
+                      <b>{t('profile.contact.address', 'Address')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.address || profile.address) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.phone', 'Phone')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.phone || profile.phone) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.whatsapp || profile.whatsapp) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.email', 'Email')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.email || profile.email) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.website', 'Website')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.website || profile.website) || '-')
+                        }}
+                      />
+                    </li>
                   </ul>
                 </div>
               </div>
