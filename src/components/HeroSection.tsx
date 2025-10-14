@@ -8,6 +8,13 @@ import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 // import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 // <<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
@@ -274,10 +281,22 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
-              {slides.length > 0 && t(slides[currentSlide].title)}
+              {slides.length > 0 ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: fixBrokenHtmlTags(t(slides[currentSlide].title))
+                  }}
+                />
+              ) : null}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {slides.length > 0 && t(slides[currentSlide].subtitle)}
+              {slides.length > 0 ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: fixBrokenHtmlTags(t(slides[currentSlide].subtitle))
+                  }}
+                />
+              ) : null}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to={slides.length > 0 ? linkTo(slides[currentSlide].button_url_1.split('.')[1]) : "/"}>
