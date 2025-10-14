@@ -124,7 +124,7 @@ const ProfileSection = () => {
                     console.log('[ProfileSection] Vision HTML to render:', visionHtml);
                     return (
                       <div
-                        className="text-muted-foreground"
+                        className="prose text-muted-foreground"
                         dangerouslySetInnerHTML={{ __html: visionHtml }}
                       />
                     );
@@ -132,13 +132,13 @@ const ProfileSection = () => {
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.mission || profile.mission) || '-' }} />
+                  <div className="prose space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.mission || profile.mission) || '-' }} />
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
-                  <div className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.aboutus || profile.aboutus) || '-' }} />
+                  <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: (translatedProfile?.aboutus || profile.aboutus) || '-' }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
