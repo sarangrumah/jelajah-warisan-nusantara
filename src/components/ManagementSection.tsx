@@ -2,46 +2,51 @@ import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-// Utility to fix broken HTML tags like < p > to <p>
-function fixBrokenHtmlTags(html: string): string {
-  if (!html) { return html; }
-  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
-             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
+import { useMemo } from 'react';
 import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
   
-  // Define cards inside component to make them reactive to language changes
-  const managementCards = [
+  // Define cards inside useMemo to make them reactive to language changes
+  const managementCards = useMemo(() => [
     {
       icon: Building2,
-      title: t('management.museum.title', 'Museum'),
-      description: t('management.museum.description', 'Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia'),
+      title: t('management.museum.title'),
+      description: t('management.museum.description'),
       features: [
-        t('management.museum.feature1', 'Sistem koleksi digital'),
-        t('management.museum.feature2', 'Program pameran berkala'),
-        t('management.museum.feature3', 'Layanan edukasi publik'),
-        t('management.museum.feature4', 'Penelitian dan dokumentasi')
+        t('management.museum.feature1'),
+        t('management.museum.feature2'),
+        t('management.museum.feature3'),
+        t('management.museum.feature4')
       ],
-      stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
-      gradient: 'from-primary to-primary-glow'
+      stats: { 
+        museums: museumStat.museums, 
+        visitors: museumStat.visitors, 
+        programs: museumStat.programs 
+      },
+      gradient: 'from-primary to-primary-glow',
+      link: '/museum'
     },
     {
       icon: Landmark,
-      title: t('management.heritage.title', 'Cagar Budaya'),
-      description: t('management.heritage.description', 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional'),
+      title: t('management.heritage.title'),
+      description: t('management.heritage.description'),
       features: [
-        t('management.heritage.feature1', 'Konservasi situs bersejarah'),
-        t('management.heritage.feature2', 'Monitoring kondisi'),
-        t('management.heritage.feature3', 'Program restorasi'),
-        t('management.heritage.feature4', 'Penelitian arkeologi')
+        t('management.heritage.feature1'),
+        t('management.heritage.feature2'),
+        t('management.heritage.feature3'),
+        t('management.heritage.feature4')
       ],
-      stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
-      gradient: 'from-accent to-secondary'
+      stats: { 
+        sites: museumStat.sites, 
+        provinces: museumStat.provinces, 
+        projects: museumStat.projects 
+      },
+      gradient: 'from-accent to-secondary',
+      link: '/heritage'
     }
-  ];
+  ], [t]);
 
   return (
     <section className="py-20 from-card to-background">
@@ -51,9 +56,12 @@ const ManagementSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {managementCards.map((card, index) => (
-            <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+            <Link 
+              key={index}
+              to={card.link} 
+              className="flex-1"
+            >
               <div
-                key={index}
                 className="group bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce scroll-reveal"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
@@ -64,11 +72,7 @@ const ManagementSection = () => {
                     <h3 className="text-3xl font-bold">{card.title}</h3>
                   </div>
                   <p className="text-primary-foreground/90 text-lg">
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(card.description)
-                      }}
-                    />
+                    {card.description}
                   </p>
                 </div>
 
@@ -77,44 +81,40 @@ const ManagementSection = () => {
                   {/* Features */}
                   <div className="mb-8">
                     <h4 className="text-xl font-semibold text-foreground mb-4">
-                      {t('management.mainServices', 'Layanan Utama')}
+                      {t('management.mainServices')}
                     </h4>
                     <ul className="space-y-3">
                       {card.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-muted-foreground">
                           <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: fixBrokenHtmlTags(feature)
-                            }}
-                          />
+                          <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  {Object.entries(card.stats).map(([key, value], statIndex) => (
-                    <div key={statIndex} className="text-center">
-                      <div className="text-2xl font-bold text-heritage-gradient">
-                        {value}
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    {Object.entries(card.stats).map(([key, value], statIndex) => (
+                      <div key={statIndex} className="text-center">
+                        <div className="text-2xl font-bold text-heritage-gradient">
+                          {value}
+                        </div>
+                        <div className="text-sm text-muted-foreground capitalize">
+                          {t(`management.${card.title === t('management.museum.title') ? 'museum' : 'heritage'}.stats.${key}`)}
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground capitalize">
-                        {t(`management.${card.title === 'Museum' ? 'museum' : 'heritage'}.stats.${key}`, key)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
                   {/* Action buttons */}
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+                    <Link to={card.link} className="flex-1">
                       <Button 
                         className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                       >
                         <Users size={16} className="mr-2" />
-                        {t('management.manage', 'Kelola')} {card.title}
+                        {t('management.manage')} {card.title}
                       </Button>
                     </Link>
                     <Link to="/agenda" className="flex-1">
@@ -123,7 +123,7 @@ const ManagementSection = () => {
                         className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-heritage"
                       >
                         <Calendar size={16} className="mr-2" />
-                        {t('management.viewAgenda', 'Lihat Agenda')}
+                        {t('management.viewAgenda')}
                       </Button>
                     </Link>
                   </div>

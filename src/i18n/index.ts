@@ -74,19 +74,13 @@ const resources = {
         title: "Integrated National Management",
         description: "Professional management of museums and cultural heritage sites throughout Indonesia with modern and integrated systems.",
         mainServices: "Main Services",
-        feature1: "Digital collection system",
-        feature2: "Regular exhibition programs",
-        feature3: "Public education services",
-        feature4: "Research and documentation",
         museum: {
           title: "Museum",
           description: "Management of collections, exhibitions, and educational programs in museums throughout Indonesia",
-          features: [
-            "Digital collection system",
-            "Regular exhibition programs",
-            "Public education services",
-            "Research and documentation"
-          ],
+          feature1: "Digital collection system",
+          feature2: "Regular exhibition programs",
+          feature3: "Public education services",
+          feature4: "Research and documentation",
           stats: {
             museums: "Museums",
             visitors: "Visitors",
@@ -96,12 +90,10 @@ const resources = {
         heritage: {
           title: "Cultural Heritage",
           description: "Preservation and protection of historical sites and national cultural heritage",
-          features: [
-            "Historical site conservation",
-            "Condition monitoring",
-            "Restoration programs",
-            "Archaeological research"
-          ],
+          feature1: "Historical site conservation",
+          feature2: "Condition monitoring",
+          feature3: "Restoration programs",
+          feature4: "Archaeological research",
           stats: {
             sites: "Sites",
             provinces: "Provinces",
@@ -585,19 +577,13 @@ const resources = {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
         mainServices: "Layanan Utama",
-        feature1: "Konservasi situs bersejarah",
-        feature2: "Monitoring kondisi",
-        feature3: "Program restorasi",
-        feature4: "Penelitian arkeologi",
         museum: {
           title: "Museum",
           description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
-          features: [
-            "Sistem koleksi digital",
-            "Program pameran berkala",
-            "Layanan edukasi publik",
-            "Penelitian dan dokumentasi"
-          ],
+          feature1: "Sistem koleksi digital",
+          feature2: "Program pameran berkala",
+          feature3: "Layanan edukasi publik",
+          feature4: "Penelitian dan dokumentasi",
           stats: {
             museums: "Museum",
             visitors: "Pengunjung",
@@ -607,12 +593,10 @@ const resources = {
         heritage: {
           title: "Cagar Budaya",
           description: "Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional",
-          features: [
-            "Konservasi situs bersejarah",
-            "Monitoring kondisi",
-            "Program restorasi",
-            "Penelitian arkeologi"
-          ],
+          feature1: "Konservasi situs bersejarah",
+          feature2: "Monitoring kondisi",
+          feature3: "Program restorasi",
+          feature4: "Penelitian arkeologi",
           stats: {
             sites: "Situs",
             provinces: "Provinsi",
