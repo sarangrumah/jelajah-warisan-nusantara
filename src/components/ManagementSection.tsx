@@ -1,4 +1,4 @@
-import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
+import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -75,7 +75,7 @@ const ManagementSection = () => {
                   {/* Features */}
                   <div className="mb-8">
                     <h4 className="text-xl font-semibold text-foreground mb-4">
-                      Layanan Utama
+                      {t('management.mainServices', 'Layanan Utama')}
                     </h4>
                     <ul className="space-y-3">
                       {card.features.map((feature, featureIndex) => (
@@ -99,12 +99,7 @@ const ManagementSection = () => {
                         {value}
                       </div>
                       <div className="text-sm text-muted-foreground capitalize">
-                        {key === 'museums' ? 'Museum' : 
-                         key === 'visitors' ? 'Pengunjung' :
-                         key === 'programs' ? 'Program' :
-                         key === 'sites' ? 'Situs' :
-                         key === 'provinces' ? 'Provinsi' :
-                         key === 'projects' ? 'Proyek' : key}
+                        {t(`management.${card.title === 'Museum' ? 'museum' : 'heritage'}.stats.${key}`, key)}
                       </div>
                     </div>
                   ))}
@@ -117,7 +112,7 @@ const ManagementSection = () => {
                         className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                       >
                         <Users size={16} className="mr-2" />
-                        Kelola {card.title}
+                        {t('management.manage', 'Kelola')} {card.title}
                       </Button>
                     </Link>
                     <Link to="/agenda" className="flex-1">
@@ -126,7 +121,7 @@ const ManagementSection = () => {
                         className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-heritage"
                       >
                         <Calendar size={16} className="mr-2" />
-                        Lihat Agenda
+                        {t('management.viewAgenda', 'Lihat Agenda')}
                       </Button>
                     </Link>
                   </div>
