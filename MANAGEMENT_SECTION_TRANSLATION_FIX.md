@@ -102,12 +102,44 @@ All translation keys are already defined in `src/i18n/index.ts`:
 - `management.manage`: "Kelola"
 - `management.viewAgenda`: "Lihat Agenda"
 
+## Critical Fix - Reactivity Issue
+
+### Root Cause
+The `managementCards` array was initially defined at the component level but **outside** the render cycle. This meant the translation function `t()` was only called once when the component first mounted, and the array never updated when the language changed.
+
+### Solution
+Moved the `managementCards` array definition **inside** the component function body (after `useTranslation()` hook). This ensures the array is re-created on every render, making it reactive to language changes.
+
+**Before (Non-reactive):**
+```tsx
+const ManagementSection = () => {
+  const { t } = useTranslation();
+  const managementCards = [...]; // Defined once, never updates
+  
+  return (...);
+};
+```
+
+**After (Reactive):**
+```tsx
+const ManagementSection = () => {
+  const { t } = useTranslation();
+  
+  // Define cards inside component to make them reactive to language changes
+  const managementCards = [...]; // Re-created on every render
+  
+  return (...);
+};
+```
+
 ## Result
 
 ✅ All text in ManagementSection now properly switches between English and Indonesian
+✅ Card content (titles, descriptions, features) updates reactively when language changes
 ✅ No hardcoded strings remain
 ✅ All translation keys are properly defined
 ✅ ESLint warnings resolved
+✅ Component re-renders correctly on language switch
 
 ## Testing
 

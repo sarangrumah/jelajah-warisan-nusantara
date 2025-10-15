@@ -12,6 +12,8 @@ import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
+  
+  // Define cards inside component to make them reactive to language changes
   const managementCards = [
     {
       icon: Building2,
