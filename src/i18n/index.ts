@@ -74,6 +74,10 @@ const resources = {
         title: "Integrated National Management",
         description: "Professional management of museums and cultural heritage sites throughout Indonesia with modern and integrated systems.",
         mainServices: "Main Services",
+        feature1: "Digital collection system",
+        feature2: "Regular exhibition programs",
+        feature3: "Public education services",
+        feature4: "Research and documentation",
         museum: {
           title: "Museum",
           description: "Management of collections, exhibitions, and educational programs in museums throughout Indonesia",
@@ -581,6 +585,10 @@ const resources = {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
         mainServices: "Layanan Utama",
+        feature1: "Konservasi situs bersejarah",
+        feature2: "Monitoring kondisi",
+        feature3: "Program restorasi",
+        feature4: "Penelitian arkeologi",
         museum: {
           title: "Museum",
           description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
