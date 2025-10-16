@@ -40,14 +40,14 @@ echo -e "${BLUE}📊 Database: ${DATABASE_URL%%@*}@...${NC}"
 echo ""
 
 # Step 1: Backup current translations
-echo -e "${YELLOW}📦 Step 1: Backing up current translations...${NC}"
-BACKUP_FILE="management_translations_backup_$(date +%Y%m%d_%H%M%S).sql"
-psql "$DATABASE_URL" -c "\COPY (SELECT * FROM translations WHERE page = 'management') TO '$BACKUP_FILE' WITH CSV HEADER" 2>/dev/null || {
-    echo -e "${YELLOW}⚠️  Could not create CSV backup, creating SQL backup instead${NC}"
-    psql "$DATABASE_URL" -c "SELECT * FROM translations WHERE page = 'management';" > "$BACKUP_FILE"
-}
-echo -e "${GREEN}✅ Backup saved to: $BACKUP_FILE${NC}"
-echo ""
+# echo -e "${YELLOW}📦 Step 1: Backing up current translations...${NC}"
+# BACKUP_FILE="management_translations_backup_$(date +%Y%m%d_%H%M%S).sql"
+# psql "$DATABASE_URL" -c "\COPY (SELECT * FROM translations WHERE page = 'management') TO '$BACKUP_FILE' WITH CSV HEADER" 2>/dev/null || {
+#     echo -e "${YELLOW}⚠️  Could not create CSV backup, creating SQL backup instead${NC}"
+#     psql "$DATABASE_URL" -c "SELECT * FROM translations WHERE page = 'management';" > "$BACKUP_FILE"
+# }
+# echo -e "${GREEN}✅ Backup saved to: $BACKUP_FILE${NC}"
+# echo ""
 
 # Step 2: Show current state
 echo -e "${YELLOW}📋 Step 2: Current translation keys (before fix):${NC}"
