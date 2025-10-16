@@ -12,6 +12,7 @@ const ManagementSection = () => {
   const managementCards = useMemo(() => [
     {
       icon: Building2,
+      type: 'museum',
       title: t('management.museum.title'),
       description: t('management.museum.description'),
       features: [
@@ -30,6 +31,7 @@ const ManagementSection = () => {
     },
     {
       icon: Landmark,
+      type: 'heritage',
       title: t('management.heritage.title'),
       description: t('management.heritage.description'),
       features: [
@@ -101,7 +103,7 @@ const ManagementSection = () => {
                           {value}
                         </div>
                         <div className="text-sm text-muted-foreground capitalize">
-                          {t(`management.${card.title === t('management.museum.title') ? 'museum' : 'heritage'}.stats.${key}`)}
+                          {t(`management.${card.type}.stats.${key}`)}
                         </div>
                       </div>
                     ))}
