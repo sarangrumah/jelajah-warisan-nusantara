@@ -577,6 +577,7 @@ const resources = {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
         mainServices: "Layanan Utama",
+        // museum.title: "Museum",
         museum: {
           title: "Museum",
           description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
@@ -604,7 +605,7 @@ const resources = {
           }
         },
         manage: "Kelola",
-        viewAgenda: "Lihat Agenda"
+        viewAgenda: "Lihat Agendas"
       },
       // Distribution Section
       distribution: {
