@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Base static statistics
-import { museumStat } from '@/../../database/get-data';
+import { museumStat } from '../../database/get-data';
 
 // Represents the structure of museum statistics
 interface MuseumStats {

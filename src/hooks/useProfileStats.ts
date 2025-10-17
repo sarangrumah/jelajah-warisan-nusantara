@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { museumStat } from '@/../../database/get-data';
+import { museumStat } from '../../database/get-data';
 
 interface ProfileStats {
   museums: number;
