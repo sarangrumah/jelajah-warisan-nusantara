@@ -189,7 +189,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     fetchSlides();
   },[]);
 
-
   useEffect(() => {
   }, []);
 
@@ -290,15 +289,17 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               ) : null}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={currentSlideObj ? linkTo((translatedSlide?.button_url_1 || currentSlideObj.button_url_1).split('.')[1]) : "/"}>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                >
-                  {currentSlideObj && (translatedSlide?.button_url_1 || t(currentSlideObj.button_url_1))}
-                </Button>
-              </Link>
+              {currentSlideObj?.button_url_1 ? (
+                <Link to={linkTo(currentSlideObj.button_url_1.split('.')[1])}>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                  >
+                    {t(currentSlideObj.button_url_1)}
+                  </Button>
+                </Link>
+              ) : null}
               
               <Button
                 variant="outline"

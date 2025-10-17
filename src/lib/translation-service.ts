@@ -15,7 +15,7 @@ class TranslationService {
 
     constructor() {
         // console.log(import.meta.env.VITE_API_URL);
-    this.baseUrl = import.meta.env.VITE_API_URL || 'https://museumcagarbudaya.kemenbud.go.id/';
+    this.baseUrl = import.meta.env.VITE_API_URL || '';
     this.cache = new Map();
   }
 

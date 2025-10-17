@@ -56,7 +56,7 @@ class TranslationBackend implements BackendModule<BackendOptions> {
             // If a key starts with "translation.", remove that prefix.
             // This handles keys like "translation.nav.beranda" -> "nav.beranda"
             // It correctly leaves keys like "management.museum.title" as-is.
-            const cleanKey = key.startsWith('translation.') ? key.substring(12) : key;
+            const cleanKey = key.startsWith(`${namespace}.`) ? key.substring(namespace.length + 1) : key;
             const relevantParts = cleanKey.split('.');
             
             // Build nested structure from the parts
