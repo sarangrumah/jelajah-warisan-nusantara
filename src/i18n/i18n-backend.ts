@@ -53,22 +53,13 @@ class TranslationBackend implements BackendModule<BackendOptions> {
           const transformed: any = {};
 
           Object.entries(translations).forEach(([key, value]) => {
-            // Split by dots: ["module", "page", "key"] or ["page", "key"]
-            const parts = key.split('.');
-
-            // Remove the first part (module) if it is "translation" and there are 3+ parts
-            // This handles: "translation.nav.beranda" -> ["nav", "beranda"]
-            //               "translation.management.museum.title" -> ["management", "museum", "title"]
-            //               "common.profile.title" -> ["profile", "title"]
-            //               "home.hero.watchVideo" -> ["hero", "watchVideo"]
-            let relevantParts = parts;
-            if (parts.length >= 3 && parts[0] === 'translation') {
-              relevantParts = parts.slice(1);
-            } else if (parts.length >= 3) {
-              relevantParts = parts.slice(1);
-            }
-
-            // Build nested structure from remaining parts
+            // If a key starts with "translation.", remove that prefix.
+            // This handles keys like "translation.nav.beranda" -> "nav.beranda"
+            // It correctly leaves keys like "management.museum.title" as-is.
+            const cleanKey = key.startsWith('translation.') ? key.substring(12) : key;
+            const relevantParts = cleanKey.split('.');
+            
+            // Build nested structure from the parts
             let current = transformed;
             for (let i = 0; i < relevantParts.length - 1; i++) {
               if (!current[relevantParts[i]]) {
