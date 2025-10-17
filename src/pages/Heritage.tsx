@@ -10,6 +10,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
 import { heritageService } from '@/lib/api-services';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
@@ -188,7 +194,13 @@ const Heritage = () => {
                       {item.period}
                     </div>
                   </div>
-                  <p className="text-sm mt-3">{item.description}</p>
+                  <p className="text-sm mt-3">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.description)
+                      }}
+                    />
+                  </p>
                   <div className="mt-4">
                     <span className="inline-block px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">
                       {types.find((t) => t.id === item.type)?.name}

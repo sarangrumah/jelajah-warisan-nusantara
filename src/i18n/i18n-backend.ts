@@ -46,22 +46,28 @@ class TranslationBackend implements BackendModule<BackendOptions> {
         // Examples: { nav: { beranda: "..." }, profile: { title: "..." }, hero: { watchVideo: "..." } }
         
         let translations = data[namespace] || data.translation || data;
-        
+
         // If translations is an object with keys like "module.page.key"
         // Transform it to nested structure by removing module prefix
         if (typeof translations === 'object' && translations !== null) {
           const transformed: any = {};
-          
+
           Object.entries(translations).forEach(([key, value]) => {
             // Split by dots: ["module", "page", "key"] or ["page", "key"]
             const parts = key.split('.');
-            
-            // Remove the first part (module) if there are 3+ parts
+
+            // Remove the first part (module) if it is "translation" and there are 3+ parts
             // This handles: "translation.nav.beranda" -> ["nav", "beranda"]
+            //               "translation.management.museum.title" -> ["management", "museum", "title"]
             //               "common.profile.title" -> ["profile", "title"]
             //               "home.hero.watchVideo" -> ["hero", "watchVideo"]
-            const relevantParts = parts.length >= 3 ? parts.slice(1) : parts;
-            
+            let relevantParts = parts;
+            if (parts.length >= 3 && parts[0] === 'translation') {
+              relevantParts = parts.slice(1);
+            } else if (parts.length >= 3) {
+              relevantParts = parts.slice(1);
+            }
+
             // Build nested structure from remaining parts
             let current = transformed;
             for (let i = 0; i < relevantParts.length - 1; i++) {
@@ -70,14 +76,22 @@ class TranslationBackend implements BackendModule<BackendOptions> {
               }
               current = current[relevantParts[i]];
             }
-            
+
             // Set the final value
             current[relevantParts[relevantParts.length - 1]] = value;
           });
-          
+
           translations = transformed;
         }
-        
+
+        // DEBUG: Log the final nested translation object for verification
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem('i18n-debug-translations', JSON.stringify(translations));
+        }
+        // Also log to console for server-side debugging
+        // eslint-disable-next-line no-console
+        console.log('[i18n-backend] Final nested translations:', translations);
+
         callback(null, translations);
       })
       .catch(error => {

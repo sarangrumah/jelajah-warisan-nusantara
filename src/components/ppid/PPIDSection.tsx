@@ -1,6 +1,12 @@
 import { Info, FileText, Clock, Download, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import { useTranslation } from 'react-i18next';
 
 const PPIDSection = () => {
@@ -104,8 +110,20 @@ const PPIDSection = () => {
             <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <Info size={32} className="text-primary mb-2" />
-                <CardTitle className="text-xl">{type.title}</CardTitle>
-                <p className="text-sm text-muted-foreground">{type.description}</p>
+                <CardTitle className="text-xl">
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: fixBrokenHtmlTags(type.title)
+                    }}
+                  />
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: fixBrokenHtmlTags(type.description)
+                    }}
+                  />
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -115,7 +133,11 @@ const PPIDSection = () => {
                       {type.examples.map((example, exampleIndex) => (
                         <li key={exampleIndex} className="text-sm text-muted-foreground flex items-center gap-2">
                           <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                          {example}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(example)
+                            }}
+                          />
                         </li>
                       ))}
                     </ul>
@@ -147,8 +169,20 @@ const PPIDSection = () => {
                         {proc.step}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold mb-1">{proc.title}</h4>
-                        <p className="text-sm text-muted-foreground mb-2">{proc.description}</p>
+                        <h4 className="font-semibold mb-1">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(proc.title)
+                            }}
+                          />
+                        </h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(proc.description)
+                            }}
+                          />
+                        </p>
                         {/* <div className="flex items-center gap-2 text-xs">
                           <Clock size={12} className="text-primary" />
                           <span className="text-primary font-medium">Maksimal {proc.duration}</span>
@@ -182,8 +216,20 @@ const PPIDSection = () => {
                         {proc.step}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold mb-1">{proc.title}</h4>
-                        <p className="text-sm text-muted-foreground mb-2">{proc.description}</p>
+                        <h4 className="font-semibold mb-1">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(proc.title)
+                            }}
+                          />
+                        </h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(proc.description)
+                            }}
+                          />
+                        </p>
                         <div className="flex items-center gap-2 text-xs">
                           <Clock size={12} className="text-primary" />
                           <span className="text-primary font-medium">Maksimal {proc.duration}</span>

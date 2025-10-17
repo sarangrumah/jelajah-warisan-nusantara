@@ -166,8 +166,7 @@ pm2 logs backend --lines 30
 ### Test 5: API Endpoints
 ```bash
 # Test heritages endpoint (should be fast, no 504)
-time curl https://museumcagarbudaya.kemenbud.go.id/api/heritages
-
+c
 # Test museums endpoint (should be fast, no 504)
 time curl https://museumcagarbudaya.kemenbud.go.id/api/museums
 

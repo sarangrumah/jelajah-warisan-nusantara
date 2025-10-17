@@ -10,6 +10,12 @@ import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
@@ -101,8 +107,20 @@ const MuseumDetail = () => {
             <Badge className="mb-2">
               {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.name}</h1>
-            <p className="text-xl pe-8">{museum.subtitle}</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-2">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(museum.name)
+                }}
+              />
+            </h1>
+            <p className="text-xl pe-8">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(museum.subtitle)
+                }}
+              />
+            </p>
           </div>
         </section>  
         {/* Content */}
@@ -116,7 +134,11 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    {museum.description}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(museum.description)
+                      }}
+                    />
                   </p>
                 </CardContent>
               </Card>

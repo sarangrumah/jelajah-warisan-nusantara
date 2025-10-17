@@ -5,6 +5,12 @@ import { useLocation, useParams } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
 import { Card, CardContent } from '@/components/ui/card';
 import MemoryOfWorldGallery from '@/components/mow/MemoryOfWorldGallery';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const MemoryOfWorldDetail = () => {
     const { id } = useParams();
@@ -49,14 +55,30 @@ const MemoryOfWorldDetail = () => {
                         </div>
                         <div className="space-y-6">
                             <div>
-                                <h1 className="text-4xl font-bold mb-2">{memory.title}</h1>
-                                <p className="text-xl text-muted-foreground">{memory.subtitle}</p>
+                                <h1 className="text-4xl font-bold mb-2">
+                                  <span
+                                    dangerouslySetInnerHTML={{
+                                      __html: fixBrokenHtmlTags(memory.title)
+                                    }}
+                                  />
+                                </h1>
+                                <p className="text-xl text-muted-foreground">
+                                  <span
+                                    dangerouslySetInnerHTML={{
+                                      __html: fixBrokenHtmlTags(memory.subtitle)
+                                    }}
+                                  />
+                                </p>
                             </div>
 
                             <Card>
                                 <CardContent className="pt-6">
                                     <p className="text-muted-foreground leading-relaxed">
-                                        {memory.description}
+                                        <span
+                                          dangerouslySetInnerHTML={{
+                                            __html: fixBrokenHtmlTags(memory.description)
+                                          }}
+                                        />
                                     </p>
                                 </CardContent>
                             </Card>

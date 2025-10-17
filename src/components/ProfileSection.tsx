@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 type CompanyProfile = {
   id: string;
@@ -25,16 +33,24 @@ const ProfileSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Use content translation hook to translate all profile fields
+  const { translatedContent: translatedProfile, isTranslating } = useContentTranslation(profile);
+
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await contentService.getAll();
+        console.log('[ProfileSection] Raw API response:', response);
         if (response.error) { throw new Error(response.error); }
         // Use the first profile (or adjust as needed)
         const data = response.data as CompanyProfile[];
+        console.log('[ProfileSection] Parsed data:', data);
         setProfile(data && data.length > 0 ? data[0] : null);
+        if (data && data.length > 0) {
+          console.log('[ProfileSection] Profile object:', data[0]);
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to load profile');
       } finally {
@@ -44,8 +60,45 @@ const ProfileSection = () => {
     fetchProfile();
   }, []);
 
+  // Debug log to check profile at render time
+  if (profile) {
+    console.log('[ProfileSection] Profile at render:', profile);
+    console.log('[ProfileSection] Translated profile:', translatedProfile);
+    console.log('[ProfileSection] Is translating:', isTranslating);
+  }
+
+  // Set up scroll reveal observer after profile data is loaded
+  useEffect(() => {
+    if (!profile) {
+      return; // Only run when profile data is available
+    }
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          console.log('[ProfileSection ScrollReveal] Revealing:', entry.target);
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    // Query for scroll-reveal elements within this component
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+    console.log('[ProfileSection] Found scroll-reveal elements:', scrollRevealElements.length);
+    scrollRevealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [profile]); // Re-run when profile data changes
+
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-card">
+    <>
+      {/* <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div> */}
+      <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
@@ -65,39 +118,78 @@ const ProfileSection = () => {
         {profile && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
+              {isTranslating && (
+                <div className="text-center text-sm text-muted-foreground mb-4">
+                  🌐 Translating content...
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.vision || '-' }} />
-                  {!profile.vision && (
-                    <div style={{ color: 'red', fontSize: '0.9em' }}>
-                      <b>Debug:</b> Vision is missing or empty from backend.
-                    </div>
-                  )}
+                  {(() => {
+                    const visionHtml = (translatedProfile?.vision || profile.vision) || '-';
+                    console.log('[ProfileSection] Vision HTML to render:', visionHtml);
+                    return (
+                      <div
+                        className="prose text-muted-foreground"
+                        dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(visionHtml) }}
+                      />
+                    );
+                  })()}
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.mission || '-' }} />
-                  {!profile.mission && (
-                    <div style={{ color: 'red', fontSize: '0.9em' }}>
-                      <b>Debug:</b> Mission is missing or empty from backend.
-                    </div>
-                  )}
+                  <div className="prose space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((translatedProfile?.mission || profile.mission) || '-') }} />
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">About Us</h4>
-                  <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: profile.aboutus || '-' }} />
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
+                  <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((translatedProfile?.aboutus || profile.aboutus) || '-') }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">Contact</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
                   <ul className="text-muted-foreground space-y-1">
-                    <li><b>Address:</b> {profile.address || '-'}</li>
-                    <li><b>Phone:</b> {profile.phone || '-'}</li>
-                    <li><b>WhatsApp:</b> {profile.whatsapp || '-'}</li>
-                    <li><b>Email:</b> {profile.email || '-'}</li>
-                    <li><b>Website:</b> {profile.website || '-'}</li>
+                    <li>
+                      <b>{t('profile.contact.address', 'Address')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.address || profile.address) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.phone', 'Phone')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.phone || profile.phone) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.whatsapp || profile.whatsapp) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.email', 'Email')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.email || profile.email) || '-')
+                        }}
+                      />
+                    </li>
+                    <li>
+                      <b>{t('profile.contact.website', 'Website')}:</b>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags((translatedProfile?.website || profile.website) || '-')
+                        }}
+                      />
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -123,6 +215,7 @@ const ProfileSection = () => {
         </div> */}
       </div>
     </section>
+    </>
   );
 };
 

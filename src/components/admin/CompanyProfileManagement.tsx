@@ -13,6 +13,12 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import RichTextEditor from '../ui/rich-text-editor';
 import QuillEditor from '@/components/ui/quill-editor';
 import { sanitizeHtml } from '@/lib/sanitize-html';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 // Helper to render a plain text preview from potential HTML input
 function stripHtml(input?: string): string {
@@ -732,7 +738,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                         <span className="font-medium">Vision</span>
                         <div
                           className="rich-content text-muted-foreground"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(profile.vision || 'No description') }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(profile.vision || 'No description')) }}
                         />
                       </div>
                       <div className='pb-2'>

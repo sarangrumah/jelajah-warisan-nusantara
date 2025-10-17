@@ -3,6 +3,12 @@ import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 import { eventCategories, defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
@@ -123,10 +129,10 @@ const AgendaSection = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'upcoming': return 'Akan Datang';
-      case 'ongoing': return 'Berlangsung';
-      case 'registration': return 'Pendaftaran';
-      default: return 'Selesai';
+      case 'upcoming': return t('agenda.status.upcoming', 'Akan Datang');
+      case 'ongoing': return t('agenda.status.ongoing', 'Berlangsung');
+      case 'registration': return t('agenda.status.registration', 'Pendaftaran');
+      default: return t('agenda.status.finished', 'Selesai');
     }
   };
 
@@ -210,11 +216,19 @@ const AgendaSection = () => {
                     {/* Event Content */}
                     <div className="p-6 mb-9 flex-1 flex flex-col">
                       <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
-                        {event.title}
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: fixBrokenHtmlTags(event.title)
+                          }}
+                        />
                       </h3>
                       
                       <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        {event.description}
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: fixBrokenHtmlTags(event.description)
+                          }}
+                        />
                       </p>
 
                       <div className="space-y-2 mb-6">
@@ -235,7 +249,7 @@ const AgendaSection = () => {
                     <div className='p-6 absolute left-0 bottom-0 right-0'>
                       <Link to={`/event/${event.id}`}>
                         <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
-                          Detail Event
+                          {t('agenda.button.detail', 'Detail Event')}
                           <ChevronRight size={16} className="ml-2" />
                         </Button>
                       </Link>

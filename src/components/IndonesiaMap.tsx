@@ -4,6 +4,12 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl, getImageUrl } from './helper';
 
@@ -191,44 +197,44 @@ const IndonesiaMap = () => {
       const popupContent = `
         <div style="padding: 16px; min-width: 280px; max-width: 320px;">
           <div style="margin-bottom: 12px;">
-            <img src="${getMuseumsImageUrl(location.image_url)}" alt="${location.name || location.title}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
-            <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${location.name || location.title}</h3>
+            <img src="${getMuseumsImageUrl(location.image_url)}" alt="${fixBrokenHtmlTags(location.name || location.title)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
+            <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${fixBrokenHtmlTags(location.name || location.title)}</h3>
             <span style="background-color: ${types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${types.length > 0 && types.find((type) => type.id === location.type)?.name}</span>
           </div>
-          <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${location.subtitle}</p>
+          <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${fixBrokenHtmlTags(location.subtitle)}</p>
           <div style="margin-bottom: 12px;">
             <div style="margin-bottom: 6px;">
               <strong style="color: #374151; font-size: 12px;">📍 Alamat:</strong>
-              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${location.address}</p>
+              <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${fixBrokenHtmlTags(location.address)}</p>
             </div>
             ${location.openingHours ? `
               <div style="margin-bottom: 6px;">
                 <strong style="color: #374151; font-size: 12px;">🕒 Jam Buka:</strong>
-                <span style="color: #6b7280; font-size: 12px; margin-left: 4px;">${location.openingHours}</span>
+                <span style="color: #6b7280; font-size: 12px; margin-left: 4px;">${fixBrokenHtmlTags(location.openingHours)}</span>
               </div>
             ` : ''}
             ${location.ticketPrice ? `
               <div style="margin-bottom: 6px;">
                 <strong style="color: #374151; font-size: 12px;">💰 Tiket:</strong>
-                <span style="color: #6b7280; font-size: 12px; margin-left: 4px;">${location.ticketPrice}</span>
+                <span style="color: #6b7280; font-size: 12px; margin-left: 4px;">${fixBrokenHtmlTags(location.ticketPrice)}</span>
               </div>
             ` : ''}
           </div>
           <div style="display: flex; gap: 8px; position: relative; z-index: 10000;">
-            <button 
+            <button
               class="popup-btn-detail"
               data-id="${location.id}"
               data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
               data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
               style="
-                flex: 1; 
-                background-color: #3b82f6; 
-                color: white; 
-                padding: 10px 12px; 
-                border: none; 
-                border-radius: 6px; 
-                font-size: 12px; 
-                cursor: pointer; 
+                flex: 1;
+                background-color: #3b82f6;
+                color: white;
+                padding: 10px 12px;
+                border: none;
+                border-radius: 6px;
+                font-size: 12px;
+                cursor: pointer;
                 font-weight: 500;
                 transition: background-color 0.2s ease;
                 pointer-events: auto;
@@ -240,20 +246,20 @@ const IndonesiaMap = () => {
             >
               Lihat Detail
             </button>
-            <button 
+            <button
               class="popup-btn-list"
               data-region="${location.region}"
               data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
               data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
               style="
-                flex: 1; 
-                background-color: #10b981; 
-                color: white; 
-                padding: 10px 12px; 
-                border: none; 
-                border-radius: 6px; 
-                font-size: 12px; 
-                cursor: pointer; 
+                flex: 1;
+                background-color: #10b981;
+                color: white;
+                padding: 10px 12px;
+                border: none;
+                border-radius: 6px;
+                font-size: 12px;
+                cursor: pointer;
                 font-weight: 500;
                 transition: background-color 0.2s ease;
                 pointer-events: auto;

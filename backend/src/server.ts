@@ -25,6 +25,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// DEBUG: Log __dirname and uploadBase to verify static path resolution
+console.log('DEBUG __dirname:', __dirname);
+const uploadBase = process.env.UPLOAD_PATH
+  ? path.resolve(process.env.UPLOAD_PATH)
+  : path.resolve(__dirname, '../../uploads');
+console.log('DEBUG uploadBase:', uploadBase);
+
 import { globalActivityLogger } from './middleware/activityLogger';
 
 // Security middleware
@@ -33,15 +40,30 @@ app.use(helmet({
 }));
 
 // CORS configuration
+// Original localhost-only config (commented for reference)
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   optionsSuccessStatus: 200
+// }));
+
+// Updated CORS configuration to support both development and production
 app.use(cors({
-//  origin: [
-//    'http://localhost:5173',
-//    'http://localhost:8080',
-//    'http://localhost:8081',
-//    'http://127.0.0.1:5173',
-//    'http://127.0.0.1:8080'
-//  ],
-  origin: 'http://localhost:5173',
+  origin: [
+    // Development origins
+    'http://localhost:5173',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:8080',
+    // Production origins
+    'https://museumcagarbudaya.kemenbud.go.id',
+    'https://www.museumcagarbudaya.kemenbud.go.id',
+    'http://museumcagarbudaya.kemenbud.go.id',
+    'http://www.museumcagarbudaya.kemenbud.go.id'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -76,9 +98,11 @@ app.use(globalActivityLogger);
 
 // Serve static files for uploaded contents
 // Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
+/* (moved above for debug logging)
 const uploadBase = process.env.UPLOAD_PATH
   ? path.resolve(process.env.UPLOAD_PATH)
   : path.resolve(__dirname, '../../uploads');
+*/
 app.use('/uploads', express.static(uploadBase));
 
 // Serve frontend static files (production build)
@@ -92,11 +116,6 @@ const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
 
 app.use('/assets', express.static(assetsDir));
 
-// Fallback: serve index.html for any non-API route (client-side routing)
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(frontendDir, 'index.html'));
-});
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -105,7 +124,8 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
-// API routes
+
+// API routes - MUST be registered BEFORE the fallback route
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
@@ -114,7 +134,7 @@ app.use('/api/activity-log', activityLogRoutes);
 app.use('/api/translation-cache', translationCacheRoutes);
 
 // Error handling middleware
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', error);
   
   if (error.code === 'LIMIT_FILE_SIZE') {
@@ -136,9 +156,16 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// Fallback: serve index.html for any non-API route (client-side routing)
+// IMPORTANT: This MUST be after all API routes and error handling to avoid catching API requests
+app.get('*', (req, res) => {
+  // Only serve index.html for non-API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(frontendDir, 'index.html'));
+  } else {
+    // If we somehow reach here for an API route, return 404
+    res.status(404).json({ error: 'API endpoint not found' });
+  }
 });
 
 // Start server

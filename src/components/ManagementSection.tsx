@@ -1,39 +1,54 @@
-import { Building2, Landmark, ArrowRight, Users, Calendar } from 'lucide-react';
+import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
-  const { t } = useTranslation();
-  const managementCards = [
+  const { t } = useTranslation('translation');
+  
+  // Define cards inside useMemo to make them reactive to language changes
+  const managementCards = useMemo(() => [
     {
       icon: Building2,
-      title: 'Museum',
-      description: 'Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia',
+      type: 'museum',
+      title: t('management.museum.title'),
+      description: t('management.museum.description'),
       features: [
-        'Sistem koleksi digital',
-        'Program pameran berkala',
-        'Layanan edukasi publik',
-        'Penelitian dan dokumentasi'
+        t('management.museum.feature1'),
+        t('management.museum.feature2'),
+        t('management.museum.feature3'),
+        t('management.museum.feature4')
       ],
-      stats: { museums: museumStat.museums, visitors: museumStat.visitors, programs: museumStat.programs },
-      gradient: 'from-primary to-primary-glow'
+      stats: { 
+        museums: museumStat.museums, 
+        visitors: museumStat.visitors, 
+        programs: museumStat.programs 
+      },
+      gradient: 'from-primary to-primary-glow',
+      link: '/museum'
     },
     {
       icon: Landmark,
-      title: 'Cagar Budaya',
-      description: 'Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional',
+      type: 'heritage',
+      title: t('management.heritage.title'),
+      description: t('management.heritage.description'),
       features: [
-        'Konservasi situs bersejarah',
-        'Monitoring kondisi',
-        'Program restorasi',
-        'Penelitian arkeologi'
+        t('management.heritage.feature1'),
+        t('management.heritage.feature2'),
+        t('management.heritage.feature3'),
+        t('management.heritage.feature4')
       ],
-      stats: { sites: museumStat.sites, provinces: museumStat.provinces, projects: museumStat.projects },
-      gradient: 'from-accent to-secondary'
+      stats: { 
+        sites: museumStat.sites, 
+        provinces: museumStat.provinces, 
+        projects: museumStat.projects 
+      },
+      gradient: 'from-accent to-secondary',
+      link: '/heritage'
     }
-  ];
+  ], [t]);
 
   return (
     <section className="py-20 from-card to-background">
@@ -43,9 +58,12 @@ const ManagementSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {managementCards.map((card, index) => (
-            <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+            <Link 
+              key={index}
+              to={card.link} 
+              className="flex-1"
+            >
               <div
-                key={index}
                 className="group bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce scroll-reveal"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
@@ -65,45 +83,40 @@ const ManagementSection = () => {
                   {/* Features */}
                   <div className="mb-8">
                     <h4 className="text-xl font-semibold text-foreground mb-4">
-                      Layanan Utama
+                      {t('management.mainServices')}
                     </h4>
                     <ul className="space-y-3">
                       {card.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center text-muted-foreground">
                           <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                          {feature}
+                          <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  {Object.entries(card.stats).map(([key, value], statIndex) => (
-                    <div key={statIndex} className="text-center">
-                      <div className="text-2xl font-bold text-heritage-gradient">
-                        {value}
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    {Object.entries(card.stats).map(([key, value], statIndex) => (
+                      <div key={statIndex} className="text-center">
+                        <div className="text-2xl font-bold text-heritage-gradient">
+                          {value}
+                        </div>
+                        <div className="text-sm text-muted-foreground capitalize">
+                          {t(`management.${card.type}.stats.${key}`)}
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground capitalize">
-                        {key === 'museums' ? 'Museum' : 
-                         key === 'visitors' ? 'Pengunjung' :
-                         key === 'programs' ? 'Program' :
-                         key === 'sites' ? 'Situs' :
-                         key === 'provinces' ? 'Provinsi' :
-                         key === 'projects' ? 'Proyek' : key}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
                   {/* Action buttons */}
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Link to={card.title === 'Museum' ? '/museum' : '/heritage'} className="flex-1">
+                    <Link to={card.link} className="flex-1">
                       <Button 
                         className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                       >
                         <Users size={16} className="mr-2" />
-                        Kelola {card.title}
+                        {t('management.manage')} {card.title}
                       </Button>
                     </Link>
                     <Link to="/agenda" className="flex-1">
@@ -112,7 +125,7 @@ const ManagementSection = () => {
                         className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-heritage"
                       >
                         <Calendar size={16} className="mr-2" />
-                        Lihat Agenda
+                        {t('management.viewAgenda')}
                       </Button>
                     </Link>
                   </div>

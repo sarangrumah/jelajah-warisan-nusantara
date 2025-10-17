@@ -3,7 +3,52 @@ import { Search, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { mediaService } from '@/lib/api-services';
+// Child component for a single news article card with translation
+function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }) {
+  const { translatedContent } = useContentTranslation(article);
+  return (
+    <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
+      {article.featured_image_url && (
+        <div className="aspect-video relative overflow-hidden">
+          <img
+            src={getNewsImageUrl(article.featured_image_url)}
+            alt={translatedContent?.title || article.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <CardContent className="p-6">
+        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+          {translatedContent?.title || article.title}
+        </h3>
+        <p className="text-muted-foreground mb-4 line-clamp-3">
+          {translatedContent?.excerpt || article.excerpt}
+        </p>
+        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+          <div className="flex items-center gap-2">
+            <Calendar size={14} />
+            <span>
+              {article.published_at 
+                ? new Date(article.published_at).toLocaleDateString('id-ID')
+                : new Date(article.created_at).toLocaleDateString('id-ID')
+              }
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <User size={14} />
+            <span>Admin</span>
+          </div>
+        </div>
+        <button onClick={() => handleReadMoreClick(article.file_url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+          Baca Selengkapnya
+          <ArrowRight size={16} />
+        </button>
+      </CardContent>
+    </Card>
+  );
+}
 
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
 
@@ -135,44 +180,12 @@ const NewsListSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredArticles.map((article, index) => (
-            <Card key={index} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
-              {article.featured_image_url && (
-                <div className="aspect-video relative overflow-hidden">
-                  <img
-                    src={getNewsImageUrl(article.featured_image_url)}
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-                  {article.title}
-                </h3>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {article.excerpt}
-                </p>
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} />
-                    <span>
-                      {article.published_at 
-                        ? new Date(article.published_at).toLocaleDateString('id-ID')
-                        : new Date(article.created_at).toLocaleDateString('id-ID')
-                      }
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <User size={14} />
-                    <span>Admin</span>
-                  </div>
-                </div>
-                  <button onClick={() => handleReadMoreClick(article.file_url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-                    Baca Selengkapnya
-                    <ArrowRight size={16} />
-                  </button>
-              </CardContent>
-            </Card>
+            <NewsArticleCard
+              key={index}
+              article={article}
+              handleReadMoreClick={handleReadMoreClick}
+              getNewsImageUrl={getNewsImageUrl}
+            />
           ))}
         </div>
 

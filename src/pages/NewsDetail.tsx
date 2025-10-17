@@ -6,7 +6,14 @@ import FloatingButtons from '@/components/FloatingButtons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { mediaService } from '@/lib/api-services';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import { useEffect, useState } from 'react';
+// Utility to fix broken HTML tags like < p > to <p>
 
 const NewsDetail = () => {
   const { pathname } = useLocation();
@@ -65,10 +72,10 @@ const NewsDetail = () => {
           }
         })
         .catch(() => {
-          if (mounted) setArticle(null);
+          if (mounted) { setArticle(null); }
         })
         .finally(() => {
-          if (mounted) setLoading(false);
+          if (mounted) { setLoading(false); }
         });
     }
     return () => { mounted = false; };
@@ -138,11 +145,19 @@ const NewsDetail = () => {
             </div>
             
             <h1 className="text-4xl md:text-4xl font-bold text-foreground mb-6">
-              {article.title}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(article.title)
+                }}
+              />
             </h1>
             
             <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-              {article.excerpt}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(article.excerpt)
+                }}
+              />
             </p>
             
             <div className="flex items-center justify-between border-t border-b border-border py-4">
@@ -184,7 +199,7 @@ const NewsDetail = () => {
           <div className="prose prose-lg max-w-none">
             <div 
               className="text-foreground leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.content }}
+              dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(article.content || '') }}
             />
           </div>
 
