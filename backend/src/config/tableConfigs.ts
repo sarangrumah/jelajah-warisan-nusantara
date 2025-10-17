@@ -145,17 +145,56 @@ export const tableConfigs = {
     'updated_by',
     'updated_at'
   ],
-  tb_categories_collections: [
-    "id",
-    "name",
-    "created_by",
-    "updated_by",
-    "created_at",
-    "updated_at"
+  tb_pemanfaatanasset: [
+    'id',
+    'title',
+    'description',
+    'location',
+    'category',
+    'image_url',
+    'short_location',
+    'area',
+    'fasilitas',
+    'tarif',
+    'overtime',
+    'fasilitas_tambahan',
+    'ketentuan_umum',
+    'kapasitas',
+    'ukuran',
+    'is_active',
+    'is_approved',
+    'is_rejected',
+    'reason_rejected',
+    'created_by',
+    'updated_by',
+    'created_at',
+    'updated_at'
   ],
- 
+  tb_categories_layananaset_area: [
+    'id',
+    'name',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+  tb_categories_layananaset_fasilitas: [
+    'id',
+    'name',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+  tb_categories_collections: [
+    'id',
+    'name',
+    'created_by',
+    'updated_by',
+    'created_at',
+    'updated_at'
+  ],
   tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at']
- 
 };
 
 export const tableRelationships = {
@@ -198,6 +237,22 @@ export const tableRelationships = {
     category: {
       table: 'tb_categories_collections',
       localKey: 'categories_id',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name']
+    }
+  },
+  tb_pemanfaatanasset: {
+    category_relation: {
+      table: 'tb_categories_layananaset_fasilitas',
+      localKey: 'category',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name']
+    },
+    location_relation: {
+      table: 'tb_categories_layananaset_area',
+      localKey: 'area',
       foreignKey: 'id',
       type: 'left',
       fields: ['id', 'name']
@@ -289,6 +344,10 @@ export const approvalConfig = {
     autoActivateOnApprove: true
   },
   tb_master_collection: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  tb_pemanfaatanasset: {
     requiresApproval: true,
     autoActivateOnApprove: true
   }

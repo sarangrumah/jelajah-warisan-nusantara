@@ -28,7 +28,7 @@ function getTranslatableFields(tableName: string): string[] {
     'tb_banner': ['title', 'subtitle', 'description'],
     'tb_memoryoftheworld': ['title', 'description'],
     'tb_company': ['name', 'description', 'vision', 'mission'],
-    'tb_pemanfaatan_aset': ['title', 'description', 'location'],
+    'tb_pemanfaatanasset': ['title', 'description', 'location'],
   };
 
   return translatableFieldsMap[tableName] || [];
@@ -362,6 +362,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         // Handle JSON/JSONB fields by stringifying values and casting placeholders
         const JSON_FIELDS: Record<string, string[]> = {
           tb_sites: ['opening_hours'],
+          tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
         };
         const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
@@ -562,6 +563,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (hasMainUpdates) {
           const JSON_FIELDS: Record<string, string[]> = {
             tb_sites: ['opening_hours'],
+            tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
           };
           const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
