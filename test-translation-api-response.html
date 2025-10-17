@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Translation API Response</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Translation API Response Test</h1>
+    
+    <div class="section info">
+        <h2>Instructions</h2>
+        <p>This page will test the translation API response and show you exactly what structure is being returned.</p>
+        <button onclick="testAPI()">Test API Response</button>
+        <button onclick="clearCache()">Clear Backend Cache</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3001'; // Adjust if needed
+
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="section info"><p>Loading...</p></div>';
+
+            try {
+                // Test Indonesian translations
+                const responseID = await fetch(`${API_URL}/api/translations/by-language/id`);
+                const dataID = await responseID.json();
+
+                // Test English translations
+                const responseEN = await fetch(`${API_URL}/api/translations/by-language/en`);
+                const dataEN = await responseEN.json();
+
+                // Check for management translations
+                const managementKeysID = Object.keys(dataID.translation || {}).filter(key => 
+                    key.includes('management')
+                );
+
+                const managementKeysEN = Object.keys(dataEN.translation || {}).filter(key => 
+                    key.includes('management')
+                );
+
+                let html = '';
+
+                // Show Indonesian management translations
+                html += '<div class="section ' + (managementKeysID.length > 0 ? 'success' : 'error') + '">';
+                html += '<h2>Indonesian (ID) Management Translations</h2>';
+                html += '<p>Found ' + managementKeysID.length + ' management translation keys</p>';
+                if (managementKeysID.length > 0) {
+                    html += '<pre>' + JSON.stringify(
+                        managementKeysID.reduce((obj, key) => {
+                            obj[key] = dataID.translation[key];
+                            return obj;
+                        }, {}),
+                        null,
+                        2
+                    ) + '</pre>';
+                } else {
+                    html += '<p class="error">❌ No management translations found!</p>';
+                    html += '<p>Sample of available keys:</p>';
+                    html += '<pre>' + Object.keys(dataID.translation || {}).slice(0, 10).join('\n') + '</pre>';
+                }
+                html += '</div>';
+
+                // Show English management translations
+                html += '<div class="section ' + (managementKeysEN.length > 0 ? 'success' : 'error') + '">';
+                html += '<h2>English (EN) Management Translations</h2>';
+                html += '<p>Found ' + managementKeysEN.length + ' management translation keys</p>';
+                if (managementKeysEN.length > 0) {
+                    html += '<pre>' + JSON.stringify(
+                        managementKeysEN.reduce((obj, key) => {
+                            obj[key] = dataEN.translation[key];
+                            return obj;
+                        }, {}),
+                        null,
+                        2
+                    ) + '</pre>';
+                }
+                html += '</div>';
+
+                // Show what the frontend expects
+                html += '<div class="section info">';
+                html += '<h2>What Frontend Expects</h2>';
+                html += '<p>The ManagementSection component calls:</p>';
+                html += '<ul>';
+                html += '<li><code>t("management.museum.title")</code></li>';
+                html += '<li><code>t("management.museum.description")</code></li>';
+                html += '<li><code>t("management.heritage.title")</code></li>';
+                html += '<li><code>t("management.museum.stats.museums")</code></li>';
+                html += '</ul>';
+                html += '<p>After i18n-backend transformation, these should map to:</p>';
+                html += '<ul>';
+                html += '<li><code>translation.management.museum.title</code> in API response</li>';
+                html += '<li><code>translation.management.museum.description</code> in API response</li>';
+                html += '<li><code>translation.management.heritage.title</code> in API response</li>';
+                html += '<li><code>translation.management.museum.stats.museums</code> in API response</li>';
+                html += '</ul>';
+                html += '</div>';
+
+                // Check if the expected keys exist
+                const expectedKeys = [
+                    'translation.management.title',
+                    'translation.management.museum.title',
+                    'translation.management.museum.description',
+                    'translation.management.heritage.title',
+                    'translation.management.museum.stats.museums'
+                ];
+
+                html += '<div class="section">';
+                html += '<h2>Key Verification</h2>';
+                html += '<table style="width:100%; border-collapse: collapse;">';
+                html += '<tr><th style="border:1px solid #ddd; padding:8px;">Expected Key</th><th style="border:1px solid #ddd; padding:8px;">Found in ID</th><th style="border:1px solid #ddd; padding:8px;">Found in EN</th></tr>';
+                
+                expectedKeys.forEach(key => {
+                    const foundID = key in (dataID.translation || {});
+                    const foundEN = key in (dataEN.translation || {});
+                    html += '<tr>';
+                    html += '<td style="border:1px solid #ddd; padding:8px;"><code>' + key + '</code></td>';
+                    html += '<td style="border:1px solid #ddd; padding:8px;">' + (foundID ? '✅ Yes' : '❌ No') + '</td>';
+                    html += '<td style="border:1px solid #ddd; padding:8px;">' + (foundEN ? '✅ Yes' : '❌ No') + '</td>';
+                    html += '</tr>';
+                });
+                
+                html += '</table>';
+                html += '</div>';
+
+                resultsDiv.innerHTML = html;
+
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="section error"><h2>Error</h2><p>' + error.message + '</p></div>';
+            }
+        }
+
+        async function clearCache() {
+            try {
+                // This would need a backend endpoint to clear cache
+                alert('To clear cache, restart your backend server or wait 5 minutes for cache to expire.');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Auto-run on page load
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

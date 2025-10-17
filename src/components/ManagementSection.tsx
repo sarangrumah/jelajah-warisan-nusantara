@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { museumStat } from '@/../database/get-data';
 
 const ManagementSection = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
   
   // Define cards inside useMemo to make them reactive to language changes
   const managementCards = useMemo(() => [
