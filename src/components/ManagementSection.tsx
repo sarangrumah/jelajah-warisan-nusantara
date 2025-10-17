@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
-import { museumStat } from '@/../database/get-data';
+import { useMuseumStats } from '@/hooks/useMuseumStats';
 
 const ManagementSection = () => {
   const { t } = useTranslation('translation');
+  const museumStats = useMuseumStats();
   
   // Define cards inside useMemo to make them reactive to language changes
   const managementCards = useMemo(() => [
@@ -21,10 +22,10 @@ const ManagementSection = () => {
         t('management.museum.feature3'),
         t('management.museum.feature4')
       ],
-      stats: { 
-        museums: museumStat.museums, 
-        visitors: museumStat.visitors, 
-        programs: museumStat.programs 
+      stats: {
+        museums: museumStats.museums,
+        visitors: museumStats.visitors,
+        programs: museumStats.programs
       },
       gradient: 'from-primary to-primary-glow',
       link: '/museum'
@@ -40,15 +41,15 @@ const ManagementSection = () => {
         t('management.heritage.feature3'),
         t('management.heritage.feature4')
       ],
-      stats: { 
-        sites: museumStat.sites, 
-        provinces: museumStat.provinces, 
-        projects: museumStat.projects 
+      stats: {
+        sites: museumStats.sites,
+        provinces: museumStats.provinces,
+        projects: museumStats.projects
       },
       gradient: 'from-accent to-secondary',
       link: '/heritage'
     }
-  ], [t]);
+  ], [t, museumStats]);
 
   return (
     <section className="py-20 from-card to-background">

@@ -10,7 +10,7 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-import { eventCategories, defaultEvents } from '@/../database/default-data';
+import { defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -54,15 +54,9 @@ const AgendaSection = () => {
   const [isPaused, setIsPaused] = useState(false);
 
   // Accessibility: Announce slide changes
-  const totalSlides = (
-    activeCategory === 'semua'
-      ? events.slice(0, 6)
-      : events.filter(event => event.category === activeCategory).slice(0, 6)
-  ).length;
-
   // Auto-slide logic
   useEffect(() => {
-    if (!carouselApi || isPaused) return;
+    if (!carouselApi || isPaused) { return; }
     const interval = setInterval(() => {
       if (carouselApi) {
         carouselApi.scrollNext();
@@ -73,7 +67,7 @@ const AgendaSection = () => {
 
   // Update current index for live region
   useEffect(() => {
-    if (!carouselApi) return;
+    if (!carouselApi) { return; }
     const onSelect = () => {
       setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
     };
@@ -129,10 +123,10 @@ const AgendaSection = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'upcoming': return t('agenda.status.upcoming', 'Akan Datang');
-      case 'ongoing': return t('agenda.status.ongoing', 'Berlangsung');
-      case 'registration': return t('agenda.status.registration', 'Pendaftaran');
-      default: return t('agenda.status.finished', 'Selesai');
+      case 'upcoming': return t('agenda.status.upcoming', 'Upcoming');
+      case 'ongoing': return t('agenda.status.ongoing', 'Ongoing');
+      case 'registration': return t('agenda.status.registration', 'Registration');
+      default: return t('agenda.status.finished', 'Finished');
     }
   };
 
@@ -150,7 +144,11 @@ const AgendaSection = () => {
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
-          {eventCategories.map((category) => (
+          {[
+            { id: 'semua', label: t('agenda.categories.all', 'All Events') },
+            { id: 'event', label: t('agenda.categories.event', 'Event') },
+            { id: 'pameranTemporer', label: t('agenda.categories.temporaryExhibition', 'Temporary Exhibition') }
+          ].map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}

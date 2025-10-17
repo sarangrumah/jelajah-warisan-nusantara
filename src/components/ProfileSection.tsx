@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
 import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { useProfileStats } from '@/hooks/useProfileStats';
+
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -35,6 +37,7 @@ const ProfileSection = () => {
 
   // Use content translation hook to translate all profile fields
   const { translatedContent: translatedProfile, isTranslating } = useContentTranslation(profile);
+  const profileStats = useProfileStats();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -94,6 +97,13 @@ const ProfileSection = () => {
 
     return () => observer.disconnect();
   }, [profile]); // Re-run when profile data changes
+
+  const statItems = [
+    { value: profileStats.museums, label: t('profile.stats.museums') },
+    { value: profileStats.heritages, label: t('profile.stats.heritage') },
+    { value: profileStats.provinces, label: t('profile.stats.provinces') },
+    { value: profileStats.experiences, label: t('profile.stats.experience') }
+  ];
 
   return (
     <>
@@ -196,6 +206,15 @@ const ProfileSection = () => {
             </div>
           </div>
         )}
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center scroll-reveal mt-16">
+          {statItems.map((stat, index) => (
+            <div key={index}>
+              <h4 className="text-3xl md:text-4xl font-bold text-heritage-gradient">{stat.value}</h4>
+              <p className="text-muted-foreground mt-2">{stat.label}</p>
+            </div>
+          ))}
+        </div>
 
         {/* Call to Action (optional) */}
         {/* <div className="text-center scroll-reveal">
