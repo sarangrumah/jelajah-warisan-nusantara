@@ -8,10 +8,10 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
+import { useTranslation } from 'react-i18next';
 
 const ContactSection = () => {
-  // const mapContainer = useRef<HTMLDivElement>(null);
-  // const map = useRef<L.Map | null>(null);
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { pathname } = useLocation();
   const [faqs, setFaqs] = useState([]);
@@ -79,8 +79,8 @@ const ContactSection = () => {
     // Basic validation
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast({
-        title: "Error",
-        description: "Mohon lengkapi semua field yang diperlukan",
+        title: t('contact.error.title'),
+        description: t('contact.validation.required'),
         variant: "destructive"
       });
       return;
@@ -90,16 +90,16 @@ const ContactSection = () => {
       // Note: For email functionality, you'll need to set up Resend
       // For now, we'll just show a success message
       toast({
-        title: "Pesan Terkirim!",
-        description: "Terima kasih! Kami akan merespons dalam 1-2 hari kerja.",
+        title: t('contact.success.title'),
+        description: t('contact.success.message'),
       });
       
       // Reset form
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Gagal mengirim pesan. Silakan coba lagi.",
+        title: t('contact.error.title'),
+        description: t('contact.error.message'),
         variant: "destructive"
       });
       console.error(error)
@@ -144,34 +144,34 @@ const ContactSection = () => {
   const contactInfo = [
     {
       icon: MapPin,
-      title: 'Alamat Kantor',
+      title: t('contact.office.title'),
       details: [
-        'Jl. Medan Merdeka Barat No. 12',
-        'Jakarta Pusat 10110',
-        'DKI Jakarta, Indonesia'
+        t('contact.office.address1'),
+        t('contact.office.address2'),
+        t('contact.office.address3')
       ]
     },
     {
       icon: Phone,
-      title: 'Whatsapp',
+      title: t('contact.whatsapp'),
       details: [
         '+6281295953929'
       ]
     },
     {
       icon: Mail,
-      title: 'Email',
+      title: t('contact.email'),
       details: [
         'museumcb@kemenbud.go.id'
       ]
     },
     {
       icon: Clock,
-      title: 'Jam Operasional',
+      title: t('contact.hours.title'),
       details: [
-        'Senin - Kamis: 07:30 - 16:00 WIB',
-        'Jumat: 07:30 - 16:30 WIB',
-        'Sabtu, Minggu & Hari Libur Nasional: Tutup'
+        t('contact.hours.monThu'),
+        t('contact.hours.fri'),
+        t('contact.hours.weekend')
       ]
     }
   ];
@@ -184,19 +184,18 @@ const ContactSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal">{/* removed scroll-reveal for testing */}
+        <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
-            Hubungi Kami
+            {t('contact.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Kami siap membantu Anda dengan pertanyaan, saran, atau informasi 
-            lebih lanjut tentang museum dan cagar budaya Indonesia.
+            {t('contact.subtitle')}
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           <div>
-            <h3 className="text-2xl font-bold mb-8">Informasi Kontak</h3>
+            <h3 className="text-2xl font-bold mb-8">{t('contact.infoTitle')}</h3>
             <div className="grid md:grid-cols-2 gap-6">
               {contactInfo.map((info, index) => (
                 <Card key={index} className="heritage-glow hover:scale-105 transition-bounce">
@@ -220,7 +219,7 @@ const ContactSection = () => {
             </div>
 
             <div className="mt-8">
-              <h4 className="text-xl font-semibold mb-4">Media Sosial</h4>
+              <h4 className="text-xl font-semibold mb-4">{t('contact.socialMedia')}</h4>
               <div className="grid grid-cols-2 gap-3">
                 {socialMedia.map((social, index) => (
                   <a
@@ -243,28 +242,28 @@ const ContactSection = () => {
           <div>
             <Card className="heritage-glow">
               <CardHeader>
-                <CardTitle className="text-2xl">Kirim Pesan</CardTitle>
+                <CardTitle className="text-2xl">{t('contact.form.title')}</CardTitle>
                 <p className="text-muted-foreground">
-                  Sampaikan pertanyaan atau saran Anda kepada kami
+                  {t('contact.form.subtitle')}
                 </p>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Nama Lengkap</label>
+                      <label className="block text-sm font-medium mb-2">{t('contact.form.name')}</label>
                       <Input 
-                        placeholder="Masukkan nama lengkap" 
+                        placeholder={t('contact.form.namePlaceholder')}
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Email</label>
+                      <label className="block text-sm font-medium mb-2">{t('contact.form.email')}</label>
                       <Input 
                         type="email" 
-                        placeholder="Masukkan email" 
+                        placeholder={t('contact.form.emailPlaceholder')}
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         required
@@ -273,9 +272,9 @@ const ContactSection = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Subjek</label>
+                    <label className="block text-sm font-medium mb-2">{t('contact.form.subject')}</label>
                     <Input 
-                      placeholder="Masukkan subjek pesan" 
+                      placeholder={t('contact.form.subjectPlaceholder')}
                       value={formData.subject}
                       onChange={(e) => setFormData({...formData, subject: e.target.value})}
                       required
@@ -283,9 +282,9 @@ const ContactSection = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Pesan</label>
+                    <label className="block text-sm font-medium mb-2">{t('contact.form.message')}</label>
                     <Textarea 
-                      placeholder="Tulis pesan Anda..." 
+                      placeholder={t('contact.form.messagePlaceholder')}
                       rows={6}
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -295,7 +294,7 @@ const ContactSection = () => {
                   
                   <Button type="submit" className="w-full">
                     <Send size={16} className="mr-2" />
-                    Kirim Pesan
+                    {t('contact.form.submit')}
                   </Button>
                 </form>
               </CardContent>
@@ -308,10 +307,10 @@ const ContactSection = () => {
             <CardHeader>
               <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
                 <HelpCircle size={28} className="text-primary" />
-                Pertanyaan yang Sering Diajukan (FAQ)
+                {t('contact.faq.title')}
               </CardTitle>
               <p className="text-muted-foreground text-center">
-                Temukan jawaban untuk pertanyaan umum seputar museum dan cagar budaya
+                {t('contact.faq.subtitle')}
               </p>
             </CardHeader>
             <CardContent>

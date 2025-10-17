@@ -5,6 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { sopService } from '@/lib/api-services';
 import { Link } from 'react-router-dom';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const RulesAndSOP = () => {
   const { t } = useTranslation();

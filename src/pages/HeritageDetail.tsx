@@ -5,9 +5,16 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
@@ -37,19 +44,20 @@ const HeritageDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchHeritages = async () => {
-      try {
-        const response = await museumService.getAll();
-        if(response.error || response.data.length === 0) {
-          console.error('Error fetching heritages:', response.error);
-        } else {
-          setHeritages(mapSlidesWithImageUrl(response.data));
-        }
-      } catch (error) {
-        console.error('Error fetching heritages:', error);
+  const fetchHeritages = async () => {
+    try {
+      const response = await museumService.getAll();
+      if(response.error || response.data.length === 0) {
+        console.error('Error fetching heritages:', response.error);
+        setHeritages(mapSlidesWithImageUrl(defaultHeritages));
+      } else {
+        setHeritages(mapSlidesWithImageUrl(response.data));
       }
-    };
+    } catch (error) {
+      console.error('Error fetching heritages:', error);
+    }
+  };
+  useEffect(() => {
     fetchHeritages();
   }, []);
 
@@ -91,8 +99,20 @@ const HeritageDetail = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute bottom-8 left-8 text-white">
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">{heritage.name}</h1>
-            <p className="text-xl">{heritage.subtitle}</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-2">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(heritage.name)
+                }}
+              />
+            </h1>
+            <p className="text-xl">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(heritage.subtitle)
+                }}
+              />
+            </p>
           </div>
         </section>
         {/* Content */}
@@ -105,7 +125,11 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-bold mb-4">{t('About')}</h2>
                   <div className="space-y-4 text-muted-foreground">
-                    {heritage.description}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(heritage.description)
+                      }}
+                    />
                   </div>
                 </CardContent>
               </Card>

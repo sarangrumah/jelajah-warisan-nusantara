@@ -24,7 +24,7 @@ const EducationSection = () => {
           <article className='flex flex-col items-stretchx max-md:max-w-full'>
             <h2 className='py-10 lg:text-4xl font-bold max-md:max-w-full max-md:text-3xl'>Edukasi & Program Publik</h2>
             <span className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Museum & Cagar Budaya (Indonesian Heritage Agency) sepakat bahwa ilmu peradaban harus dapat disajikan
+              Museum dan Cagar Budaya (Indonesian Heritage Agency) sepakat bahwa ilmu peradaban harus dapat disajikan
               dengan relevan dan inovatif sehingga muatan-muatan edukasi tersebut mampu melebur bersama kurikulum
               pendidikan formal. Selain itu, persiapan infrastruktur museum seperti ruang anak dan buku panduan museum
               turut menjadi program prioritas. Ikut serta melakukan perubahan besar pada program komunikasi yang selaras

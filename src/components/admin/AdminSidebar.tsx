@@ -12,7 +12,10 @@ import {
   Shield,
   Home,
   BarChart3,
-  Menu} from 'lucide-react';
+  Menu,
+  Key,
+  Languages
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminSidebarProps {
@@ -22,6 +25,7 @@ interface AdminSidebarProps {
   isAdmin: boolean;
   canEdit: boolean;
   onSignOut: () => void;
+  onOpenChangePassword: () => void;
 }
 
 const menuItems = [
@@ -37,11 +41,13 @@ const menuItems = [
   { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
   { id: 'career-submissions', label: 'Submissions', icon: Users },
   { id: 'faq', label: 'FAQ', icon: Settings },
+  { id: 'translations', label: 'Translations', icon: Languages },
+  { id: 'activity-log', label: 'Activity Log', icon: FileText },
   // { id: 'career', label: 'Karir', icon: Users },
   { id: 'users', label: 'Users', icon: Shield },
 ];
 
-const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onSignOut }: AdminSidebarProps) => {
+const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onSignOut, onOpenChangePassword }: AdminSidebarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -111,6 +117,17 @@ const AdminSidebar = ({ activeTab, setActiveTab, userRole, isAdmin, canEdit, onS
 
       {/* Bottom actions */}
       <div className="p-4 border-t border-border space-y-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={() => {
+            onOpenChangePassword();
+            setIsMobileMenuOpen(false);
+          }}
+        >
+          <Key className="w-4 h-4 mr-3" />
+          Ubah Kata Sandi
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start"

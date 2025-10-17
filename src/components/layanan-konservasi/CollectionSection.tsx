@@ -20,7 +20,7 @@ const CollectionSection = () => {
                             Koleksi & Kuratorial
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5">
-                            Museum & Cagar Budaya (Indonesia Heritage Agency) berupaya untuk dapat menyajikan beragam koleksi
+                            Museum dan Cagar Budaya (Indonesia Heritage Agency) berupaya untuk dapat menyajikan beragam koleksi
                             benda & tak benda yang melengkapi sejarah peradaban Indonesia, dengan kajian Kuratorial yang
                             berkualitas, Koleksi dari Masa Prasejarah, Masa Kolonial, Masa Kemerdekaan hingga Kontemporer tersebar
                             dan tersaji elok di 18 Unit Museum.

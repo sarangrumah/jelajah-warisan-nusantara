@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Calendar, Building } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { categoriesCollection, masterCollectionService } from '@/lib/api-services';
+import { defaultCollections } from '@/../database/default-data';
+import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
 
@@ -37,29 +44,22 @@ const Collection = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await masterCollectionService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching collections:', response.error);
-        } else {
-          const filteredCollections = response.data.filter((collection: { 
-            is_active: boolean; 
-            is_approved: boolean; 
-            is_rejected: boolean; 
-          }) => (
-            collection.is_active === true && 
-            collection.is_approved === true &&
-            collection.is_rejected === false
-          ));
-          setCollections(filteredCollections);
-        }
-      } catch (error) {
-        console.error('Error fetching collections:', error);
+  const fetchCollections = async () => {
+    try {
+      const response = await masterCollectionService.getAll();
+
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching collections:', response.error);
+        setCollections(defaultCollections);
+      } else {
+        setCollections(response.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchCollections();
   }, []);
 
@@ -143,8 +143,20 @@ const Collection = () => {
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
-                  <CardDescription>{item.subtitle}</CardDescription>
+                  <CardTitle className="text-lg">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.title)
+                      }}
+                    />
+                  </CardTitle>
+                  <CardDescription>
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.subtitle)
+                      }}
+                    />
+                  </CardDescription>
                 </CardHeader>
               </Card>
             </Link>

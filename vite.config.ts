@@ -16,10 +16,11 @@ export default defineConfig(({ mode }) => {
   ]);
   
   return {
+    // Base public path - use '/' for production to ensure correct asset paths
+    base: mode === 'production' ? '/' : './',
     server: {
-      base: './',
       host: "::",
-      port: DEV_PORT,
+      port: 5173,
       watch: {
         // Only ignore heavy system folders so asset buckets trigger reloads
         ignored: ['**/node_modules/**', '**/.git/**'],

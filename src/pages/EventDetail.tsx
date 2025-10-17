@@ -5,7 +5,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { EventsService } from '@/lib/api-services';
+
+import { defaultEvents } from '@/../database/default-data';
+import { agendaService, EventsService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -14,20 +16,21 @@ const EventDetail = () => {
   const { t } = useTranslation();
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await EventsService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching events:', response.error);
-        } else {
-          const filteredEvents = response.data.filter((event: any) => event.id === id);
-          setEvents(filteredEvents);
-        }
-      } catch (error) {
-        console.error('Error fetching events:', error);
+  const fetchEvents = async () => {
+    try {
+      const response = await EventsService.getAll();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching events:', response.error);
+        setEvents(defaultEvents);
+      } else {
+        const filteredEvents = response.data.filter((event: any) => event.id === id);
+        setEvents(filteredEvents);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+  useEffect(() => {
     fetchEvents();
   }, []);
 

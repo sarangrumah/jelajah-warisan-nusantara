@@ -1,10 +1,22 @@
+// Import must be at the very top
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { bannerService } from '@/lib/api-services';
+
+import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { defaultSlides } from '@/../database/default-data';
+// import { defaultVideos } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 // <<<<<<< HEAD
 // --- Helpers to resolve image/video URLs without triggering Vite glob watchers ---
@@ -17,32 +29,36 @@ function isImage(filename: string) {
 function isVideo(filename: string) {
   return /\.(mp4|webm|ogg)$/i.test(filename);
 }
-const heroImages = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp,mp4}', { eager: true, import: 'default' });
 
+/*
+// Disabled due to missing images causing Vite errors
+const images = import.meta.glob('/src/assets/images/hero-section/*.{jpg,jpeg,png,gif,webp}', { eager: true, import: 'default' });
+*/
+
+/*
+// Disabled due to missing images causing Vite errors
 function getImageOrVideoUrl(p: string) {
-  if (typeof p !== 'string' || p.length === 0) { return ''; }
-  // If it's an uploaded image (backend), use the API assetUrl helper
-  if (p.startsWith('/uploads/') || p.startsWith('../uploads') || p.startsWith('/uploads/images/hero-section/') || p.startsWith('uploads/images/hero-section/')) {
-    return assetUrl(p);
-  }
-  // Try to resolve using import.meta.glob mapping
-  const filename = p.split('/').pop();
-  if (filename && heroImages) {
-    for (const [key, value] of Object.entries(heroImages)) {
-      if (key.endsWith('/' + filename)) {
-        return value as string;
-      }
-    }
-  }
-  // Fallback: return as is (will likely 404)
-  return p;
+  return '/placeholder.svg'; // fallback to a placeholder image
 }
+*/
 const mapSlidesWithImageUrl = (slidesArr: any[]) =>
-  slidesArr.map(slide => ({
-    ...slide,
-    asset: slide.image?.split('/').pop() || slide.image,
-    image: getImageOrVideoUrl(slide.image),
-  }));
+  slidesArr.map(slide => {
+    const originalPath = slide.image_url || slide.image;
+    const transformedPath = assetUrl(originalPath) || '/placeholder.svg';
+    
+    console.log('[mapSlidesWithImageUrl] Processing slide:', {
+      original: originalPath,
+      transformed: transformedPath,
+      slide: slide
+    });
+    
+    return {
+      ...slide,
+      asset: slide.image?.split('/').pop() || slide.image,
+      // Use assetUrl to transform paths for production compatibility
+      image: transformedPath,
+    };
+  });
 
 import { useRef } from 'react';
 
@@ -105,6 +121,10 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [types, setTypes] = useState([]);
+  // Use content translation for the current slide
+  const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
+  const { translatedContent: translatedSlide } = useContentTranslation(currentSlideObj);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -138,33 +158,54 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     }
   };
   
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        const response = await bannerService.getAll();
-        if (response.error) {
-          console.error('Error fetching slides:', response.error);
-          // setSlides(mapSlidesWithImageUrl(defaultSlides));
-        } else {
-          const filteredSlides = response.data.filter((slide: {
-            is_active: boolean;
-            is_approved: boolean;
-            start_publish_date: Date;
-            end_publish_date: Date;
-          }) => (
-            slide.is_active === true 
-            && slide.is_approved === true 
+  const fetchSlides = async () => {
+    try {
+      const response = await bannerService.getAll();
+      if (response.error || !response.data || response.data.length === 0) {
+        console.error('Error fetching slides:', response.error);
+        setSlides(mapSlidesWithImageUrl(defaultSlides));
+      } else {
+        // Ensure image path is always /uploads/hero-sections/filename.jpg
+        const filteredSlides = response.data
+          .filter((slide: any) => (
+            slide.is_active === true
+            && slide.is_approved === true
             && new Date(slide.start_publish_date) <= new Date()
             && new Date(slide.end_publish_date) >= new Date()
-          ));
-          setSlides(mapSlidesWithImageUrl(filteredSlides));
-        }
-      } catch (error) {
-        console.error('Error fetching slides:', error);
+          ))
+          .map((slide: any) => ({
+            ...slide,
+            image: slide.image && !slide.image.startsWith('/uploads/hero-sections/')
+              ? `/uploads/hero-sections/${slide.image.split('/').pop()}`
+              : slide.image
+          }));
+        setSlides(mapSlidesWithImageUrl(filteredSlides));
       }
-    };
+    } catch (error) {
+      console.error('Error fetching slides:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchSlides();
-  }, []);
+  },[]);
+
+  const fetchTypeSites = async () => {
+    try {
+      const response = await TypesAndCategoriesSites.getAllTypes();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching types:', response.error);
+      } else {
+        setTypes(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchTypeSites();
+  },[]);
 
   const linkTo = (slides: string) => {
     if(slides === 'museum') {      
@@ -205,10 +246,12 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
                   onLoad={() => {
-                    console.log('[HeroSection] Image loaded:', slide.image);
+                    console.log('[HeroSection] Image loaded successfully:', slide.image);
                   }}
-                  onError={() => {
+                  onError={(e) => {
                     console.error('[HeroSection] Image failed to load:', slide.image);
+                    // Fallback to placeholder on error
+                    (e.target as HTMLImageElement).src = '/placeholder.svg';
                   }}
                 />
               ) : isVideo(slide.asset) ? (
@@ -216,10 +259,13 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   src={slide.image}
                   controls
                   className="w-full h-full object-cover parallax"
+                  onError={() => {
+                    console.error('[HeroSection] Video failed to load:', slide.image);
+                  }}
                 />
               ) : (
                 <img
-                  src="/public/placeholder.svg"
+                  src="/placeholder.svg"
                   alt="Not found"
                   className="w-full h-full object-cover parallax"
                 />
@@ -240,19 +286,31 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
-              {slides.length > 0 && t(slides[currentSlide].title)}
+              {currentSlideObj ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: fixBrokenHtmlTags(translatedSlide?.title || t(currentSlideObj.title))
+                  }}
+                />
+              ) : null}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto">
-              {slides.length > 0 && t(slides[currentSlide].subtitle)}
+              {currentSlideObj ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: fixBrokenHtmlTags(translatedSlide?.subtitle || t(currentSlideObj.subtitle))
+                  }}
+                />
+              ) : null}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to={slides.length > 0 ? linkTo(slides[currentSlide].button_url_1.split('.')[1]) : "/"}>
+              <Link to={currentSlideObj ? linkTo((translatedSlide?.button_url_1 || currentSlideObj.button_url_1).split('.')[1]) : "/"}>
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 >
-                  {slides.length > 0 && t(slides[currentSlide].button_url_1)}
+                  {currentSlideObj && (translatedSlide?.button_url_1 || t(currentSlideObj.button_url_1))}
                 </Button>
               </Link>
               

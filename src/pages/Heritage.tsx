@@ -8,8 +8,14 @@ import { Input } from '@/components/ui/input';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
+import { defaultHeritages } from '@/../database/default-data';
+import { museumService } from '@/lib/api-services';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
@@ -53,63 +59,18 @@ const Heritage = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchType = async () => {
-      try {
-        const response = await TypesAndCategoriesSites.getAllTypes();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching tyes:', response.error);
-        } else {
-          setTypes(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
+  const fetchHeritages = async () => {
+    try {
+      const response = await museumService.getAll();
+      if(response.error) {
+        console.error('Error fetching heritages:', response.error);
       }
-    };
-    fetchType();
-  }, []);
-
+      setHeritages(response.data || defaultHeritages);
+    } catch (error) {
+      console.error('Error fetching heritages:', error);
+    }
+  };
   useEffect(() => {
-      if(types.length > 0) {
-        const fetchCategory = async () => {
-          try {
-            const museumId = types.find((t) => t.name.toLowerCase() === 'cagar budaya')?.id;
-            const response = await TypesAndCategoriesSites.getAllCategories(museumId);
-            if (response.error || response.data.length === 0) {
-              console.error('Error fetching categories:', response.error);
-            } else {
-              setCategories(response.data);
-            }
-          } catch (error) {
-            console.error('Error fetching museums:', error);
-          }
-        };
-        fetchCategory();
-      }
-    }, [types]);
-
-  useEffect(() => {
-    const fetchHeritages = async () => {
-      try {
-        const response = await museumService.getAll();
-        if(response.error || response.data.length === 0) {
-          console.error('Error fetching heritages:', response.error);
-        } else {
-          const filteredHeritages = response.data.filter((heritage: { 
-            is_active: boolean; 
-            is_approved: boolean; 
-            is_rejected: boolean; 
-          }) => (
-            heritage.is_active === true && 
-            heritage.is_approved === true &&
-            heritage.is_rejected === false
-          ))
-          setHeritages(mapSlidesWithImageUrl(filteredHeritages));
-        }
-      } catch (error) {
-        console.error('Error fetching heritages:', error);
-      }
-    };
     fetchHeritages();
   }, []);
 
@@ -133,11 +94,27 @@ const Heritage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const heritageId = types.find((t) => t.name.toLowerCase() === 'cagar budaya')?.id;
+  // Defensive: prefer .name, fallback to .title for legacy data
+  const heritageId = types.find((t) => {
+    const name = typeof t.name === 'string' ? t.name : (typeof t.title === 'string' ? t.title : undefined);
+    if (!name) {
+      console.warn('Type item missing name/title:', t);
+      return false;
+    }
+    return name.toLowerCase() === 'cagar budaya';
+  })?.id;
+
   const filteredHeritages = heritages.filter(heritage => {
-    const matchesSearch = heritage.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         heritage.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType;
+    // Defensive: prefer .name, fallback to .title for legacy data
+    const name = typeof heritage.name === 'string' ? heritage.name : (typeof heritage.title === 'string' ? heritage.title : undefined);
+    const subtitle = typeof heritage.subtitle === 'string' ? heritage.subtitle : '';
+    if (!name) {
+      console.warn('Heritage item missing name:', heritage);
+      return false;
+    }
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || (categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType);
     return heritage.type === heritageId && matchesSearch && matchesFilter;
   });
 
@@ -217,7 +194,13 @@ const Heritage = () => {
                       {item.period}
                     </div>
                   </div>
-                  <p className="text-sm mt-3">{item.description}</p>
+                  <p className="text-sm mt-3">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.description)
+                      }}
+                    />
+                  </p>
                   <div className="mt-4">
                     <span className="inline-block px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">
                       {types.find((t) => t.id === item.type)?.name}

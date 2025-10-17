@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import './quill-editor.css';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 type QuillEditorProps = {
   value: string;
@@ -84,8 +85,9 @@ export default function QuillEditor({
         theme={theme}
         value={value || ''}
         onChange={(_content: string, _delta: any, _source: any, editor: any) => {
-          const html = editor?.getHTML?.() ?? '';
-          onChange(html);
+          const rawHtml = editor?.getHTML?.() ?? '';
+          const sanitized = sanitizeHtml(rawHtml);
+          onChange(sanitized);
         }}
         placeholder={placeholder}
         modules={modules}

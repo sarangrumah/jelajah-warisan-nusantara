@@ -2,7 +2,8 @@ import { Response } from 'express';
 import { query, getClient } from '../config/database';
 import { AuthRequest } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
-import { tableConfigs, tableRelationships, autoJoinRelations, approvalConfig } from '../config/tableConfigs';
+import { tableConfigs, tableRelationships, approvalConfig } from '../config/tableConfigs';
+import contentTranslationService from '../services/contentTranslationService';
 
 // Define relation config shape
 interface JoinConfig {
@@ -11,6 +12,26 @@ interface JoinConfig {
   foreignKey: string;
   type: 'left' | 'inner' | 'has_many';
   fields?: string[];
+}
+
+/**
+ * Get translatable fields for a table
+ * Returns array of field names that should be translated
+ */
+function getTranslatableFields(tableName: string): string[] {
+  const translatableFieldsMap: Record<string, string[]> = {
+    'tb_sites': ['name', 'subtitle', 'description', 'address'],
+    'tb_media': ['title', 'content', 'excerpt'],
+    'tb_events': ['title', 'description', 'location'],
+    'tb_master_collection': ['name', 'description'],
+    'tb_faqs': ['question', 'answer'],
+    'tb_banner': ['title', 'subtitle', 'description'],
+    'tb_memoryoftheworld': ['title', 'description'],
+    'tb_company': ['name', 'description', 'vision', 'mission'],
+    'tb_pemanfaatan_aset': ['title', 'description', 'location'],
+  };
+
+  return translatableFieldsMap[tableName] || [];
 }
 
 // Generic CRUD controller factory
@@ -67,7 +88,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     // === GET ALL ===
     getAll: async (req: AuthRequest, res: Response) => {
       try {
-        const { limit = 50, offset = 0, ...filters } = req.query;
+        console.log(`[getAll] Table: ${tableName}, Query:`, req.query);
+        const { limit = 50, offset = 0, lang, ...filters } = req.query;
+        const targetLang = (lang as string) || 'id';
 
         // Start with base fields
         let selectFields = `${tableName}.*`;
@@ -151,10 +174,32 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         `;
 
         const result = await query(queryText, [...params, limit, offset]);
-        res.json(result.rows);
+        
+        // Translate content if language is not Indonesian
+        let rows = result.rows;
+        if (targetLang !== 'id') {
+          // Define translatable fields per table
+          const translatableFields = getTranslatableFields(tableName);
+          if (translatableFields.length > 0) {
+            rows = await contentTranslationService.translateContentArray(
+              rows,
+              translatableFields,
+              targetLang,
+              'id'
+            );
+          }
+        }
+        
+        res.json(rows);
       } catch (error) {
         console.error(`Get all ${tableName} error:`, error);
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+          console.error(error.stack);
+        }
+        res.status(500).json({
+          error: 'Internal server error',
+          details: error instanceof Error ? error.message : String(error)
+        });
       }
     },
 
@@ -162,6 +207,8 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     getById: async (req: AuthRequest, res: Response) => {
       try {
         const { id } = req.params;
+        const { lang } = req.query;
+        const targetLang = (lang as string) || 'id';
 
         // Base query
         const baseResult = await query(`SELECT * FROM ${tableName} WHERE id = $1`, [id]);
@@ -214,6 +261,20 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             }
           }
         }
+        
+        // Translate content if language is not Indonesian
+        if (targetLang !== 'id') {
+          const translatableFields = getTranslatableFields(tableName);
+          if (translatableFields.length > 0) {
+            record = await contentTranslationService.translateContent(
+              record,
+              translatableFields,
+              targetLang,
+              'id'
+            );
+          }
+        }
+        
         res.json(record);
       } catch (error) {
         console.error(`Get ${tableName} by ID error:`, error);
@@ -245,10 +306,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           ({ gallery = [], ...insertData } = data);
         }
 
-        if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string' ) {
+        if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string') {
           try {
             insertData.opening_hours = JSON.parse(insertData.opening_hours);
-          } catch (e) {
+          } catch (_e) {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -256,7 +317,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         } else if (tableName === 'tb_sites' && typeof insertData.facilities === 'string') {
           try {
             insertData.facilities = JSON.parse(insertData.facilities);
-          } catch (e) {
+          } catch (_e) {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -273,6 +334,18 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         insertData.id = id;
         insertData.created_at = new Date();
         insertData.updated_at = new Date();
+
+        if (fields.includes('is_approved') && insertData.is_approved === undefined) {
+          insertData.is_approved = false;
+        }
+
+        if (fields.includes('is_rejected') && insertData.is_rejected === undefined) {
+          insertData.is_rejected = false;
+        }
+
+        if (fields.includes('reason_rejected') && insertData.reason_rejected === undefined) {
+          insertData.reason_rejected = '';
+        }
 
         if (fields.includes('created_by') && req.user) {
           insertData.created_by = req.user.id;
@@ -408,15 +481,23 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         // 🔹 Extract nested arrays — single destructuring, no reassignment
         const {
-          images = [],
-          gallery = [],
-          company_leadership: companyLeadership = [],
-          company_visitor: companyVisitor = [],
+          images: rawImages,
+          gallery: rawGallery,
+          company_leadership: rawCompanyLeadership,
+          company_visitor: rawCompanyVisitor,
           ...mainData // All top-level fields
-        } = input;
+        } = input as Record<string, any>;
+
+        const hasImagesField = rawImages !== undefined;
+        const hasGalleryField = rawGallery !== undefined;
+
+        const images = Array.isArray(rawImages) ? rawImages : [];
+        const gallery = Array.isArray(rawGallery) ? rawGallery : [];
+        const companyLeadership = Array.isArray(rawCompanyLeadership) ? rawCompanyLeadership : [];
+        const companyVisitor = Array.isArray(rawCompanyVisitor) ? rawCompanyVisitor : [];
 
         // Add metadata
-        const data = {
+        const data: Record<string, any> = {
           ...mainData,
           updated_at: new Date()
         };
@@ -432,14 +513,29 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           data.updated_by = req.user.id;
         }
 
-        // Approval logic: only approver/admin (and super-admin) may change is_approved
+        if (fields.includes('reason_rejected') && data.reason_rejected === undefined) {
+          data.reason_rejected = '';
+        }
+
+        // Approval logic: only approver/admin (and super-admin) may change moderation flags
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
         if (approvalSettings?.requiresApproval) {
           const userRoles = req.user?.roles || [];
-          const canChangeApproval = userRoles.includes('approver') || userRoles.includes('admin') || userRoles.includes('super-admin');
-          if (!canChangeApproval && Object.prototype.hasOwnProperty.call(data, 'is_approved')) {
-            // Strip attempted changes from non-approver/admin edits so regular updates don't fail
-            delete (data as any).is_approved;
+          const canModerate = userRoles.includes('approver') || userRoles.includes('admin') || userRoles.includes('super-admin');
+
+          if (!canModerate) {
+            if (Object.prototype.hasOwnProperty.call(data, 'is_approved')) {
+              // Strip attempted changes from non-approver/admin edits so regular updates don't fail
+              delete (data as any).is_approved;
+            }
+
+            if (Object.prototype.hasOwnProperty.call(data, 'is_rejected')) {
+              delete (data as any).is_rejected;
+            }
+
+            if (fields.includes('is_rejected')) {
+              (data as any).is_rejected = false;
+            }
           }
         }
 
@@ -452,8 +548,8 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const hasMainUpdates = validFields.length > 0;
         const hasNestedUpdates =
           (tableName === 'tb_company' && (companyLeadership.length > 0 || companyVisitor.length > 0)) ||
-          (tableName === 'tb_sites' && images.length > 0) ||
-          (tableName === 'tb_memoryoftheworld' && gallery.length > 0);
+          (tableName === 'tb_sites' && hasImagesField) ||
+          (tableName === 'tb_memoryoftheworld' && hasGalleryField);
 
         if (!hasMainUpdates && !hasNestedUpdates) {
           return res.status(400).json({ error: 'No data to update' });
@@ -498,7 +594,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         // 🔹 2. Handle companyLeadership (Update, Insert)
         if (tableName === 'tb_company') {
           for (const item of companyLeadership) {
-           
             if (item.is_deleted && item.id) {
               // 🚫 DELETE
               await client.query(
@@ -523,7 +618,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               );
             } else {
               // ➕ INSERT new
-               console.log(item, id)
               await client.query(
                 `INSERT INTO tb_company_leadership (
                   id, name, position, is_active, company_id, created_by, updated_by, created_at, updated_at
@@ -567,7 +661,6 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               );
             } else {
               // ➕ INSERT
-               console.log(item, id)
               await client.query(
                 `INSERT INTO tb_company_visitor (
                   id, visitor_count, year, is_active, company_id, created_by, updated_by, created_at, updated_at
@@ -587,30 +680,56 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         }
 
         // 🔹 3. Handle images for tb_sites
-        if (tableName === 'tb_sites') {
-          for (const img of images) {
-            if (img.is_deleted && img.id) {
-              // 🚫 DELETE
+        if (tableName === 'tb_sites' && hasImagesField) {
+          const existingImages = await client.query(
+            `SELECT id FROM tb_images WHERE sites_id = $1`,
+            [id]
+          );
+
+          const remainingIds = new Set<string>(
+            existingImages.rows.map((row: { id: string }) => row.id)
+          );
+
+          for (const img of images as any[]) {
+            if (!img) continue;
+
+            const imageId = img.id as string | undefined;
+            const filePath = img.path || img.upload_file || img.url;
+
+            if (img.is_deleted && imageId) {
               await client.query(
                 `DELETE FROM tb_images WHERE id = $1 AND sites_id = $2`,
-                [img.id, id]
+                [imageId, id]
               );
-            } else if (img.id) {
-              // ✏️ UPDATE
-              await client.query(
-                `UPDATE tb_images
-                SET path = $1, updated_by = $2, updated_at = $3
-                WHERE id = $4 AND sites_id = $5`,
-                [img.path, updatedBy, new Date(), img.id, id]
-              );
-            } else {
-              // ➕ INSERT
+              remainingIds.delete(imageId);
+              continue;
+            }
+
+            if (imageId) {
+              remainingIds.delete(imageId);
+
+              if (filePath) {
+                await client.query(
+                  `UPDATE tb_images
+                  SET path = $1, updated_by = $2, updated_at = $3
+                  WHERE id = $4 AND sites_id = $5`,
+                  [filePath, updatedBy, new Date(), imageId, id]
+                );
+              }
+            } else if (filePath) {
               await client.query(
                 `INSERT INTO tb_images (id, path, sites_id, created_by, updated_by, created_at)
                 VALUES ($1, $2, $3, $4, $4, $5)`,
-                [uuidv4(), img.path, id, updatedBy, new Date()]
+                [uuidv4(), filePath, id, updatedBy, new Date()]
               );
             }
+          }
+
+          if (remainingIds.size > 0) {
+            await client.query(
+              `DELETE FROM tb_images WHERE id = ANY($1::uuid[]) AND sites_id = $2`,
+              [Array.from(remainingIds), id]
+            );
           }
         }
 
@@ -692,7 +811,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
       try {
         const { id } = req.params;
         const result = await query(`DELETE FROM ${tableName} WHERE id = $1 RETURNING id`, [id]);
-        if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Not found' });
+        }
         res.json({ message: 'Deleted successfully', id });
       } catch (error) {
         console.error(`Delete ${tableName} error:`, error);
@@ -704,8 +825,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     approve: async (req: AuthRequest, res: Response) => {
       try {
         const { id } = req.params;
-        const userName = req.user?.email;
-        const idUser = req.user?.id
+        const idUser = req.user?.id;
 
         // Check if table requires approval
         const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
@@ -737,19 +857,39 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const autoActivate = approvalSettings.autoActivateOnApprove;
         const now = new Date().toISOString();
 
+        const hasIsActive = fields.includes('is_active');
+        const hasReason = fields.includes('reason_rejected');
+
+        const params: any[] = [id];
+        const setClauses = [
+          'is_approved = true',
+          'is_rejected = false'
+        ];
+
+        if (hasReason) {
+          setClauses.push("reason_rejected = ''");
+        }
+
+        if (hasIsActive) {
+          setClauses.push(`is_active = CASE WHEN $${params.length + 1} THEN true ELSE is_active END`);
+          params.push(autoActivate);
+        }
+
+        setClauses.push(`updated_by = $${params.length + 1}`);
+        params.push(idUser);
+
+        setClauses.push(`updated_at = $${params.length + 1}`);
+        params.push(now);
+
         const result = await query(
           `
           UPDATE ${tableName}
           SET 
-            is_approved = true,
-
-            is_active = CASE WHEN $2 THEN true ELSE is_active END,
-            updated_by = $3,
-            updated_at = $4
+            ${setClauses.join(',\n            ')}
           WHERE id = $1
           RETURNING *
           `,
-          [id, autoActivate, idUser, now]
+          params
         );
 
         res.json({
@@ -759,6 +899,94 @@ export const createCrudController = (tableName: string, fields: string[]) => {
       } catch (error) {
         console.error(`Approve ${tableName} error:`, error);
         res.status(500).json({ error: 'Failed to approve record' });
+      }
+    },
+
+    // === REJECT ===
+    reject: async (req: AuthRequest, res: Response) => {
+      try {
+        const { id } = req.params;
+        const idUser = req.user?.id;
+        const { reason_rejected } = req.body || {};
+
+        const hasReasonField = fields.includes('reason_rejected');
+        const computedReason = typeof reason_rejected === 'string' ? reason_rejected.trim() : '';
+
+        if (hasReasonField && computedReason.length === 0) {
+          return res.status(400).json({ error: 'Rejection reason is required' });
+        }
+
+        const approvalSettings = (approvalConfig as Record<string, any>)[tableName];
+        if (!approvalSettings?.requiresApproval) {
+          return res.status(400).json({ error: `Rejection not supported for table: ${tableName}` });
+        }
+
+        const userRoles = req.user?.roles || [];
+        if (!userRoles.includes('approver') && !userRoles.includes('super-admin')) {
+          return res.status(403).json({ error: 'You do not have permission to reject records.' });
+        }
+
+        const checkQuery = await query(
+          `SELECT is_approved, is_rejected FROM ${tableName} WHERE id = $1`,
+          [id]
+        );
+
+        if (checkQuery.rows.length === 0) {
+          return res.status(404).json({ error: 'Record not found' });
+        }
+
+        const { is_approved, is_rejected } = checkQuery.rows[0];
+
+        if (is_rejected) {
+          return res.status(400).json({ error: 'Record is already rejected' });
+        }
+
+        if (is_approved) {
+          return res.status(400).json({ error: 'Record is already approved' });
+        }
+
+        const now = new Date().toISOString();
+        const hasIsActive = fields.includes('is_active');
+
+        const params: any[] = [id];
+        const setClauses = [
+          'is_rejected = true',
+          'is_approved = false'
+        ];
+
+        if (hasIsActive) {
+          setClauses.push('is_active = false');
+        }
+
+        if (hasReasonField) {
+          setClauses.push(`reason_rejected = $${params.length + 1}`);
+          params.push(computedReason);
+        }
+
+        setClauses.push(`updated_by = $${params.length + 1}`);
+        params.push(idUser);
+
+        setClauses.push(`updated_at = $${params.length + 1}`);
+        params.push(now);
+
+        const result = await query(
+          `
+          UPDATE ${tableName}
+          SET 
+            ${setClauses.join(',\n            ')}
+          WHERE id = $1
+          RETURNING *
+          `,
+          params
+        );
+
+        res.json({
+          message: 'Record rejected successfully',
+          data: result.rows[0]
+        });
+      } catch (error) {
+        console.error(`Reject ${tableName} error:`, error);
+        res.status(500).json({ error: 'Failed to reject record' });
       }
     }
   };

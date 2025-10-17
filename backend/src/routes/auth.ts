@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signUp, signIn, getProfile, getUserRoles, signUpValidation, signInValidation, getAllProfile } from '../controllers/authController';
+import { signUp, signIn, getProfile, getUserRoles, signUpValidation, signInValidation, getAllProfile, changePassword, changePasswordValidation } from '../controllers/authController';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
@@ -12,5 +12,6 @@ router.post('/signin', signInValidation, signIn);
 router.get('/profile/:userId', authenticateToken, getProfile);
 router.get('/profile', authenticateToken, getAllProfile);
 router.get('/roles', authenticateToken, getUserRoles);
+router.post('/change-password', authenticateToken, changePasswordValidation, changePassword);
 
 export default router;

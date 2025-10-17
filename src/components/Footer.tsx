@@ -10,8 +10,17 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    'Beranda', 'Agenda', 'Tentang Kami', 'Struktur Organisasi', 'Laboratorium Konservasi', 'Berita & Publikasi', 
-    'Hubungi Kami', 'Karir', 'PPID', 'Prosedur Operasional Standar', 'Pengaturan',
+    { label: t('nav.beranda'), href: '/beranda' },
+    { label: t('nav.agenda'), href: '/agenda' },
+    { label: t('nav.tentangKami'), href: '/tentang-kami' },
+    { label: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+    { label: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
+    { label: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+    { label: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
+    { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
+    { label: t('nav.career'), href: '/career' },
+    { label: t('nav.ppid'), href: '/ppid' },
+    { label: t('nav.sop'), href: '/sop' },
   ];
 
   return (
@@ -31,7 +40,7 @@ const Footer = () => {
                   {t('footer.orgName')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Kementerian Kebudayaan Republik Indonesia
+                  {t('footer.ministry')}
                 </p>
               </div>
             </div>
@@ -42,7 +51,7 @@ const Footer = () => {
 
           {/* Contact Information */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">Kontak Kami</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('footer.contactUs')}</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone size={16} className="text-primary" />
@@ -66,26 +75,26 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-foreground">{t('footer.quickLinks')}</h4>
             <div className='flex gap-x-5 w-full'>
               <div className="space-y-2">
-                {quickLinks.map((link) => (
+                {quickLinks.slice(0, 5).map((link) => (
                   <a
-                    key={link}
-                    href={`${link.toLowerCase().replace(/\s+/g, '-')}`}
+                    key={link.href}
+                    href={link.href}
                     className="block text-sm text-muted-foreground hover:text-primary transition-heritage"
                   >
-                    {link}
+                    {link.label}
                   </a>
-                )).slice(0, 6)}
+                ))}
               </div>
               <div className="space-y-2">
-                {quickLinks.map((link) => (
+                {quickLinks.slice(5, 10).map((link) => (
                   <a
-                    key={link}
-                    href={`${link.toLowerCase().replace(/\s+/g, '-')}`}
+                    key={link.href}
+                    href={link.href}
                     className="block text-sm text-muted-foreground hover:text-primary transition-heritage"
                   >
-                    {link}
+                    {link.label}
                   </a>
-                )).slice(6, 12)}
+                ))}
               </div>
             </div>
           </div>

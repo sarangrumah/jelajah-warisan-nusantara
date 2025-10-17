@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, Plus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadService } from '@/lib/api-services';
-import { assetUrl } from '@/lib/asset-url';
 
 interface MediaItem {
   id?: string;
@@ -40,9 +39,36 @@ export const MediaGalleryUpload = ({
   const isImageType = (type: string) => type.startsWith('image/');
   const isVideoType = (type: string) => type.startsWith('video/');
 
+  const sanitizeFileName = (url?: string) => {
+    if (!url) {return ''};
+
+    const scrub = (raw: string) => raw.replace(/[\s\\/:*?"<>|]+/g, ' ').trim();
+    const safeDecode = (raw: string) => {
+      try {
+        return decodeURIComponent(raw);
+      } catch (_) {
+        return raw;
+      }
+    };
+
+    try {
+      const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+      const parsed = new URL(url, base);
+      const segments = parsed.pathname.split('/').filter(Boolean);
+      const fileName = segments.pop() || '';
+      return scrub(safeDecode(fileName));
+    } catch (_) {
+      const cleaned = url.split(/[?#]/)[0];
+      const segments = cleaned.split('/').filter(Boolean);
+      const fileName = segments.pop() || cleaned;
+      return scrub(safeDecode(fileName));
+    }
+  };
+
   const handleFiles = async (files: FileList) => {
     if (!files.length) return;
-    if (value.length + files.length > maxItems) {
+    const activeCount = (value || []).filter((item) => !item.is_deleted).length;
+    if (activeCount + files.length > maxItems) {
       toast({ title: 'Error', description: `Maximum ${maxItems} items allowed`, variant: 'destructive' });
       return;
     }
@@ -76,8 +102,10 @@ export const MediaGalleryUpload = ({
     }
   };
 
-  const removeAt = (idx: number) => {
+  const removeItem = (target: MediaItem) => {
     const current = value || [];
+    const idx = current.indexOf(target);
+    if (idx === -1) {return;}
     const item = current[idx];
     // If item has id, mark as deleted so backend can delete it.
     if (item && item.id) {
@@ -90,29 +118,27 @@ export const MediaGalleryUpload = ({
     }
   };
 
+  const activeItems = (value || []).filter((m) => !m.is_deleted);
+
   return (
     <div className={`space-y-4 ${className}`}>
       <Label>{label}</Label>
 
-      {value && value.filter((m) => !m.is_deleted).length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {value.filter((m) => !m.is_deleted).map((m, idx) => {
-            const src = assetUrl(m.path);
-            const ext = src.split('?')[0].split('#')[0].toLowerCase();
-            const isVideo = /\.(mp4|webm|ogg)$/i.test(ext);
+      {activeItems.length > 0 && (
+        <div className="space-y-2">
+          {activeItems.map((m) => {
+            const label = sanitizeFileName(m.path) || m.path;
             return (
-              <div key={idx} className="relative group">
-                {isVideo ? (
-                  <video src={src} controls className="w-full h-24 object-cover rounded-md" />
-                ) : (
-                  <img src={src} alt={`Media ${idx + 1}`} className="w-full h-24 object-cover rounded-md" />
-                )}
+              <div key={`${m.id ?? m.path}`} className="flex items-center gap-3 rounded-md border border-border bg-muted/10 px-3 py-2">
+                <span className="text-sm font-medium text-muted-foreground break-all flex-1">
+                  {label}
+                </span>
                 <Button
                   type="button"
                   variant="destructive"
-                  size="sm"
-                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => removeAt(idx)}
+                  size="icon"
+                  className="shrink-0"
+                  onClick={() => removeItem(m)}
                 >
                   <X className="w-3 h-3" />
                 </Button>
@@ -122,7 +148,7 @@ export const MediaGalleryUpload = ({
         </div>
       )}
 
-      {(!value || value.length < maxItems) && (
+      {(activeItems.length < maxItems) && (
         <Card className={`border-2 border-dashed cursor-pointer transition-colors`} onClick={() => inputRef.current?.click()}>
           <CardContent className="p-6">
             <div className="flex flex-col items-center justify-center text-center">

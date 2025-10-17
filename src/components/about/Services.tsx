@@ -1,6 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { DynamicComponent } from '../dynamic-components';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const Services = () => {
   const { t } = useTranslation();
@@ -63,7 +70,12 @@ const Services = () => {
                 <DynamicComponent componentName={service.icon} size={48} className="text-primary mb-4" />
 
                 <CardTitle className="text-xl">{service.title}</CardTitle>
-                <p className="text-muted-foreground">{service.description}</p>
+                <span
+                  className="text-muted-foreground"
+                  dangerouslySetInnerHTML={{
+                    __html: fixBrokenHtmlTags(service.description || '')
+                  }}
+                />
 
               </CardHeader>
               <CardContent>
@@ -72,7 +84,16 @@ const Services = () => {
                   <ul className="space-y-1">
                       <li className="text-sm text-muted-foreground flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                        {service.features}
+                        {Array.isArray(service.features)
+                          ? service.features.map((feature, i) => (
+                              <span
+                                key={i}
+                                dangerouslySetInnerHTML={{
+                                  __html: fixBrokenHtmlTags(feature)
+                                }}
+                              />
+                            ))
+                          : null}
                       </li>
                   </ul>
                 </div>

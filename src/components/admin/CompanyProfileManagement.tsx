@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +12,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ImageUpload } from '@/components/ui/image-upload';
 import RichTextEditor from '../ui/rich-text-editor';
 import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 // Helper to render a plain text preview from potential HTML input
 function stripHtml(input?: string): string {
@@ -374,19 +380,21 @@ const ProfileForm = ({
 
       <div className="space-y-2">
         <Label>Address</Label>
-        <Textarea
+        <QuillEditor
           value={profile.address || ''}
-          onChange={(e) => handleFieldChange('address', e.target.value)}
-          rows={2}
+          onChange={(html) => handleFieldChange('address', html)}
+          height={100}
+          placeholder="Company address"
         />
       </div>
 
       <div className="space-y-2">
         <Label>About Us</Label>
-        <Textarea
+        <QuillEditor
           value={profile.aboutus || ''}
-          onChange={(e) => handleFieldChange('aboutus', e.target.value)}
-          rows={3}
+          onChange={(html) => handleFieldChange('aboutus', html)}
+          height={100}
+          placeholder="Describe the company"
         />
       </div>
 
@@ -395,17 +403,18 @@ const ProfileForm = ({
         <QuillEditor
           value={profile.vision || ''}
           onChange={(html) => handleFieldChange('vision', html)}
-          height={200}
+          height={100}
           placeholder="Write vision…"
         />
       </div>
 
       <div className="space-y-2">
         <Label>Mission</Label>
-        <Textarea
+        <QuillEditor
           value={profile.mission || ''}
-          onChange={(e) => handleFieldChange('mission', e.target.value)}
-          rows={4}
+          onChange={(html) => handleFieldChange('mission', html)}
+          height={100}
+          placeholder="Write mission…"
         />
       </div>
 
@@ -729,7 +738,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                         <span className="font-medium">Vision</span>
                         <div
                           className="rich-content text-muted-foreground"
-                          dangerouslySetInnerHTML={{ __html: profile.vision || 'No description' }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(profile.vision || 'No description')) }}
                         />
                       </div>
                       <div className='pb-2'>

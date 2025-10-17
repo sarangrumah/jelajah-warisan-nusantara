@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { faqService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +10,8 @@ import { Loader2, Edit, Save, X, Plus, ArrowUp, ArrowDown, Trash } from 'lucide-
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '../ErrorHandling';
+import QuillEditor from '@/components/ui/quill-editor';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 interface Faq {
   id: string;
@@ -44,24 +45,20 @@ const FaqForm = ({ faq, onSave, onCancel, saving }: {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="question">Question</Label>
-        <Textarea
-          id="question"
-          value={formData.question}
-          onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-          required
-          rows={2}
+        <QuillEditor
+          value={formData.question || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, question: html }))}
+          height={100}
           placeholder="What is the question users frequently ask?"
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="answer">Answer</Label>
-        <Textarea
-          id="answer"
-          value={formData.answer}
-          onChange={(e) => setFormData(prev => ({ ...prev, answer: e.target.value }))}
-          required
-          rows={4}
+        <QuillEditor
+          value={formData.answer || ''}
+          onChange={(html) => setFormData(prev => ({ ...prev, answer: html }))}
+          height={200}
           placeholder="Provide a comprehensive answer to the question"
         />
       </div>
@@ -472,9 +469,10 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
               <CardContent>
                 <div className="text-sm">
                   <span className="font-medium">Answer:</span>
-                  <p className="text-muted-foreground mt-1 line-clamp-3">
-                    {faq.answer}
-                  </p>
+                  <div
+                    className="text-muted-foreground mt-1 line-clamp-3"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer || '') }}
+                  />
                 </div>
               </CardContent>
             </Card>

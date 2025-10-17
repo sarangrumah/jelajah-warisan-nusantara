@@ -37,6 +37,11 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    // Add Accept-Language header for automatic translation
+    // Get current language from i18n or localStorage
+    const currentLang = localStorage.getItem('i18nextLng') || 'id';
+    headers['Accept-Language'] = currentLang;
+
     return headers;
   }
 
@@ -108,6 +113,13 @@ class ApiClient {
     return this.request<string[]>('/api/auth/roles');
   }
 
+  async changePassword(data: { new_password: string; confirm_password: string }): Promise<ApiResponse<{ message: string }>> {
+    return this.request<{ message: string }>('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem('auth_token', token);
@@ -151,6 +163,13 @@ class ApiClient {
   async approve<T>(endpoint: string, id: string): Promise<ApiResponse<T>> {
     return this.request<T>(`/api/${endpoint}/${id}/approve`, {
       method: 'POST',
+    });
+  }
+
+  async reject<T>(endpoint: string, id: string, reason: string): Promise<ApiResponse<T>> {
+    return this.request<T>(`/api/${endpoint}/${id}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason_rejected: reason }),
     });
   }
 

@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react';
 import { careerMgmtService, careerSubmissionService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { Loader2, Edit, Save, X, Plus, Trash, UserPlus } from 'lucide-react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import QuillEditor from '@/components/ui/quill-editor';
+import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 interface CareerPosting {
   id?: string;
@@ -28,6 +35,8 @@ interface CareerPosting {
   location?: string;
   is_active: boolean;
   is_approved?: boolean;
+  is_rejected?: boolean;
+  reason_rejected?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -46,6 +55,8 @@ const emptyPosting: CareerPosting = {
   location: '',
   is_active: true,
   is_approved: false,
+  is_rejected: false,
+  reason_rejected: '',
 };
 
 const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
@@ -117,16 +128,21 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" rows={3} value={formData.description} onChange={(e) => setFormData(p => ({...p, description: e.target.value}))} />
+        <QuillEditor
+          value={formData.description || ''}
+          onChange={(html) => setFormData(p => ({ ...p, description: html }))}
+          height={100}
+          placeholder="Write a brief description"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
         <div className="space-y-2">
           <Label htmlFor="requirement">Requirement</Label>
           <QuillEditor
             value={formData.requirement || ''}
             onChange={(html) => setFormData(p => ({ ...p, requirement: html }))}
-            height={180}
+            height={100}
             placeholder="Write requirements…"
           />
         </div>
@@ -135,11 +151,11 @@ const CareerPostingForm = ({ data, onSave, onCancel, saving }: {
           <QuillEditor
             value={formData.responsibility || ''}
             onChange={(html) => setFormData(p => ({ ...p, responsibility: html }))}
-            height={180}
+            height={100}
             placeholder="Write responsibilities…"
           />
         </div>
-      </div>
+      {/* </div> */}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
@@ -202,6 +218,10 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const [isSubmissionDialogOpen, setIsSubmissionDialogOpen] = useState(false);
   const [submissionFor, setSubmissionFor] = useState<CareerPosting | null>(null);
   const { toast } = useToast();
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -209,7 +229,11 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       const response = await careerMgmtService.getAll();
       if (response.error) {throw new Error(response.error)};
-      setItems((response.data as any) || []);
+      const data = (response.data as CareerPosting[] | undefined) || [];
+      setItems(data.map((item) => ({
+        ...item,
+        reason_rejected: item.reason_rejected ?? '',
+      })));
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to load career postings', variant: 'destructive' });
@@ -302,15 +326,26 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (formData: CareerPosting) => {
     setSaving(true);
     try {
+      const payload: CareerPosting = {
+        ...formData,
+        is_rejected: false,
+        reason_rejected: '',
+      };
       if (editingItem?.id) {
-        const res = await careerMgmtService.update(editingItem.id, formData);
+        const res = await careerMgmtService.update(editingItem.id, payload);
         if (res.error) {throw new Error(res.error)};
-        setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...formData } : i));
+        setItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...payload } : i));
         toast({ title: 'Success', description: 'Posting updated' });
       } else {
-        const res = await careerMgmtService.create(formData);
+        const res = await careerMgmtService.create(payload);
         if (res.error) {throw new Error(res.error)};
-        setItems(prev => [res.data as any, ...prev]);
+        setItems(prev => [
+          {
+            ...(res.data as CareerPosting),
+            reason_rejected: (res.data as CareerPosting)?.reason_rejected ?? '',
+          },
+          ...prev,
+        ]);
         toast({ title: 'Success', description: 'Posting created' });
       }
       setEditingItem(null);
@@ -339,12 +374,63 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
     try {
       const res = await careerMgmtService.approve(id);
       if (res.error) {throw new Error(res.error)};
-      setItems(prev => prev.map(i => i.id === id ? { ...i, is_approved: (res as any).data?.is_approved } : i));
+      const updated = (res.data || {}) as Partial<CareerPosting>;
+      setItems(prev => prev.map(i => i.id === id ? {
+        ...i,
+        is_approved: updated.is_approved ?? true,
+        is_rejected: updated.is_rejected ?? false,
+        reason_rejected: '',
+      } : i));
       toast({ title: 'Success', description: 'Posting approved' });
       fetchItems();
     } catch (e) {
       console.error(e);
       toast({ title: 'Error', description: 'Failed to approve posting', variant: 'destructive' });
+    }
+  };
+
+  const openRejectDialog = (id: string) => {
+    setRejectingId(id);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const closeRejectDialog = () => {
+    setRejectDialogOpen(false);
+    setRejectingId(null);
+    setRejectReason('');
+  };
+
+  const submitReject = async () => {
+    if (!rejectingId) {
+      return;
+    }
+
+    const trimmedReason = rejectReason.trim();
+    if (!trimmedReason) {
+      toast({ title: 'Reason required', description: 'Please enter a rejection reason.', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      setRejectSubmitting(true);
+      const res = await careerMgmtService.reject(rejectingId, trimmedReason);
+      if (res.error) {throw new Error(res.error)};
+      const updated = (res.data || {}) as Partial<CareerPosting>;
+      setItems(prev => prev.map(i => i.id === rejectingId ? {
+        ...i,
+        is_approved: updated.is_approved ?? false,
+        is_rejected: updated.is_rejected ?? true,
+        reason_rejected: updated.reason_rejected ?? trimmedReason,
+      } : i));
+      toast({ title: 'Success', description: 'Posting rejected' });
+      closeRejectDialog();
+      fetchItems();
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Error', description: 'Failed to reject posting', variant: 'destructive' });
+    } finally {
+      setRejectSubmitting(false);
     }
   };
 
@@ -372,6 +458,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Career Posting Management</h2>
           <p className="text-muted-foreground">Manage career postings</p>
         </div>
+          {userRole === 'admin' || userRole === 'super-admin' ?
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingItem(emptyPosting)}>
@@ -393,7 +480,7 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
               saving={saving}
             />
           </DialogContent>
-        </Dialog>
+        </Dialog> : <></>}
       </div>
 
       <div className="flex justify-between items-center">
@@ -420,6 +507,16 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
         ) : null}
       </div>
 
+      <RejectReasonDialog
+        open={rejectDialogOpen}
+        reason={rejectReason}
+        loading={rejectSubmitting}
+        onReasonChange={(value) => setRejectReason(value)}
+        onSubmit={submitReject}
+        onClose={closeRejectDialog}
+        title="Reject Career Posting"
+      />
+
       {items.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
@@ -436,18 +533,18 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
             <Card key={item.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {item.title}
-                      <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                        {item.is_active ? 'Published' : 'Draft'}
-                      </Badge>
-                      <Badge variant={item.is_approved ? 'success' : 'secondary'}>
-                        {item.is_approved ? 'Approved' : 'Pending'}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription>{item.subtitle}</CardDescription>
-                  </div>
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    {item.title}
+                    <Badge variant={item.is_active ? 'default' : 'secondary'}>
+                      {item.is_active ? 'Published' : 'Draft'}
+                    </Badge>
+                    <Badge variant={item.is_approved ? 'success' : item.is_rejected ? 'destructive' : 'secondary'}>
+                      {item.is_approved ? 'Approved' : item.is_rejected ? 'Rejected' : 'Pending'}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>{item.subtitle}</CardDescription>
+                </div>
                   {userRole === 'admin' || userRole === 'super-admin' ? (
                     <div className="flex items-center space-x-2">
                       {/* <Button variant="outline" size="sm" onClick={() => openSubmissionDialog(item)}>
@@ -460,10 +557,15 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => toggleActive(item.id!, checked)}
                         />
                       </div>
-                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved ? (
-                        <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
-                          Approve
-                        </Button>
+                      {(userRole === 'super-admin' || userRole === 'approver') && !item.is_approved && !item.is_rejected ? (
+                        <>
+                          <Button variant="success" size="sm" onClick={() => toggleApproved(item.id!)}>
+                            Approve
+                          </Button>
+                          <Button variant="destructive" size="sm" onClick={() => item.id && openRejectDialog(item.id)}>
+                            Reject
+                          </Button>
+                        </>
                       ) : null}
                       <Button variant="outline" size="sm" onClick={() => { setEditingItem(item); setIsDialogOpen(true); }}>
                         <Edit className="w-4 h-4" />
@@ -472,10 +574,13 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                         <Trash className="w-4 h-4" />
                       </Button>
                     </div>
-                  ) : userRole === 'approver' && !item.is_approved ? (
+                  ) : userRole === 'approver' && !item.is_approved && !item.is_rejected ? (
                     <div className="flex items-center space-x-2">
                       <Button variant="success" className="w-full" onClick={() => toggleApproved(item.id!)}>
                         Approve
+                      </Button>
+                      <Button variant="destructive" className="w-full" onClick={() => item.id && openRejectDialog(item.id)}>
+                        Reject
                       </Button>
                     </div>
                   ) : null}
@@ -508,21 +613,36 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
                 {item.description && (
                   <div className="mt-4">
                     <span className="font-medium">Description:</span>
-                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                    <div
+                      className="text-sm text-muted-foreground mt-1"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.description || '')) }}
+                    />
                   </div>
                 )}
                 {(item.requirement || item.responsibility) && (
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <span className="font-medium">Requirements:</span>
-                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.requirement || '' }} />
+                      <div
+                        className="prose prose-sm text-muted-foreground mt-1"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.requirement || '')) }}
+                      />
                     </div>
                     <div>
                       <span className="font-medium">Responsibilities:</span>
-                      <div className="prose prose-sm text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: item.responsibility || '' }} />
+                      <div
+                        className="prose prose-sm text-muted-foreground mt-1"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(fixBrokenHtmlTags(item.responsibility || '')) }}
+                      />
                     </div>
                   </div>
                 )}
+                {item.is_rejected && item.reason_rejected?.trim() ? (
+                  <div className="mt-4 text-sm">
+                    <span className="font-medium">Alasan Penolakan : </span>
+                    <p className="text-muted-foreground">{item.reason_rejected}</p>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
           ))}
@@ -572,7 +692,12 @@ const CareerPostingManagement = ({ userRole }: { userRole: string }) => {
             </div>
             <div className="space-y-2">
               <Label>Motivasi & Tujuan</Label>
-              <Textarea rows={4} value={submissionData.motivation} onChange={(e) => setSubmissionData(p => ({...p, motivation: e.target.value}))} />
+              <QuillEditor
+                value={submissionData?.motivation ?? ''}
+                onChange={(html) => setSubmissionData(p => (p ? { ...p, motivation: html } : p))}
+                height={100}
+                placeholder="Volunteer motivation"
+              />
             </div>
 
             <FileUploadPDF bucket="cv-uploads" label="CV Upload (PDF)" onUploadComplete={(url) => setSubmissionData(p => ({...p, cv_url: url}))} />

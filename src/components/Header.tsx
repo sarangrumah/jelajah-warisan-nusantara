@@ -59,6 +59,7 @@ const Header = () => {
         { name: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
         { name: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
+        // { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/karir' },
       ]

@@ -9,6 +9,13 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import heritageSites from '@/assets/heritage-sites.jpg';
 import museumInterior from '@/assets/museum-interior.jpg';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const CompanyProfile = () => {
   const { t } = useTranslation();
@@ -115,10 +122,15 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed text-justify">
-                    "Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia 
-                    yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat."
-                  </p>
+                  <div
+                    className="text-lg text-muted-foreground leading-relaxed text-justify"
+                    dangerouslySetInnerHTML={{
+                      __html: fixBrokenHtmlTags(
+                        `"Menjadi institusi terdepan dalam pelestarian, perlindungan, dan pengembangan warisan budaya Indonesia
+                        yang berkelanjutan untuk memperkuat identitas bangsa dan meningkatkan kesejahteraan masyarakat."`
+                      )
+                    }}
+                  />
                 </CardContent>
               </Card>
 
@@ -130,24 +142,19 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3 text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Melindungi dan melestarikan cagar budaya serta koleksi museum sebagai warisan bangsa
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Mengembangkan museum sebagai pusat edukasi, penelitian, dan rekreasi budaya
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Meningkatkan kesadaran masyarakat terhadap pentingnya warisan budaya
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                      Membangun sistem informasi terintegrasi untuk pengelolaan warisan budaya
-                    </li>
-                  </ul>
+                  <div
+                    className="space-y-3 text-muted-foreground"
+                    dangerouslySetInnerHTML={{
+                      __html: fixBrokenHtmlTags(`
+                        <ul>
+                          <li class="flex items-start gap-2"><span class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>Melindungi dan melestarikan cagar budaya serta koleksi museum sebagai warisan bangsa</li>
+                          <li class="flex items-start gap-2"><span class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>Mengembangkan museum sebagai pusat edukasi, penelitian, dan rekreasi budaya</li>
+                          <li class="flex items-start gap-2"><span class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>Meningkatkan kesadaran masyarakat terhadap pentingnya warisan budaya</li>
+                          <li class="flex items-start gap-2"><span class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>Membangun sistem informasi terintegrasi untuk pengelolaan warisan budaya</li>
+                        </ul>
+                      `)
+                    }}
+                  />
                 </CardContent>
               </Card>
             </div>

@@ -20,7 +20,6 @@ const resources = {
         strukturOrganisasi: "Organizational structure",
         layananKonservasi: "Conservation Laboratory",
         mediaPublikasi: "Media & Publications",
-        pemanfaatanAset: "Asset Utilization",
         hubungiKami: "Contact Us",
         career: "Career",
         ppid: "PPID",
@@ -74,38 +73,52 @@ const resources = {
       management: {
         title: "Integrated National Management",
         description: "Professional management of museums and cultural heritage sites throughout Indonesia with modern and integrated systems.",
+        mainServices: "Main Services",
         museum: {
-          title: "Museum Management",
-          description: "Comprehensive management of museum collections, operations, and public services",
-          features: [
-            "Collection Management",
-            "Exhibition Programs",
-            "Educational Services",
-            "Digital Archives"
-          ],
+          title: "Museum",
+          description: "Management of collections, exhibitions, and educational programs in museums throughout Indonesia",
+          feature1: "Digital collection system",
+          feature2: "Regular exhibition programs",
+          feature3: "Public education services",
+          feature4: "Research and documentation",
           stats: {
-            museums: "Active Museums",
-            collections: "Collection Items",
-            visitors: "Annual Visitors"
+            museums: "Museums",
+            visitors: "Visitors",
+            programs: "Programs"
           }
         },
         heritage: {
-          title: "Cultural Heritage Management",
-          description: "Conservation and protection of cultural heritage sites and historical artifacts",
-          features: [
-            "Site Conservation",
-            "Archaeological Research",
-            "Heritage Documentation",
-            "Community Programs"
-          ],
+          title: "Cultural Heritage",
+          description: "Preservation and protection of historical sites and national cultural heritage",
+          feature1: "Historical site conservation",
+          feature2: "Condition monitoring",
+          feature3: "Restoration programs",
+          feature4: "Archaeological research",
           stats: {
-            sites: "Heritage Sites",
-            artifacts: "Protected Artifacts",
-            programs: "Active Programs"
+            sites: "Sites",
+            provinces: "Provinces",
+            projects: "Projects"
           }
         },
         manage: "Manage",
         viewAgenda: "View Agenda"
+      },
+      // Distribution Section
+      distribution: {
+        title: "Distribution of Museums and Cultural Heritage",
+        subtitle: "Distribution of museums and cultural heritage sites throughout Indonesia managed by the Directorate of Museums and Cultural Heritage.",
+        regions: {
+          sumatera: "Sumatra",
+          jawa: "Java",
+          kalimantan: "Kalimantan",
+          sulawesi: "Sulawesi",
+          papua: "Papua",
+          malukuNusaTenggara: "Maluku & Nusa Tenggara"
+        },
+        labels: {
+          museum: "Museum",
+          heritage: "Cultural Heritage"
+        }
       },
       // Agenda Section
       agenda: {
@@ -484,18 +497,11 @@ const resources = {
           categoryPreHistorical: "PreHistorical",
           categoryGeographic: "Geographic",
         },
-        pemanfaatanAset: {
-          search: "Search assets...",
-        }
       },
       mow: {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
-      },
-      pemanfaatanAset: {
-        title: "Asset Utilization Services",
-        subtitle: "Managing and preserving national heritage for future generations"
       }
     }
   },
@@ -515,7 +521,6 @@ const resources = {
         strukturOrganisasi: "Struktur Organisasi",
         layananKonservasi: "Laboratorium Konservasi",
         mediaPublikasi: "Berita & Publikasi",
-        pemanfaatanAset: "Pemanfaatan Aset",
         hubungiKami: "Hubungi Kami",
         career: "Karir",
         ppid: "PPID",
@@ -545,7 +550,7 @@ const resources = {
       // Profile Sectionpa
       profile: {
         title: "Tentang Kami",
-        description: "Museum & Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum & Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
+        description: "Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
         vision: "Visi",
         visionText: "“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”",
         mission: "Misi",
@@ -571,38 +576,52 @@ const resources = {
       management: {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
+        mainServices: "Layanan Utama",
         museum: {
-          title: "Pengelolaan Museum",
-          description: "Pengelolaan komprehensif koleksi museum, operasional, dan layanan publik",
-          features: [
-            "Manajemen Koleksi",
-            "Program Pameran",
-            "Layanan Edukasi",
-            "Arsip Digital"
-          ],
+          title: "Museum",
+          description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
+          feature1: "Sistem koleksi digital",
+          feature2: "Program pameran berkala",
+          feature3: "Layanan edukasi publik",
+          feature4: "Penelitian dan dokumentasi",
           stats: {
-            museums: "Museum Aktif",
-            collections: "Item Koleksi", 
-            visitors: "Pengunjung per Tahun"
+            museums: "Museum",
+            visitors: "Pengunjung",
+            programs: "Program"
           }
         },
         heritage: {
-          title: "Pengelolaan Cagar Budaya",
-          description: "Konservasi dan perlindungan situs cagar budaya serta artefak bersejarah",
-          features: [
-            "Konservasi Situs",
-            "Penelitian Arkeologi",
-            "Dokumentasi Warisan",
-            "Program Komunitas"
-          ],
+          title: "Cagar Budaya",
+          description: "Pelestarian dan perlindungan situs bersejarah dan warisan budaya nasional",
+          feature1: "Konservasi situs bersejarah",
+          feature2: "Monitoring kondisi",
+          feature3: "Program restorasi",
+          feature4: "Penelitian arkeologi",
           stats: {
-            sites: "Situs Cagar Budaya",
-            artifacts: "Artefak Terlindungi",
-            programs: "Program Aktif"
+            sites: "Situs",
+            provinces: "Provinsi",
+            projects: "Proyek"
           }
         },
         manage: "Kelola",
         viewAgenda: "Lihat Agenda"
+      },
+      // Distribution Section
+      distribution: {
+        title: "Sebaran Museum dan Cagar Budaya",
+        subtitle: "Distribusi museum dan situs cagar budaya di seluruh Indonesia yang dikelola oleh Direktorat Museum dan Cagar Budaya.",
+        regions: {
+          sumatera: "Sumatera",
+          jawa: "Jawa",
+          kalimantan: "Kalimantan",
+          sulawesi: "Sulawesi",
+          papua: "Papua",
+          malukuNusaTenggara: "Maluku & Nusa Tenggara"
+        },
+        labels: {
+          museum: "Museum",
+          heritage: "Cagar Budaya"
+        }
       },
       // Agenda Section
       agenda: {
@@ -629,7 +648,7 @@ const resources = {
           subtitle: "Merupakan unit eselon II di bawah Direktorat Jenderal Kebudayaan, Kementerian Kebudayaan Republik Indonesia.",
           historyTitle: "Sejarah & Perkembangan",
           historyText1: "Didirikan dengan tujuan untuk mengelola, melestarikan, dan mengembangkan museum serta situs cagar budaya di seluruh Indonesia. Sejak berdiri, kami telah berperan aktif dalam pelestarian warisan budaya bangsa.",
-          historyText2: "Terbentuk pada tahun 2022 berdasarkan Permendikbudristek Nomor 28 Tahun 2022 tentang OTK Museum dan Cagar Budaya, dan diresmikan menjadi badan layanan umum per 1 September 2023, Museum & Cagar Budaya mempunyai visi menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
+          historyText2: "Terbentuk pada tahun 2022 berdasarkan Permendikbudristek Nomor 28 Tahun 2022 tentang OTK Museum dan Cagar Budaya, dan diresmikan menjadi badan layanan umum per 1 September 2023, Museum dan Cagar Budaya mempunyai visi menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
           commitmentTitle: "Komitmen Kami",
           commitmentText: "Museum dan Cagar Budaya mengedepankan peningkatan pelayanan yang berbasis perlindungan sebagai prioritas utama. Dengan merangkul kreativitas dan mengusung semangat kolaborasi yang inklusif. Museum dan Cagar Budaya secara kolektif berkontribusi untuk membuka wawasan apresiasi mendalam terhadap warisan budaya Indonesia yang beragam.",
           highlights: {
@@ -660,8 +679,8 @@ const resources = {
             features: ["Konservasi preventif, Restorasi struktural, Monitoring kondisi, Dokumentasi digital"]
           },
           museum: {
-            title: "Pengelolaan Museum & Cagar Budaya",
-            description: "Pengelolaan komprehensif koleksi museum & cagar budaya, operasional, dan layanan publik",
+            title: "Pengelolaan Museum dan Cagar Budaya",
+            description: "Pengelolaan komprehensif koleksi Museum dan Cagar Budaya, operasional, dan layanan publik",
             features: ["Kurasi koleksi, Manajemen penyimpanan, Program pameran, Layanan pengunjung"]
           },
           research: {
@@ -981,18 +1000,11 @@ const resources = {
           categoryPreHistorical: "PraSejarah",
           categoryGeographic: "Geographic",
         },
-        pemanfaatanAset: {
-          search: "Cari aset...",
-        }
       },
       mow: {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
-      },
-      pemanfaatanAset: {
-        title: "Layanan Pemanfaatan Aset",
-        subtitle: "Mengelola dan melestarikan warisan nasional untuk generasi mendatang"
       }
     }
   }

@@ -7,8 +7,15 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+// import { defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { masterCollectionService } from '@/lib/api-services';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import logo from '@/assets/MCB-Logo.png';
 
 const CollectionDetail = () => {
@@ -21,20 +28,22 @@ const CollectionDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchCollections = async () => {
+  const fetchCollections = async () => {
       try {
         const response = await masterCollectionService.getAll();
+  
         if (response.error) {
           console.error('Error fetching collections:', response.error);
         }
-        setCollections(response.data);
+  
+        setCollections(response.data || defaultCollections);
       } catch (error) {
         console.error('Error fetching collections:', error);
       }
     };
-    fetchCollections();
-  }, []);
+    useEffect(() => {
+      fetchCollections();
+    }, []);
 
   const filteredCollection = collections.filter(collection => collection.id.toString() === id);
 
@@ -87,14 +96,30 @@ const CollectionDetail = () => {
               <div className="space-y-6">
                 <div>
                   <Badge className="mb-2 hidden">{t(collection.category)}</Badge>
-                  <h1 className="text-4xl font-bold mb-2">{collection.title}</h1>
-                  <p className="text-xl text-muted-foreground">{collection.subtitle}</p>
+                  <h1 className="text-4xl font-bold mb-2">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(collection.title)
+                      }}
+                    />
+                  </h1>
+                  <p className="text-xl text-muted-foreground">
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(collection.subtitle)
+                      }}
+                    />
+                  </p>
                 </div>
 
                 <Card>
                   <CardContent className="pt-6">
                     <p className="text-muted-foreground leading-relaxed">
-                      {collection.description}
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags(collection.description)
+                        }}
+                      />
                     </p>
                   </CardContent>
                 </Card>

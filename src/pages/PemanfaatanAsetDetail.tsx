@@ -73,7 +73,7 @@ const PemanfaatanAsetDetail = () => {
       <Header />
       {assets.map((asset) => (
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
-          <section className="relative h-96 overflow-hidden">
+          <section className="relative h-96 overflow-hidden pt-10">
             <img
               src={getMuseumImageUrl(asset.image_url?.split('/').pop() || asset.image_url)}
               alt={asset.name}

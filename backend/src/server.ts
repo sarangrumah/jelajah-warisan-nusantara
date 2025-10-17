@@ -12,6 +12,12 @@ import authRoutes from './routes/auth';
 import apiRoutes from './routes/api';
 import uploadRoutes from './routes/upload';
 import usersRoutes from './routes/users';
+import activityLogRoutes from './routes/activityLog';
+import translationCacheRoutes from './routes/translationCache';
+
+// Import translation utilities
+import { warmUpCache, getCacheStats, clearTranslationCache } from './middleware/translateResponse';
+import pool from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -19,21 +25,45 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// DEBUG: Log __dirname and uploadBase to verify static path resolution
+console.log('DEBUG __dirname:', __dirname);
+const uploadBase = process.env.UPLOAD_PATH
+  ? path.resolve(process.env.UPLOAD_PATH)
+  : path.resolve(__dirname, '../../uploads');
+console.log('DEBUG uploadBase:', uploadBase);
+
+import { globalActivityLogger } from './middleware/activityLogger';
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // CORS configuration
+// Original localhost-only config (commented for reference)
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   optionsSuccessStatus: 200
+// }));
+
+// Updated CORS configuration to support both development and production
 app.use(cors({
-//  origin: [
-//    'http://localhost:5173',
-//    'http://localhost:8080',
-//    'http://localhost:8081',
-//    'http://127.0.0.1:5173',
-//    'http://127.0.0.1:8080'
-//  ],
-  origin: '*',  
+  origin: [
+    // Development origins
+    'http://localhost:5173',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:8080',
+    // Production origins
+    'https://museumcagarbudaya.kemenbud.go.id',
+    'https://www.museumcagarbudaya.kemenbud.go.id',
+    'http://museumcagarbudaya.kemenbud.go.id',
+    'http://www.museumcagarbudaya.kemenbud.go.id'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -62,12 +92,22 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Global activity logger (logs all requests)
+app.use(globalActivityLogger);
+
+
 // Serve static files for uploaded contents
 // Allow overriding upload base via UPLOAD_PATH to keep uploads outside project root (avoids Vite HMR watching)
+/* (moved above for debug logging)
 const uploadBase = process.env.UPLOAD_PATH
   ? path.resolve(process.env.UPLOAD_PATH)
   : path.resolve(__dirname, '../../uploads');
+*/
 app.use('/uploads', express.static(uploadBase));
+
+// Serve frontend static files (production build)
+const frontendDir = path.resolve(__dirname, '../../public');
+app.use(express.static(frontendDir));
 
 // Serve assets from project root src/assets (outside backend)
 const assetsDir = fs.existsSync(path.resolve(__dirname, '../../../src/assets'))
@@ -78,21 +118,23 @@ app.use('/assets', express.static(assetsDir));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
 });
 
-// API routes
+// API routes - MUST be registered BEFORE the fallback route
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/activity-log', activityLogRoutes);
+app.use('/api/translation-cache', translationCacheRoutes);
 
 // Error handling middleware
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', error);
   
   if (error.code === 'LIMIT_FILE_SIZE') {
@@ -114,18 +156,35 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// Fallback: serve index.html for any non-API route (client-side routing)
+// IMPORTANT: This MUST be after all API routes and error handling to avoid catching API requests
+app.get('*', (req, res) => {
+  // Only serve index.html for non-API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(frontendDir, 'index.html'));
+  } else {
+    // If we somehow reach here for an API route, return 404
+    res.status(404).json({ error: 'API endpoint not found' });
+  }
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
   console.log(`📱 Main API: http://localhost:${PORT}/api`);
   console.log(`📁 Upload API: http://localhost:${PORT}/api/upload`);
+  console.log(`🌐 Translation middleware: Active (Local LibreTranslate)`);
+  
+  // Warm up translation cache with popular content
+  try {
+    await warmUpCache(pool);
+    const stats = getCacheStats();
+    console.log(`💾 Translation cache ready: ${stats.totalTranslations} translations (${stats.cacheSizeKB} KB)`);
+  } catch (error) {
+    console.error('⚠️  Failed to warm up cache:', error);
+  }
 });
 
 export default app;

@@ -27,7 +27,10 @@ const Beranda = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          console.log('[ScrollReveal] Revealing:', entry.target);
           entry.target.classList.add('revealed');
+        } else {
+          console.log('[ScrollReveal] Not revealed:', entry.target);
         }
       });
     }, observerOptions);

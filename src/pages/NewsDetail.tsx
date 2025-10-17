@@ -4,8 +4,15 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
 import { mediaService } from '@/lib/api-services';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+import { useEffect, useState } from 'react';
+// Utility to fix broken HTML tags like < p > to <p>
 
 const newsImages = import.meta.glob('../assets/news/*', { eager: true });
 
@@ -31,31 +38,77 @@ function getNewsImageUrl(filename: string) {
 }
 const NewsDetail = () => {
   const { pathname } = useLocation();
-  const [news, setNews] = useState([]);
-        
+  const { id } = useParams();
+  interface MediaArticle {
+    id: string;
+    title: string;
+    image_url?: string;
+    file_url?: string;
+    categories?: string;
+    subtitle?: string;
+    description?: string;
+    source?: string;
+    author?: string[] | string;
+    published_date?: string;
+    is_active?: boolean;
+    is_approved?: boolean;
+    created_at?: string;
+    updated_at?: string;
+    created_by?: string;
+    updated_by?: string;
+    is_published?: boolean;
+    is_rejected?: boolean;
+    reason_rejected?: string;
+    excerpt?: string;
+    content?: string;
+    image?: string;
+    category?: string;
+    date?: string;
+  }
+  const [article, setArticle] = useState<MediaArticle | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  const { id } = useParams();
 
   useEffect(() => {
-      const fetchNews = async () => {
-        try {
-          const response = await mediaService.getAll();
-          if (response.error || response.data.length === 0) {
-            console.error('Error fetching news:', response.error);
-          } else {
-            setNews(response.data);
+    let mounted = true;
+    setLoading(true);
+    if (id) {
+      mediaService.getById(id)
+        .then((response) => {
+          if (mounted) {
+            if (response.error) {
+              setArticle(null);
+            } else {
+              // Only show if active and approved
+              const data = response.data as MediaArticle;
+              if (data && data.is_active === true && data.is_approved === true) {
+                setArticle(data);
+              } else {
+                setArticle(null);
+              }
+            }
           }
-        } catch (error) {
-          console.error('Error fetching news:', error);
-        }
-      };
-      fetchNews();
-    }, []);
+        })
+        .catch(() => {
+          if (mounted) { setArticle(null); }
+        })
+        .finally(() => {
+          if (mounted) { setLoading(false); }
+        });
+    }
+    return () => { mounted = false; };
+  }, [id]);
 
-  // const article = id && news[id as keyof typeof news] ? news[id as keyof typeof news] : null;
-  const article = news.find((item) => item.id.toString() === id );
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <span className="text-lg text-muted-foreground">Memuat artikel...</span>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
@@ -113,11 +166,19 @@ const NewsDetail = () => {
             </div>
             
             <h1 className="text-4xl md:text-4xl font-bold text-foreground mb-6">
-              {article.title}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(article.title)
+                }}
+              />
             </h1>
             
             <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-              {article.subtitle}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(article.excerpt)
+                }}
+              />
             </p>
             
             <div className="flex items-center justify-between border-t border-b border-border py-4">
@@ -163,7 +224,7 @@ const NewsDetail = () => {
           <div className="prose prose-lg max-w-none">
             <div 
               className="text-foreground leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.description }}
+              dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(article.content || '') }}
             />
           </div>
 

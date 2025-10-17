@@ -7,8 +7,15 @@ import { Filter, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
+import { defaultMemories } from '@/../database/default-data';
+import { collectionService, memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
 function getCollectionImageUrl(filename: string) {
@@ -20,10 +27,9 @@ function getCollectionImageUrl(filename: string) {
   ) {
     return filename;
   }
-  // Always extract the filename and match against imported images
-  const justFile = filename.split('/').pop();
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(justFile || ''));
-  return match ? (match[1] as { default: string }).default : filename;
+  // Try to resolve using Vite's import
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  return match ? (match[1] as any).default : filename;
 }
 const MemoryOfWorld = () => {
   const { t } = useTranslation();
@@ -37,32 +43,19 @@ const MemoryOfWorld = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const response = await memoryWorldService.getAll();
-        if (response.error || !response.data) {
-          console.error('Error fetching memories:', response);
-        } else {
-          const filteredMemories = response.data.filter((memory: {
-            is_active: boolean;
-            is_approved: boolean;
-            is_rejected: boolean;
-            start_publish_date: Date;
-            end_publish_date: Date;
-          }) => (
-            memory.is_active === true && 
-            memory.is_approved === true &&
-            memory.is_rejected === false &&
-            new Date(memory.start_publish_date) <= new Date() &&
-            new Date(memory.end_publish_date) >= new Date()
-          ));
-          setMemories(filteredMemories);
-        }
-      } catch (error) {
-        console.error('Error fetching memories:', error);
+  const fetchMemories = async () => {
+    try {
+      const response = await memoryWorldService.getAll();
+      if(response.error) {
+        console.error('Error fetching memories:', response.error);
+      } else {
+        setMemories(response.data);
       }
+    } catch (error) {
+      console.error('Error fetching memories:', error);
     }
+  }
+  useEffect(() => {
     fetchMemories();
   }, []);
 
@@ -83,10 +76,9 @@ const MemoryOfWorld = () => {
   }, []);
 
   const filteredMemories = memories.filter(item => {
-    const matchesSearch = (item.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (item.subtitle?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    // If tb_memoryoftheworld does not have a category field, skip category filtering
-    const matchesFilter = filterCategory === 'all' || item.categories_id === filterCategory;
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
     return matchesSearch && matchesFilter;
   });
 
@@ -155,10 +147,18 @@ const MemoryOfWorld = () => {
                 </div>
                 <CardHeader>
                   <CardTitle className="text-lg">
-                    {item.title}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.title)
+                      }}
+                    />
                   </CardTitle>
                   <CardDescription>
-                    {item.description}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(item.description)
+                      }}
+                    />
                   </CardDescription>
                 </CardHeader>
               </Card>

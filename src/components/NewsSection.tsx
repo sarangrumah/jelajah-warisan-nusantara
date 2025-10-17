@@ -1,13 +1,25 @@
-import { useState, useEffect } from 'react';
-import { Search, Calendar, User, ArrowRight, Download } from 'lucide-react';
+import * as React from 'react';
+import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { mediaService } from '@/lib/api-services';
 import { Link } from 'react-router-dom';
+import { mediaService } from '@/lib/api-services';
+import { useTranslation } from 'react-i18next';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext
+} from '@/components/ui/carousel';
 
 const newsImages = import.meta.glob('../assets/news/*', { eager: true });
-const newsFiles = import.meta.glob('../assets/berita/*', { eager: true });
 
 function getNewsImageUrl(filename: string) {
   if (
@@ -51,179 +63,219 @@ function getNewsFileUrl(filename: string) {
   return undefined;
 }
 
-const NewsListSection = () => {
-  const [articles, setArticles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('semua');
+const NewsSection = () => {
+  const { t } = useTranslation();
+  const [carouselApi, setCarouselApi] = React.useState(null);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [news, setNews] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const categories = [
-    { id: 'semua', name: 'Semua' },
-    { id: 'berita', name: 'Berita' },
-    { id: 'kemitraan', name: 'Kemitraan' },
-    { id: 'artikel', name: 'Artikel' },
-    { id: 'pengumuman', name: 'Pengumuman' },
-  ];
-
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await mediaService.getAll();
-  
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching articles:', response.error);
-        } else {
-          const filteredArticles = response.data.filter((article: {
-            is_active: boolean;
-            is_approved: boolean;
-            is_rejected: boolean;
-            published_date: Date;
-          }) => (
-            article.is_active === true
-            && article.is_approved === true
-            && article.is_rejected === false
-            && new Date(article.published_date) <= new Date()
-          ));
-          setArticles(filteredArticles);
+  // Fetch news from tb_media
+  React.useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    mediaService.getAll()
+      .then((response) => {
+        if (mounted) {
+          if (response.error) {
+            console.error('Error fetching news:', response.error);
+            setNews([]);
+          } else {
+            // Only show news that are active and approved
+            setNews((response.data || []).filter(
+              (item: any) => item.is_active === true && item.is_approved === true
+            ));
+          }
         }
-      } catch (error) {
-        console.error('Error fetching articles:', error);
-      }
-    };
-    fetchArticles();
+      })
+      .catch((err) => {
+        if (mounted) {
+          console.error('Error fetching news:', err);
+          setNews([]);
+        }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => { mounted = false; };
   }, []);
 
-  const filteredArticles = articles.filter(article => {
-    if (activeCategory === 'semua') {
-      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
-    } else {
-      const matchesSearch = article.categories.toLowerCase() === activeCategory.toLocaleLowerCase() 
-          && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) 
-          || article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchesSearch;
+  // Accessibility: Announce slide changes
+  const totalSlides = news.length;
+
+  // Auto-slide logic
+  React.useEffect(() => {
+    if (!carouselApi || isPaused) { return; }
+    const interval = setInterval(() => {
+      if (carouselApi) {
+        carouselApi.scrollNext();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [carouselApi, isPaused, news]);
+
+  // Update current index for live region
+  React.useEffect(() => {
+    if (!carouselApi) { return; }
+    const onSelect = () => {
+      setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
+    };
+    carouselApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      carouselApi.off('select', onSelect);
+    };
+  }, [carouselApi, news]);
+
+  // Pause on hover/focus, resume on mouse leave/blur
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+  const handleFocus = () => setIsPaused(true);
+  const handleBlur = () => setIsPaused(false);
+
+  // Diagnostic log for Embla API
+  React.useEffect(() => {
+    if (carouselApi) {
+      // eslint-disable-next-line no-console
+      console.log('[NewsSection] Carousel API set:', carouselApi);
     }
-  });
-
-  const handleOpenFile = (filename: string) => {
-    return getNewsFileUrl(filename);
-  };
-
-  // const handleReadMoreClick = (article) => {
-  //   const link = document.createElement('a');
-  //   link.href = article;
-  //   link.target = '_blank';
-  //   link.rel = 'noopener noreferrer';
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  }, [carouselApi]);
 
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            Berita & Publikasi
+          <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
+            {t('news.news.title', 'Berita & Artikel')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Temukan berita terbaru, artikel, dan publikasi resmi tentang museum 
-            dan cagar budaya Indonesia.
+            {t('news.news.subtitle', 'Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian warisan budaya Indonesia')}
           </p>
         </div>
 
-        <div className="mb-12">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
-            <div className="relative flex-1 max-w-md">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Cari berita atau artikel..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+        <div className="relative mb-12">
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <span className="text-lg text-muted-foreground">{t('news.news.loading', 'Memuat berita...')}</span>
+            </div>
+          ) : (
+            <Carousel
+              setApi={setCarouselApi}
+              aria-label="News Carousel"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            >
+              <CarouselPrevious
+                className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -left-20 z-20"
+                size="icon"
+                aria-label="Previous slide"
+                onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
               />
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={activeCategory === category.id ? "default" : "outline"}
-                  onClick={() => setActiveCategory(category.id)}
-                  className="text-sm"
+              <CarouselNext
+                className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -right-20 z-20"
+                size="icon"
+                aria-label="Next slide"
+                onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
+              />
+              <CarouselContent>
+                {news.map((article, index) => (
+                  <CarouselItem
+                    key={article.id}
+                    className="md:basis-1/2 lg:basis-1/3 py-5"
+                    aria-label={`Slide ${index + 1} of ${news.length}`}
+                  >
+                    <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce h-full flex flex-col p-2">
+                      <div className="aspect-video relative overflow-hidden">
+                        <img
+                          src={getNewsImageUrl(article.image || article.image_url)}
+                          alt={article.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                            {article.category || article.categories}
+                          </span>
+                        </div>
+                      </div>
+                      <CardContent className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(article.title)
+                            }}
+                          />
+                        </h3>
+                        <p className="text-muted-foreground mb-4 line-clamp-3">
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: fixBrokenHtmlTags(article.excerpt || article.subtitle || article.description)
+                            }}
+                          />
+                        </p>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={14} />
+                            <span>
+                              {article.date
+                                ? new Date(article.date).toLocaleDateString('id-ID')
+                                : article.published_date
+                                  ? new Date(article.published_date).toLocaleDateString('id-ID')
+                                  : ''}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <User size={14} />
+                            <span>
+                              {Array.isArray(article.author)
+                                ? article.author.join(', ')
+                                : article.author}
+                            </span>
+                          </div>
+                        </div>
+                        <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
+                          {t('news.button.readMore', 'Baca Selengkapnya')}
+                          <ArrowRight size={16} />
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {/* Pause/Resume Button */}
+              {/* <div className="absolute right-4 bottom-4 z-10">
+                <button
+                  onClick={() => setIsPaused((p) => !p)}
+                  aria-pressed={isPaused}
+                  aria-label={isPaused ? "Resume auto-slide" : "Pause auto-slide"}
+                  className="bg-primary text-primary-foreground px-4 py-2 rounded focus:ring-2 focus:ring-primary"
+                  tabIndex={0}
                 >
-                  {category.name}
-                </Button>
-              ))}
-            </div>
-          </div>
+                  {isPaused ? "Resume" : "Pause"}
+                </button>
+              </div> */}
+              {/* Live region for screen readers */}
+              <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {news[currentIndex]
+                  ? `Showing slide ${currentIndex + 1} of ${news.length}: ${news[currentIndex].title}`
+                  : ""}
+              </div>
+            </Carousel>
+          )}
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredArticles.map((article, index) => (
-            <Card key={index} className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
-              {article.featured_image_url && (
-                <div className="aspect-video relative overflow-hidden">
-                  <img
-                    src={getNewsImageUrl(article.featured_image_url)}
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-                  {article.title}
-                </h3>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {article.excerpt}
-                </p>
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} />
-                    <span>
-                      {article.published_at 
-                        ? new Date(article.published_at).toLocaleDateString('id-ID')
-                        : new Date(article.created_at).toLocaleDateString('id-ID')
-                      }
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <User size={14} />
-                    <span>Admin</span>
-                  </div>
-                </div>
-                {article.file_url && (
-                  <a href={handleOpenFile(article.file_url)} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:text-primary-glow transition-colors">
-                    <button className="py-5 flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-                      <Download size={16} />
-                      <span>Unduh Dokumen</span>
-                    </button>
-                  </a>
-                )}
-                <Link to={`/news/${article.id}`} className="text-sm text-primary hover:text-primary-glow transition-colors">
-                  <button className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-                    Baca Selengkapnya
-                    <ArrowRight size={16} />
-                  </button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="text-center scroll-reveal">
+          <Link to={'/media-publikasi'}>
+            <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
+              {t('news.button.viewAll', 'Lihat Semua Berita')}
+            </button>
+          </Link>
         </div>
-
-        {filteredArticles.length === 0 && (
-          <div className="text-center py-12">
-            <Search size={64} className="mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">Tidak ada artikel ditemukan</h3>
-            <p className="text-muted-foreground">
-              Coba ubah kata kunci pencarian atau filter kategori
-            </p>
-          </div>
-        )}
       </div>
     </section>
   );
 };
 
-export default NewsListSection;
+export default NewsSection;

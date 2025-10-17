@@ -33,7 +33,7 @@ const ensureUniqueFilename = (dir: string, desired: string) => {
 // Ensure upload directories exist
 // Use an absolute path relative to this file for reliability
 // Store uploads under backend/uploads (not under src) to avoid Vite HMR
-const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../../public/uploads');
+const uploadDir = process.env.UPLOAD_PATH || path.resolve(__dirname, '../../uploads');
 
 const DEFAULT_BUCKET = 'images';
 const bucketWhitelist = [
@@ -52,21 +52,7 @@ const bucketWhitelist = [
 const allowedBuckets = new Set(bucketWhitelist);
 
 const ensureBucketPath = (bucket: string) => {
-  // Special case: for images/hero-section, always use absolute path to src/assets/images/hero-section
-  if (bucket === 'images/hero-section') {
-    const target = path.resolve(__dirname, '../../../src/assets/images/hero-section');
-    if (!fs.existsSync(target)) {
-      fs.mkdirSync(target, { recursive: true });
-    }
-    return target;
-  }
-  // Support nested buckets, e.g., "images/hero-section"
-  const safeBucket = bucket
-    .split('/')
-    .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, '')) // sanitize each segment
-    .filter(Boolean)
-    .join('/');
-  const target = path.join(uploadDir, safeBucket);
+  const target = path.join(uploadDir, bucket);
   if (!fs.existsSync(target)) {
     fs.mkdirSync(target, { recursive: true });
   }
@@ -74,20 +60,11 @@ const ensureBucketPath = (bucket: string) => {
 };
 
 const resolveBucket = (rawBucket: any) => {
-  // Allow nested buckets like "images/hero-section"
   const candidate = typeof rawBucket === 'string' && rawBucket.trim().length > 0
     ? rawBucket.trim().toLowerCase()
     : DEFAULT_BUCKET;
 
-  // Allow "images/hero-section" and similar
-  if (
-    allowedBuckets.has(candidate) ||
-    candidate.startsWith('images/') ||
-    candidate.startsWith('documents/') ||
-    candidate.startsWith('cv-uploads/') ||
-    candidate.startsWith('transcripts/') ||
-    candidate.startsWith('cover-letters/')
-  ) {
+  if (allowedBuckets.has(candidate)) {
     return candidate;
   }
 
@@ -120,6 +97,7 @@ const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) 
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
         try {
+          // Always save to backend/uploads/{bucket}
           cb(null, ensureBucketPath(bucket));
         } catch (err) {
           cb(err as Error, uploadDir);
@@ -195,39 +173,30 @@ const uploadMulter = multer({
 
 // Generic upload endpoint
 router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
+  // LOGGING: Print incoming upload details
+  console.log('---[UPLOAD DEBUG]---');
+  console.log('req.body.bucket:', req.body.bucket);
+  console.log('resolved bucket:', resolveBucket(req.body.bucket));
+  if (req.file) {
+    console.log('req.file.destination:', req.file.destination);
+    console.log('req.file.filename:', req.file.filename);
+    console.log('req.file.path:', req.file.path);
+    console.log('req.file.mimetype:', req.file.mimetype);
+    console.log('req.file.size:', req.file.size);
+  } else {
+    console.log('No file received!');
+  }
+  console.log('--------------------');
+
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-
+  
   const bucket = resolveBucket(req.body.bucket);
-  // Debug log: where is the file being saved?
-  console.log('[UPLOAD DEBUG] bucket:', bucket, 'req.file.path:', req.file.path, 'req.file.filename:', req.file.filename);
-
-  // Unified public URL path under /uploads (avoid src/assets to prevent Vite HMR)
-  // Return the public URL for the uploaded file (for frontend preview)
-  // If bucket is nested (e.g., images/hero-section), reflect that in the URL
-  const safeBucket = bucket
-    .split('/')
-    .map(seg => seg.replace(/[^a-zA-Z0-9-_]/g, ''))
-    .filter(Boolean)
-    .join('/');
-  // Debug: log bucket and safeBucket
-  console.log('[UPLOAD DEBUG] bucket:', bucket, 'safeBucket:', safeBucket, 'filename:', req.file.filename);
-
-  // If uploading to images/hero-section, return /assets/images/hero-section/filename as the URL
-  let fileUrl;
-  if (safeBucket === 'images/hero-section') {
-    fileUrl = `/assets/images/hero-section/${req.file.filename}`;
-  } else {
-    fileUrl = `/uploads/${safeBucket}/${req.file.filename}`;
-  }
-
-  // Debug: print absolute file path and existence
-  console.log('[UPLOAD DEBUG] req.file.path:', req.file.path, 'exists:', fs.existsSync(req.file.path));
-
-  // Debug: log the fileUrl being returned
-  console.log('[UPLOAD DEBUG] Returning fileUrl:', fileUrl);
-
+  // Return correct URL path that matches where backend serves files from
+  // Always return /uploads/{bucket}/{filename}
+  const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
+  
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -241,60 +210,13 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   });
 });
 
-// API: Copy an uploaded image to src/assets/images/hero-section for static asset use
-router.post('/copy-to-assets', authenticateToken, (req, res) => {
-  try {
-    const { filename } = req.body;
-    if (!filename || typeof filename !== 'string') {
-      return res.status(400).json({ error: 'Missing or invalid filename' });
-    }
-
-    // Only allow copying from backend/uploads/images
-    const sourceDir = path.resolve(__dirname, '../../../public/uploads/images');
-    const sourcePath = path.join(sourceDir, filename);
-
-    if (!fs.existsSync(sourcePath)) {
-      return res.status(404).json({ error: 'Source file not found' });
-    }
-
-    // Target: src/assets/images/hero-section
-    const targetDir = path.resolve(__dirname, '../../../src/assets/images/hero-section');
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-    // Ensure unique filename in target
-    const ext = path.extname(filename);
-    const base = path.basename(filename, ext);
-    let targetFilename = filename;
-    let counter = 1;
-    while (fs.existsSync(path.join(targetDir, targetFilename))) {
-      targetFilename = `${base}-${counter}${ext}`;
-      counter += 1;
-    }
-    const targetPath = path.join(targetDir, targetFilename);
-
-    fs.copyFileSync(sourcePath, targetPath);
-
-    // Return the new static asset path
-    const assetPath = `/assets/images/hero-section/${targetFilename}`;
-    return res.json({
-      message: 'File copied to static assets',
-      assetPath,
-      filename: targetFilename
-    });
-  } catch (err) {
-    console.error('[copy-to-assets] Error:', err);
-    return res.status(500).json({ error: 'Failed to copy file to static assets' });
-  }
-});
-
 // Upload routes
 router.post('/documents', authenticateToken, uploadPDF.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/documents/${req.file.filename}`;
+  const fileUrl = `/uploads/documents/${req.file.filename}`;
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -312,7 +234,7 @@ router.post('/cv-uploads', uploadCV.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/cv-assets/${req.file.filename}`;
+  const fileUrl = `/uploads/cv-uploads/${req.file.filename}`;
   res.json({
     message: 'CV uploaded successfully',
     file: {
@@ -330,7 +252,7 @@ router.post('/transcripts', uploadTranscript.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/transcripts/${req.file.filename}`;
+  const fileUrl = `/uploads/transcripts/${req.file.filename}`;
   res.json({
     message: 'Transcript uploaded successfully',
     file: {
@@ -348,7 +270,7 @@ router.post('/cover-letters', uploadCoverLetter.single('file'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   
-  const fileUrl = `../src/assets/cover-letters/${req.file.filename}`;
+  const fileUrl = `/uploads/cover-letters/${req.file.filename}`;
   res.json({
     message: 'Cover letter uploaded successfully',
     file: {

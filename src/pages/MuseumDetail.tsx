@@ -6,9 +6,16 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
 const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
@@ -57,19 +64,20 @@ const MuseumDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMuseums = async () => {
-      try {
-        const response = await museumService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching museums:', response.error);
-        } else {
-          setMuseums(mapSlidesWithImageUrl(response.data));
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching museums:', response.error);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
+      } else {
+        setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
       }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
     }
+  }
+  useEffect(() => {
     fetchMuseums();
   }, []);
 
@@ -107,8 +115,20 @@ const MuseumDetail = () => {
             <Badge className="mb-2">
               {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">{museum.name}</h1>
-            <p className="text-xl pe-8">{museum.subtitle}</p>
+            <h1 className="text-4xl md:text-6xl font-bold mb-2">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(museum.name)
+                }}
+              />
+            </h1>
+            <p className="text-xl pe-8">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: fixBrokenHtmlTags(museum.subtitle)
+                }}
+              />
+            </p>
           </div>
         </section>  
         {/* Content */}
@@ -122,7 +142,11 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    {museum.description}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: fixBrokenHtmlTags(museum.description)
+                      }}
+                    />
                   </p>
                 </CardContent>
               </Card>
@@ -132,7 +156,9 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {(museum.facilities ?? []).map((facility, index) => (
+                    {typeof museum.facilities === 'string' 
+                      ? museum.facilities.split(',') 
+                      : museum.facilities ?? [].map((facility, index) => (
                       <Badge key={index} variant="outline">
                         {facility}
                       </Badge>

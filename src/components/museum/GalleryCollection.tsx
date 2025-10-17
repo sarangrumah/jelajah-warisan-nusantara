@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { defaultCollections } from '@/../database/default-data';
 import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
-import { mapSlidesWithImageUrl } from "../helper";
 
 const collectionImages = import.meta.glob('../../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
@@ -29,21 +29,27 @@ const GalleryCollection = ({museum}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [collections, setCollections] = useState([]);
 
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await masterCollectionService.getAll();
-  
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching collections:', response.error);
-        } else {
-          setCollections(mapSlidesWithImageUrl(response.data));
-        }
-  
-      } catch (error) {
-        console.error('Error fetching collections:', error);
+  const fetchCollections = async () => {
+    try {
+      const response = await masterCollectionService.getAll();
+
+      if (response.error) {
+        console.error('Error fetching collections:', response.error);
+        setCollections(defaultCollections);
       }
-    };
+
+      if(response.data.length === 0) {
+        setCollections(defaultCollections);
+      } else {
+        setCollections(response.data);
+      }
+
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchCollections();
   }, []);
 

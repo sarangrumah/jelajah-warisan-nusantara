@@ -4,9 +4,11 @@ import { query } from '../config/database';
 
 export interface AuthRequest extends Request {
   user?: {
-    id: string;
-    email: string;
-    roles: string[];
+    id?: number | string;
+    email?: string;
+    role?: string;
+    roles?: string[];
+    [key: string]: any;
   };
 }
 
@@ -73,7 +75,7 @@ export const requireRole = (roles: string[]) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const hasRole = roles.some(role => req.user!.roles.includes(role));
+    const hasRole = req.user?.roles?.some(role => roles.includes(role)) ?? false;
     if (!hasRole) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }

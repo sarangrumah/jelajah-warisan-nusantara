@@ -8,8 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
@@ -56,26 +63,28 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMuseums = async () => {
-      try {
-        const response = await museumService.getAll();
-        if (response.error || response.data.length === 0) {
-          console.error('Error fetching museums:', response.error);
-        } else {
-          const filteredMuseums = response.data.filter((museum: {
-            is_active: boolean;
-            is_approved: boolean;
-          }) => (
-            museum.is_active === true && 
-            museum.is_approved === true
-          ));
-          setMuseums(mapSlidesWithImageUrl(filteredMuseums));
-        }
-      } catch (error) {
-        console.error('Error fetching museums:', error);
+  const fetchMuseums = async () => {
+    try {
+      const response = await museumService.getAll();
+
+      if (response.error || response.data.length === 0) {
+        console.error('Error fetching museums:', response.error);
+        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
+      } else {
+        const filteredMuseums = response.data.filter((museum: any) => (
+          museum.is_active === true 
+          && museum.is_approved === true
+          // && new Date(museum.start_publish_date) <= new Date()
+          // && new Date(museum.end_publish_date) >= new Date()
+        ));
+        setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching museums:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchMuseums();
   }, []);
   
@@ -157,7 +166,7 @@ const Museum = () => {
       <section className="py-20 relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
-            {t('Museum & Cagar Budaya')}
+            {t('Museum dan Cagar Budaya')}
           </h1>
         </div>
       </section>
@@ -207,30 +216,42 @@ const Museum = () => {
                     className="w-full h-full object-cover object-bottom"
                   />
                 </div>
-                <CardHeader>
-                  <CardTitle className="text-lg">{item.name}</CardTitle>
-                  <CardDescription>{item.subtitle}</CardDescription>
-                </CardHeader>
+                <div className="flex-1 flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags(item.name)
+                        }}
+                      />
+                    </CardTitle>
+                    <CardDescription>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: fixBrokenHtmlTags(item.subtitle)
+                        }}
+                      />
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <div className="flex-1" />
+                    <div className="flex gap-2 mt-6">
+                      <button
+                        className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
+                        type="button"
+                      >
+                        Beli Tiket
+                      </button>
+                      <Link
+                        to={`/museum/${item.id}`}
+                        className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
+                      >
+                        Kunjungi Museum
+                      </Link>
+                    </div>
+                  </CardContent>
+                </div>
               </Link>
-              <div className="flex-1 flex flex-col">
-                <CardContent className="flex-1 flex flex-col">
-                  <div className="flex-1" />
-                  <div className="flex gap-2 mt-6">
-                    <Button
-                      className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
-                      type="button"
-                    >
-                      Beli Tiket
-                    </Button>
-                    <Button 
-                      onClick={() => handleVisitMuseum(item.website)}
-                      className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
-                    >
-                      Kunjungi Museum
-                    </Button>
-                  </div>
-                </CardContent>
-              </div>
             </Card>
           ))}
         </div>
