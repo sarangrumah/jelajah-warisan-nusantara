@@ -17,6 +17,16 @@ export function useContentTranslation<T extends string | Record<string, any>>(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Clear cache on language change
+    i18n.on('languageChanged', () => {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        Object.keys(window.sessionStorage).forEach(key => {
+          if (key.startsWith('translation_')) {
+            window.sessionStorage.removeItem(key);
+          }
+        });
+      }
+    });
     const translateContent = async () => {
       // If no content, return null
       if (!content) {

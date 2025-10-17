@@ -75,13 +75,10 @@ const NewsSection = () => {
         }
       })
       .finally(() => {
-        if (mounted) setLoading(false);
+        if (mounted) { setLoading(false); }
       });
     return () => { mounted = false; };
   }, []);
-
-  // Accessibility: Announce slide changes
-  const totalSlides = news.length;
 
   // Auto-slide logic
   React.useEffect(() => {

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
-import { bannerService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { bannerService } from '@/lib/api-services';
 import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { defaultSlides } from '@/../database/default-data';
 // import { defaultVideos } from '@/../database/default-data';
@@ -121,7 +121,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [types, setTypes] = useState([]);
   // Use content translation for the current slide
   const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
   const { translatedContent: translatedSlide } = useContentTranslation(currentSlideObj);
@@ -190,22 +189,9 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
     fetchSlides();
   },[]);
 
-  const fetchTypeSites = async () => {
-    try {
-      const response = await TypesAndCategoriesSites.getAllTypes();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching types:', response.error);
-      } else {
-        setTypes(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  }
 
   useEffect(() => {
-    fetchTypeSites();
-  },[]);
+  }, []);
 
   const linkTo = (slides: string) => {
     if(slides === 'museum') {      
