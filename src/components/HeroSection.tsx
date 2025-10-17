@@ -296,20 +296,32 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                     size="lg"
                     className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                   >
-                    {t(currentSlideObj.button_url_1)}
+                    {t(currentSlideObj.button_label_1)}
+                  </Button>
+                </Link>
+              ) : null}
+
+              {currentSlideObj?.button_url_2 ? (
+                <Link to={linkTo(currentSlideObj.button_url_2.split('.')[1])}>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                  >
+                    {t(currentSlideObj.button_label_21)}
                   </Button>
                 </Link>
               ) : null}
               
-              <Button
+              {/* <Button
                 variant="outline"
                 size="lg"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                 onClick={() => setIsVideoPlaying(true)}
               >
                 <Play size={24} className="mr-2" />
-                {t('hero.watchVideo')}
-              </Button>
+                {t(currentSlideObj.button_label_2)}
+              </Button> */}
             </div>
           </div>
         </div>
