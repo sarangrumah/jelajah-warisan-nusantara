@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Translation resources
-const resources = {
+export const resources = {
   en: {
     translation: {
       // Navigation
@@ -128,6 +128,8 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum and Cultural Heritage",
+        ministry: "Ministry of Culture",
+        contactUs: "Contact Us",
         address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
         phone: "",
         email: "info@kebudayaan.kemdikbud.go.id",
@@ -632,6 +634,8 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum dan Cagar Budaya",
+        ministry: "Kementerian Kebudayaan",
+        contactUs: "Hubungi Kami",
         address: "Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110",
         phone: "",
         email: "museumcb@kemenbud.go.id ",
