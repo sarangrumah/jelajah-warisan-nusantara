@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useTranslation } from 'react-i18next';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -11,7 +13,7 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { mapSlidesWithImageUrl, getImageUrl } from './helper';
+import { mapSlidesWithImageUrl } from './helper';
 
 interface LocationData {
   id: string;
@@ -54,10 +56,13 @@ const IndonesiaMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | 'museum' | 'heritage'>('all');
   const [locations, setLocations] = useState([]);
   const [types, setTypes] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
+  const { translatedContent: translatedLocations } = useContentTranslation(locations);
+  const { translatedContent: translatedTypes } = useContentTranslation(types);
 
   const fetchLocations = async () => {
     try {
@@ -96,11 +101,11 @@ const IndonesiaMap = () => {
     if(filter === 'all') {
       setFilteredLocations(locations);
     } else if(filter === 'museum') {
-      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name === 'museum'));
+      setFilteredLocations(locations.filter(loc => (translatedTypes || types).find((type) => type.id === loc.type)?.name === 'museum'));
     } else {
-      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name !== 'museum'));
+      setFilteredLocations(locations.filter(loc => (translatedTypes || types).find((type) => type.id === loc.type)?.name !== 'museum'));
     }
-  }, [filter, locations, types])
+  }, [filter, locations, types, translatedTypes])
 
   useEffect(() => {
     if (!mapContainer.current || map.current) { return };
@@ -153,9 +158,9 @@ const IndonesiaMap = () => {
 
     // Create custom icon function
     const createCustomIcon = (location: LocationData) => {
-      const color = types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981';
-      const icon = types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '🏛️' : '🏛️';
-      
+      const typeName = (translatedTypes || types).find((type) => type.id === location.type)?.name;
+      const color = typeName === 'museum' ? '#3b82f6' : '#10b981';
+      const icon = '🏛️';
       return L.divIcon({
         className: 'custom-marker',
         html: `
@@ -180,7 +185,7 @@ const IndonesiaMap = () => {
       });
     };
     // Add markers for filtered locations
-    filteredLocations.forEach((location) => {
+    (translatedLocations || filteredLocations).forEach((location) => {
       if (!location.latitude || !location.longitude) { return };
       let coords: [number, number];
       try {
@@ -199,7 +204,7 @@ const IndonesiaMap = () => {
           <div style="margin-bottom: 12px;">
             <img src="${getMuseumsImageUrl(location.image_url)}" alt="${fixBrokenHtmlTags(location.name || location.title)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />
             <h3 style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${fixBrokenHtmlTags(location.name || location.title)}</h3>
-            <span style="background-color: ${types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${types.length > 0 && types.find((type) => type.id === location.type)?.name}</span>
+            <span style="background-color: ${(translatedTypes || types).find((type) => type.id === location.type)?.name === 'museum' ? '#3b82f6' : '#10b981'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${(translatedTypes || types).find((type) => type.id === location.type)?.name}</span>
           </div>
           <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${fixBrokenHtmlTags(location.subtitle)}</p>
           <div style="margin-bottom: 12px;">
@@ -224,8 +229,8 @@ const IndonesiaMap = () => {
             <button
               class="popup-btn-detail"
               data-id="${location.id}"
-              data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
-              data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
+              data-type="${(translatedTypes || types).find((type) => type.id === location.type)?.name}"
+              data-typeid="${(translatedTypes || types).find((type) => type.id === location.type)?.id}"
               style="
                 flex: 1;
                 background-color: #3b82f6;
@@ -244,13 +249,13 @@ const IndonesiaMap = () => {
               onmouseover="this.style.backgroundColor='#2563eb'"
               onmouseout="this.style.backgroundColor='#3b82f6'"
             >
-              Lihat Detail
+              {t('seeDetails')}
             </button>
             <button
               class="popup-btn-list"
               data-region="${location.region}"
-              data-type="${types.length > 0 && types.find((type) => type.id === location.type)?.name}"
-              data-typeid="${types.length > 0 && types.find((type) => type.id === location.type)?.id}"
+              data-type="${(translatedTypes || types).find((type) => type.id === location.type)?.name}"
+              data-typeid="${(translatedTypes || types).find((type) => type.id === location.type)?.id}"
               style="
                 flex: 1;
                 background-color: #10b981;
@@ -269,7 +274,7 @@ const IndonesiaMap = () => {
               onmouseover="this.style.backgroundColor='#059669'"
               onmouseout="this.style.backgroundColor='#10b981'"
             >
-              Lihat Daftar
+              {t('seeList')}
             </button>
           </div>
         </div>
@@ -376,18 +381,17 @@ const IndonesiaMap = () => {
       });
     });
 
-  }, [filteredLocations, types, navigate]);
+  }, [filteredLocations, types, navigate, translatedLocations, translatedTypes, t]);
 
   return (
     <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <h3 className="text-2xl font-bold text-foreground mb-4 sm:mb-0">
-          Peta Interaktif Indonesia
+          {t('interactiveMap')}
         </h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-500/30">
-            {/* types.length > 0 && types.find((type) => type.id === location.type)?.name === 'museum' */}
               🏛️ Museum: {locations.filter(l => l.type === '12bc00a9-ba1a-4562-940d-4e33bb26acdc').length}
             </Badge>
             <Badge variant="outline" className="bg-green-500/20 text-green-600 border-green-500/30">
@@ -399,9 +403,9 @@ const IndonesiaMap = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua</SelectItem>
-              <SelectItem value="museum">Museum</SelectItem>
-              <SelectItem value="heritage">Cagar Budaya</SelectItem>
+              <SelectItem value="all">{t('filter.museum.categoryAll')}</SelectItem>
+              <SelectItem value="museum">{t('filter.museum.categoryMuseum')}</SelectItem>
+              <SelectItem value="heritage">{t('filter.museum.categoryHeritage')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -410,7 +414,7 @@ const IndonesiaMap = () => {
         <div ref={mapContainer} className="absolute inset-0" />
       </div>
       <p className="text-muted-foreground mt-4 text-center text-sm">
-        Klik pada marker untuk melihat detail lokasi dan navigasi ke halaman museum atau cagar budaya
+        {t('clickMarker')}
       </p>
       <style>{`
         .custom-popup .leaflet-popup-content-wrapper {

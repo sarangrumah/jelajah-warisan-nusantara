@@ -2,18 +2,34 @@ import { Building, Landmark } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import IndonesiaMap from './IndonesiaMap';
 import { useTranslation } from 'react-i18next';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { museumService } from '@/lib/api-services';
+import { useEffect, useState } from 'react';
 
 const DistributionSection = () => {
   const { t } = useTranslation();
-  
-  const regions = [
-    { key: 'sumatera', museums: 45, heritage: 123, color: 'bg-blue-500' },
-    { key: 'jawa', museums: 187, heritage: 456, color: 'bg-green-500' },
-    { key: 'kalimantan', museums: 23, heritage: 78, color: 'bg-yellow-500' },
-    { key: 'sulawesi', museums: 34, heritage: 92, color: 'bg-purple-500' },
-    { key: 'papua', museums: 12, heritage: 34, color: 'bg-red-500' },
-    { key: 'malukuNusaTenggara', museums: 18, heritage: 56, color: 'bg-orange-500' },
-  ];
+  const [regions, setRegions] = useState([]);
+  const { translatedContent } = useContentTranslation(regions);
+
+  useEffect(() => {
+    const fetchRegions = async () => {
+      const response = await museumService.getAll();
+      if (response.data) {
+        // Assuming the API returns data that can be processed into regions
+        // This is a placeholder for the actual data processing logic
+        const processedRegions = response.data.map((item: any) => ({
+          key: item.region_key,
+          museums: item.museums_count,
+          heritage: item.heritage_count,
+          color: item.color,
+        }));
+        setRegions(processedRegions);
+      }
+    };
+    fetchRegions();
+  }, []);
+
+  const displayRegions = translatedContent || regions;
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -28,7 +44,7 @@ const DistributionSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 hidden">
-          {regions.map((region, index) => (
+          {displayRegions.map((region, index) => (
             <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">

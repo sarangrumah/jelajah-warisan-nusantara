@@ -254,8 +254,7 @@ export const resources = {
               description: "Procedures for organizing temporary exhibitions"
             }
           ]
-        }
-      },
+        },
       // PPID Section
       ppid: {
         title: "PPID - Information and Documentation Management Officer",
@@ -504,7 +503,11 @@ export const resources = {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
-      }
+      },
+      interactiveMap: 'Interactive Map of Indonesia',
+      seeDetails: 'See Details',
+      seeList: 'See List',
+      clickMarker: 'Click on a marker to see location details and navigate to the museum or cultural heritage page'
     }
   },
   id: {
@@ -760,8 +763,7 @@ export const resources = {
               description: "Prosedur penyelenggaraan pameran sementara"
             }
           ]
-        }
-      },
+        },
       // PPID Section
       ppid: {
         title: "PPID - Pejabat Pengelola Informasi dan Dokumentasi",
@@ -1010,7 +1012,11 @@ export const resources = {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
-      }
+      },
+      interactiveMap: 'Peta Interaktif Indonesia',
+      seeDetails: 'Lihat Detail',
+      seeList: 'Lihat Daftar',
+      clickMarker: 'Klik pada penanda untuk melihat detail lokasi dan navigasi ke halaman museum atau cagar budaya'
     }
   }
 };
