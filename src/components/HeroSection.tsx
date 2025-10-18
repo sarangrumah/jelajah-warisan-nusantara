@@ -1,6 +1,6 @@
 // Import must be at the very top
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -117,7 +117,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   }, [onScrollToNextSection]);
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoPlaying, _setIsVideoPlaying] = useState(false);
   const { t } = useTranslation();
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -289,39 +289,28 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               ) : null}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {currentSlideObj?.button_url_1 ? (
-                <Link to={linkTo(currentSlideObj.button_url_1.split('.')[1])}>
+              {currentSlideObj?.button_url_1 && currentSlideObj.button_label_1 && (
+                <Link to={linkTo((currentSlideObj.button_url_1 || '').split('.')[1] || '')}>
                   <Button
                     variant="outline"
                     size="lg"
                     className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                   >
-                    {t(currentSlideObj.button_label_1)}
+                    {translatedSlide?.button_label_1 || t(currentSlideObj.button_label_1)}
                   </Button>
                 </Link>
-              ) : null}
-
-              {currentSlideObj?.button_url_2 ? (
-                <Link to={linkTo(currentSlideObj.button_url_2.split('.')[1])}>
+              )}
+              {currentSlideObj?.button_url_2 && currentSlideObj.button_label_2 && (
+                <Link to={linkTo((currentSlideObj.button_url_2 || '').split('.')[1] || '')}>
                   <Button
                     variant="outline"
                     size="lg"
                     className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                   >
-                    {t(currentSlideObj.button_label_21)}
+                    {translatedSlide?.button_label_2 || t(currentSlideObj.button_label_2)}
                   </Button>
                 </Link>
-              ) : null}
-              
-              {/* <Button
-                variant="outline"
-                size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                onClick={() => setIsVideoPlaying(true)}
-              >
-                <Play size={24} className="mr-2" />
-                {t(currentSlideObj.button_label_2)}
-              </Button> */}
+              )}
             </div>
           </div>
         </div>
