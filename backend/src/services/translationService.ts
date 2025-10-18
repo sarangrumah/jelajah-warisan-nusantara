@@ -16,6 +16,10 @@ interface LibreTranslateResponse {
   translatedText: string;
 }
 
+interface LibreTranslateBatchResponse {
+  translatedText: string[];
+}
+
 class TranslationService {
   private baseUrl: string;
   private apiKey?: string;
@@ -159,8 +163,8 @@ class TranslationService {
         throw new Error(`Batch translation API error: ${response.status} - ${errorText}`);
       }
 
-      const data = await response.json();
-      const translatedTexts = data.translatedText as string[];
+      const data = (await response.json()) as LibreTranslateBatchResponse;
+      const translatedTexts = data.translatedText;
 
       // Map results back to original texts, maintaining order
       let translatedIndex = 0;

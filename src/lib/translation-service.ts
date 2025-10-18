@@ -9,6 +9,11 @@ interface TranslationResult {
   error?: string;
 }
 
+interface BatchTranslationResponse {
+  results: TranslationResult[];
+  success: boolean;
+}
+
 class TranslationService {
   private baseUrl: string;
   private cache: Map<string, string>;
@@ -132,7 +137,7 @@ class TranslationService {
         throw new Error(errorData.error || 'Batch translation failed');
       }
 
-      const batchResult = await response.json();
+      const batchResult = await response.json() as BatchTranslationResponse;
       
       if (!batchResult.success || !batchResult.results) {
          throw new Error('Batch translation API returned invalid response');
