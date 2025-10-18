@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { Link } from 'react-router-dom';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -44,6 +45,94 @@ function getEventImageUrl(filename: string) {
   }
   return undefined;
 }
+
+const AgendaCard = ({ event }) => {
+  const { t } = useTranslation();
+  const { translatedContent: translatedEvent } = useContentTranslation(event);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'upcoming': return 'bg-blue-500';
+      case 'ongoing': return 'bg-green-500';
+      case 'registration': return 'bg-yellow-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'upcoming': return t('agenda.status.upcoming', 'Upcoming');
+      case 'ongoing': return t('agenda.status.ongoing', 'Ongoing');
+      case 'registration': return t('agenda.status.registration', 'Registration');
+      default: return t('agenda.status.finished', 'Finished');
+    }
+  };
+
+  const currentEvent = translatedEvent || event;
+
+  return (
+    <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
+      {/* Event Image */}
+      <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+        <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(currentEvent.status)}`}>
+          {getStatusLabel(currentEvent.status)}
+        </div>
+        <img
+          src={
+            currentEvent.image_url
+              ? getEventImageUrl(currentEvent.image_url) || logo
+              : logo
+          }
+          alt={currentEvent.title}
+          className="w-full h-full object-contain object-center"
+        />
+      </div>
+
+      {/* Event Content */}
+      <div className="p-6 mb-9 flex-1 flex flex-col">
+        <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
+          <span
+            dangerouslySetInnerHTML={{
+              __html: fixBrokenHtmlTags(currentEvent.title)
+            }}
+          />
+        </h3>
+        
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+          <span
+            dangerouslySetInnerHTML={{
+              __html: fixBrokenHtmlTags(currentEvent.description)
+            }}
+          />
+        </p>
+
+        <div className="space-y-2 mb-6">
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Calendar size={16} className="mr-3 text-primary" />
+            {currentEvent.date}
+          </div>
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Clock size={16} className="mr-3 text-primary" />
+            {currentEvent.time}
+          </div>
+          <div className="flex items-center text-sm text-muted-foreground">
+            <MapPin size={16} className="mr-3 text-primary" />
+            {currentEvent.location}
+          </div>
+        </div>
+      </div>
+      <div className='p-6 absolute left-0 bottom-0 right-0'>
+        <Link to={`/event/${currentEvent.id}`}>
+          <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
+            {t('agenda.button.detail', 'Detail Event')}
+            <ChevronRight size={16} className="ml-2" />
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 const AgendaSection = () => {
   const { t } = useTranslation();
@@ -108,27 +197,9 @@ const AgendaSection = () => {
     fetchEvents();
   }, []);
 
-  const filteredEvents = activeCategory === 'semua' 
-    ? events.slice(0, 6) 
+  const filteredEvents = activeCategory === 'semua'
+    ? events.slice(0, 6)
     : events.filter(event => event.category === activeCategory).slice(0, 6);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'upcoming': return 'bg-blue-500';
-      case 'ongoing': return 'bg-green-500';
-      case 'registration': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'upcoming': return t('agenda.status.upcoming', 'Upcoming');
-      case 'ongoing': return t('agenda.status.ongoing', 'Ongoing');
-      case 'registration': return t('agenda.status.registration', 'Registration');
-      default: return t('agenda.status.finished', 'Finished');
-    }
-  };
 
   return (
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
@@ -193,66 +264,7 @@ const AgendaSection = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                   aria-label={`Slide ${index + 1} of ${filteredEvents.length}`}
                 >
-                  <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
-                    {/* Event Image */}
-                    <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                      <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
-                        {getStatusLabel(event.status)}
-                      </div>
-                      <img
-                        src={
-                          event.image_url
-                            ? getEventImageUrl(event.image_url) || logo
-                            : logo
-                        }
-                        alt={event.title}
-                        className="w-full h-full object-contain object-center"
-                      />
-                    </div>
-
-                    {/* Event Content */}
-                    <div className="p-6 mb-9 flex-1 flex flex-col">
-                      <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: fixBrokenHtmlTags(event.title)
-                          }}
-                        />
-                      </h3>
-                      
-                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: fixBrokenHtmlTags(event.description)
-                          }}
-                        />
-                      </p>
-
-                      <div className="space-y-2 mb-6">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar size={16} className="mr-3 text-primary" />
-                          {event.date}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Clock size={16} className="mr-3 text-primary" />
-                          {event.time}
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <MapPin size={16} className="mr-3 text-primary" />
-                          {event.location}
-                        </div>
-                      </div>
-                    </div>
-                    <div className='p-6 absolute left-0 bottom-0 right-0'>
-                      <Link to={`/event/${event.id}`}>
-                        <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
-                          {t('agenda.button.detail', 'Detail Event')}
-                          <ChevronRight size={16} className="ml-2" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                  <AgendaCard event={event} />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -288,7 +300,7 @@ const AgendaSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/agenda">
-                <Button 
+                <Button
                   size="lg"
                   className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 hover:scale-105 transition-bounce heritage-glow"
                 >
