@@ -7,7 +7,7 @@ import translationService from '@/lib/translation-service';
  * @param content - The content to translate (can be string or object with multiple fields)
  * @param sourceLang - Source language code (default: 'id' for Indonesian)
  */
-export function useContentTranslation<T extends string | Record<string, any>>(
+export function useContentTranslation<T extends string | Record<string, any> | any[]>(
   content: T | null | undefined,
   sourceLang: string = 'id'
 ): { translatedContent: T | null; isTranslating: boolean; error: string | null } {
@@ -56,27 +56,40 @@ export function useContentTranslation<T extends string | Record<string, any>>(
             setTranslatedContent(content); // Fallback to original
           }
         }
-        // Handle object content (translate all string fields)
+        // Handle array of objects
+        else if (Array.isArray(content)) {
+          const translatedArray = await Promise.all(
+            content.map(async (item) => {
+              if (typeof item === 'object' && item !== null) {
+                const translatedItem: any = { ...item };
+                for (const field of Object.keys(item)) {
+                  const value = (item as any)[field];
+                  if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
+                    const result = await translationService.translate(value, currentLang, sourceLang);
+                    if (result.success) {
+                      translatedItem[field] = result.translatedText;
+                    }
+                  }
+                }
+                return translatedItem;
+              }
+              return item; // Return non-object items as is
+            })
+          );
+          setTranslatedContent(translatedArray as unknown as T);
+        }
+        // Handle single object content
         else if (typeof content === 'object' && content !== null) {
           const translated: any = { ...content };
-          const fields = Object.keys(content);
-
-          for (const field of fields) {
+          for (const field of Object.keys(content)) {
             const value = (content as any)[field];
-            
-            // Only translate string values that are not empty or just a dash
             if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
               const result = await translationService.translate(value, currentLang, sourceLang);
               if (result.success) {
                 translated[field] = result.translatedText;
-              } else {
-                translated[field] = value; // Keep original on error
               }
-            } else {
-              translated[field] = value; // Keep non-string or empty values as is
             }
           }
-
           setTranslatedContent(translated as T);
         }
       } catch (err) {
