@@ -111,14 +111,51 @@ class TranslationService {
     targetLang: string,
     sourceLang: string = 'id'
   ): Promise<TranslationResult[]> {
-    const results: TranslationResult[] = [];
-
-    for (const text of texts) {
-      const result = await this.translate(text, targetLang, sourceLang);
-      results.push(result);
+    if (sourceLang === targetLang) {
+      return texts.map(text => ({ translatedText: text, success: true }));
     }
 
-    return results;
+    const textsToTranslate = texts.filter(text => text && text.trim() !== '' && text.trim() !== '-');
+    if (textsToTranslate.length === 0) {
+      return texts.map(text => ({ translatedText: text, success: true }));
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/translate/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texts: textsToTranslate, targetLang, sourceLang }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Batch translation failed');
+      }
+
+      const batchResult = await response.json();
+      
+      if (!batchResult.success || !batchResult.results) {
+         throw new Error('Batch translation API returned invalid response');
+      }
+      
+      const translatedMap = new Map(textsToTranslate.map((text, i) => [text, batchResult.results[i].translatedText]));
+
+      return texts.map(originalText => {
+        if (!originalText || originalText.trim() === '' || originalText.trim() === '-') {
+          return { translatedText: originalText, success: true };
+        }
+        const translatedText = translatedMap.get(originalText) || originalText;
+        return { translatedText, success: true };
+      });
+
+    } catch (error) {
+      console.error('Batch translation error:', error);
+      return texts.map(text => ({
+        translatedText: text,
+        success: false,
+        error: error instanceof Error ? error.message : 'Batch translation failed',
+      }));
+    }
   }
 
   /**

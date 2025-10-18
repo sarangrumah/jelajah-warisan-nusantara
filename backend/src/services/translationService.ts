@@ -127,18 +127,60 @@ class TranslationService {
     targetLang: string,
     sourceLang: string = 'id'
   ): Promise<TranslationResult[]> {
-    const results: TranslationResult[] = [];
-
-    // Process translations sequentially to avoid rate limiting
-    for (const text of texts) {
-      const result = await this.translate(text, targetLang, sourceLang);
-      results.push(result);
-      
-      // Small delay between requests to be respectful to free API
-      await this.sleep(100);
+    if (sourceLang === targetLang) {
+      return texts.map(text => ({ translatedText: text, success: true }));
     }
 
-    return results;
+    // LibreTranslate expects 'q' to be an array for batch translations
+    const nonEmptyTexts = texts.map(text => (text || '').trim());
+    
+    // If all texts are empty, return immediately
+    if (nonEmptyTexts.every(text => text === '')) {
+      return texts.map(text => ({ translatedText: text, success: true }));
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/translate`, {
+        method: 'POST',
+        body: JSON.stringify({
+          q: nonEmptyTexts,
+          source: sourceLang,
+          target: targetLang,
+          format: 'text',
+          api_key: this.apiKey
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Batch translation API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      const translatedTexts = data.translatedText as string[];
+
+      // Map results back to original texts, maintaining order
+      let translatedIndex = 0;
+      return texts.map((originalText) => {
+        if (!originalText || originalText.trim() === '') {
+          return { translatedText: originalText, success: true };
+        }
+        const translatedText = translatedTexts[translatedIndex++];
+        return { translatedText, success: true };
+      });
+
+    } catch (error) {
+      console.error('Batch translation failed:', error);
+      // Fallback: return original texts on failure
+      return texts.map(text => ({
+        translatedText: text,
+        success: false,
+        error: error instanceof Error ? error.message : 'Batch translation failed'
+      }));
+    }
   }
 
   /**

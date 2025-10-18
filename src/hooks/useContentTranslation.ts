@@ -28,7 +28,6 @@ export function useContentTranslation<T extends string | Record<string, any> | a
       }
     });
     const translateContent = async () => {
-      // If no content, return null
       if (!content) {
         setTranslatedContent(null);
         return;
@@ -36,7 +35,6 @@ export function useContentTranslation<T extends string | Record<string, any> | a
 
       const currentLang = i18n.language;
 
-      // If current language is same as source, return original content
       if (currentLang === sourceLang) {
         setTranslatedContent(content);
         return;
@@ -46,56 +44,67 @@ export function useContentTranslation<T extends string | Record<string, any> | a
       setError(null);
 
       try {
-        // Handle string content
         if (typeof content === 'string') {
           const result = await translationService.translate(content, currentLang, sourceLang);
           if (result.success) {
             setTranslatedContent(result.translatedText as T);
           } else {
             setError(result.error || 'Translation failed');
-            setTranslatedContent(content); // Fallback to original
+            setTranslatedContent(content);
           }
-        }
-        // Handle array of objects
-        else if (Array.isArray(content)) {
-          const translatedArray = await Promise.all(
-            content.map(async (item) => {
-              if (typeof item === 'object' && item !== null) {
-                const translatedItem: any = { ...item };
-                for (const field of Object.keys(item)) {
-                  const value = (item as any)[field];
-                  if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
-                    const result = await translationService.translate(value, currentLang, sourceLang);
-                    if (result.success) {
-                      translatedItem[field] = result.translatedText;
-                    }
+        } else if (typeof content === 'object' && content !== null) {
+          // Collect all strings to be translated
+          const stringsToTranslate: string[] = [];
+          const collectStrings = (obj: any) => {
+            if (Array.isArray(obj)) {
+              obj.forEach(collectStrings);
+            } else if (typeof obj === 'object' && obj !== null) {
+              Object.values(obj).forEach((value: any) => {
+                if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
+                  stringsToTranslate.push(value);
+                } else if (typeof value === 'object') {
+                  collectStrings(value);
+                }
+              });
+            }
+          };
+          collectStrings(content);
+
+          if (stringsToTranslate.length > 0) {
+            const batchResult = await translationService.translateBatch(stringsToTranslate, currentLang, sourceLang);
+            const translatedMap = new Map(
+              batchResult.map((res, i) => [stringsToTranslate[i], res.translatedText])
+            );
+
+            // Apply translations back to the content structure
+            const applyTranslations = (obj: any): any => {
+              if (Array.isArray(obj)) {
+                return obj.map(applyTranslations);
+              } else if (typeof obj === 'object' && obj !== null) {
+                const newObj: any = { ...obj };
+                for (const key in newObj) {
+                  const value = newObj[key];
+                  if (typeof value === 'string' && translatedMap.has(value)) {
+                    newObj[key] = translatedMap.get(value);
+                  } else if (typeof value === 'object') {
+                    newObj[key] = applyTranslations(value);
                   }
                 }
-                return translatedItem;
+                return newObj;
               }
-              return item; // Return non-object items as is
-            })
-          );
-          setTranslatedContent(translatedArray as unknown as T);
-        }
-        // Handle single object content
-        else if (typeof content === 'object' && content !== null) {
-          const translated: any = { ...content };
-          for (const field of Object.keys(content)) {
-            const value = (content as any)[field];
-            if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
-              const result = await translationService.translate(value, currentLang, sourceLang);
-              if (result.success) {
-                translated[field] = result.translatedText;
-              }
-            }
+              return obj;
+            };
+            setTranslatedContent(applyTranslations(content));
+          } else {
+            setTranslatedContent(content);
           }
-          setTranslatedContent(translated as T);
+        } else {
+          setTranslatedContent(content);
         }
       } catch (err) {
         console.error('Translation error:', err);
         setError(err instanceof Error ? err.message : 'Translation failed');
-        setTranslatedContent(content); // Fallback to original
+        setTranslatedContent(content);
       } finally {
         setIsTranslating(false);
       }

@@ -50,7 +50,7 @@ const NewsSection = () => {
   const [isPaused, setIsPaused] = React.useState(false);
   const [news, setNews] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const { translatedContent: translatedNews } = useContentTranslation(news);
+  const { translatedContent: translatedNews, isTranslating } = useContentTranslation(news);
 
   // Fetch news from tb_media
   React.useEffect(() => {
@@ -133,7 +133,7 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
-          {loading ? (
+          {loading || isTranslating ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">{t('news.loading')}</span>
             </div>
