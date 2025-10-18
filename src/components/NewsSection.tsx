@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
 import { useTranslation } from 'react-i18next';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -47,8 +48,9 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const [news, setNews] = React.useState([]);
+  const [news, setNews] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const { translatedContent: translatedNews } = useContentTranslation(news);
 
   // Fetch news from tb_media
   React.useEffect(() => {
@@ -123,17 +125,17 @@ const NewsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            {t('news.news.title', 'Berita & Artikel')}
+            {t('news.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {t('news.news.subtitle', 'Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian warisan budaya Indonesia')}
+            {t('news.subtitle')}
           </p>
         </div>
 
         <div className="relative mb-12">
           {loading ? (
             <div className="flex items-center justify-center h-64">
-              <span className="text-lg text-muted-foreground">{t('news.news.loading', 'Memuat berita...')}</span>
+              <span className="text-lg text-muted-foreground">{t('news.loading')}</span>
             </div>
           ) : (
             <Carousel
@@ -157,11 +159,11 @@ const NewsSection = () => {
                 onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
               />
               <CarouselContent>
-                {news.map((article, index) => (
+                {(translatedNews || news).map((article, index) => (
                   <CarouselItem
                     key={article.id}
                     className="md:basis-1/2 lg:basis-1/3"
-                    aria-label={`Slide ${index + 1} of ${news.length}`}
+                    aria-label={`Slide ${index + 1} of ${(translatedNews || news).length}`}
                   >
                     <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
                       <div className="aspect-video relative overflow-hidden">
@@ -212,7 +214,7 @@ const NewsSection = () => {
                           </div>
                         </div>
                         <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
-                          {t('news.button.readMore', 'Baca Selengkapnya')}
+                          {t('news.button.readMore')}
                           <ArrowRight size={16} />
                         </Link>
                       </CardContent>
@@ -234,8 +236,8 @@ const NewsSection = () => {
               </div> */}
               {/* Live region for screen readers */}
               <div className="sr-only" aria-live="polite" aria-atomic="true">
-                {news[currentIndex]
-                  ? `Showing slide ${currentIndex + 1} of ${news.length}: ${news[currentIndex].title}`
+                {(translatedNews || news)[currentIndex]
+                  ? `Showing slide ${currentIndex + 1} of ${(translatedNews || news).length}: ${(translatedNews || news)[currentIndex].title}`
                   : ""}
               </div>
             </Carousel>
@@ -245,7 +247,7 @@ const NewsSection = () => {
         <div className="text-center scroll-reveal">
           <Link to={'/media-publikasi'}>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              {t('news.button.viewAll', 'Lihat Semua Berita')}
+              {t('news.button.viewAll')}
             </button>
           </Link>
         </div>

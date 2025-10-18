@@ -517,6 +517,16 @@ export const resources = {
         addressLabel: "Address:",
         seeDetails: "See Details",
         seeList: "See List"
+      },
+      // News Section
+      news: {
+        title: "News & Articles",
+        subtitle: "Follow the latest developments about museums, cultural heritage, and cultural heritage preservation activities in Indonesia",
+        loading: "Loading news...",
+        button: {
+          readMore: "Read More",
+          viewAll: "View All News"
+        }
       }
     }
   },
@@ -1036,6 +1046,16 @@ export const resources = {
         addressLabel: "Alamat:",
         seeDetails: "Lihat Detail",
         seeList: "Lihat Daftar"
+      },
+      // News Section
+      news: {
+        title: "Berita & Artikel",
+        subtitle: "Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian warisan budaya Indonesia",
+        loading: "Memuat berita...",
+        button: {
+          readMore: "Baca Selengkapnya",
+          viewAll: "Lihat Semua Berita"
+        }
       }
     }
   }
