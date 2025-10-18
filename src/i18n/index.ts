@@ -254,7 +254,8 @@ export const resources = {
               description: "Procedures for organizing temporary exhibitions"
             }
           ]
-        },
+        }
+      },
       // PPID Section
       ppid: {
         title: "PPID - Information and Documentation Management Officer",
@@ -466,7 +467,7 @@ export const resources = {
           // categoryTextile: "Textiles",
           // categoryJewelry: "Jewelry",
           categoryCeramic: "Ceramics",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
@@ -491,7 +492,7 @@ export const resources = {
           // categoryJewelry: "Jewelry",
           // categoryCeramic: "Ceramics",
           categoryCeramic: "Ceramics",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
@@ -503,11 +504,7 @@ export const resources = {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
-      },
-      interactiveMap: 'Interactive Map of Indonesia',
-      seeDetails: 'See Details',
-      seeList: 'See List',
-      clickMarker: 'Click on a marker to see location details and navigate to the museum or cultural heritage page'
+      }
     }
   },
   id: {
@@ -552,7 +549,7 @@ export const resources = {
         },
         watchVideo: "Tonton Video",
       },
-      // Profile Sectionpa
+      // Profile Section
       profile: {
         title: "Tentang Kami",
         description: "Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
@@ -684,32 +681,32 @@ export const resources = {
           heritage: {
             title: "Pelestarian Cagar Budaya",
             description: "Konservasi dan restorasi situs bersejarah serta artefak budaya",
-            features: ["Konservasi preventif, Restorasi struktural, Monitoring kondisi, Dokumentasi digital"]
+            features: ["Konservasi preventif", "Restorasi struktural", "Monitoring kondisi", "Dokumentasi digital"]
           },
           museum: {
             title: "Pengelolaan Museum dan Cagar Budaya",
             description: "Pengelolaan komprehensif koleksi Museum dan Cagar Budaya, operasional, dan layanan publik",
-            features: ["Kurasi koleksi, Manajemen penyimpanan, Program pameran, Layanan pengunjung"]
+            features: ["Kurasi koleksi", "Manajemen penyimpanan", "Program pameran", "Layanan pengunjung"]
           },
           research: {
             title: "Penelitian & Pengembangan",
             description: "Riset ilmiah untuk pengembangan metode pelestarian modern",
-            features: ["Penelitian arkeologi, Studi konservasi, Inovasi teknologi, Publikasi ilmiah"]
+            features: ["Penelitian arkeologi", "Studi konservasi", "Inovasi teknologi", "Publikasi ilmiah"]
           },
           international: {
             title: "Kerjasama Internasional",
             description: "Kolaborasi dengan lembaga internasional dalam pelestarian budaya",
-            features: ["Program pertukaran, Standar internasional, Capacity building, Best practices"]
+            features: ["Program pertukaran", "Standar internasional", "Capacity building", "Best practices"]
           },
           digitization: {
             title: "Digitalisasi Warisan",
             description: "Transformasi digital koleksi untuk preservasi dan akses publik",
-            features: ["3D scanning, Virtual reality, Database digital, Platform online"]
+            features: ["3D scanning", "Virtual reality", "Database digital", "Platform online"]
           },
           education: {
             title: "Edukasi & Outreach",
             description: "Program pendidikan dan sosialisasi kepada masyarakat",
-            features: ["Workshop komunitas, Program sekolah, Pelatihan SDM, Kampanye awareness"]
+            features: ["Workshop komunitas", "Program sekolah", "Pelatihan SDM", "Kampanye awareness"]
           },
           consultationTitle: "Butuh Layanan Khusus?",
           consultationText: "Tim ahli kami siap membantu Anda dengan kebutuhan khusus dalam pelestarian dan pengelolaan warisan budaya.",
@@ -763,7 +760,8 @@ export const resources = {
               description: "Prosedur penyelenggaraan pameran sementara"
             }
           ]
-        },
+        }
+      },
       // PPID Section
       ppid: {
         title: "PPID - Pejabat Pengelola Informasi dan Dokumentasi",
@@ -976,7 +974,7 @@ export const resources = {
           // categoryJewelry: "Perhiasan",
           // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
@@ -1000,7 +998,7 @@ export const resources = {
           // categoryJewelry: "Perhiasan",
           // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
@@ -1012,11 +1010,7 @@ export const resources = {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
-      },
-      interactiveMap: 'Peta Interaktif Indonesia',
-      seeDetails: 'Lihat Detail',
-      seeList: 'Lihat Daftar',
-      clickMarker: 'Klik pada penanda untuk melihat detail lokasi dan navigasi ke halaman museum atau cagar budaya'
+      }
     }
   }
 };
