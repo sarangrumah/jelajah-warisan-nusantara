@@ -79,15 +79,15 @@ const DistributionSection = () => {
 
           {/* Legend */}
           <div className="absolute bottom-4 right-4 bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border">
-            <h4 className="font-bold mb-2 text-heritage-gradient">{t('distribution.legend.title', 'Legend')}</h4>
+            <h4 className="font-bold mb-2 text-heritage-gradient">{t('distribution.legend.title')}</h4>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-primary"></div>
-                <span>{t('distribution.legend.museum', 'Museum')}</span>
+                <span>{t('distribution.legend.museum')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-secondary"></div>
-                <span>{t('distribution.legend.heritage', 'Heritage')}</span>
+                <span>{t('distribution.legend.heritage')}</span>
               </div>
             </div>
           </div>

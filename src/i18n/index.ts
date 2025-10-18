@@ -118,6 +118,11 @@ export const resources = {
         labels: {
           museum: "Museum",
           heritage: "Cultural Heritage"
+        },
+        legend: {
+          title: "Legend",
+          museum: "Museum",
+          heritage: "Heritage"
         }
       },
       // Agenda Section
@@ -504,6 +509,14 @@ export const resources = {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
+      },
+      // Map Section
+      map: {
+        interactiveMap: "Interactive Map",
+        clickMarker: "Click a marker for more details",
+        addressLabel: "Address:",
+        seeDetails: "See Details",
+        seeList: "See List"
       }
     }
   },
@@ -622,6 +635,11 @@ export const resources = {
           malukuNusaTenggara: "Maluku & Nusa Tenggara"
         },
         labels: {
+          museum: "Museum",
+          heritage: "Cagar Budaya"
+        },
+        legend: {
+          title: "Legenda",
           museum: "Museum",
           heritage: "Cagar Budaya"
         }
@@ -1010,6 +1028,14 @@ export const resources = {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
+      },
+      // Map Section
+      map: {
+        interactiveMap: "Peta Interaktif",
+        clickMarker: "Klik penanda untuk detail lebih lanjut",
+        addressLabel: "Alamat:",
+        seeDetails: "Lihat Detail",
+        seeList: "Lihat Daftar"
       }
     }
   }

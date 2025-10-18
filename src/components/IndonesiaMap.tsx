@@ -209,7 +209,7 @@ const IndonesiaMap = () => {
           <p style="color: #6b7280; font-size: 13px; margin-bottom: 12px; line-height: 1.4;">${fixBrokenHtmlTags(location.subtitle)}</p>
           <div style="margin-bottom: 12px;">
             <div style="margin-bottom: 6px;">
-              <strong style="color: #374151; font-size: 12px;">📍 Alamat:</strong>
+              <strong style="color: #374151; font-size: 12px;">📍 ${t('map.addressLabel')}</strong>
               <p style="color: #6b7280; font-size: 12px; margin: 2px 0;">${fixBrokenHtmlTags(location.address)}</p>
             </div>
             ${location.openingHours ? `
@@ -249,7 +249,7 @@ const IndonesiaMap = () => {
               onmouseover="this.style.backgroundColor='#2563eb'"
               onmouseout="this.style.backgroundColor='#3b82f6'"
             >
-              {t('seeDetails')}
+              ${t('map.seeDetails')}
             </button>
             <button
               class="popup-btn-list"
@@ -274,7 +274,7 @@ const IndonesiaMap = () => {
               onmouseover="this.style.backgroundColor='#059669'"
               onmouseout="this.style.backgroundColor='#10b981'"
             >
-              {t('seeList')}
+              ${t('map.seeList')}
             </button>
           </div>
         </div>
@@ -387,7 +387,7 @@ const IndonesiaMap = () => {
     <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <h3 className="text-2xl font-bold text-foreground mb-4 sm:mb-0">
-          {t('interactiveMap')}
+          {t('map.interactiveMap')}
         </h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -414,7 +414,7 @@ const IndonesiaMap = () => {
         <div ref={mapContainer} className="absolute inset-0" />
       </div>
       <p className="text-muted-foreground mt-4 text-center text-sm">
-        {t('clickMarker')}
+        {t('map.clickMarker')}
       </p>
       <style>{`
         .custom-popup .leaflet-popup-content-wrapper {
