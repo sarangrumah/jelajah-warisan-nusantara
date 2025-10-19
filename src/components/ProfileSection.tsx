@@ -45,15 +45,10 @@ const ProfileSection = () => {
       setError(null);
       try {
         const response = await contentService.getAll();
-        console.log('[ProfileSection] Raw API response:', response);
         if (response.error) { throw new Error(response.error); }
         // Use the first profile (or adjust as needed)
         const data = response.data as CompanyProfile[];
-        console.log('[ProfileSection] Parsed data:', data);
         setProfile(data && data.length > 0 ? data[0] : null);
-        if (data && data.length > 0) {
-          console.log('[ProfileSection] Profile object:', data[0]);
-        }
       } catch (err: any) {
         setError(err.message || 'Failed to load profile');
       } finally {
@@ -64,11 +59,6 @@ const ProfileSection = () => {
   }, []);
 
   // Debug log to check profile at render time
-  if (profile) {
-    console.log('[ProfileSection] Profile at render:', profile);
-    console.log('[ProfileSection] Translated profile:', translatedProfile);
-    console.log('[ProfileSection] Is translating:', isTranslating);
-  }
 
   // Set up scroll reveal observer after profile data is loaded
   useEffect(() => {
@@ -84,7 +74,6 @@ const ProfileSection = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          console.log('[ProfileSection ScrollReveal] Revealing:', entry.target);
           entry.target.classList.add('revealed');
         }
       });
@@ -92,7 +81,6 @@ const ProfileSection = () => {
 
     // Query for scroll-reveal elements within this component
     const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-    console.log('[ProfileSection] Found scroll-reveal elements:', scrollRevealElements.length);
     scrollRevealElements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
@@ -138,7 +126,6 @@ const ProfileSection = () => {
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                   {(() => {
                     const visionHtml = (translatedProfile?.vision || profile.vision) || '-';
-                    console.log('[ProfileSection] Vision HTML to render:', visionHtml);
                     return (
                       <div
                         className="prose text-muted-foreground"
@@ -154,11 +141,11 @@ const ProfileSection = () => {
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'About Us')}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'Tentang Kami')}</h4>
                   <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((translatedProfile?.aboutus || profile.aboutus) || '-') }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Contact')}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Hubungi Kami')}</h4>
                   <ul className="text-muted-foreground space-y-1">
                     <li>
                       <b>{t('profile.contact.address', 'Address')}:</b>

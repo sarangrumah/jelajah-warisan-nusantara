@@ -166,9 +166,6 @@ const AgendaSection = () => {
   const handleBlur = () => setIsPaused(false);
 
   useEffect(() => {
-    if (carouselApi) {
-      console.log('[AgendaSection] Carousel API set:', carouselApi);
-    }
   }, [carouselApi]);
 
   const fetchEvents = async () => {

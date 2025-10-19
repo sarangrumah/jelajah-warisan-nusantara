@@ -119,7 +119,6 @@ const NewsSection = () => {
   React.useEffect(() => {
     if (carouselApi) {
       // eslint-disable-next-line no-console
-      console.log('[NewsSection] Carousel API set:', carouselApi);
     }
   }, [carouselApi]);
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
@@ -14,9 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ImageUpload } from '@/components/ui/image-upload';
 import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { sanitizeHtml } from '@/lib/sanitize-html';
-import { map, string } from 'zod';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { da } from 'zod/v4/locales';
 import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 interface SitesItem {
@@ -84,7 +83,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
     setFormData({
       ...museum,
       is_free: museum.is_free ?? false,
-      images: museum.images == null ? [] : museum.images
+      images: museum.images === null ? [] : museum.images
     });
     if (museum.is_free) {
       previousTicketPriceRef.current = museum.ticket_price || '';
@@ -94,9 +93,9 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
   const [types, setTypes] = useState<Types[]>()
   const [categories, setCategories] = useState<Categories[]>()
   const [loading, setLoading] = useState(true);
-  const [loadingCat, setLoadingCat] = useState(true);
+  const [_loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
-  const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+  const [_errors, _setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
 
   // Opening hours (Senin..Minggu) state and helpers
   const DAYS = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu', "Tutup"] as const;
@@ -131,7 +130,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           });
         }
       }
-    } catch (_) {
+    } catch {
       // ignore parse errors, keep defaults
     }
     return base;
@@ -157,7 +156,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
   }, []);
 
   useEffect(() => {
-    if (formData.type != '') {
+    if (formData.type !== '') {
       setLoadingCat(true)
       fetchCategories(formData.type);  
     }
@@ -174,7 +173,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       
       setTypes(response.data as Types[] || []);
     } catch (error) {
-      console.error('Error fetching museums:', error);
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -185,7 +183,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
     }
   };
 
-  const fetchCategories = async (id) => {
+  const fetchCategories = async (id: string) => {
     try {
       const response = await TypesAndCategoriesSites.getAllCategories(id);
       
@@ -195,7 +193,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       
       setCategories(response.data as Categories[] || []);
     } catch (error) {
-      console.error('Error fetching museums:', error);
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -208,7 +205,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
  
   // This ensures proper state updates
   const handleImageUpload = async (url: string) => {
-    console.log('handleImageUpload received:', url);
     setFormData(prev => ({
       ...prev,
       img_banner: url
@@ -263,7 +259,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
-              {types.map((e) => (
+              {types && types.map((e) => (
                 <SelectItem value={e.id}>{e.name}</SelectItem>
               ))}
             </SelectContent>
@@ -282,7 +278,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
             </SelectTrigger>
             {
               <SelectContent>
-                {categories != undefined  ? categories.map((e) => (
+                {categories !== undefined  ? categories.map((e) => (
                   <SelectItem value={e.id}>{e.name}</SelectItem>
                 )) : <></>}
               </SelectContent> 
@@ -301,29 +297,6 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           placeholder="Brief summary of the content"
         />
       </div>
-
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="latitude">Latitude</Label>
-          <Input
-            id="latitude"
-            step="any"
-            value={formData.latitude}
-            onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
-            placeholder="-6.2088"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="longitude">Longitude</Label>
-          <Input
-            id="longitude"
-            step="any"
-            value={formData.longitude}
-            onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
-            placeholder="106.8456"
-          />
-        </div>
-      </div> */}
       
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
@@ -384,8 +357,8 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
             </div>
           ))}
         </div>
-        {errors.opening_hours && (
-          <p className="text-sm text-red-500">{errors.opening_hours}</p>
+        {_errors.opening_hours && (
+          <p className="text-sm text-red-500">{_errors.opening_hours}</p>
         )}
       </div>
 
@@ -485,8 +458,8 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           height={100}
            placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
         />
-        {errors.opening_hours && (
-          <p className="text-sm text-red-500">{errors.opening_hours}</p>
+        {_errors.opening_hours && (
+          <p className="text-sm text-red-500">{_errors.opening_hours}</p>
         )}
       </div>
 
@@ -496,10 +469,9 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
           value={formData.collection || ''}
           onChange={(html) => setFormData(prev => ({ ...prev, collection: html }))}
           height={100}
-          // placeholder="Parkir, Toilet, Kafeteria, Toko Souvenir, Audio Guide, WiFi"
         />
-        {errors.opening_hours && (
-          <p className="text-sm text-red-500">{errors.opening_hours}</p>
+        {_errors.opening_hours && (
+          <p className="text-sm text-red-500">{_errors.opening_hours}</p>
         )}
       </div>
 
@@ -586,7 +558,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       }));
       setSitess(normalized);
     } catch (error) {
-      console.error('Error fetching museums:', error);
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -647,7 +618,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       setEditingSites(emptySites);
       setIsDialogOpen(false);
     } catch (error) {
-      console.error('Error saving museum:', error);
       toast({
         title: 'Error',
         description: 'Failed to save museum',
@@ -658,7 +628,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const togglePublished = async (id: string, isPublished: boolean) => {
+  const _togglePublished = async (id: string, isPublished: boolean) => {
     try {
       const response = await museumService.update(id, { is_active: isPublished });
       
@@ -675,7 +645,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         description: `Sites ${isPublished ? 'published' : 'unpublished'}`,
       });
     } catch (error) {
-      console.error('Error toggling museum:', error);
       toast({
         title: 'Error',
         description: 'Failed to update museum status',
@@ -708,7 +677,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       });
       fetchSites();
     } catch (error) {
-      console.error('Error toggling banner:', error);
       toast({
         title: 'Error',
         description: 'Failed to update banner status',
@@ -769,7 +737,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       closeRejectDialog();
       fetchSites();
     } catch (error) {
-      console.error('Error rejecting museum:', error);
       toast({
         title: 'Error',
         description: 'Failed to reject museum',
@@ -786,17 +753,12 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       const response = await museumService.delete(id);
       if (response.error) {throw new Error(response.error);}
       
-      // setBanners(prev => prev.map(banner => 
-      //   banner.id === id ? { ...banner, is_approved: response.data["is_approved"] } : banner
-      // ));
-      
       toast({
         title: 'Success',
         description: `Banner Deleted`,
       });
       fetchSites()
     } catch (error) {
-      console.error('Error toggling banner:', error);
       toast({
         title: 'Error',
         description: 'Failed to delete banner',
@@ -822,10 +784,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            {/* <Button onClick={() => setEditingSites(emptySites)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Museum
-            </Button> */}
             { userRole !== "approver" && userRole !== "viewer" ?             
               <Button onClick={() => setEditingSites(emptySites)}>
                 <Plus className="w-4 h-4 mr-2" />
@@ -856,7 +814,46 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {museum != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {museum !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+          <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                  <DialogTitle>
+                  {'Delete ' + museum?.name + ' content'}
+                  </DialogTitle>
+                  <DialogDescription>
+                  {'Are you sure want delete this' + museum?.name + ' content'}
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
+                  <X className="w-4 h-4 mr-2" />
+                      Cancel
+                  </Button>
+                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(museum?.id || '')}>
+                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingSites.id ? 'Edit Museum' : 'Add New Museum'}
+              </DialogTitle>
+              <DialogDescription>
+                {editingSites.id ? 'Update museum information' : 'Create a new museum or heritage site'}
+              </DialogDescription>
+            </DialogHeader>
+            <SitesForm
+              museum={editingSites}
+              onSave={saveSites}
+              saving={saving}
+              onCancel={() => {
+                setIsDialogOpen(false);
+              }}
+            />
+          </DialogContent>
+        </DialogTitle>
+      </div>
+
+      <div className="flex justify-between items-center">
+        {museum !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
                   <DialogTitle>
@@ -930,7 +927,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                           onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                         />
                       </div>
-                      {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved && !museum.is_rejected ? (
+                      {(userRole === 'super-admin' || userRole === 'admin') && !museum.is_approved && !museum.is_rejected ? (
                         <>
                           <Button
                             variant="success"

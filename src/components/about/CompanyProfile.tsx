@@ -19,7 +19,7 @@ const CompanyProfile = () => {
   const [companies, setCompanies] = useState([]);
   // Use content translation for the first company profile
   const company = companies.length > 0 ? companies[0] : null;
-  const { translatedContent, isTranslating } = useContentTranslation(company);
+  const { translatedContent, isTranslating: _isTranslating } = useContentTranslation(company);
 
   const fetchCompanies = async () => {
     const response = await contentService.getAll();
@@ -62,7 +62,6 @@ const CompanyProfile = () => {
     { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
     { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
   ];
-  console.log(companies)
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">

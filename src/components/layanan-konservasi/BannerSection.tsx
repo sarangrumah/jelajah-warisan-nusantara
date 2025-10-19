@@ -52,11 +52,6 @@ const BannerSection = () => {
 
   // Log all slide image URLs on render for debugging
   useEffect(() => {
-    if (slides && slides.length > 0) {
-      slides.forEach((slide, idx) => {
-        console.log(`[BannerSection] Slide ${idx} image URL:`, slide.image);
-      });
-    }
   }, [slides]);
 
   return (
@@ -74,7 +69,6 @@ const BannerSection = () => {
               alt={slide.title}
               className="w-full h-full object-cover parallax"
               onLoad={() => {
-                console.log('[BannerSection] Image loaded:', slide.image);
                 setIsLoading(false);
               }}
               onError={() => {

@@ -12,9 +12,7 @@ import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
-import { GalleryUpload } from '@/components/ui/gallery-upload';
 import { sanitizeHtml } from '@/lib/sanitize-html';
-import { map, string } from 'zod';
 import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 
@@ -146,7 +144,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   const [loading, setLoading] = useState(true);
   const [loadingCat, setLoadingCat] = useState(true);
   const { toast } = useToast();
-  const [errors, setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
+  const [_errors, _setErrors] = useState<{ opening_hours?: string, facilities?: string }>({});
   const [useSites, setUseSites] = useState<boolean>(false)
 
   useEffect(() => {
@@ -160,7 +158,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       setUseSites(true)
     }
 
-    if (sites != undefined && useSites) {
+    if (sites !== undefined && useSites) {
       sites.filter((e) => {
         if (formData.sites_id === e.id) {
           formData.address = e.address
@@ -171,11 +169,11 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   }, [formData.sites_id]);
 
   useEffect(() => {
-    if (!useSites && formData.sites_id != null) {
+    if (!useSites && formData.sites_id !== null) {
        formData.address = ''
        formData.sites_id = null
     } else {
-      if (sites != undefined) {
+      if (sites !== undefined) {
       sites.filter((e) => {
           if (formData.sites_id === e.id) {
             formData.address = e.address
@@ -515,7 +513,6 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
-      {console.log('ImageUpload value (banner_img):', formData.banner_img)}
       <ImageUpload
         label="Banner Image"
         value={formData.banner_img}
@@ -916,7 +913,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {event != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {event !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                   <DialogTitle>
@@ -989,7 +986,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
                         onCheckedChange={(checked) => togglePublished(museum.id, checked)}
                       />
                     </div>
-                    {(userRole === 'super-admin' || userRole === 'approver') && !museum.is_approved && !museum.is_rejected ? (
+                    {(userRole === 'super-admin' || userRole === 'admin') && !museum.is_approved && !museum.is_rejected ? (
                       <>
                         <Button
                           variant="success"

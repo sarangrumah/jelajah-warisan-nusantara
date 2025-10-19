@@ -46,12 +46,6 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
     const originalPath = slide.image_url || slide.image;
     const transformedPath = assetUrl(originalPath) || '/placeholder.svg';
     
-    console.log('[mapSlidesWithImageUrl] Processing slide:', {
-      original: originalPath,
-      transformed: transformedPath,
-      slide: slide
-    });
-    
     return {
       ...slide,
       asset: slide.image?.split('/').pop() || slide.image,
@@ -212,12 +206,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
       {/* Background Image Slider */}
       <div className="absolute inset-0">
         {slides && slides.map((slide, index) => {
-          console.log('[HeroSection] Rendering slide:', {
-            index,
-            asset: slide.asset,
-            image: slide.image,
-            slide
-          });
           return (
             <div
               key={index}
@@ -232,7 +220,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                   alt={t(slide.title)}
                   className="w-full h-full object-cover parallax"
                   onLoad={() => {
-                    console.log('[HeroSection] Image loaded successfully:', slide.image);
                   }}
                   onError={(e) => {
                     console.error('[HeroSection] Image failed to load:', slide.image);
