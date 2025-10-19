@@ -137,7 +137,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         let paramIndex = 1;
 
         for (const [key, value] of Object.entries(filters)) {
-          if (value === undefined || key === 'include') continue;
+          if (value === undefined || key === 'include') { continue; }
 
           if (key === 'search') {
             const conditions = [];
@@ -173,7 +173,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
         `;
 
+        console.time(`[PERF] Query for ${tableName}`);
         const result = await query(queryText, [...params, limit, offset]);
+        console.timeEnd(`[PERF] Query for ${tableName}`);
         
         // Translate content if language is not Indonesian
         let rows = result.rows;
@@ -309,7 +311,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string') {
           try {
             insertData.opening_hours = JSON.parse(insertData.opening_hours);
-          } catch (_e) {
+          } catch {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -317,7 +319,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         } else if (tableName === 'tb_sites' && typeof insertData.facilities === 'string') {
           try {
             insertData.facilities = JSON.parse(insertData.facilities);
-          } catch (_e) {
+          } catch {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -351,15 +353,13 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           insertData.created_by = req.user.id;
         }
 
-
-        const excludedOnCreate = ['updated_by', 'updated_at'];
-        const validFields = fields
-          .filter(f => 
-            insertData[f] !== undefined && 
-            !excludedOnCreate.includes(f)
-          );
-
-        // Handle JSON/JSONB fields by stringifying values and casting placeholders
+const excludedOnCreate = ['updated_by', 'updated_at'];
+const validFields = fields
+  .filter(f =>
+    insertData[f] !== undefined &&
+    !excludedOnCreate.includes(f)
+  );
+// Handle JSON/JSONB fields by stringifying values and casting placeholders
         const JSON_FIELDS: Record<string, string[]> = {
           tb_sites: ['opening_hours'],
         };
@@ -378,16 +378,12 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           .join(', ');
 
         await client.query('BEGIN');
-
-
         await client.query(
           `INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`,
           values
         );
 
         // console.log(`INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`)
-        
-
         // Insert nested (unchanged)
         if (tableName === 'tb_company' && companyLeadership.length > 0) {
           const createdBy = insertData.created_by || 'system';
@@ -427,7 +423,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           const createdBy = insertData.created_by || 'system';
           for (const item of gallery) {
             const filePath = (item && (item.path || item.upload_file)) || item;
-            if (!filePath) continue;
+            if (!filePath) { continue; }
             await client.query(
               `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
                VALUES ($1, $2, $3, $4, $4, $5)`,
@@ -691,7 +687,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           );
 
           for (const img of images as any[]) {
-            if (!img) continue;
+            if (!img) { continue; }
 
             const imageId = img.id as string | undefined;
             const filePath = img.path || img.upload_file || img.url;

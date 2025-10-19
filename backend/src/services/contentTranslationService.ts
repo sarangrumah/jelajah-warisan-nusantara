@@ -1,39 +1,51 @@
+import crypto from 'crypto';
 import translationService from './translationService';
+import { query } from '../config/database';
 
 /**
  * Content Translation Service
  * Translates database content (museums, news, events, etc.) in API responses
  */
 
-interface TranslationCache {
-  [key: string]: string;
-}
 
 class ContentTranslationService {
-  private cache: TranslationCache = {};
-  private cacheTimeout = 7 * 24 * 60 * 60 * 1000; // 7 days
-
   /**
    * Generate cache key
    */
-  private getCacheKey(text: string, targetLang: string, sourceLang: string): string {
-    return `${sourceLang}:${targetLang}:${text}`;
+  private getSourceHash(text: string): string {
+    return crypto.createHash('sha256').update(text).digest('hex');
   }
 
   /**
    * Get from cache
    */
-  private getFromCache(text: string, targetLang: string, sourceLang: string): string | null {
-    const key = this.getCacheKey(text, targetLang, sourceLang);
-    return this.cache[key] || null;
+  private async getFromCache(text: string, lang: string): Promise<string | null> {
+    const hash = this.getSourceHash(text);
+    try {
+      const result = await query(
+        'SELECT translation FROM translations WHERE source_hash = $1 AND lang = $2',
+        [hash, lang]
+      );
+      return result.rows[0]?.translation || null;
+    } catch (error) {
+      console.error('Error fetching from translation cache:', error);
+      return null;
+    }
   }
 
   /**
    * Save to cache
    */
-  private saveToCache(text: string, targetLang: string, sourceLang: string, translation: string): void {
-    const key = this.getCacheKey(text, targetLang, sourceLang);
-    this.cache[key] = translation;
+  private async saveToCache(text: string, lang: string, translation: string): Promise<void> {
+    const hash = this.getSourceHash(text);
+    try {
+      await query(
+        'INSERT INTO translations (source_hash, lang, translation) VALUES ($1, $2, $3) ON CONFLICT (source_hash, lang) DO NOTHING',
+        [hash, lang, translation]
+      );
+    } catch (error) {
+      console.error('Error saving to translation cache:', error);
+    }
   }
 
   /**
@@ -55,7 +67,7 @@ class ContentTranslationService {
     }
 
     // Check cache first
-    const cached = this.getFromCache(text, targetLang, sourceLang);
+    const cached = await this.getFromCache(text, targetLang);
     if (cached) {
       return cached;
     }
@@ -66,7 +78,7 @@ class ContentTranslationService {
       
       if (result.success) {
         // Save to cache
-        this.saveToCache(text, targetLang, sourceLang, result.translatedText);
+        this.saveToCache(text, targetLang, result.translatedText);
         return result.translatedText;
       } else {
         console.warn(`Translation failed for text: "${text.substring(0, 50)}..."`, result.error);
@@ -150,21 +162,6 @@ class ContentTranslationService {
   /**
    * Clear translation cache
    */
-  clearCache(): void {
-    this.cache = {};
-    console.log('Translation cache cleared');
-  }
-
-  /**
-   * Get cache statistics
-   */
-  getCacheStats(): { size: number; keys: string[] } {
-    const keys = Object.keys(this.cache);
-    return {
-      size: keys.length,
-      keys: keys.slice(0, 10) // Return first 10 keys as sample
-    };
-  }
 }
 
 // Export singleton instance
