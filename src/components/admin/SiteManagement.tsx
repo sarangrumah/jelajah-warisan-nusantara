@@ -172,7 +172,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       }
       
       setTypes(response.data as Types[] || []);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -192,7 +192,7 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
       }
       
       setCategories(response.data as Categories[] || []);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -557,7 +557,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         reason_rejected: item.reason_rejected ?? '',
       }));
       setSitess(normalized);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to load museums',
@@ -617,7 +617,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
 
       setEditingSites(emptySites);
       setIsDialogOpen(false);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to save museum',
@@ -644,7 +644,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         title: 'Success',
         description: `Sites ${isPublished ? 'published' : 'unpublished'}`,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update museum status',
@@ -676,7 +676,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         description: `Banner Approved`,
       });
       fetchSites();
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update banner status',
@@ -736,7 +736,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       });
       closeRejectDialog();
       fetchSites();
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to reject museum',
@@ -758,7 +758,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         description: `Banner Deleted`,
       });
       fetchSites()
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to delete banner',
@@ -811,45 +811,6 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
             />
           </DialogContent>
         </Dialog>
-      </div>
-
-      <div className="flex justify-between items-center">
-        {museum !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
-          <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                  <DialogTitle>
-                  {'Delete ' + museum?.name + ' content'}
-                  </DialogTitle>
-                  <DialogDescription>
-                  {'Are you sure want delete this' + museum?.name + ' content'}
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogDelete(false)}>
-                  <X className="w-4 h-4 mr-2" />
-                      Cancel
-                  </Button>
-                  <Button type="submit" disabled={isDialogOpen} onClick={() => toggleDelete(museum?.id || '')}>
-                    {isDialogOpen && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>
-                {editingSites.id ? 'Edit Museum' : 'Add New Museum'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingSites.id ? 'Update museum information' : 'Create a new museum or heritage site'}
-              </DialogDescription>
-            </DialogHeader>
-            <SitesForm
-              museum={editingSites}
-              onSave={saveSites}
-              saving={saving}
-              onCancel={() => {
-                setIsDialogOpen(false);
-              }}
-            />
-          </DialogContent>
-        </DialogTitle>
       </div>
 
       <div className="flex justify-between items-center">
@@ -924,7 +885,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                         <Switch
                           id="is_active"
                           checked={museum.is_active}
-                          onCheckedChange={(checked) => togglePublished(museum.id, checked)}
+                          onCheckedChange={(checked) => _togglePublished(museum.id, checked)}
                         />
                       </div>
                       {(userRole === 'super-admin' || userRole === 'admin') && !museum.is_approved && !museum.is_rejected ? (
