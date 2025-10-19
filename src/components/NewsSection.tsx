@@ -55,32 +55,47 @@ const NewsSection = () => {
   // Fetch news from tb_media
   React.useEffect(() => {
     let mounted = true;
+    console.log('🔍 NewsSection: Starting to fetch news data...');
     setLoading(true);
     mediaService.getAll()
       .then((response) => {
         if (mounted) {
+          console.log('🔍 NewsSection: API response received:', response);
           if (response.error) {
-            console.error('Error fetching news:', response.error);
+            console.error('❌ NewsSection: Error fetching news:', response.error);
             setNews([]);
           } else {
+            const rawData = response.data || [];
+            console.log('🔍 NewsSection: Raw data length:', rawData.length);
+
             // Only show news that are active and approved
-            const sortedAndFilteredNews = (response.data || [])
-              .filter((item: any) => item.is_active === true && item.is_approved === true)
+            const sortedAndFilteredNews = rawData
+              .filter((item: any) => {
+                console.log('🔍 NewsSection: Checking item:', item.id, 'is_active:', item.is_active, 'is_approved:', item.is_approved);
+                return item.is_active === true && item.is_approved === true;
+              })
               .sort((a: any, b: any) => new Date(b.published_date || b.date).getTime() - new Date(a.published_date || a.date).getTime());
-            
+
+            console.log('🔍 NewsSection: Filtered and sorted news:', sortedAndFilteredNews.length);
+
             // Slice to get only the latest 6 news
-            setNews(sortedAndFilteredNews.slice(0, 6));
+            const finalNews = sortedAndFilteredNews.slice(0, 6);
+            console.log('🔍 NewsSection: Final news to display:', finalNews.length);
+            setNews(finalNews);
           }
         }
       })
       .catch((err) => {
         if (mounted) {
-          console.error('Error fetching news:', err);
+          console.error('❌ NewsSection: Error fetching news:', err);
           setNews([]);
         }
       })
       .finally(() => {
-        if (mounted) { setLoading(false); }
+        if (mounted) {
+          console.log('🔍 NewsSection: Loading finished');
+          setLoading(false);
+        }
       });
     return () => { mounted = false; };
   }, []);
@@ -125,6 +140,7 @@ const NewsSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
+        {(() => { console.log('🔍 NewsSection: Component is rendering'); return null; })()}
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             {t('news.title')}
@@ -135,8 +151,13 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
+          {(() => {
+            console.log('🔍 NewsSection: Render state - loading:', loading, 'isTranslating:', isTranslating, 'news length:', news.length);
+            return null;
+          })()}
           {loading || isTranslating ? (
             <div className="flex items-center justify-center h-64">
+              {(() => { console.log('🔍 NewsSection: Showing loading state'); return null; })()}
               <span className="text-lg text-muted-foreground">{t('news.loading')}</span>
             </div>
           ) : (
@@ -161,12 +182,23 @@ const NewsSection = () => {
                 onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
               />
               <CarouselContent>
-                {(translatedNews || news).map((article, index) => (
-                  <CarouselItem
-                    key={article.id}
-                    className="md:basis-1/2 lg:basis-1/3"
-                    aria-label={`Slide ${index + 1} of ${(translatedNews || news).length}`}
-                  >
+                {(() => {
+                  const newsToShow = translatedNews || news;
+                  console.log('🔍 NewsSection: Mapping over', newsToShow.length, 'news items');
+                  if (newsToShow.length === 0) {
+                    console.log('⚠️ NewsSection: No news items to display');
+                    return (
+                      <div className="flex items-center justify-center h-64 col-span-full">
+                        <span className="text-lg text-muted-foreground">No news available</span>
+                      </div>
+                    );
+                  }
+                  return newsToShow.map((article, index) => (
+                    <CarouselItem
+                      key={article.id}
+                      className="md:basis-1/2 lg:basis-1/3"
+                      aria-label={`Slide ${index + 1} of ${newsToShow.length}`}
+                    >
                     <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
                       <div className="aspect-video relative overflow-hidden">
                         <img
@@ -221,8 +253,9 @@ const NewsSection = () => {
                         </Link>
                       </CardContent>
                     </Card>
-                  </CarouselItem>
-                ))}
+                    </CarouselItem>
+                  ));
+                })()}
               </CarouselContent>
               {/* Pause/Resume Button */}
               {/* <div className="absolute right-4 bottom-4 z-10">
