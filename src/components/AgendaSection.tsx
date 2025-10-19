@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { Link } from 'react-router-dom';
-// Utility to fix broken HTML tags like < p > to <p>
+
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
@@ -39,7 +39,6 @@ function getEventImageUrl(filename: string) {
   if (match) {
     return (match[1] as any).default;
   }
-  // Fallback: try public/assets/events/ for production
   if (justFile) {
     return `/assets/events/${justFile}`;
   }
@@ -48,7 +47,6 @@ function getEventImageUrl(filename: string) {
 
 const AgendaCard = ({ event }) => {
   const { t } = useTranslation();
-  const { translatedContent: translatedEvent } = useContentTranslation(event);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -68,23 +66,21 @@ const AgendaCard = ({ event }) => {
     }
   };
 
-  const currentEvent = translatedEvent || event;
-
   return (
     <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
       {/* Event Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-        <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(currentEvent.status)}`}>
-          {getStatusLabel(currentEvent.status)}
+        <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+          {getStatusLabel(event.status)}
         </div>
         <img
           src={
-            currentEvent.image_url
-              ? getEventImageUrl(currentEvent.image_url) || logo
+            event.image_url
+              ? getEventImageUrl(event.image_url) || logo
               : logo
           }
-          alt={currentEvent.title}
+          alt={event.title}
           className="w-full h-full object-contain object-center"
         />
       </div>
@@ -94,7 +90,7 @@ const AgendaCard = ({ event }) => {
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
           <span
             dangerouslySetInnerHTML={{
-              __html: fixBrokenHtmlTags(currentEvent.title)
+              __html: fixBrokenHtmlTags(event.title)
             }}
           />
         </h3>
@@ -102,7 +98,7 @@ const AgendaCard = ({ event }) => {
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
           <span
             dangerouslySetInnerHTML={{
-              __html: fixBrokenHtmlTags(currentEvent.description)
+              __html: fixBrokenHtmlTags(event.description)
             }}
           />
         </p>
@@ -110,20 +106,20 @@ const AgendaCard = ({ event }) => {
         <div className="space-y-2 mb-6">
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar size={16} className="mr-3 text-primary" />
-            {currentEvent.date}
+            {event.date}
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <Clock size={16} className="mr-3 text-primary" />
-            {currentEvent.time}
+            {event.time}
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin size={16} className="mr-3 text-primary" />
-            {currentEvent.location}
+            {event.location}
           </div>
         </div>
       </div>
       <div className='p-6 absolute left-0 bottom-0 right-0'>
-        <Link to={`/event/${currentEvent.id}`}>
+        <Link to={`/event/${event.id}`}>
           <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
             {t('agenda.button.detail', 'Detail Event')}
             <ChevronRight size={16} className="ml-2" />
@@ -142,8 +138,6 @@ const AgendaSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Accessibility: Announce slide changes
-  // Auto-slide logic
   useEffect(() => {
     if (!carouselApi || isPaused) { return; }
     const interval = setInterval(() => {
@@ -154,7 +148,6 @@ const AgendaSection = () => {
     return () => clearInterval(interval);
   }, [carouselApi, isPaused, activeCategory, events]);
 
-  // Update current index for live region
   useEffect(() => {
     if (!carouselApi) { return; }
     const onSelect = () => {
@@ -167,39 +160,44 @@ const AgendaSection = () => {
     };
   }, [carouselApi, activeCategory, events]);
 
-  // Pause on hover/focus, resume on mouse leave/blur
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  // Diagnostic log for Embla API
   useEffect(() => {
     if (carouselApi) {
-      // eslint-disable-next-line no-console
       console.log('[AgendaSection] Carousel API set:', carouselApi);
     }
   }, [carouselApi]);
 
   const fetchEvents = async () => {
     try {
-      const response = await agendaService.getAll();
+      const response = await agendaService.getAll({ limit: 6, active: true, approved: true });
       if (response.error) {
         console.error('Error fetching events:', response.error);
+        setEvents(defaultEvents.slice(0, 6));
+      } else {
+        const sortedEvents = (response.data || [])
+          .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
+        setEvents(sortedEvents);
       }
-  
-      setEvents(response.data || defaultEvents);
     } catch (error) {
       console.error('Error fetching events:', error);
+      setEvents(defaultEvents.slice(0, 6)); // Fallback to default on error
     }
   };
+  
   useEffect(() => {
     fetchEvents();
   }, []);
 
+  const { translatedContent: translatedEvents } = useContentTranslation(events);
+  const displayedEvents = translatedEvents || events;
+
   const filteredEvents = activeCategory === 'semua'
-    ? events.slice(0, 6)
-    : events.filter(event => event.category === activeCategory).slice(0, 6);
+    ? displayedEvents
+    : displayedEvents.filter((event: any) => event.category === activeCategory);
 
   return (
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
@@ -213,7 +211,6 @@ const AgendaSection = () => {
           </p>
         </div>
 
-        {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
           {[
             { id: 'semua', label: t('agenda.categories.all', 'All Events') },
@@ -234,7 +231,6 @@ const AgendaSection = () => {
           ))}
         </div>
 
-        {/* Events Carousel */}
         <div className="relative mb-12 scroll-reveal">
           <Carousel
             setApi={setCarouselApi}
@@ -268,19 +264,6 @@ const AgendaSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            {/* Pause/Resume Button */}
-            {/* <div className="absolute right-4 bottom-4 z-10">
-              <Button
-                onClick={() => setIsPaused((p) => !p)}
-                aria-pressed={isPaused}
-                aria-label={isPaused ? "Resume auto-slide" : "Pause auto-slide"}
-                className="bg-primary text-primary-foreground px-4 py-2 rounded focus:ring-2 focus:ring-primary"
-                tabIndex={0}
-              >
-                {isPaused ? "Resume" : "Pause"}
-              </Button>
-            </div> */}
-            {/* Live region for screen readers */}
             <div className="sr-only" aria-live="polite" aria-atomic="true">
               {filteredEvents[currentIndex]
                 ? `Showing slide ${currentIndex + 1} of ${filteredEvents.length}: ${filteredEvents[currentIndex].title}`
@@ -288,28 +271,6 @@ const AgendaSection = () => {
             </div>
           </Carousel>
         </div>
-
-        {/* Call to Action */}
-        {/* <div className="text-center">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Jangan Lewatkan Event Menarik Lainnya
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Daftarkan diri Anda untuk mendapatkan notifikasi event terbaru dan informasi menarik lainnya
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/agenda">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 hover:scale-105 transition-bounce heritage-glow"
-                >
-                  Lihat Semua Agenda
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div> */}
       </div>
     </section>
   );

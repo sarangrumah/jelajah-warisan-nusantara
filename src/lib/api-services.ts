@@ -1,4 +1,3 @@
-import { get } from 'http';
 import { apiClient } from './api-client';
 
 export const authService = {
@@ -49,7 +48,7 @@ export const newsService = {
 
 // Agenda Items
 export const agendaService = {
-  getAll: () => apiClient.getAll('agenda_items'), // Get all for admin, filtering happens in components
+  getAll: (params?: Record<string, any>) => apiClient.getAll('agenda_items', params),
   getPublished: () => apiClient.getAll('agenda_items', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('agenda_items', id),
   create: (data: any) => apiClient.create('agenda_items', data),
