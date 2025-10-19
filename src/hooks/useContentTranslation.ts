@@ -78,13 +78,14 @@ export function useContentTranslation<T extends string | Record<string, any> | a
               chunks.push(stringsToTranslate.slice(i, i + CHUNK_SIZE));
             }
 
-            // Await all chunk translations
-            const chunkResults = await Promise.all(
-              chunks.map(chunk => translationService.translateBatch(chunk, currentLang, sourceLang))
-            );
-
-            // Combine results and create the translation map
-            const allResults = chunkResults.flat();
+            // Process chunks sequentially to avoid overloading the server
+            const allResults = [];
+            for (const chunk of chunks) {
+              const chunkResult = await translationService.translateBatch(chunk, currentLang, sourceLang);
+              allResults.push(...chunkResult);
+            }
+            
+            // Create the translation map from the combined results
             const translatedMap = new Map(
               allResults.map((res, i) => [stringsToTranslate[i], res.translatedText])
             );
