@@ -183,8 +183,9 @@ const NewsSection = () => {
               />
               <CarouselContent>
                 {(() => {
-                  const newsToShow = translatedNews || news;
-                  console.log('🔍 NewsSection: Mapping over', newsToShow.length, 'news items');
+                  // Fix the logic: if translatedNews is empty or null, use news
+                  const newsToShow = (translatedNews && translatedNews.length > 0) ? translatedNews : news;
+                  console.log('🔍 NewsSection: translatedNews:', translatedNews?.length || 0, 'news:', news.length, 'newsToShow:', newsToShow.length);
                   if (newsToShow.length === 0) {
                     console.log('⚠️ NewsSection: No news items to display');
                     return (
@@ -271,9 +272,12 @@ const NewsSection = () => {
               </div> */}
               {/* Live region for screen readers */}
               <div className="sr-only" aria-live="polite" aria-atomic="true">
-                {(translatedNews || news)[currentIndex]
-                  ? `Showing slide ${currentIndex + 1} of ${(translatedNews || news).length}: ${(translatedNews || news)[currentIndex].title}`
-                  : ""}
+                {(() => {
+                  const newsToShow = (translatedNews && translatedNews.length > 0) ? translatedNews : news;
+                  return newsToShow[currentIndex]
+                    ? `Showing slide ${currentIndex + 1} of ${newsToShow.length}: ${newsToShow[currentIndex].title}`
+                    : "";
+                })()}
               </div>
             </Carousel>
           )}
