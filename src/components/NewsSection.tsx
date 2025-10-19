@@ -130,12 +130,25 @@ const NewsSection = () => {
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  // Diagnostic log for Embla API
+  // Enhanced diagnostic logging
   React.useEffect(() => {
-    if (carouselApi) {
-      // eslint-disable-next-line no-console
-    }
-  }, [carouselApi]);
+    console.log('🔍 NewsSection: Component mounted and running');
+    console.log('🔍 NewsSection: Current state - loading:', loading, 'news length:', news.length, 'isTranslating:', isTranslating);
+    console.log('🔍 NewsSection: Translation hook state - translatedNews length:', translatedNews?.length || 0);
+
+    // Check if component is actually rendering
+    const timer = setTimeout(() => {
+      console.log('🔍 NewsSection: Still alive after 100ms - checking DOM presence');
+      const newsSection = document.querySelector('section.py-20.bg-background');
+      console.log('🔍 NewsSection: DOM element found:', !!newsSection);
+      if (newsSection) {
+        console.log('🔍 NewsSection: Element classes:', newsSection.className);
+        console.log('🔍 NewsSection: Element visibility:', getComputedStyle(newsSection).display);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [loading, news.length, isTranslating, translatedNews?.length]);
 
   return (
     <section className="py-20 bg-background">
