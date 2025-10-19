@@ -32,8 +32,34 @@ const Beranda = () => {
       });
     }, observerOptions);
 
-    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-    scrollRevealElements.forEach((el) => observer.observe(el));
+    // Function to observe elements with retry logic
+    const observeElements = (retryCount = 0) => {
+      const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+      console.log('🔍 Beranda: Found scroll-reveal elements:', scrollRevealElements.length, 'retry:', retryCount);
+
+      if (scrollRevealElements.length > 0) {
+        scrollRevealElements.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const inView = rect.top < window.innerHeight && rect.bottom > 0;
+          console.log('🔍 Beranda: Element in view:', inView, 'classes:', el.className.substring(0, 50) + '...');
+
+          if (inView) {
+            el.classList.add('revealed');
+            console.log('🔍 Beranda: Added revealed class to element');
+          } else {
+            observer.observe(el);
+          }
+        });
+      } else if (retryCount < 10) {
+        // Retry after a short delay if no elements found (max 10 retries)
+        setTimeout(() => observeElements(retryCount + 1), 200);
+      } else {
+        console.log('🔍 Beranda: Max retries reached, stopping scroll-reveal observer');
+      }
+    };
+
+    // Initial attempt with small delay to ensure DOM is ready
+    setTimeout(observeElements, 50);
 
     return () => observer.disconnect();
   }, []);
