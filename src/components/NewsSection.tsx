@@ -155,6 +155,23 @@ const NewsSection = () => {
         console.log('🔍 NewsSection: Element bounding rect:', rect);
         console.log('🔍 NewsSection: Is in viewport:', rect.top < window.innerHeight && rect.bottom > 0);
 
+        // Check scroll-reveal elements specifically
+        const scrollRevealElements = newsSection.querySelectorAll('.scroll-reveal');
+        console.log('🔍 NewsSection: Found scroll-reveal elements:', scrollRevealElements.length);
+        scrollRevealElements.forEach((el, index) => {
+          const classes = el.className;
+          const hasRevealed = classes.includes('revealed');
+          const opacity = getComputedStyle(el).opacity;
+          const transform = getComputedStyle(el).transform;
+          console.log(`🔍 NewsSection: Scroll-reveal element ${index}:`, {
+            classes,
+            hasRevealed,
+            opacity,
+            transform,
+            inView: el.getBoundingClientRect().top < window.innerHeight && el.getBoundingClientRect().bottom > 0
+          });
+        });
+
         // Check for any parent elements that might be hiding it
         let parent = newsSection.parentElement;
         let depth = 0;
