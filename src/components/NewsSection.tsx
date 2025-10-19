@@ -64,9 +64,12 @@ const NewsSection = () => {
             setNews([]);
           } else {
             // Only show news that are active and approved
-            setNews((response.data || []).filter(
-              (item: any) => item.is_active === true && item.is_approved === true
-            ));
+            const sortedAndFilteredNews = (response.data || [])
+              .filter((item: any) => item.is_active === true && item.is_approved === true)
+              .sort((a: any, b: any) => new Date(b.published_date || b.date).getTime() - new Date(a.published_date || a.date).getTime());
+            
+            // Slice to get only the latest 6 news
+            setNews(sortedAndFilteredNews.slice(0, 6));
           }
         }
       })

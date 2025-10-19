@@ -122,8 +122,9 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [slides, setSlides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // Use content translation for the current slide
-  const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
-  const { translatedContent: translatedSlide } = useContentTranslation(currentSlideObj);
+  const { translatedContent: translatedSlides } = useContentTranslation(slides);
+  const displayedSlides = translatedSlides || slides;
+  const currentSlideObj = displayedSlides.length > 0 ? displayedSlides[currentSlide] : null;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -274,7 +275,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               {currentSlideObj ? (
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: fixBrokenHtmlTags(translatedSlide?.title || t(currentSlideObj.title))
+                    __html: fixBrokenHtmlTags(currentSlideObj.title)
                   }}
                 />
               ) : null}
@@ -283,7 +284,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               {currentSlideObj ? (
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: fixBrokenHtmlTags(translatedSlide?.subtitle || t(currentSlideObj.subtitle))
+                    __html: fixBrokenHtmlTags(currentSlideObj.subtitle)
                   }}
                 />
               ) : null}
@@ -296,7 +297,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                     size="lg"
                     className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                   >
-                    {translatedSlide?.button_label_1 || t(currentSlideObj.button_label_1)}
+                    {currentSlideObj.button_label_1}
                   </Button>
                 </Link>
               )}
@@ -307,7 +308,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
                     size="lg"
                     className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                   >
-                    {translatedSlide?.button_label_2 || t(currentSlideObj.button_label_2)}
+                    {currentSlideObj.button_label_2}
                   </Button>
                 </Link>
               )}
