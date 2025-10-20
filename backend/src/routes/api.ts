@@ -19,6 +19,7 @@ router.use('/translations', translationRoutes);
 router.use('/translate', translateRoutes);
 
 // Create CRUD routes for each table
+console.log('[API ROUTER] Registering CRUD routes for tables:', Object.keys(tableConfigs));
 Object.entries(tableConfigs).forEach(([tableName, fields]) => {
   const controller = createCrudController(tableName, fields);
 
