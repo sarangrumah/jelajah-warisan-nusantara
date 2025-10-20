@@ -48,7 +48,7 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const { data: news, loading, error: _error, isTranslating } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
+  const { data: news, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
 
   // Auto-slide logic
   React.useEffect(() => {
@@ -93,10 +93,10 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
-          {loading || isTranslating ? (
+          {loading ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
-                {loading ? t('news.loading', 'Loading news...') : t('news.translating', 'Translating...')}
+                {t('news.loading', 'Loading news...')}
               </span>
             </div>
           ) : (

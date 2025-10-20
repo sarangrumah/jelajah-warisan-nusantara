@@ -31,7 +31,7 @@ type CompanyProfile = {
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const { data, loading, error, isTranslating } = useContent(contentService);
+  const { data, loading, error } = useContent(contentService);
   const profile = (data?.[0] as CompanyProfile) || null;
   const profileStats = useProfileStats();
 
@@ -58,10 +58,8 @@ const ProfileSection = () => {
           </p>
         </div>
 
-        {(loading || isTranslating) && (
-          <div className="text-center text-muted-foreground">
-            {loading ? 'Loading company profile...' : 'Translating...'}
-          </div>
+        {loading && (
+          <div className="text-center text-muted-foreground">Loading company profile...</div>
         )}
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>

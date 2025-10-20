@@ -1,20 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTranslationManager } from '../contexts/TranslationContext';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useContent = (service: any, params: any = {}) => {
   const { i18n } = useTranslation();
+  const { register, unregister, setTranslating } = useTranslationManager();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isInitialLoad = useRef(true);
+  const componentId = useRef(uuidv4()).current;
+
+  useEffect(() => {
+    register(componentId);
+    return () => unregister(componentId);
+  }, [componentId, register, unregister]);
 
   useEffect(() => {
     const fetchContent = async () => {
       if (isInitialLoad.current) {
         setLoading(true);
       } else {
-        setIsTranslating(true);
+        setTranslating(componentId, true);
       }
       setError(null);
 
@@ -32,12 +40,12 @@ export const useContent = (service: any, params: any = {}) => {
           setLoading(false);
           isInitialLoad.current = false;
         }
-        setIsTranslating(false);
+        setTranslating(componentId, false);
       }
     };
 
     fetchContent();
-  }, [i18n.language, service, JSON.stringify(params)]);
+  }, [i18n.language, service, JSON.stringify(params), componentId, setTranslating]);
 
-  return { data, loading, error, isTranslating };
+  return { data, loading, error };
 };

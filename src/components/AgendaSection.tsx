@@ -135,7 +135,7 @@ const AgendaSection = () => {
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, _setCurrentIndex] = useState(0);
   const [_isPaused, setIsPaused] = useState(false);
-  const { data: events, loading: _isTranslating, isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
+  const { data: events, loading: _isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
@@ -181,10 +181,10 @@ const AgendaSection = () => {
         </div>
 
         <div className="relative mb-12 scroll-reveal">
-          {(_isTranslating || isTranslating) ? (
+          {_isTranslating ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
-                {_isTranslating ? t('agenda.loading', 'Loading events...') : t('agenda.translating', 'Translating...')}
+                {t('agenda.loading', 'Loading events...')}
               </span>
             </div>
           ) : (
