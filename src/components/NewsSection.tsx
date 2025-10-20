@@ -131,66 +131,29 @@ const NewsSection = () => {
   const handleBlur = () => setIsPaused(false);
 
   // Enhanced diagnostic logging
+  // Enhanced diagnostic logging (can be restored for debugging)
+  /*
   React.useEffect(() => {
     console.log('🔍 NewsSection: Component mounted and running');
     console.log('🔍 NewsSection: Current state - loading:', loading, 'news length:', news.length, 'isTranslating:', isTranslating);
     console.log('🔍 NewsSection: Translation hook state - translatedNews length:', translatedNews?.length || 0);
 
-    // Check if component is actually rendering
     const timer = setTimeout(() => {
-      console.log('🔍 NewsSection: Still alive after 100ms - checking DOM presence');
       const newsSection = document.querySelector('section.py-20.bg-background');
-      console.log('🔍 NewsSection: DOM element found:', !!newsSection);
       if (newsSection) {
-        console.log('🔍 NewsSection: Element classes:', newsSection.className);
-        console.log('🔍 NewsSection: Element visibility:', getComputedStyle(newsSection).display);
-        console.log('🔍 NewsSection: Element opacity:', getComputedStyle(newsSection).opacity);
-        console.log('🔍 NewsSection: Element height:', getComputedStyle(newsSection).height);
-        console.log('🔍 NewsSection: Element position:', getComputedStyle(newsSection).position);
-        console.log('🔍 NewsSection: Element top:', getComputedStyle(newsSection).top);
-        console.log('🔍 NewsSection: Element z-index:', getComputedStyle(newsSection).zIndex);
-
-        // Check if element is in viewport
-        const rect = newsSection.getBoundingClientRect();
-        console.log('🔍 NewsSection: Element bounding rect:', rect);
-        console.log('🔍 NewsSection: Is in viewport:', rect.top < window.innerHeight && rect.bottom > 0);
-
-        // Check scroll-reveal elements specifically
+        console.log('🔍 NewsSection: DOM element found:', !!newsSection);
         const scrollRevealElements = newsSection.querySelectorAll('.scroll-reveal');
         console.log('🔍 NewsSection: Found scroll-reveal elements:', scrollRevealElements.length);
         scrollRevealElements.forEach((el, index) => {
-          const classes = el.className;
-          const hasRevealed = classes.includes('revealed');
-          const opacity = getComputedStyle(el).opacity;
-          const transform = getComputedStyle(el).transform;
-          console.log(`🔍 NewsSection: Scroll-reveal element ${index}:`, {
-            classes,
-            hasRevealed,
-            opacity,
-            transform,
-            inView: el.getBoundingClientRect().top < window.innerHeight && el.getBoundingClientRect().bottom > 0
-          });
+          const hasRevealed = el.classList.contains('revealed');
+          console.log(`🔍 NewsSection: Scroll-reveal element ${index}: revealed=${hasRevealed}`);
         });
-
-        // Check for any parent elements that might be hiding it
-        let parent = newsSection.parentElement;
-        let depth = 0;
-        while (parent && depth < 5) {
-          const parentStyle = getComputedStyle(parent);
-          if (parentStyle.display === 'none' || parentStyle.visibility === 'hidden' || parseFloat(parentStyle.opacity) === 0) {
-            console.log('🔍 NewsSection: Hidden parent found:', parent.tagName, parent.className);
-            console.log('🔍 NewsSection: Hidden parent display:', parentStyle.display);
-            console.log('🔍 NewsSection: Hidden parent visibility:', parentStyle.visibility);
-            console.log('🔍 NewsSection: Hidden parent opacity:', parentStyle.opacity);
-          }
-          parent = parent.parentElement;
-          depth++;
-        }
       }
-    }, 100);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [loading, news.length, isTranslating, translatedNews?.length]);
+  */
 
   return (
     <section className="py-20 bg-background">
