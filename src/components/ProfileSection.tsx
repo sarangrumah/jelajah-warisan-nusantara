@@ -31,9 +31,8 @@ type CompanyProfile = {
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const { data, loading, error } = useContent(contentService);
+  const { data, loading, error, isTranslating } = useContent(contentService);
   const profile = (data?.[0] as CompanyProfile) || null;
-  const translatedProfile = profile;
   const profileStats = useProfileStats();
 
   // Debug log to check profile at render time
@@ -59,8 +58,10 @@ const ProfileSection = () => {
           </p>
         </div>
 
-        {loading && (
-          <div className="text-center text-muted-foreground">Loading company profile...</div>
+        {(loading || isTranslating) && (
+          <div className="text-center text-muted-foreground">
+            {loading ? 'Loading company profile...' : 'Translating...'}
+          </div>
         )}
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
@@ -72,7 +73,7 @@ const ProfileSection = () => {
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
                   {(() => {
-                    const visionHtml = (translatedProfile?.vision || profile.vision) || '-';
+                    const visionHtml = (profile?.vision) || '-';
                     return (
                       <div
                         className="prose text-muted-foreground"
@@ -83,13 +84,13 @@ const ProfileSection = () => {
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="prose space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((translatedProfile?.mission || profile.mission) || '-') }} />
+                  <div className="prose space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((profile?.mission) || '-') }} />
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'Tentang Kami')}</h4>
-                  <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((translatedProfile?.aboutus || profile.aboutus) || '-') }} />
+                  <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((profile?.aboutus) || '-') }} />
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Hubungi Kami')}</h4>
@@ -98,7 +99,7 @@ const ProfileSection = () => {
                       <b>{t('profile.contact.address', 'Address')}:</b>
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((translatedProfile?.address || profile.address) || '-')
+                          __html: fixBrokenHtmlTags((profile?.address) || '-')
                         }}
                       />
                     </li>
@@ -106,7 +107,7 @@ const ProfileSection = () => {
                       <b>{t('profile.contact.phone', 'Phone')}:</b>
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((translatedProfile?.phone || profile.phone) || '-')
+                          __html: fixBrokenHtmlTags((profile?.phone) || '-')
                         }}
                       />
                     </li>
@@ -114,7 +115,7 @@ const ProfileSection = () => {
                       <b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b>
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((translatedProfile?.whatsapp || profile.whatsapp) || '-')
+                          __html: fixBrokenHtmlTags((profile?.whatsapp) || '-')
                         }}
                       />
                     </li>
@@ -122,7 +123,7 @@ const ProfileSection = () => {
                       <b>{t('profile.contact.email', 'Email')}:</b>
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((translatedProfile?.email || profile.email) || '-')
+                          __html: fixBrokenHtmlTags((profile?.email) || '-')
                         }}
                       />
                     </li>
@@ -130,7 +131,7 @@ const ProfileSection = () => {
                       <b>{t('profile.contact.website', 'Website')}:</b>
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((translatedProfile?.website || profile.website) || '-')
+                          __html: fixBrokenHtmlTags((profile?.website) || '-')
                         }}
                       />
                     </li>

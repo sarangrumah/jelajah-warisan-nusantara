@@ -135,7 +135,7 @@ const AgendaSection = () => {
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, _setCurrentIndex] = useState(0);
   const [_isPaused, setIsPaused] = useState(false);
-  const { data: events, loading: _isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
+  const { data: events, loading: _isTranslating, isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
@@ -181,44 +181,52 @@ const AgendaSection = () => {
         </div>
 
         <div className="relative mb-12 scroll-reveal">
-          <Carousel
-            setApi={setCarouselApi}
-            aria-label="Agenda Events Carousel"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          >
-            <CarouselPrevious
-              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -left-20 z-20"
-              size="icon"
-              aria-label="Previous slide"
-              onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
-            />
-            <CarouselNext
-              className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -right-20 z-20"
-              size="icon"
-              aria-label="Next slide"
-              onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
-            />
-            <CarouselContent>
-              {filteredEvents.map((event, index) => (
-                <CarouselItem
-                  key={event.id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  aria-label={`Slide ${index + 1} of ${filteredEvents.length}`}
-                >
-                  <AgendaCard event={event} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="sr-only" aria-live="polite" aria-atomic="true">
-              {filteredEvents[currentIndex]
-                ? `Showing slide ${currentIndex + 1} of ${filteredEvents.length}: ${filteredEvents[currentIndex].title}`
-                : ""}
+          {(_isTranslating || isTranslating) ? (
+            <div className="flex items-center justify-center h-64">
+              <span className="text-lg text-muted-foreground">
+                {_isTranslating ? t('agenda.loading', 'Loading events...') : t('agenda.translating', 'Translating...')}
+              </span>
             </div>
-          </Carousel>
+          ) : (
+            <Carousel
+              setApi={setCarouselApi}
+              aria-label="Agenda Events Carousel"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            >
+              <CarouselPrevious
+                className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -left-20 z-20"
+                size="icon"
+                aria-label="Previous slide"
+                onClick={() => { setIsPaused(true); carouselApi?.scrollPrev(); }}
+              />
+              <CarouselNext
+                className="h-16 w-16 text-3xl focus:ring-2 focus:ring-primary -right-20 z-20"
+                size="icon"
+                aria-label="Next slide"
+                onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
+              />
+              <CarouselContent>
+                {filteredEvents.map((event, index) => (
+                  <CarouselItem
+                    key={event.id}
+                    className="md:basis-1/2 lg:basis-1/3"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    aria-label={`Slide ${index + 1} of ${filteredEvents.length}`}
+                  >
+                    <AgendaCard event={event} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {filteredEvents[currentIndex]
+                  ? `Showing slide ${currentIndex + 1} of ${filteredEvents.length}: ${filteredEvents[currentIndex].title}`
+                  : ""}
+              </div>
+            </Carousel>
+          )}
         </div>
       </div>
     </section>

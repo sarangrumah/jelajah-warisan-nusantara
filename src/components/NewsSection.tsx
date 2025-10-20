@@ -48,9 +48,7 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const { data: news, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
-  const isTranslating = loading;
-  const translatedNews = news;
+  const { data: news, loading, error: _error, isTranslating } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
 
   // Auto-slide logic
   React.useEffect(() => {
@@ -85,7 +83,6 @@ const NewsSection = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        {(() => { console.log('🔍 NewsSection: Component is rendering'); return null; })()}
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             {t('news.title')}
@@ -96,14 +93,11 @@ const NewsSection = () => {
         </div>
 
         <div className="relative mb-12">
-          {(() => {
-            console.log('🔍 NewsSection: Render state - loading:', loading, 'isTranslating:', isTranslating, 'news length:', news.length);
-            return null;
-          })()}
           {loading || isTranslating ? (
             <div className="flex items-center justify-center h-64">
-              {(() => { console.log('🔍 NewsSection: Showing loading state'); return null; })()}
-              <span className="text-lg text-muted-foreground">{t('news.loading')}</span>
+              <span className="text-lg text-muted-foreground">
+                {loading ? t('news.loading', 'Loading news...') : t('news.translating', 'Translating...')}
+              </span>
             </div>
           ) : (
             <Carousel
@@ -127,23 +121,16 @@ const NewsSection = () => {
                 onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
               />
               <CarouselContent>
-                {(() => {
-                  // Fix the logic: if translatedNews is empty or null, use news
-                  const newsToShow = (translatedNews && translatedNews.length > 0) ? translatedNews : news;
-                  console.log('🔍 NewsSection: translatedNews:', translatedNews?.length || 0, 'news:', news.length, 'newsToShow:', newsToShow.length);
-                  if (newsToShow.length === 0) {
-                    console.log('⚠️ NewsSection: No news items to display');
-                    return (
-                      <div className="flex items-center justify-center h-64 col-span-full">
-                        <span className="text-lg text-muted-foreground">No news available</span>
-                      </div>
-                    );
-                  }
-                  return newsToShow.map((article, index) => (
+                {news.length === 0 ? (
+                  <div className="flex items-center justify-center h-64 col-span-full">
+                    <span className="text-lg text-muted-foreground">No news available</span>
+                  </div>
+                ) : (
+                  news.map((article, index) => (
                     <CarouselItem
                       key={article.id}
                       className="md:basis-1/2 lg:basis-1/3"
-                      aria-label={`Slide ${index + 1} of ${newsToShow.length}`}
+                      aria-label={`Slide ${index + 1} of ${news.length}`}
                     >
                     <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
                       <div className="aspect-video relative overflow-hidden">
@@ -200,8 +187,8 @@ const NewsSection = () => {
                       </CardContent>
                     </Card>
                     </CarouselItem>
-                  ));
-                })()}
+                  ))
+                )}
               </CarouselContent>
               {/* Pause/Resume Button */}
               {/* <div className="absolute right-4 bottom-4 z-10">
@@ -217,12 +204,11 @@ const NewsSection = () => {
               </div> */}
               {/* Live region for screen readers */}
               <div className="sr-only" aria-live="polite" aria-atomic="true">
-                {(() => {
-                  const newsToShow = (translatedNews && translatedNews.length > 0) ? translatedNews : news;
-                  return newsToShow[currentIndex]
-                    ? `Showing slide ${currentIndex + 1} of ${newsToShow.length}: ${newsToShow[currentIndex].title}`
-                    : "";
-                })()}
+                {
+                  news[currentIndex]
+                    ? `Showing slide ${currentIndex + 1} of ${news.length}: ${news[currentIndex].title}`
+                    : ""
+                }
               </div>
             </Carousel>
           )}
