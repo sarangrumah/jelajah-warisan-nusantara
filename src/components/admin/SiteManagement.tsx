@@ -551,11 +551,13 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
       if (response.error) {
         throw new Error(response.error);
       }
+      console.log('Raw API Response:', response.data);
       const normalized = (response.data as SitesItem[] || []).map((item) => ({
         ...item,
         is_free: item.is_free ?? false,
         reason_rejected: item.reason_rejected ?? '',
       }));
+      console.log('Normalized Data:', normalized);
       setSitess(normalized);
     } catch {
       toast({
@@ -861,7 +863,9 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {museums.map((museum) => (
+          {museums.map((museum) => {
+            console.log('Rendering museum:', museum);
+            return (
             <Card key={museum.id}>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -1001,7 +1005,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
                 ) : null}
               </CardContent>
             </Card>
-          ))}
+          )})}
         </div>
       )}
     </div>
