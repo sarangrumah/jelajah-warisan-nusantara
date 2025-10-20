@@ -913,7 +913,7 @@ const EventManagement = ({ userRole }: { userRole: string }) => {
       </div>
 
       <div className="flex justify-between items-center">
-        {event !== null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
+        {event ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                   <DialogTitle>
