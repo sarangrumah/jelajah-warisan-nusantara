@@ -174,9 +174,9 @@ export async function warmUpCache(pool: any) {
     }
     
     // Get upcoming events
-    const events = await pool.query('SELECT title, description FROM tb_events ORDER BY created_at DESC LIMIT 10');
+    const events = await pool.query('SELECT name, description FROM tb_events ORDER BY created_at DESC LIMIT 10');
     for (const event of events.rows) {
-      if (event.title) await translateWithCache(event.title, 'en');
+      if (event.name) await translateWithCache(event.name, 'en');
       if (event.description) await translateWithCache(event.description, 'en');
     }
     

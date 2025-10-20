@@ -22,13 +22,13 @@ import CareerSubmissionManagement from '@/components/admin/CareerSubmissionManag
 import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
+import PemanfaatanAssetManagement from '@/components/admin/PemanfaatanAssetManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
 import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
-import ActivityLogManagement from "@/components/admin/ActivityLogManagement";
-import TranslationManagement from "@/components/admin/TranslationManagement";
+import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
+import TranslationManagement from '@/components/admin/TranslationManagement';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -160,6 +160,7 @@ const AdminDashboard = () => {
           {activeTab === 'career-mgmt' && <CareerPostingManagement userRole={userRole} />}
           {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
           {activeTab === 'memoryworld' && <MemoryWorldManagement userRole={userRole} />}
+          {activeTab === 'pemanfaatan-asset' && <PemanfaatanAssetManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {/* {activeTab === 'career' && <CareerManagement />} */}
