@@ -514,7 +514,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
       </div>
 
       <ImageUpload
-        label="Banner Image"
+        label="Event Image"
         value={formData.banner_img}
         onChange={handleImageUpload}
         bucket="hero-sections"

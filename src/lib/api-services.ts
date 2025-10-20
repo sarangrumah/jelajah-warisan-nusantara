@@ -133,6 +133,21 @@ export const memoryWorldService = {
   reject: (id: string, reason: string) => apiClient.reject('tb_memoryoftheworld', id, reason),
 };
 
+export const pemanfaatanAssetService = {
+  approve: (id: string) => apiClient.approve('tb_pemanfaatanasset', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_pemanfaatanasset', id, reason),
+  getAll: () => apiClient.getAll('tb_pemanfaatanasset'),
+  getById: (id: string) => apiClient.getById('tb_pemanfaatanasset', id),
+  create: (data: any) => apiClient.create('tb_pemanfaatanasset', data),
+  update: (id: string, data: any) => apiClient.update('tb_pemanfaatanasset', id, data),
+  delete: (id: string) => apiClient.delete('tb_pemanfaatanasset', id),
+};
+
+export const pemanfaatanAssetCategories = {
+  getAreas: () => apiClient.getAll('tb_categories_layananaset_area'),
+  getFacilities: () => apiClient.getAll('tb_categories_layananaset_fasilitas'),
+};
+
 export const collectionCategoryService = {
   getAll: () => apiClient.getAll('tb_categories_collections'),
 };
