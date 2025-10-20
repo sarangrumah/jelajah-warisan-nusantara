@@ -23,12 +23,12 @@ class ContentTranslationService {
     const hash = this.getSourceHash(text);
     try {
       const result = await query(
-        'SELECT translation FROM translations WHERE source_hash = $1 AND lang = $2',
+        'SELECT translation FROM content_translation_cache WHERE source_hash = $1 AND lang = $2',
         [hash, lang]
       );
       return result.rows[0]?.translation || null;
     } catch (error) {
-      console.error('Error fetching from translation cache:', error);
+      console.error('Error fetching from content translation cache:', error);
       return null;
     }
   }
@@ -40,11 +40,11 @@ class ContentTranslationService {
     const hash = this.getSourceHash(text);
     try {
       await query(
-        'INSERT INTO translations (source_hash, lang, translation) VALUES ($1, $2, $3) ON CONFLICT (source_hash, lang) DO NOTHING',
+        'INSERT INTO content_translation_cache (source_hash, lang, translation) VALUES ($1, $2, $3) ON CONFLICT (source_hash, lang) DO NOTHING',
         [hash, lang, translation]
       );
     } catch (error) {
-      console.error('Error saving to translation cache:', error);
+      console.error('Error saving to content translation cache:', error);
     }
   }
 

@@ -36,11 +36,13 @@ import FloatingButtons from "@/components/FloatingButtons";
 import PemanfaatanAset from "./pages/PemanfaatanAset";
 import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
 import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
+import { useScrollReveal } from "./hooks/useScrollReveal";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { loading } = useLoading();
+  useScrollReveal(); // Initialize the global scroll-reveal observer
 
   return (
     <>

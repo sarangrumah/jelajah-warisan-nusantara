@@ -177,9 +177,11 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const result = await query(queryText, [...params, limit, offset]);
         console.timeEnd(`[PERF] Query for ${tableName}`);
         
-        // Translate content if language is not Indonesian
+        // Translate content if language is not Indonesian and feature is enabled
         let rows = result.rows;
-        if (targetLang !== 'id') {
+        const isTranslationEnabled = process.env.ENABLE_CONTENT_TRANSLATION === 'true';
+
+        if (isTranslationEnabled && targetLang !== 'id') {
           // Define translatable fields per table
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
@@ -264,8 +266,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           }
         }
         
-        // Translate content if language is not Indonesian
-        if (targetLang !== 'id') {
+        // Translate content if language is not Indonesian and feature is enabled
+        const isTranslationEnabled = process.env.ENABLE_CONTENT_TRANSLATION === 'true';
+
+        if (isTranslationEnabled && targetLang !== 'id') {
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
             record = await contentTranslationService.translateContent(

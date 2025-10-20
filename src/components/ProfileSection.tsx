@@ -60,32 +60,6 @@ const ProfileSection = () => {
 
   // Debug log to check profile at render time
 
-  // Set up scroll reveal observer after profile data is loaded
-  useEffect(() => {
-    if (!profile) {
-      return; // Only run when profile data is available
-    }
-
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-        }
-      });
-    }, observerOptions);
-
-    // Query for scroll-reveal elements within this component
-    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-    scrollRevealElements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [profile]); // Re-run when profile data changes
-
   const statItems = [
     { value: profileStats.museums, label: t('profile.stats.museums') },
     { value: profileStats.heritages, label: t('profile.stats.heritage') },

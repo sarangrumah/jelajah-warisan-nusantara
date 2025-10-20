@@ -130,31 +130,6 @@ const NewsSection = () => {
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  // Enhanced diagnostic logging
-  // Enhanced diagnostic logging (can be restored for debugging)
-  /*
-  React.useEffect(() => {
-    console.log('🔍 NewsSection: Component mounted and running');
-    console.log('🔍 NewsSection: Current state - loading:', loading, 'news length:', news.length, 'isTranslating:', isTranslating);
-    console.log('🔍 NewsSection: Translation hook state - translatedNews length:', translatedNews?.length || 0);
-
-    const timer = setTimeout(() => {
-      const newsSection = document.querySelector('section.py-20.bg-background');
-      if (newsSection) {
-        console.log('🔍 NewsSection: DOM element found:', !!newsSection);
-        const scrollRevealElements = newsSection.querySelectorAll('.scroll-reveal');
-        console.log('🔍 NewsSection: Found scroll-reveal elements:', scrollRevealElements.length);
-        scrollRevealElements.forEach((el, index) => {
-          const hasRevealed = el.classList.contains('revealed');
-          console.log(`🔍 NewsSection: Scroll-reveal element ${index}: revealed=${hasRevealed}`);
-        });
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [loading, news.length, isTranslating, translatedNews?.length]);
-  */
-
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
