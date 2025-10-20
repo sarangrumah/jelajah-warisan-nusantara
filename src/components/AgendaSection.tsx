@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
 
 function fixBrokenHtmlTags(html: string): string {
@@ -11,7 +11,6 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-import { defaultEvents } from '@/../database/default-data';
 import { agendaService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -133,64 +132,17 @@ const AgendaCard = ({ event }) => {
 const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
-  const [events, setEvents] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    if (!carouselApi || isPaused) { return; }
-    const interval = setInterval(() => {
-      if (carouselApi) {
-        carouselApi.scrollNext();
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselApi, isPaused, activeCategory, events]);
-
-  useEffect(() => {
-    if (!carouselApi) { return; }
-    const onSelect = () => {
-      setCurrentIndex(carouselApi.selectedScrollSnap() ?? 0);
-    };
-    carouselApi.on('select', onSelect);
-    onSelect();
-    return () => {
-      carouselApi.off('select', onSelect);
-    };
-  }, [carouselApi, activeCategory, events]);
+  const [currentIndex, _setCurrentIndex] = useState(0);
+  const [_isPaused, setIsPaused] = useState(false);
+  const { data: events, loading: _isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  useEffect(() => {
-  }, [carouselApi]);
-
-  const fetchEvents = async () => {
-    try {
-      const response = await agendaService.getAll({ limit: 6, active: true, approved: true });
-      if (response.error) {
-        console.error('Error fetching events:', response.error);
-        setEvents(defaultEvents.slice(0, 6));
-      } else {
-        const sortedEvents = (response.data || [])
-          .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
-        setEvents(sortedEvents);
-      }
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      setEvents(defaultEvents.slice(0, 6)); // Fallback to default on error
-    }
-  };
-  
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const { translatedContent: translatedEvents } = useContentTranslation(events);
-  const displayedEvents = translatedEvents || events;
+  const displayedEvents = events || [];
 
   const filteredEvents = activeCategory === 'semua'
     ? displayedEvents

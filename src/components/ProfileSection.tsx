@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import 'react';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@/lib/api-services';
-import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { useContent } from '@/hooks/useContent';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -31,32 +31,11 @@ type CompanyProfile = {
 
 const ProfileSection = () => {
   const { t } = useTranslation();
-  const [profile, setProfile] = useState<CompanyProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Use content translation hook to translate all profile fields
-  const { translatedContent: translatedProfile, isTranslating } = useContentTranslation(profile);
+  const { data, loading, error } = useContent(contentService);
+  const profile = (data?.[0] as CompanyProfile) || null;
+  const isTranslating = loading;
+  const translatedProfile = profile;
   const profileStats = useProfileStats();
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await contentService.getAll();
-        if (response.error) { throw new Error(response.error); }
-        // Use the first profile (or adjust as needed)
-        const data = response.data as CompanyProfile[];
-        setProfile(data && data.length > 0 ? data[0] : null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load profile');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
 
   // Debug log to check profile at render time
 

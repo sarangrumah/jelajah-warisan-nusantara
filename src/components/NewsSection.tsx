@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
 import { useTranslation } from 'react-i18next';
-import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -48,57 +48,9 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const [news, setNews] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const { translatedContent: translatedNews, isTranslating } = useContentTranslation(news);
-
-  // Fetch news from tb_media
-  React.useEffect(() => {
-    let mounted = true;
-    console.log('🔍 NewsSection: Starting to fetch news data...');
-    setLoading(true);
-    mediaService.getAll()
-      .then((response) => {
-        if (mounted) {
-          console.log('🔍 NewsSection: API response received:', response);
-          if (response.error) {
-            console.error('❌ NewsSection: Error fetching news:', response.error);
-            setNews([]);
-          } else {
-            const rawData = response.data || [];
-            console.log('🔍 NewsSection: Raw data length:', rawData.length);
-
-            // Only show news that are active and approved
-            const sortedAndFilteredNews = rawData
-              .filter((item: any) => {
-                console.log('🔍 NewsSection: Checking item:', item.id, 'is_active:', item.is_active, 'is_approved:', item.is_approved);
-                return item.is_active === true && item.is_approved === true;
-              })
-              .sort((a: any, b: any) => new Date(b.published_date || b.date).getTime() - new Date(a.published_date || a.date).getTime());
-
-            console.log('🔍 NewsSection: Filtered and sorted news:', sortedAndFilteredNews.length);
-
-            // Slice to get only the latest 6 news
-            const finalNews = sortedAndFilteredNews.slice(0, 6);
-            console.log('🔍 NewsSection: Final news to display:', finalNews.length);
-            setNews(finalNews);
-          }
-        }
-      })
-      .catch((err) => {
-        if (mounted) {
-          console.error('❌ NewsSection: Error fetching news:', err);
-          setNews([]);
-        }
-      })
-      .finally(() => {
-        if (mounted) {
-          console.log('🔍 NewsSection: Loading finished');
-          setLoading(false);
-        }
-      });
-    return () => { mounted = false; };
-  }, []);
+  const { data: news, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
+  const isTranslating = loading;
+  const translatedNews = news;
 
   // Auto-slide logic
   React.useEffect(() => {
