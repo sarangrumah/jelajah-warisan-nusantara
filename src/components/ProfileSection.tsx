@@ -33,7 +33,6 @@ const ProfileSection = () => {
   const { t } = useTranslation();
   const { data, loading, error } = useContent(contentService);
   const profile = (data?.[0] as CompanyProfile) || null;
-  const isTranslating = loading;
   const translatedProfile = profile;
   const profileStats = useProfileStats();
 
@@ -69,11 +68,6 @@ const ProfileSection = () => {
         {profile && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
-              {isTranslating && (
-                <div className="text-center text-sm text-muted-foreground mb-4">
-                  🌐 Translating content...
-                </div>
-              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
                   <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
