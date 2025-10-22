@@ -6,34 +6,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTranslation } from 'react-i18next';
-
-import { useEffect, useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
-  const [languages, setLanguages] = useState([
-    { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-    { code: 'en', name: 'English', flag: '🇺🇸' }
-  ]);
-  const [loading, setLoading] = useState(true);
+  const { language, setLanguage, availableLanguages } = useLanguage();
 
-  useEffect(() => {
-    fetch('/api/translations/languages')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          setLanguages(data);
-        }
-      })
-      .catch(() => {/* fallback to default */})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = availableLanguages.find(lang => lang.code === language) || availableLanguages[0];
 
   const changeLanguage = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+    setLanguage(languageCode);
   };
 
   return (
@@ -46,20 +27,16 @@ const LanguageSwitcher = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {loading ? (
-          <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-        ) : (
-          languages.map((language) => (
-            <DropdownMenuItem
-              key={language.code}
-              onClick={() => changeLanguage(language.code)}
-              className={`gap-2 ${i18n.language === language.code ? 'bg-primary/10' : ''}`}
-            >
-              <span>{language.flag}</span>
-              <span>{language.name}</span>
-            </DropdownMenuItem>
-          ))
-        )}
+        {availableLanguages.map((lang) => (
+          <DropdownMenuItem
+            key={lang.code}
+            onClick={() => changeLanguage(lang.code)}
+            className={`gap-2 ${language === lang.code ? 'bg-primary/10' : ''}`}
+          >
+            <span>{lang.flag}</span>
+            <span>{lang.name}</span>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

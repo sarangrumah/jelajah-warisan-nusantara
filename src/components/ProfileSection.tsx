@@ -1,172 +1,117 @@
 import 'react';
-import { useTranslation } from 'react-i18next';
-import { contentService } from '@/lib/api-services';
-import { useContent } from '@/hooks/useContent';
+import { useTranslate } from '@/hooks/useTranslate';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
-// Utility to fix broken HTML tags like < p > to <p>
-function fixBrokenHtmlTags(html: string): string {
-  if (!html) { return html; }
-  // Replace < tag > and < / tag > with <tag> and </tag>
-  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
-             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-type CompanyProfile = {
-  id: string;
-  name: string;
-  brand?: string;
-  aboutus?: string;
-  vision?: string;
-  mission?: string;
-  address?: string;
-  phone?: string;
-  whatsapp?: string;
-  email?: string;
-  website?: string;
-  latitude?: string;
-  longitude?: string;
-  // Add other fields as needed
+// A simple component to render translated HTML
+const TranslatedHtml = ({ text }: { text: string }) => {
+  const { translatedText } = useTranslate(text);
+  return <div dangerouslySetInnerHTML={{ __html: translatedText }} />;
 };
 
 const ProfileSection = () => {
-  const { t } = useTranslation();
-  const { data, loading, error } = useContent(contentService);
-  const profile = (data?.[0] as CompanyProfile) || null;
   const profileStats = useProfileStats();
+  
+  // This is where you would fetch your dynamic data, for now we will use static data
+  const profile = {
+      vision: `“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”`,
+      mission: `Mewujudkan pengelolaan koleksi, cagar budaya, dan bangunan bersejarah yang berkelanjutan.<br>Melaksanakan upaya pelayanan dan pelibatan masyarakat secara terpadu.<br>Mengedepankan transformasi pengembangan wawasan melalui praktik edukasi yang inovatif dan pembangunan komunitas.<br>Menjalin kepercayaan kuat antara para pemangku kepentingan yang berbasis kemitraan.<br>Mewujudkan ruang ekspresi dan interaksi budaya yang inklusif dan mudah diakses.<br>Mewujudkan tata kelola kelembagaan dan pengelolaan sumber daya manusia yang tangkas dan berorientasi kepada dampak yang berkelanjutan.`,
+      aboutus: `Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.`,
+      address: `Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110`,
+      phone: `(021) 123-4567`,
+      whatsapp: `0812-3456-7890`,
+      email: `museumcb@kemenbud.go.id`,
+      website: `https://museumcagarbudaya.kemenbud.go.id/`
+  }
 
-  // Debug log to check profile at render time
+  const { translatedText: title } = useTranslate('Tentang Kami');
+  const { translatedText: description } = useTranslate('Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.');
+  const { translatedText: visionTitle } = useTranslate('Visi');
+  const { translatedText: missionTitle } = useTranslate('Misi');
+  const { translatedText: aboutUsTitle } = useTranslate('Tentang Kami');
+  const { translatedText: contactTitle } = useTranslate('Hubungi Kami');
+  const { translatedText: addressLabel } = useTranslate('Alamat');
+  const { translatedText: phoneLabel } = useTranslate('Telepon');
+  const { translatedText: whatsappLabel } = useTranslate('WhatsApp');
+  const { translatedText: emailLabel } = useTranslate('Email');
+  const { translatedText: websiteLabel } = useTranslate('Situs Web');
 
   const statItems = [
-    { value: profileStats.museums, label: t('profile.stats.museums') },
-    { value: profileStats.heritages, label: t('profile.stats.heritage') },
-    { value: profileStats.provinces, label: t('profile.stats.provinces') },
-    { value: profileStats.experiences, label: t('profile.stats.experience') }
+    { value: profileStats.museums, label: useTranslate('Museum Terdaftar').translatedText },
+    { value: profileStats.heritages, label: useTranslate('Cagar Budaya').translatedText },
+    { value: profileStats.provinces, label: useTranslate('Provinsi').translatedText },
+    { value: profileStats.experiences, label: useTranslate('Tahun Pengalaman').translatedText }
   ];
 
   return (
     <>
-      {/* <div style={{ color: 'magenta', fontWeight: 'bold' }}>DEBUG: ProfileSection render reached</div> */}
       <section className="py-20 bg-gradient-to-b from-background to-card">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
-            {t('profile.title')}
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
-            {t('profile.description')}
-          </p>
-        </div>
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16 scroll-reveal">
+            <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
+              {title}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
+              {description}
+            </p>
+          </div>
 
-        {loading && (
-          <div className="text-center text-muted-foreground">Loading company profile...</div>
-        )}
-        {error && (
-          <div className="text-center text-red-500">Error: {error}</div>
-        )}
-        {profile && (
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.vision')}</h4>
-                  {(() => {
-                    const visionHtml = (profile?.vision) || '-';
-                    return (
-                      <div
-                        className="prose text-muted-foreground"
-                        dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(visionHtml) }}
-                      />
-                    );
-                  })()}
+                  <h4 className="text-xl font-semibold text-primary mb-3">{visionTitle}</h4>
+                  <div className="prose text-muted-foreground">
+                    <TranslatedHtml text={profile.vision} />
+                  </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{t('profile.mission')}</h4>
-                  <div className="prose space-y-2 text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((profile?.mission) || '-') }} />
+                  <h4 className="text-xl font-semibold text-primary mb-3">{missionTitle}</h4>
+                  <div className="prose space-y-2 text-muted-foreground">
+                    <TranslatedHtml text={profile.mission} />
+                  </div>
                 </div>
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.aboutUs', 'Tentang Kami')}</h4>
-                  <div className="prose text-muted-foreground" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags((profile?.aboutus) || '-') }} />
+                  <h4 className="text-lg font-semibold text-primary mb-2">{aboutUsTitle}</h4>
+                  <div className="prose text-muted-foreground">
+                    <TranslatedHtml text={profile.aboutus} />
+                  </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{t('profile.profile.contact', 'Hubungi Kami')}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{contactTitle}</h4>
                   <ul className="text-muted-foreground space-y-1">
                     <li>
-                      <b>{t('profile.contact.address', 'Address')}:</b>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((profile?.address) || '-')
-                        }}
-                      />
+                      <b>{addressLabel}:</b> <TranslatedHtml text={profile.address} />
                     </li>
                     <li>
-                      <b>{t('profile.contact.phone', 'Phone')}:</b>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((profile?.phone) || '-')
-                        }}
-                      />
+                      <b>{phoneLabel}:</b> <TranslatedHtml text={profile.phone} />
                     </li>
                     <li>
-                      <b>{t('profile.contact.whatsapp', 'WhatsApp')}:</b>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((profile?.whatsapp) || '-')
-                        }}
-                      />
+                      <b>{whatsappLabel}:</b> <TranslatedHtml text={profile.whatsapp} />
                     </li>
                     <li>
-                      <b>{t('profile.contact.email', 'Email')}:</b>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((profile?.email) || '-')
-                        }}
-                      />
+                      <b>{emailLabel}:</b> <TranslatedHtml text={profile.email} />
                     </li>
                     <li>
-                      <b>{t('profile.contact.website', 'Website')}:</b>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: fixBrokenHtmlTags((profile?.website) || '-')
-                        }}
-                      />
+                      <b>{websiteLabel}:</b> <TranslatedHtml text={profile.website} />
                     </li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-        )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center scroll-reveal mt-16">
-          {statItems.map((stat, index) => (
-            <div key={index}>
-              <h4 className="text-3xl md:text-4xl font-bold text-heritage-gradient">{stat.value}</h4>
-              <p className="text-muted-foreground mt-2">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Call to Action (optional) */}
-        {/* <div className="text-center scroll-reveal">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              {t('profile.callToAction')}
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              {t('profile.callToActionText')}
-            </p>
-            <Link to="/tentang-kami">
-              <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-                {t('profile.learnMore')}
-              </button>
-            </Link>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center scroll-reveal mt-16">
+            {statItems.map((stat, index) => (
+              <div key={index}>
+                <h4 className="text-3xl md:text-4xl font-bold text-heritage-gradient">{stat.value}</h4>
+                <p className="text-muted-foreground mt-2">{stat.label}</p>
+              </div>
+            ))}
           </div>
-        </div> */}
-      </div>
-    </section>
+        </div>
+      </section>
     </>
   );
 };
