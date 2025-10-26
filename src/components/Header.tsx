@@ -87,7 +87,7 @@ const Header = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-heritage-gradient">
-                  Museum dan Cagar Budaya
+                  {t('footer.orgName')}
                 </h1>
               </div>
             </div>

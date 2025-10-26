@@ -3,28 +3,32 @@ import { Search, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useContentTranslation } from '@/hooks/useContentTranslation';
+import { useTranslate } from '@/hooks/useTranslate';
 import { mediaService } from '@/lib/api-services';
+
 // Child component for a single news article card with translation
-function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }) {
-  const { translatedContent } = useContentTranslation(article);
+function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: any, handleReadMoreClick: (url: string) => void, getNewsImageUrl: (filename: string) => string }) {
+  const { translatedText: title } = useTranslate(article.title);
+  const { translatedText: excerpt } = useTranslate(article.excerpt);
+  const { translatedText: readMoreLabel } = useTranslate('Baca Selengkapnya');
+
   return (
     <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce">
       {article.featured_image_url && (
         <div className="aspect-video relative overflow-hidden">
           <img
             src={getNewsImageUrl(article.featured_image_url)}
-            alt={translatedContent?.title || article.title}
+            alt={title}
             className="w-full h-full object-cover"
           />
         </div>
       )}
       <CardContent className="p-6">
         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-          {translatedContent?.title || article.title}
+          {title}
         </h3>
         <p className="text-muted-foreground mb-4 line-clamp-3">
-          {translatedContent?.excerpt || article.excerpt}
+          {excerpt}
         </p>
         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
           <div className="flex items-center gap-2">
@@ -42,7 +46,7 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }) {
           </div>
         </div>
         <button onClick={() => handleReadMoreClick(article.file_url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-          Baca Selengkapnya
+          {readMoreLabel}
           <ArrowRight size={16} />
         </button>
       </CardContent>
@@ -74,17 +78,23 @@ function getNewsImageUrl(filename: string) {
 }
 
 const NewsListSection = () => {
-  const [articles, setArticles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('semua');
+    const [articles, setArticles] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeCategory, setActiveCategory] = useState('semua');
+    
+    const { translatedText: pageTitle } = useTranslate('Berita & Publikasi');
+    const { translatedText: pageSubtitle } = useTranslate('Temukan berita terbaru, artikel, dan publikasi resmi tentang museum dan cagar budaya Indonesia.');
+    const { translatedText: searchPlaceholder } = useTranslate('Cari berita atau artikel...');
+    const { translatedText: noArticlesTitle } = useTranslate('Tidak ada artikel ditemukan');
+    const { translatedText: noArticlesSubtitle } = useTranslate('Coba ubah kata kunci pencarian atau filter kategori');
 
-  const categories = [
-    { id: 'semua', name: 'Semua' },
-    { id: 'berita', name: 'Berita' },
-    { id: 'kemitraan', name: 'Kemitraan' },
-    { id: 'artikel', name: 'Artikel' },
-    { id: 'pengumuman', name: 'Pengumuman' },
-  ];
+    const categories = [
+        { id: 'semua', name: useTranslate('Semua').translatedText },
+        { id: 'berita', name: useTranslate('Berita').translatedText },
+        { id: 'kemitraan', name: useTranslate('Kemitraan').translatedText },
+        { id: 'artikel', name: useTranslate('Artikel').translatedText },
+        { id: 'pengumuman', name: useTranslate('Pengumuman').translatedText },
+    ];
 
   useEffect(() => {
     fetchArticles();
@@ -128,9 +138,9 @@ const NewsListSection = () => {
     }
   });
 
-  const handleReadMoreClick = (article) => {
+  const handleReadMoreClick = (articleUrl: string) => {
     const link = document.createElement('a');
-    link.href = article;
+    link.href = articleUrl;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     document.body.appendChild(link);
@@ -143,11 +153,10 @@ const NewsListSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            Berita & Publikasi
+            {pageTitle}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Temukan berita terbaru, artikel, dan publikasi resmi tentang museum 
-            dan cagar budaya Indonesia.
+            {pageSubtitle}
           </p>
         </div>
 
@@ -156,7 +165,7 @@ const NewsListSection = () => {
             <div className="relative flex-1 max-w-md">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Cari berita atau artikel..."
+                placeholder={searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -192,9 +201,9 @@ const NewsListSection = () => {
         {filteredArticles.length === 0 && (
           <div className="text-center py-12">
             <Search size={64} className="mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">Tidak ada artikel ditemukan</h3>
+            <h3 className="text-xl font-semibold mb-2">{noArticlesTitle}</h3>
             <p className="text-muted-foreground">
-              Coba ubah kata kunci pencarian atau filter kategori
+              {noArticlesSubtitle}
             </p>
           </div>
         )}

@@ -16,30 +16,6 @@ const Beranda = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  
-  // Scroll reveal animation
-  useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          console.log('[ScrollReveal] Revealing:', entry.target);
-          entry.target.classList.add('revealed');
-        } else {
-          console.log('[ScrollReveal] Not revealed:', entry.target);
-        }
-      });
-    }, observerOptions);
-
-    const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-    scrollRevealElements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">

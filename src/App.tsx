@@ -36,23 +36,28 @@ import FloatingButtons from "@/components/FloatingButtons";
 import PemanfaatanAset from "./pages/PemanfaatanAset";
 import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
 import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
+import { useScrollReveal } from "./hooks/useScrollReveal";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { TranslationProvider } from "./contexts/TranslationContext";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { loading } = useLoading();
+  useScrollReveal(); // Initialize the global scroll-reveal observer
 
   return (
-    <>
-      {loading && <LoadingSpinner />}
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/beranda" element={<Beranda />} />
+    <LanguageProvider>
+      <TranslationProvider>
+        {loading && <LoadingSpinner />}
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/beranda" element={<Beranda />} />
               <Route path="/agenda" element={<Agenda />} />
               <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
               <Route path="/tentang-kami" element={<TentangKami />} />
@@ -86,8 +91,9 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-      <FloatingButtons />
-    </>
+        <FloatingButtons />
+      </TranslationProvider>
+    </LanguageProvider>
   );
 };
 

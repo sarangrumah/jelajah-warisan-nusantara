@@ -16,7 +16,6 @@ import SitesManagement from '@/components/admin/SiteManagement';
 import AgendaManagement from '@/components/admin/EventManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';
-import CareerManagement from '@/components/admin/CareerManagement';
 import UserManagement from '@/components/admin/UserManagement';
 import CareerPostingManagement from '@/components/admin/CareerPostingManagement';
 import CareerSubmissionManagement from '@/components/admin/CareerSubmissionManagement';
@@ -41,12 +40,9 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      console.log('👤 User object:', user);
-      console.log('🔐 User roles:', user.roles);
       // User roles are already included in the auth response
       // Get the primary role (first role if multiple)
       const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'viewer';
-      console.log('🎯 Primary role set to:', primaryRole);
       setUserRole(primaryRole);
     }
   }, [user]);

@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Translation resources
-const resources = {
+export const resources = {
   en: {
     translation: {
       // Navigation
@@ -118,6 +118,11 @@ const resources = {
         labels: {
           museum: "Museum",
           heritage: "Cultural Heritage"
+        },
+        legend: {
+          title: "Legend",
+          museum: "Museum",
+          heritage: "Heritage"
         }
       },
       // Agenda Section
@@ -128,6 +133,8 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum and Cultural Heritage",
+        ministry: "Ministry of Culture",
+        contactUs: "Contact Us",
         address: "Jl. Jenderal Sudirman, Senayan Jakarta Pusat 10270",
         phone: "",
         email: "info@kebudayaan.kemdikbud.go.id",
@@ -465,7 +472,7 @@ const resources = {
           // categoryTextile: "Textiles",
           // categoryJewelry: "Jewelry",
           categoryCeramic: "Ceramics",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
@@ -490,7 +497,7 @@ const resources = {
           // categoryJewelry: "Jewelry",
           // categoryCeramic: "Ceramics",
           categoryCeramic: "Ceramics",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
@@ -502,6 +509,24 @@ const resources = {
         title: "Memory of the World",
         subtitle: "Uncovering the Memory of the World",
         description: "Journey through the most precious documents and archives that form the collective memory of humanity. Each item offers a window into the pivotal moments and lasting legacies of our past."
+      },
+      // Map Section
+      map: {
+        interactiveMap: "Interactive Map",
+        clickMarker: "Click a marker for more details",
+        addressLabel: "Address:",
+        seeDetails: "See Details",
+        seeList: "See List"
+      },
+      // News Section
+      news: {
+        title: "News & Articles",
+        subtitle: "Follow the latest developments about museums, cultural heritage, and cultural heritage preservation activities in Indonesia",
+        loading: "Loading news...",
+        button: {
+          readMore: "Read More",
+          viewAll: "View All News"
+        }
       }
     }
   },
@@ -547,7 +572,7 @@ const resources = {
         },
         watchVideo: "Tonton Video",
       },
-      // Profile Sectionpa
+      // Profile Section
       profile: {
         title: "Tentang Kami",
         description: "Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.",
@@ -622,6 +647,11 @@ const resources = {
         labels: {
           museum: "Museum",
           heritage: "Cagar Budaya"
+        },
+        legend: {
+          title: "Legenda",
+          museum: "Museum",
+          heritage: "Cagar Budaya"
         }
       },
       // Agenda Section
@@ -632,6 +662,8 @@ const resources = {
       // Footer translations
       footer: {
         orgName: "Museum dan Cagar Budaya",
+        ministry: "Kementerian Kebudayaan",
+        contactUs: "Hubungi Kami",
         address: "Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110",
         phone: "",
         email: "museumcb@kemenbud.go.id ",
@@ -677,32 +709,32 @@ const resources = {
           heritage: {
             title: "Pelestarian Cagar Budaya",
             description: "Konservasi dan restorasi situs bersejarah serta artefak budaya",
-            features: ["Konservasi preventif, Restorasi struktural, Monitoring kondisi, Dokumentasi digital"]
+            features: ["Konservasi preventif", "Restorasi struktural", "Monitoring kondisi", "Dokumentasi digital"]
           },
           museum: {
             title: "Pengelolaan Museum dan Cagar Budaya",
             description: "Pengelolaan komprehensif koleksi Museum dan Cagar Budaya, operasional, dan layanan publik",
-            features: ["Kurasi koleksi, Manajemen penyimpanan, Program pameran, Layanan pengunjung"]
+            features: ["Kurasi koleksi", "Manajemen penyimpanan", "Program pameran", "Layanan pengunjung"]
           },
           research: {
             title: "Penelitian & Pengembangan",
             description: "Riset ilmiah untuk pengembangan metode pelestarian modern",
-            features: ["Penelitian arkeologi, Studi konservasi, Inovasi teknologi, Publikasi ilmiah"]
+            features: ["Penelitian arkeologi", "Studi konservasi", "Inovasi teknologi", "Publikasi ilmiah"]
           },
           international: {
             title: "Kerjasama Internasional",
             description: "Kolaborasi dengan lembaga internasional dalam pelestarian budaya",
-            features: ["Program pertukaran, Standar internasional, Capacity building, Best practices"]
+            features: ["Program pertukaran", "Standar internasional", "Capacity building", "Best practices"]
           },
           digitization: {
             title: "Digitalisasi Warisan",
             description: "Transformasi digital koleksi untuk preservasi dan akses publik",
-            features: ["3D scanning, Virtual reality, Database digital, Platform online"]
+            features: ["3D scanning", "Virtual reality", "Database digital", "Platform online"]
           },
           education: {
             title: "Edukasi & Outreach",
             description: "Program pendidikan dan sosialisasi kepada masyarakat",
-            features: ["Workshop komunitas, Program sekolah, Pelatihan SDM, Kampanye awareness"]
+            features: ["Workshop komunitas", "Program sekolah", "Pelatihan SDM", "Kampanye awareness"]
           },
           consultationTitle: "Butuh Layanan Khusus?",
           consultationText: "Tim ahli kami siap membantu Anda dengan kebutuhan khusus dalam pelestarian dan pengelolaan warisan budaya.",
@@ -970,7 +1002,7 @@ const resources = {
           // categoryJewelry: "Perhiasan",
           // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
@@ -994,7 +1026,7 @@ const resources = {
           // categoryJewelry: "Perhiasan",
           // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
-          categoryEtnograhpy: "Etnograhpy",
+          categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
           categoryHistory: "Sejarah",
           categoryNumismatic: "Numismatik & Heraldik",
@@ -1006,6 +1038,24 @@ const resources = {
         title: "Memori Dunia",
         subtitle: "Mengungkap Memori Dunia",
         description: "Telusuri dokumen dan arsip paling berharga yang membentuk memori kolektif umat manusia. Setiap item menawarkan jendela ke momen-momen penting dan warisan abadi masa lalu kita."
+      },
+      // Map Section
+      map: {
+        interactiveMap: "Peta Interaktif",
+        clickMarker: "Klik penanda untuk detail lebih lanjut",
+        addressLabel: "Alamat:",
+        seeDetails: "Lihat Detail",
+        seeList: "Lihat Daftar"
+      },
+      // News Section
+      news: {
+        title: "Berita & Artikel",
+        subtitle: "Ikuti perkembangan terbaru seputar museum, cagar budaya, dan kegiatan pelestarian warisan budaya Indonesia",
+        loading: "Memuat berita...",
+        button: {
+          readMore: "Baca Selengkapnya",
+          viewAll: "Lihat Semua Berita"
+        }
       }
     }
   }
