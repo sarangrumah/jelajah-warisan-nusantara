@@ -202,7 +202,11 @@ const ContactSection = () => {
                           key={detailIndex}
                           className="text-muted-foreground text-sm"
                         >
-                         <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(detail)) }} />
+                          {detail.startsWith('contact.') ? (
+                            <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(detail)) }} />
+                          ) : (
+                            detail
+                          )}
                         </p>
                       ))}
                     </div>
