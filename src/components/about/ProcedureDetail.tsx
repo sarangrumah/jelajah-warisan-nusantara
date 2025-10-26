@@ -5,6 +5,14 @@ import { useLocation, useParams } from 'react-router-dom';
 import { sopService } from '@/lib/api-services';
 import { Calendar, User } from 'lucide-react';
 
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
 const ProcedureDetail = () => {
     const { pathname } = useLocation();
     const [procedures, setProcedures] = useState([]);
@@ -87,7 +95,7 @@ const ProcedureDetail = () => {
                         <div className="prose prose-lg max-w-none">
                             <div 
                                 className="text-foreground leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: procedure.description }}
+                                dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(procedure.description) }}
                             />
                         </div>
                     </div>

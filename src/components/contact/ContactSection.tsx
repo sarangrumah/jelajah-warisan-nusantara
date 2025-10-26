@@ -10,6 +10,14 @@ import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
 import { useTranslation } from 'react-i18next';
 
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
 const ContactSection = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -301,9 +309,10 @@ const ContactSection = () => {
                       {faq.question}
                     </AccordionTrigger>
                     <AccordionContent>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {faq.answer}
-                      </p>
+                      <p
+                        className="text-muted-foreground leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.answer) }}
+                      />
                     </AccordionContent>
                   </AccordionItem>
                 ))}

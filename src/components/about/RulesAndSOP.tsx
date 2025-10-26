@@ -105,7 +105,7 @@ const RulesAndSOP = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">{regulation.description}</p>
+                  <p className="text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(regulation.description) }} />
                   <Button variant="outline" size="sm" className="w-full" onClick={() => downloadFromUrl(regulation.document_url)}>
                     <Download size={16} className="mr-2" />
                     {t('buttons.downloadDocument')}
@@ -130,7 +130,7 @@ const RulesAndSOP = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">{procedure.description}</p>
+                  <p className="text-muted-foreground mb-4" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(procedure.description) }} />
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Author:</span>

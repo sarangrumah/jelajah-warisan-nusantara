@@ -2,10 +2,18 @@ import 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
 // A simple component to render translated HTML
 const TranslatedHtml = ({ text }: { text: string }) => {
   const { translatedText } = useTranslate(text);
-  return <div dangerouslySetInnerHTML={{ __html: translatedText }} />;
+  return <div dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(translatedText) }} />;
 };
 
 const ProfileSection = () => {

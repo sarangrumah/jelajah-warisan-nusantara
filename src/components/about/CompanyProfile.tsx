@@ -6,6 +6,14 @@ import compProfile from '@/assets/museum-interior.jpg'
 import { contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
 const CompanyStatCard = ({ stat }: { stat: { icon: any; label: string; value: string; color: string } }) => {
     const { translatedText: label } = useTranslate(stat.label);
     const { translatedText: value } = useTranslate(stat.value);
@@ -108,7 +116,7 @@ const CompanyProfile = () => {
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             {name}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xlx mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: aboutus }} />
+          <p className="text-xl text-muted-foreground max-w-3xlx mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(aboutus) }} />
         </div>
 
         <div className="mb-16 mx-auto gap-12 px-4">
@@ -163,7 +171,7 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: vision }} />
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(vision) }} />
                 </CardContent>
               </Card>
 
@@ -175,7 +183,7 @@ const CompanyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: mission }} />
+                  <p className="text-lg text-muted-foreground leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(mission) }} />
                 </CardContent>
               </Card>
             </div>

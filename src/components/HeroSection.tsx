@@ -7,6 +7,14 @@ import { bannerService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
+// Utility to fix broken HTML tags like < p > to <p>
+function fixBrokenHtmlTags(html: string): string {
+  if (!html) { return html; }
+  // Replace < tag > and < / tag > with <tag> and </tag>
+  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
+             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
+}
+
 function isImage(filename: string) {
   return /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
 }
@@ -48,8 +56,8 @@ const HeroSlideContent = ({ slide }: { slide: any }) => {
 
     return (
         <div className="max-w-4xl mx-auto scroll-reveal">
-            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5" dangerouslySetInnerHTML={{ __html: title }} />
-            <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: subtitle }} />
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-6 text-heritage-gradientx pb-5" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(title) }} />
+            <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(subtitle) }} />
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {slide?.button_url_1 && buttonLabel1 && (
                 <Link to={linkTo((slide.button_url_1 || '').split('.')[1] || '')}>
