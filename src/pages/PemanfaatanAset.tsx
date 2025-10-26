@@ -72,12 +72,12 @@ const PemanfaatanAset = () => {
         const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.description.toLowerCase().includes(searchTerm.toLowerCase());
         if(filterCategories.length > 0) {
-            if(filterCategories.includes(item.area) && !filterCategories.some(facility => item.fasilitas.includes(facility))) {
+            if(filterCategories.includes(item.area) && !filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))) {
                 return matchesSearch && filterCategories.includes(item.area)
-            } else if(!filterCategories.includes(item.area) && filterCategories.some(facility => item.fasilitas.includes(facility))) {
-                return matchesSearch && filterCategories.some(facility => item.fasilitas.includes(facility))
+            } else if(!filterCategories.includes(item.area) && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))) {
+                return matchesSearch && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))
             } else{
-                return matchesSearch && (filterCategories.includes(item.area) && filterCategories.some(facility => item.fasilitas.includes(facility)));
+                return matchesSearch && (filterCategories.includes(item.area) && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility)));
             }
         }
         return matchesSearch
@@ -229,10 +229,10 @@ const PemanfaatanAset = () => {
                                                 <span>Fasilitas</span>
                                                 <div className='px-5 py-2 border rounded-md'>
                                                     <ul>
-                                                    {item.fasilitas.length > 0 && item.fasilitas.map((facility, index) => (
+                                                    {Array.isArray(item.fasilitas) && item.fasilitas.length > 0 && item.fasilitas.map((facility, index) => (
                                                         <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{`${facility}`}</li>
                                                         ))}
-                                                    </ul>    
+                                                    </ul>
                                                 </div>
                                                 <div>
                                                     <div className='flex items-center gap-2'>

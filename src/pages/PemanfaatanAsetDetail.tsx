@@ -102,7 +102,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardHeader>
                 <CardContent className='text-start'>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {asset.ketentuan_umum.length > 0 ? 
+                    {Array.isArray(asset.ketentuan_umum) && asset.ketentuan_umum.length > 0 ?
                       asset.ketentuan_umum.map((item, index) => <li key={index}>{item}</li>)
                     : 'Tidak ada ketentuan umum'}
                   </p>
@@ -128,7 +128,7 @@ const PemanfaatanAsetDetail = () => {
                     {'Fasilitas : '}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {asset.fasilitas.length > 0 ? 
+                    {Array.isArray(asset.fasilitas) && asset.fasilitas.length > 0 ?
                       asset.fasilitas.map((item, index) => <li key={index}>{item}</li>)
                     : ''}
                   </p>
@@ -138,7 +138,7 @@ const PemanfaatanAsetDetail = () => {
                     {'Fasilitas Tambahan : '}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {(asset.fasilitas_tambahan !== null) ? 
+                    {Array.isArray(asset.fasilitas_tambahan) && asset.fasilitas_tambahan.length > 0 ?
                       asset.fasilitas_tambahan.map((item, index) => <li key={index}>{item}</li>)
                     : ''}
                   </p>
