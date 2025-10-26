@@ -1,14 +1,19 @@
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { MapPin, Search } from 'lucide-react';
+import { Filter, MapPin, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { defaultAssets } from '@/../database/default-data';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { Select as Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanAssetService } from '@/lib/api-services';
+// import { CardDescription } from '@/components/ui/card';
+// import { Checkbox } from '@/components/ui/checkbox';
+// import { Label } from '@/components/ui/label';
+// import Select from 'react-select';
 
 const collectionImages = import.meta.glob('../assets/images/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
@@ -26,49 +31,80 @@ function getAssetImageUrl(filename: string) {
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
 const PemanfaatanAset = () => {
-    const { t } = useTranslation();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterArea, setFilterArea] = useState([]);
-    const [filterFacilities, setFilterFacilities] = useState([]);
-    const { pathname } = useLocation();
-    const [assets, setAssets] = useState([]);
+	const { t } = useTranslation();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [filterType, setFilterType] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [filterCategories, setFilterCategories] = useState([]);
+	const { pathname } = useLocation();
+	const [assets, setAssets] = useState([]);
     
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [pathname]);
 
     useEffect(() => {
-        setAssets(defaultAssets);
+        const fetchAllCategories = async () => {            
+            try {
+                const [assetsResponse, areaResponse, fasilitasResponse] = await Promise.all([
+                    pemanfaatanAssetService.getAll(),
+                    categoriesLayananAsetArea.getAllCategories(),
+                    categoriesLayananAsetFasilitas.getAllCategories()
+                ])
+                if(assetsResponse.error || areaResponse.error || fasilitasResponse.error) {
+                    console.error('Error fetching one or more categories:', areaResponse.error || fasilitasResponse.error);
+                } else {
+                    const combinedCategories = [
+                        {label:'Area', items: areaResponse.data},
+                        {label:'Fasilitas', items: fasilitasResponse.data}
+                    ]
+                    setCategories(combinedCategories);
+                    setAssets(assetsResponse.data);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        }
+        fetchAllCategories();
     }, []);
 
     const filteredAssets = assets.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            item.description.toLowerCase().includes(searchTerm.toLowerCase());
-        if (filterArea.length > 0 && filterFacilities.length === 0) {
-            return matchesSearch && filterArea.includes(item.area);
-        } else if(filterFacilities.length > 0 && filterArea.length === 0) {
-            return matchesSearch && filterFacilities.some(facility => item.facilities.includes(facility));
-        } else if(filterFacilities.length > 0 && filterArea.length > 0) {
-            return matchesSearch && filterArea.includes(item.area) && filterFacilities.some(facility => item.facilities.includes(facility));
-        } else {
-            return matchesSearch
+            item.description.toLowerCase().includes(searchTerm.toLowerCase());
+        if(filterCategories.length > 0) {
+            if(filterCategories.includes(item.area) && !filterCategories.some(facility => item.fasilitas.includes(facility))) {
+                return matchesSearch && filterCategories.includes(item.area)
+            } else if(!filterCategories.includes(item.area) && filterCategories.some(facility => item.fasilitas.includes(facility))) {
+                return matchesSearch && filterCategories.some(facility => item.fasilitas.includes(facility))
+            } else{
+                return matchesSearch && (filterCategories.includes(item.area) && filterCategories.some(facility => item.fasilitas.includes(facility)));
+            }
         }
+        return matchesSearch
     });
 
-    const handleAreasChange = (value, isChecked) => {
-        if (isChecked) {
-            setFilterArea((prevFilters) => [...prevFilters, value]);
-        } else {
-            setFilterArea((prevFilters) => prevFilters.filter((area) => area !== value));
-        }
-    };
+    const handleFilterTypeChange = (filterType) => {
+        const itemName = categories
+            .flatMap((category) => category.items)
+            .find((item) => item.id === filterType)?.name;
+        setFilterType(filterType);
+        setFilterCategories((prevFilters) => [...prevFilters, itemName]);
+    }
 
-    const handleFacilitiesChange = (value, isChecked) => {
-        if (isChecked) {
-            setFilterFacilities((prevFilters) => [...prevFilters, value]);
-        } else {
-            setFilterFacilities((prevFilters) => prevFilters.filter((facility) => facility !== value));
-        }
+    const deleteFilter = (filter) => {
+        setFilterCategories((prevFilters) => {
+            const updatedFilters = prevFilters.filter((category) => category !== filter);
+            if (updatedFilters.length > 0) {
+                const lastItem = updatedFilters[updatedFilters.length - 1];
+                const itemId = categories
+                    .flatMap((category) => category.items)
+                    .find((item) => item.name === lastItem)?.id;
+                setFilterType(itemId);
+            } else {
+                setFilterType('');
+            }
+            return updatedFilters;
+        });
     }
 
     return (
@@ -87,7 +123,7 @@ const PemanfaatanAset = () => {
             </section>
             {/* Search and Filter */}
             <section className="container mx-auto px-4 py-8">
-                <div className="flex flex-col md:flex-row gap-4 mb-8">
+                <div className="flex flex-col md:flex-row gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
@@ -97,126 +133,95 @@ const PemanfaatanAset = () => {
                         className="pl-10"
                         />
                     </div>
+                    <Select
+                        value={filterType} 
+                        onValueChange={handleFilterTypeChange}
+                    >
+                        <SelectTrigger className="w-full md:w-48">
+                            <Filter size={20} className="mr-2" />
+                            <SelectValue placeholder={'Semua'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {categories.map((option) => (
+                                <SelectGroup key={option.label}>
+                                    <SelectLabel className='bg-background ps-0 py-3'>
+                                        <span className='ms-3'>{option.label}</span>
+                                    </SelectLabel>
+                                    <div className='py-3'>
+                                        {option.items.map((item) => (
+                                            <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
+                                        ))}
+                                    </div>
+                                </SelectGroup>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className='flex mt-2 gap-3'>
+                    {filterCategories.map((filter, index) => (
+                        <Badge key={index} variant="secondary" className='items-center gap-1'>
+                            {filter}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-auto w-auto p-0 ml-1 rounded-full text-foreground/50 hover:text-foreground hover:bg-transparent"
+                                onClick={() => deleteFilter(filter)}
+                            >
+                                <X className="h-3 w-3" />
+                            </Button>
+                        </Badge>
+                    ))}
                 </div>
 
                 {/* Results */}
-                <div className="flex gap-5">
-                    <div className='w-1/4'>
+                <div className="flex gap-5 mt-8">
+                    {/* <div className='w-1/4 hidden'>
                         <div className='pb-5'>
-                            <span>Area</span>
-                            <div className='flex flex-col gap-2 mt-2'>
-                                <div className='flex gap-2'>
-                                    <Checkbox 
-                                        id='indoor' 
-                                        value='indoor' 
-                                        checked={filterArea.includes('indoor')}
-                                        onCheckedChange={(isChecked) => handleAreasChange('indoor', isChecked)}
-                                    />
-                                    <Label htmlFor='indoor'>Indoor</Label>
+                            {options.map((option) => (
+                                <div key={option.id} className='pt-5'>
+                                    <span>{option.label}</span>
+                                    <div className='flex flex-col gap-2 mt-2 pb-5'>
+                                        <div className='flex flex-col gap-2'>
+                                            {option.items.map((item, index) => (
+                                            <div key={index} className='flex gap-2'>
+                                                <Checkbox 
+                                                    id={item.value} 
+                                                    value={item.value}
+                                                    checked={filterCategories.includes(item.value)}
+                                                    onCheckedChange={(isChecked) => handleCheckedChange(item.value, isChecked)}
+                                                />
+                                                <Label htmlFor={item.value}>{item.label}</Label>
+                                            </div>    
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {options.at(-1) !== option && <hr />}
                                 </div>
-                                <div className='flex gap-2'>
-                                    <Checkbox
-                                        id='outdoor' 
-                                        value='outdoor' 
-                                        checked={filterArea.includes('outdoor')}
-                                        onCheckedChange={(isChecked) => handleAreasChange('outdoor', isChecked)}
-                                    />
-                                    <Label htmlFor='outdoor'>Outdoor</Label>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <Checkbox 
-                                        id='semi-outdoor' 
-                                        value='semi-outdoor' 
-                                        checked={filterArea.includes('semi-outdoor')}
-                                        onCheckedChange={(isChecked) => handleAreasChange('semi-outdoor', isChecked)}
-                                    />
-                                    <Label htmlFor='semi-outdoor'>Semi Outdoor</Label>
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                        <hr />
-                        <div className='pt-5'>
-                            <span>Fasilitas</span>
-                            <div className='flex flex-col gap-2 mt-2'>
-                                <div className='flex gap-2'>
-                                    <Checkbox 
-                                        id='jasa-fotografi' 
-                                        value='jasa-fotografi' 
-                                        checked={filterFacilities.includes('jasa-fotografi')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('jasa-fotografi', isChecked)}
-                                    />
-                                    <Label htmlFor='jasa-fotografi'>Jasa Fotografi</Label>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <Checkbox 
-                                        id='sound-system' 
-                                        value='sound-system' 
-                                        checked={filterFacilities.includes('sound-system')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('sound-system', isChecked)}
-                                    />
-                                    <Label htmlFor='sound-system'>Sound System</Label>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <Checkbox 
-                                        id='lighting-system' 
-                                        value='lighting-system' 
-                                        checked={filterFacilities.includes('lighting-system')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('lighting-system', isChecked)}
-                                    />
-                                    <Label htmlFor='lighting-system'>Lighting System</Label>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Checkbox 
-                                        id='sewa-perlengkapan' 
-                                        value='sewa-perlengkapan' 
-                                        checked={filterFacilities.includes('sewa-perlengkapan')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('sewa-perlengkapan', isChecked)}
-                                    />
-                                    <Label htmlFor='sewa-perlengkapan'>Sewa Perlengkapan</Label>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Checkbox 
-                                        id='sewa-transportasi' 
-                                        value='sewa-transportasi' 
-                                        checked={filterFacilities.includes('sewa-transportasi')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('sewa-transportasi', isChecked)}
-                                    />
-                                    <Label htmlFor='sewa-transportasi'>Sewa Transportasi</Label>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Checkbox 
-                                        id='alat-berat' 
-                                        value='alat-berat' 
-                                        checked={filterFacilities.includes('alat-berat')}
-                                        onCheckedChange={(isChecked) => handleFacilitiesChange('alat-berat', isChecked)}
-                                    />
-                                    <Label htmlFor='alat-berat'>Alat Berat</Label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='w-3/4 pe-5'>
-                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6'>
+                    </div> */}
+                    <div className='px-5'>
+                        <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-5'>
                             {filteredAssets.map((item) => (
                                 <Link 
                                 key={item.id} 
                                 to={`/pemanfaatan-aset/${item.id}`}
                                 >
                                     <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
-                                        <img
-                                            src={(getAssetImageUrl(item.imageUrl?.split('/').pop() || item.imageUrl))}
-                                            alt={item.title}
-                                            className="w-full h-full object-contain object-center"
-                                        />
+                                        <div className="aspect-video overflow-hidden rounded-t-lg pt-5x p-3">
+                                            <img
+                                                src={(getAssetImageUrl(item.image_url?.split('/').pop() || item.image_url))}
+                                                alt={item.title}
+                                                className="w-full h-full object-cover object-center"
+                                            />
                                         </div>
                                         <CardHeader>
                                             <CardTitle className="text-lg">
                                                 {item.title}
                                             </CardTitle>
-                                            <CardDescription>
+                                            {/* <CardDescription>
                                                 {item.description}
-                                            </CardDescription>
+                                            </CardDescription> */}
                                             <div className='text-[#86807c] font-normal mt-2 flex flex-col gap-2'>
                                                 <div>{`Lokasi : ${item.location}`}</div>
                                                 <div>{`Kategori : ${item.category}`}</div>
@@ -224,7 +229,7 @@ const PemanfaatanAset = () => {
                                                 <span>Fasilitas</span>
                                                 <div className='px-5 py-2 border rounded-md'>
                                                     <ul>
-                                                    {item.facilities.length > 0 && item.facilities.map((facility, index) => (
+                                                    {item.fasilitas.length > 0 && item.fasilitas.map((facility, index) => (
                                                         <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{`${facility}`}</li>
                                                         ))}
                                                     </ul>    
@@ -232,7 +237,7 @@ const PemanfaatanAset = () => {
                                                 <div>
                                                     <div className='flex items-center gap-2'>
                                                         <MapPin />
-                                                        <span className='text-lg font-normal leading-none'>{`${item.shortLocation}`}</span>
+                                                        <span className='text-lg font-normal leading-none'>{`${item.short_location}`}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -244,10 +249,10 @@ const PemanfaatanAset = () => {
                     </div>
                 </div>
 
-                {assets.length === 0 && (
+                {(assets.length === 0 || filteredAssets.length === 0) && (
                     <div className="text-center py-12">
                         <p className="text-muted-foreground text-lg">
-                        {t('No memories found. Try adjusting your search or filter.')}
+                        {t('Data pemanfaatan aset untuk disewakan tidak ditemukan.')}
                         </p>
                     </div>
                 )}

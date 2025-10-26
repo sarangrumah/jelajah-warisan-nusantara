@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultCollections } from '@/../database/default-data';
-import { collectionService } from '@/lib/api-services';
+import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -46,7 +46,7 @@ const Collection = () => {
   }, [pathname]);
   const fetchCollections = async () => {
     try {
-      const response = await collectionService.getAll();
+      const response = await masterCollectionService.getAll();
 
       if (response.error || response.data.length === 0) {
         console.error('Error fetching collections:', response.error);

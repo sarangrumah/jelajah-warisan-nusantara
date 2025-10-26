@@ -24,7 +24,7 @@ const PublicationSection = () => {
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 scroll-reveal hidden">
+        {/* <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
             Publikasi & Dokumen
           </h2>
@@ -32,13 +32,17 @@ const PublicationSection = () => {
             Akses dokumen resmi, laporan, dan publikasi ilmiah tentang 
             pengelolaan museum dan pelestarian cagar budaya.
           </p>
-        </div>
+        </div> */}
 
         <div className="mb-16">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
               Dokumen Publikasi
             </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Akses dokumen resmi, laporan, dan publikasi ilmiah tentang 
+              pengelolaan museum dan pelestarian cagar budaya.
+            </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
             {publications.map((pub, index) => (

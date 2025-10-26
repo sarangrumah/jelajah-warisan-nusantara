@@ -172,7 +172,7 @@ const AgendaList = () => {
                 <div className='p-6 absolute left-0 bottom-0 right-0'>
                 <Link to={`/event/${event.id}`}>
                   <Button className="w-full">
-                    Detail Event
+                    Detail Acara
                   </Button>
                 </Link>
                 </div>

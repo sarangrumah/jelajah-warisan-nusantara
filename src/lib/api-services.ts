@@ -267,3 +267,15 @@ export const categoriesMOW = {
 export const memoryOfWorldGalleryService = {
   getAll: () => apiClient.getAll('tb_memoryoftheworld_gallery'),
 };
+
+export const categoriesLayananAsetArea = {
+  getAllCategories: () => apiClient.getAll('tb_categories_layananaset_area'),
+}
+
+export const categoriesLayananAsetFasilitas = {
+  getAllCategories: () => apiClient.getAll('tb_categories_layananaset_fasilitas'),
+}
+
+export const pemanfaatanAssetService = {
+  getAll: () => apiClient.getAll('tb_pemanfaatanasset')
+}

@@ -1,9 +1,10 @@
-import { FileText, Scale, CheckCircle, Download } from 'lucide-react';
+import { FileText, Scale, CheckCircle, Download} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { sopService } from '@/lib/api-services';
+import { Link } from 'react-router-dom';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -59,6 +60,17 @@ const RulesAndSOP = () => {
   const regulationsData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'peraturan');
   const proceduresData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'sop');
 
+  const downloadFromUrl = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    // link.download = filename || "download";
+    link.rel="noopener noreferrer";
+    link.target="_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
@@ -94,7 +106,7 @@ const RulesAndSOP = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">{regulation.description}</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => downloadFromUrl(regulation.document_url)}>
                     <Download size={16} className="mr-2" />
                     {t('buttons.downloadDocument')}
                   </Button>
@@ -129,10 +141,10 @@ const RulesAndSOP = () => {
                       <span className="font-semibold">{procedure.category}</span>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Link to={`/prosedur/${procedure.id}`} className="flex items-center text-primary">
                     <CheckCircle size={16} className="mr-2" />
                     {t('buttons.viewDetails')}
-                  </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}

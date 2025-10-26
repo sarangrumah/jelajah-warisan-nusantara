@@ -36,6 +36,7 @@ import FloatingButtons from "@/components/FloatingButtons";
 import PemanfaatanAset from "./pages/PemanfaatanAset";
 import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
 import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
+import ProcedureDetail from "./components/about/ProcedureDetail";
 import { useScrollReveal } from "./hooks/useScrollReveal";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
@@ -62,14 +63,15 @@ const App = () => {
               <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
               <Route path="/tentang-kami" element={<TentangKami />} />
               {/* <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} /> */}
-              <Route path="/layanan-konservasi" element={<LayananKonservasi />} />
+              <Route path="/laboratorium-konservasi" element={<LayananKonservasi />} />
               <Route path="/media-publikasi" element={<MediaPublikasi />} />
               <Route path="/hubungi-kami" element={<HubungiKami />} />
-              <Route path="/career" element={<Career />} />
+              <Route path="/karir" element={<Career />} />
               <Route path="/ppid" element={<PPID />} />
               <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
               <Route path="/pemanfaatan-aset/:id" element={<PemanfaatanAsetDetail />} />
               <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
+              <Route path="/prosedur/:id" element={<ProcedureDetail />} />
               <Route path="/peraturan" element={<Peraturan />} />
               <Route path="/museums" element={<Museum />} />
               <Route path="/museum/:id" element={<MuseumDetail />} />

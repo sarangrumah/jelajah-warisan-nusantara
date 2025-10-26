@@ -3,9 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { defaultCollections } from '@/../database/default-data';
-import { collectionService } from '@/lib/api-services';
+import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
-import { mapSlidesWithImageUrl } from "../helper";
 
 const collectionImages = import.meta.glob('../../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
@@ -32,7 +31,7 @@ const GalleryCollection = ({museum}) => {
 
   const fetchCollections = async () => {
     try {
-      const response = await collectionService.getAll();
+      const response = await masterCollectionService.getAll();
 
       if (response.error) {
         console.error('Error fetching collections:', response.error);

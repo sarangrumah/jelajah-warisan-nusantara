@@ -16,6 +16,7 @@ const Footer = () => {
     { label: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
     { label: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
     { label: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+    { label: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
     { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
     { label: t('nav.career'), href: '/career' },
     { label: t('nav.ppid'), href: '/ppid' },

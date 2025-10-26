@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
-import { heritageService } from '@/lib/api-services';
+import { museumService } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -61,7 +61,7 @@ const Heritage = () => {
 
   const fetchHeritages = async () => {
     try {
-      const response = await heritageService.getAll();
+      const response = await museumService.getAll();
       if(response.error) {
         console.error('Error fetching heritages:', response.error);
       }

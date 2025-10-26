@@ -205,6 +205,7 @@ const ContactSection = () => {
                   <a
                     key={index}
                     href={social.url}
+                    target="_blank"
                     className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg hover:bg-card/80 transition-colors"
                   >
                     <MessageSquare size={16} className="text-primary" />

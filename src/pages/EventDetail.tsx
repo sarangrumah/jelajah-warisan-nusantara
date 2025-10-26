@@ -274,7 +274,7 @@ const EventDetail = () => {
                       onClick={() => shareEventHandler('https://wa.me/6281295953929')}
                     >
                       <Share2 size={16} className="mr-2" />
-                      {t('Share Event')}
+                      {t('Bagikan')}
                     </Button>
                     <Button 
                       variant="outline" 

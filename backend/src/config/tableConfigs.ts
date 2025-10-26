@@ -177,6 +177,9 @@ export const tableConfigs = {
     'updated_by',
     'updated_at'
   ],
+
+  tb_categories_layananaset_area: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
+
   tb_categories_layananaset_fasilitas: [
     'id',
     'name',

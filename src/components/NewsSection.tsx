@@ -34,11 +34,32 @@ function getNewsImageUrl(filename: string) {
   const justFile = filename?.split('/').pop() || filename;
   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Fallback: try public/assets/news/ for production
   if (justFile) {
     return `/assets/news/${justFile}`;
+  }
+  return undefined;
+}
+
+function getNewsFileUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Fallback: try public/assets/news/ for production
+  if (justFile) {
+    return `/assets/berita/${justFile}`;
   }
   return undefined;
 }
@@ -121,18 +142,13 @@ const NewsSection = () => {
                 onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
               />
               <CarouselContent>
-                {news.length === 0 ? (
-                  <div className="flex items-center justify-center h-64 col-span-full">
-                    <span className="text-lg text-muted-foreground">No news available</span>
-                  </div>
-                ) : (
-                  news.map((article, index) => (
-                    <CarouselItem
-                      key={article.id}
-                      className="md:basis-1/2 lg:basis-1/3"
-                      aria-label={`Slide ${index + 1} of ${news.length}`}
-                    >
-                    <Card className="overflow-hidden scroll-reveal heritage-glow hover:scale-105 transition-bounce h-full flex flex-col">
+                {news.map((article, index) => (
+                  <CarouselItem
+                    key={article.id}
+                    className="md:basis-1/2 lg:basis-1/3 py-5"
+                    aria-label={`Slide ${index + 1} of ${news.length}`}
+                  >
+                    <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce h-full flex flex-col p-2">
                       <div className="aspect-video relative overflow-hidden">
                         <img
                           src={getNewsImageUrl(article.image || article.image_url)}

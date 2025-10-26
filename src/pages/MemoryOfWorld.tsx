@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { defaultMemories } from '@/../database/default-data';
-import { collectionService } from '@/lib/api-services';
+import { collectionService, memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -45,13 +45,11 @@ const MemoryOfWorld = () => {
 
   const fetchMemories = async () => {
     try {
-      const response = await collectionService.getAll();
-      const filteredResponse = (response.data as Memory[]).filter(item => item.type === 'mow');
-      if(response.error || filteredResponse.length === 0) {
+      const response = await memoryWorldService.getAll();
+      if(response.error) {
         console.error('Error fetching memories:', response.error);
-        setMemories(defaultMemories);
       } else {
-        setMemories(filteredResponse);
+        setMemories(response.data);
       }
     } catch (error) {
       console.error('Error fetching memories:', error);

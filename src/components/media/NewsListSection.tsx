@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Calendar, User, ArrowRight } from 'lucide-react';
+import { Search, Calendar, User, ArrowRight, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,7 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
 }
 
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
+const newsFiles = import.meta.glob('../../assets/berita/*', { eager: true });
 
 function getNewsImageUrl(filename: string) {
   if (
@@ -73,6 +74,27 @@ function getNewsImageUrl(filename: string) {
   // Fallback: try public/assets/news/ for production
   if (justFile) {
     return `/assets/news/${justFile}`;
+  }
+  return undefined;
+}
+
+function getNewsFileUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Fallback: try public/assets/news/ for production
+  if (justFile) {
+    return `/assets/berita/${justFile}`;
   }
   return undefined;
 }
@@ -97,33 +119,32 @@ const NewsListSection = () => {
     ];
 
   useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await mediaService.getAll();
+  
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching articles:', response.error);
+        } else {
+          const filteredArticles = response.data.filter((article: {
+            is_active: boolean;
+            is_approved: boolean;
+            is_rejected: boolean;
+            published_date: Date;
+          }) => (
+            article.is_active === true
+            && article.is_approved === true
+            && article.is_rejected === false
+            && new Date(article.published_date) <= new Date()
+          ));
+          setArticles(filteredArticles);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    };
     fetchArticles();
   }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const response = await mediaService.getAll();
-
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching articles:', response.error);
-      } else {
-        const filteredArticles = response.data.filter((article: {
-          is_active: boolean;
-          is_approved: boolean;
-          is_rejected: boolean;
-          published_date: Date;
-        }) => (
-          article.is_active === true
-          && article.is_approved === true
-          && article.is_rejected === false
-          && new Date(article.published_date) <= new Date()
-        ));
-        setArticles(filteredArticles);
-      }
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    }
-  };
 
   const filteredArticles = articles.filter(article => {
     if (activeCategory === 'semua') {
@@ -138,6 +159,11 @@ const NewsListSection = () => {
     }
   });
 
+  const handleOpenFile = (filename: string) => {
+    return getNewsFileUrl(filename);
+  };
+
+//   const handleReadMoreClick = (article) => {
   const handleReadMoreClick = (articleUrl: string) => {
     const link = document.createElement('a');
     link.href = articleUrl;

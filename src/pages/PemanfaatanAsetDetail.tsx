@@ -1,12 +1,14 @@
 import Header from '@/components/Header'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
-import { defaultAssets } from '@/../database/default-data';
+// import { defaultAssets } from '@/../database/default-data';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { pemanfaatanAssetService } from '@/lib/api-services';
 
 const museumImages = import.meta.glob('../assets/images/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
@@ -37,8 +39,20 @@ const PemanfaatanAsetDetail = () => {
   }, [pathname]);
 
   useEffect(() => {
-    const filteredAssets = defaultAssets.filter((asset) => asset.id.toString() === id);
-    setAssets(filteredAssets);
+    const fetchAssets = async () => {
+      try {
+        const response = await pemanfaatanAssetService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching assets:', response.error);
+        } else {
+          const filteredAssets = response.data.filter((asset: { id: string }) => asset.id.toString() === id);
+          setAssets(filteredAssets);
+        }
+      } catch (error) {
+        console.error('Error fetching assets:', error);
+      }
+    }
+    fetchAssets();
   }, [id]);
 
   if (assets.length === 0) {
@@ -46,8 +60,8 @@ const PemanfaatanAsetDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Museum not found')}</h1>
-          <p className="text-muted-foreground">{t('The requested museum could not be found.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('Data pemanfaatan asset tidak ditemukan')}</h1>
+          <p className="text-muted-foreground">{t('Permintaan data tidak ditemukan.')}</p>
         </div>
         <Footer />
       </div>
@@ -59,18 +73,18 @@ const PemanfaatanAsetDetail = () => {
       <Header />
       {assets.map((asset) => (
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
-          <section className="relative h-96 overflow-hidden">
+          <section className="relative h-96 overflow-hidden pt-10">
             <img
-              src={getMuseumImageUrl(asset.imageUrl?.split('/').pop() || asset.imageUrl)}
+              src={getMuseumImageUrl(asset.image_url?.split('/').pop() || asset.image_url)}
               alt={asset.name}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/30" />
           </section>
-          <section className="container mx-auto px-4 py-2">
+          <section className="container mx-auto px-4 py-5">
             <div className='flex mx-auto justify-center'>
-              <MapPin className="mb-2" />
-              {asset.shortLocation}
+              <MapPin className="mb-2 mx-1" />
+              {asset.short_location}
             </div>
             <div className="grid grid-cols-1 py-10">
               <div className="lg:col-span-2">
@@ -88,8 +102,8 @@ const PemanfaatanAsetDetail = () => {
                 </CardHeader>
                 <CardContent className='text-start'>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {asset.ketentuanUmum.length > 0 ? 
-                      asset.ketentuanUmum.map((item, index) => <li key={index}>{item}</li>)
+                    {asset.ketentuan_umum.length > 0 ? 
+                      asset.ketentuan_umum.map((item, index) => <li key={index}>{item}</li>)
                     : 'Tidak ada ketentuan umum'}
                   </p>
                 </CardContent>
@@ -114,8 +128,8 @@ const PemanfaatanAsetDetail = () => {
                     {'Fasilitas : '}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {asset.facilities.length > 0 ? 
-                      asset.facilities.map((item, index) => <li key={index}>{item}</li>)
+                    {asset.fasilitas.length > 0 ? 
+                      asset.fasilitas.map((item, index) => <li key={index}>{item}</li>)
                     : ''}
                   </p>
                 </CardContent>
@@ -124,19 +138,17 @@ const PemanfaatanAsetDetail = () => {
                     {'Fasilitas Tambahan : '}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-8">
-                    {asset.fasilitasTambahan.length > 0 ? 
-                      asset.fasilitasTambahan.map((item, index) => <li key={index}>{item}</li>)
+                    {(asset.fasilitas_tambahan !== null) ? 
+                      asset.fasilitas_tambahan.map((item, index) => <li key={index}>{item}</li>)
                     : ''}
                   </p>
                 </CardContent>
               </Card>
               <Card className='mt-4 pb-8'>
                 <CardHeader>
-                  <CardTitle className='text-start flex'>
-                    <div className='py-2'>
-                    {'Detail'}
-                    </div>
-                    <div className='bg-muted-foreground text-background ms-5 p-2 rounded-md'>{asset.area}</div>
+                  <CardTitle className='text-start flex text-sm'>
+                    <span className='py-2'>{'Detail'}</span>
+                    <Badge className='bg-muted-foreground text-background ms-5'>{asset.area}</Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='flex text-start'>
@@ -165,6 +177,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <Button 
+                    onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
                     className="w-[15rem] bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                   >
                     Booking

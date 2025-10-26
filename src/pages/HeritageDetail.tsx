@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Calendar, Clock, Camera } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Camera } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -68,8 +68,8 @@ const HeritageDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Museum not found')}</h1>
-          <p className="text-muted-foreground">{t('The requested museum could not be found.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('Museum tidak ditemukan')}</h1>
+          <p className="text-muted-foreground">{t('Museum yang diminta tidak dapat ditemukan.')}</p>
         </div>
         <Footer />
       </div>
@@ -140,16 +140,19 @@ const HeritageDetail = () => {
               {/* Quick Info */}
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4">{t('Quick Info')}</h3>
+                  <h3 className="text-xl font-bold mb-4">{t('Info Singkat')}</h3>
                   <div className="space-y-3">
-                    <div className="flex items-center">
-                      <MapPin size={16} className="mr-3 text-primary" />
-                      <span className="text-sm">{heritage.location}</span>
+                    <div className="flex items-start gap-3">
+                      <MapPin size={20} className="mr-1 text-primary" />
+                      <div>
+                        <p className="font-semibold">{t('museumDetail.location')}</p>
+                        <p className="text-sm text-muted-foreground">{heritage.address}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center">
+                    {/* <div className="flex items-center">
                       <Calendar size={16} className="mr-3 text-primary" />
                       <span className="text-sm">{heritage.period}</span>
-                    </div>
+                    </div> */}
                   </div>
                 </CardContent>
               </Card>
@@ -157,38 +160,40 @@ const HeritageDetail = () => {
               {/* Visit Information */}
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4">{t('Visit Information')}</h3>
+                  <h3 className="text-xl font-bold mb-4">{t('Informasi Kunjungan')}</h3>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Opening Hours')}</h4>
+                      <h4 className="font-semibold text-sm mb-2">{t('Jam Buka')}</h4>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Clock size={16} className="mr-2" />
-                        {/* {heritage.visit_info.openHours} */}
+                        {heritage.opening_hours.map((openingHour, index) => (
+                          <p key={index}>{`${Object.keys(openingHour)} : ${Object.values(openingHour)}`}</p>
+                        ))}
                       </div>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Ticket Price')}</h4>
+                      <h4 className="font-semibold text-sm mb-2">{t('Harga Tiket')}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {/* {heritage.visit_info.ticketPrice} */}
+                        {heritage.ticket_price}
                       </p>
                     </div>
                     
-                    <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Best Time to Visit')}</h4>
+                    {/* <div>
+                      <h4 className="font-semibold text-sm mb-2">{t('Waktu Terbaik untuk Berkunjung')}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {/* {heritage.visit_info.bestTime} */}
+                        {heritage.visit_info.bestTime}
                       </p>
-                    </div>
+                    </div> */}
                     
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Facilities')}</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {heritage.facilities && heritage.facilities.map((facility, index) => (
+                      <h4 className="font-semibold text-sm mb-2">{t('Fasilitas')}</h4>
+                      <div className="flex flex-wrap gap-2">{heritage.facilities}
+                        {/* {heritage.facilities && heritage.facilities.map((facility, index) => (
                           <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
                             {facility}
                           </span>
-                        ))}
+                        ))} */}
                       </div>
                     </div>
                   </div>
@@ -200,11 +205,11 @@ const HeritageDetail = () => {
                 <CardContent className="p-6 space-y-3">
                   <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
                     <Camera size={16} className="mr-2" />
-                    {t('Virtual Tour')}
+                    {t('Tur Virtual')}
                   </Button>
                   <Button variant="outline" className="w-full">
                     <MapPin size={16} className="mr-2" />
-                    {t('Get Directions')}
+                    {t('Lokasi')}
                   </Button>
                 </CardContent>
               </Card>

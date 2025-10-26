@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { defaultCollections } from '@/../database/default-data';
+// import { defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { masterCollectionService } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -30,7 +30,7 @@ const CollectionDetail = () => {
 
   const fetchCollections = async () => {
       try {
-        const response = await collectionService.getAll();
+        const response = await masterCollectionService.getAll();
   
         if (response.error) {
           console.error('Error fetching collections:', response.error);

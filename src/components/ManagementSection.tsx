@@ -28,7 +28,7 @@ const ManagementSection = () => {
         programs: museumStats.programs
       },
       gradient: 'from-primary to-primary-glow',
-      link: '/museum'
+      link: '/museums'
     },
     {
       icon: Landmark,
