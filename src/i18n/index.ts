@@ -24,6 +24,7 @@ export const resources = {
         career: "Career",
         ppid: "PPID",
         sop: "Standard Operating Procedures",
+        pemanfaatanAset: "Asset Utilization",
         // peraturan: "Arrangement",
         admin: "Admin"
       },
@@ -550,6 +551,7 @@ export const resources = {
         career: "Karir",
         ppid: "PPID",
         sop: "Prosedur Operasional Standar",
+        pemanfaatanAset: "Pemanfaatan Aset",
         // peraturan: "Peraturan",
         admin: "Admin"
       },
