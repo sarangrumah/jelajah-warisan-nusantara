@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import https from 'https';
 
 /**
  * Translation Service using LibreTranslate (Free & Open Source)
@@ -25,6 +26,7 @@ class TranslationService {
   private apiKey?: string;
   private retryAttempts: number;
   private retryDelay: number;
+  private agent: https.Agent | undefined;
 
   constructor() {
     // Use local LibreTranslate instance (Docker) or fallback to public
@@ -33,6 +35,14 @@ class TranslationService {
     this.apiKey = process.env.LIBRETRANSLATE_API_KEY; // Optional, for self-hosted instances
     this.retryAttempts = 3;
     this.retryDelay = 1000; // 1 second
+
+    // If using a local HTTPS endpoint with a self-signed cert, disable rejection.
+    if (this.baseUrl.startsWith('https://') && (this.baseUrl.includes('localhost') || this.baseUrl.includes('127.0.0.1'))) {
+      this.agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+      console.log('⚠️  Using custom HTTPS agent for local LibreTranslate to allow self-signed certs.');
+    }
     
     console.log(`🌐 Translation Service initialized with: ${this.baseUrl}`);
     
@@ -87,7 +97,8 @@ class TranslationService {
           }),
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          agent: this.agent
         });
 
         if (!response.ok) {
@@ -155,7 +166,8 @@ class TranslationService {
         }),
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        agent: this.agent
       });
 
       if (!response.ok) {
@@ -196,7 +208,8 @@ class TranslationService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        agent: this.agent
       });
 
       if (!response.ok) {
@@ -221,7 +234,8 @@ class TranslationService {
   async checkHealth(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/languages`, {
-        method: 'GET'
+        method: 'GET',
+        agent: this.agent
       });
       return response.ok;
     } catch (error) {
