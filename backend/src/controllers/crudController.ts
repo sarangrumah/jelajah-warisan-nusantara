@@ -12,6 +12,8 @@ interface JoinConfig {
   foreignKey: string;
   type: 'left' | 'inner' | 'has_many';
   fields?: string[];
+  localKeyCast?: string;
+  foreignKeyCast?: string;
 }
 
 /**
@@ -103,8 +105,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             selectFields += `, ${joinSelect}`;
 
             const joinType = rel.type === 'left' ? 'LEFT JOIN' : 'INNER JOIN';
+            const localKeyExpr = `${tableName}.${rel.localKey}${rel.localKeyCast || ''}`;
+            const foreignKeyExpr = `${rel.table}.${rel.foreignKey}${rel.foreignKeyCast || ''}`;
             joins.push(
-              `${joinType} ${rel.table} ON ${tableName}.${rel.localKey} = ${rel.table}.${rel.foreignKey}`
+              `${joinType} ${rel.table} ON ${localKeyExpr} = ${foreignKeyExpr}`
             );
           }
         }
@@ -157,6 +161,27 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             params.push(value);
             paramIndex++;
           }
+        }
+
+        if (tableName === 'tb_pemanfaatanasset') {
+          selectFields += `,
+            (
+              SELECT COALESCE(
+                json_agg(json_build_object('id', cat.id::text, 'name', cat.name))
+                  FILTER (WHERE cat.id IS NOT NULL),
+                '[]'::json
+              )
+              FROM tb_categories_layananaset_fasilitas cat
+              WHERE cat.id::text = ANY (
+                string_to_array(
+                  NULLIF(
+                    regexp_replace(${tableName}.category::text, '\\s+', '', 'g'),
+                    ''
+                  ),
+                  ','
+                )
+              )
+            ) AS category_relation`;
         }
 
         const whereClause = whereConditions.length > 0
@@ -226,11 +251,16 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         for (const { name: relName, config: rel } of flatJoins) {
           const joinSelect = buildBelongsToSelect(relName, rel);
           if (joinSelect) {
+            const localValue = (record as Record<string, unknown>)[rel.localKey];
+            if (localValue === undefined || localValue === null || localValue === '') {
+              continue;
+            }
+
             const joinResult = await query(
               `SELECT ${joinSelect}
                FROM ${rel.table}
-               WHERE ${rel.table}.${rel.foreignKey} = $1`,
-              [id]
+               WHERE ${rel.table}.${rel.foreignKey}${rel.foreignKeyCast || ''} = $1`,
+              [localValue]
             );
             if (joinResult.rows[0]) {
               Object.assign(record, joinResult.rows[0]);
@@ -265,11 +295,32 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             }
           }
         }
-        
-        // Translate content if language is not Indonesian and feature is enabled
-        const isTranslationEnabled = process.env.ENABLE_CONTENT_TRANSLATION === 'true';
 
-        if (isTranslationEnabled && targetLang !== 'id') {
+        if (tableName === 'tb_pemanfaatanasset') {
+          const categoryResult = await query(
+            `SELECT COALESCE(
+                json_agg(json_build_object('id', cat.id::text, 'name', cat.name))
+                  FILTER (WHERE cat.id IS NOT NULL),
+                '[]'::json
+              ) AS categories
+             FROM tb_categories_layananaset_fasilitas cat
+             WHERE cat.id::text = ANY (
+               string_to_array(
+                 NULLIF(
+                   regexp_replace($1::text, '\\s+', '', 'g'),
+                   ''
+                 ),
+                 ','
+               )
+             )`,
+            [record.category]
+          );
+
+          record.category_relation = categoryResult.rows[0]?.categories ?? [];
+        }
+
+        // Translate content if language is not Indonesian
+        if (targetLang !== 'id') {
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
             record = await contentTranslationService.translateContent(
@@ -366,7 +417,7 @@ const validFields = fields
 // Handle JSON/JSONB fields by stringifying values and casting placeholders
         const JSON_FIELDS: Record<string, string[]> = {
           tb_sites: ['opening_hours'],
-          tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
+          // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
         };
         const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
@@ -563,7 +614,7 @@ const validFields = fields
         if (hasMainUpdates) {
           const JSON_FIELDS: Record<string, string[]> = {
             tb_sites: ['opening_hours'],
-            tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
+            // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
           };
           const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 

@@ -247,14 +247,18 @@ export const tableRelationships = {
       localKey: 'category',
       foreignKey: 'id',
       type: 'left',
-      fields: ['id', 'name']
+      fields: ['id', 'name'],
+      localKeyCast: '::text',
+      foreignKeyCast: '::text'
     },
     location_relation: {
       table: 'tb_categories_layananaset_area',
       localKey: 'area',
       foreignKey: 'id',
       type: 'left',
-      fields: ['id', 'name']
+      fields: ['id', 'name'],
+      localKeyCast: '::text',
+      foreignKeyCast: '::text'
     }
   },
   tb_career_submission_management: {

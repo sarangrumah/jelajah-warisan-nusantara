@@ -11,6 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
+  CardFooter,
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +24,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -44,6 +48,7 @@ import {
   X,
   Check,
   Ban,
+  ChevronsUpDown,
 } from 'lucide-react';
 
 interface CategoryOption {
@@ -79,7 +84,7 @@ interface PemanfaatanAsset {
   created_at?: string;
   updated_at?: string;
   area_relation?: CategoryOption | null;
-  category_relation?: CategoryOption | null;
+  category_relation?: CategoryOption | CategoryOption[] | null;
   description_raw?: unknown;
   fasilitas_raw?: unknown;
   fasilitas_tambahan_raw?: unknown;
@@ -198,6 +203,74 @@ const jsonValueToQuillContent = (value: unknown): string => {
   return String(value);
 };
 
+const parseCategoryIds = (raw: unknown): string[] => {
+  if (!raw && raw !== 0) {
+    return [];
+  }
+
+  if (Array.isArray(raw)) {
+    return raw
+      .map((value) =>
+        typeof value === 'string' || typeof value === 'number'
+          ? String(value).trim()
+          : ''
+      )
+      .filter((value) => value.length > 0);
+  }
+
+  if (typeof raw === 'string') {
+    return raw
+      .split(',')
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+  }
+
+  if (typeof raw === 'number') {
+    return [String(raw)];
+  }
+
+  return [];
+};
+
+const formatCategoryValue = (ids: string[]): string =>
+  ids
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0)
+    .join(',');
+
+const extractCategoryIds = (
+  categoryValue: unknown,
+  relation?: CategoryOption | CategoryOption[] | null
+): string[] => {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  parseCategoryIds(categoryValue).forEach((id) => {
+    if (!seen.has(id)) {
+      seen.add(id);
+      result.push(id);
+    }
+  });
+
+  if (!relation) {
+    return result;
+  }
+
+  const relationArray = Array.isArray(relation) ? relation : [relation];
+  relationArray.forEach((entry) => {
+    if (!entry) {
+      return;
+    }
+    const entryId = String(entry.id ?? '').trim();
+    if (entryId && !seen.has(entryId)) {
+      seen.add(entryId);
+      result.push(entryId);
+    }
+  });
+
+  return result;
+};
+
 const summarizeJsonField = (value: unknown) => {
   const content = jsonValueToQuillContent(value);
   if (!content) {
@@ -212,9 +285,10 @@ const summarizeJsonField = (value: unknown) => {
 
 const prepareRichTextPayload = (value: string): string => {
   const cleaned = sanitizeHtml(value || '').trim();
-  const isEmpty = cleaned === '' || cleaned === '<p><br></p>';
-  const content = isEmpty ? '' : cleaned;
-  return JSON.stringify({ content });
+  if (!cleaned || cleaned === '<p><br></p>') {
+    return '';
+  }
+  return cleaned;
 };
 
 const PemanfaatanAssetForm = ({
@@ -232,11 +306,80 @@ const PemanfaatanAssetForm = ({
   onCancel: () => void;
   onSave: (data: PemanfaatanAsset) => void;
 }) => {
-  const [formData, setFormData] = useState<PemanfaatanAsset>({ ...value });
+  const initialCategoryIds = useMemo(
+    () => extractCategoryIds(value.category, value.category_relation),
+    [value.category, value.category_relation]
+  );
+
+  const [formData, setFormData] = useState<PemanfaatanAsset>({
+    ...value,
+    category: formatCategoryValue(initialCategoryIds),
+  });
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(initialCategoryIds);
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
 
   useEffect(() => {
-    setFormData({ ...value });
+    const derivedCategoryIds = extractCategoryIds(value.category, value.category_relation);
+    setFormData({
+      ...value,
+      category: formatCategoryValue(derivedCategoryIds),
+    });
+    setSelectedCategoryIds(derivedCategoryIds);
   }, [value]);
+
+  useEffect(() => {
+    setFormData((prev) => {
+      const nextCategory = formatCategoryValue(selectedCategoryIds);
+      if (prev.category === nextCategory) {
+        return prev;
+      }
+      return { ...prev, category: nextCategory };
+    });
+  }, [selectedCategoryIds]);
+
+  const selectedCategoryOptions = useMemo(() => {
+    const optionMap = new Map<string, CategoryOption>(
+      facilityCategories.map((category) => [category.id, category])
+    );
+    return selectedCategoryIds
+      .map((id) => optionMap.get(id))
+      .filter((option): option is CategoryOption => Boolean(option));
+  }, [facilityCategories, selectedCategoryIds]);
+
+  const categoryButtonText = useMemo(() => {
+    if (selectedCategoryIds.length === 0) {
+      return 'Select categories';
+    }
+
+    if (selectedCategoryIds.length === 1) {
+      const onlyId = selectedCategoryIds[0];
+      const label =
+        selectedCategoryOptions.find((option) => option.id === onlyId)?.name ||
+        facilityCategories.find((category) => category.id === onlyId)?.name ||
+        onlyId;
+      return label;
+    }
+
+    const firstId = selectedCategoryIds[0];
+    const firstLabel =
+      selectedCategoryOptions.find((option) => option.id === firstId)?.name ||
+      facilityCategories.find((category) => category.id === firstId)?.name ||
+      firstId;
+
+    return `${firstLabel} + ${selectedCategoryIds.length - 1} more`;
+  }, [facilityCategories, selectedCategoryIds, selectedCategoryOptions]);
+
+  const handleCategoryChange = (categoryId: string, checked: boolean) => {
+    setSelectedCategoryIds((prev) => {
+      if (checked) {
+        if (prev.includes(categoryId)) {
+          return prev;
+        }
+        return [...prev, categoryId];
+      }
+      return prev.filter((id) => id !== categoryId);
+    });
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -299,25 +442,76 @@ const PemanfaatanAssetForm = ({
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Category</Label>
-          <Select
-            value={formData.category || 'none'}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, category: value === 'none' ? '' : value }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Select category</SelectItem>
-              {facilityCategories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label htmlFor="category">Category</Label>
+          <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                id="category"
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={categoryPopoverOpen}
+                className="w-full justify-between"
+              >
+                <span className="truncate text-left">
+                  {categoryButtonText}
+                </span>
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-[min(22rem,90vw)] p-0">
+              <ScrollArea className="max-h-56">
+                <div className="flex flex-col gap-1 p-2">
+                  {facilityCategories.length === 0 ? (
+                    <p className="px-2 py-1 text-sm text-muted-foreground">No categories available.</p>
+                  ) : (
+                    facilityCategories.map((category) => {
+                      const isChecked = selectedCategoryIds.includes(category.id);
+                      return (
+                        <label
+                          key={category.id}
+                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 hover:bg-muted"
+                        >
+                          <Checkbox
+                            checked={isChecked}
+                            onCheckedChange={(checked) =>
+                              handleCategoryChange(category.id, checked === true)
+                            }
+                          />
+                          <span className="text-sm">{category.name}</span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
+          {selectedCategoryIds.length > 0 ? (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {selectedCategoryIds.map((id) => {
+                const option = facilityCategories.find((category) => category.id === id);
+                const label = option?.name || id;
+                return (
+                  <Badge
+                    key={id}
+                    variant="secondary"
+                    className="flex items-center gap-1 pr-1 pl-2"
+                  >
+                    <span>{label}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCategoryChange(id, false)}
+                      className="flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-muted"
+                      aria-label={`Remove ${label}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -448,6 +642,9 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<PemanfaatanAsset | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const { toast } = useToast();
 
   const canEdit = useMemo(
@@ -459,6 +656,28 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
     () => userRole === 'approver' || userRole === 'super-admin',
     [userRole]
   );
+
+  const facilityCategoryMap = useMemo(
+    () => new Map(facilityCategories.map((category) => [category.id, category.name])),
+    [facilityCategories]
+  );
+
+  const getCategoryBadges = (asset: PemanfaatanAsset) => {
+    const ids = extractCategoryIds(asset.category, asset.category_relation);
+    const relationEntries: CategoryOption[] = Array.isArray(asset.category_relation)
+      ? asset.category_relation.filter((entry): entry is CategoryOption => Boolean(entry))
+      : asset.category_relation
+      ? [asset.category_relation]
+      : [];
+    const relationMap = new Map<string, string>(
+      relationEntries.map((entry) => [entry.id, entry.name])
+    );
+
+    return ids.map((id) => ({
+      id,
+      name: relationMap.get(id) ?? facilityCategoryMap.get(id) ?? id,
+    }));
+  };
 
   useEffect(() => {
     fetchAll();
@@ -474,21 +693,33 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
       }
       const assets = (response.data as PemanfaatanAsset[] | undefined) || [];
       setItems(
-        assets.map((item) => ({
-          ...item,
-          image_url: deserializeImages((item as any).image_url),
-          reason_rejected: item.reason_rejected ?? '',
-          area: item.area ?? '',
-          category: item.category ?? '',
-          description: jsonValueToQuillContent((item as any).description),
-          fasilitas: jsonValueToQuillContent((item as any).fasilitas),
-          fasilitas_tambahan: jsonValueToQuillContent((item as any).fasilitas_tambahan),
-          ketentuan_umum: jsonValueToQuillContent((item as any).ketentuan_umum),
-          description_raw: (item as any).description,
-          fasilitas_raw: (item as any).fasilitas,
-          fasilitas_tambahan_raw: (item as any).fasilitas_tambahan,
-          ketentuan_umum_raw: (item as any).ketentuan_umum,
-        }))
+        assets.map((item) => {
+          const categoryRelation = (item as any).category_relation as
+            | CategoryOption
+            | CategoryOption[]
+            | null
+            | undefined;
+          const normalizedCategory = formatCategoryValue(
+            extractCategoryIds(item.category, categoryRelation)
+          );
+
+          return {
+            ...item,
+            image_url: deserializeImages((item as any).image_url),
+            reason_rejected: item.reason_rejected ?? '',
+            area: item.area ?? '',
+            category: normalizedCategory,
+            category_relation: categoryRelation ?? null,
+            description: jsonValueToQuillContent((item as any).description),
+            fasilitas: jsonValueToQuillContent((item as any).fasilitas),
+            fasilitas_tambahan: jsonValueToQuillContent((item as any).fasilitas_tambahan),
+            ketentuan_umum: jsonValueToQuillContent((item as any).ketentuan_umum),
+            description_raw: (item as any).description,
+            fasilitas_raw: (item as any).fasilitas,
+            fasilitas_tambahan_raw: (item as any).fasilitas_tambahan,
+            ketentuan_umum_raw: (item as any).ketentuan_umum,
+          };
+        })
       );
     } catch (error) {
       console.error('Error fetching pemanfaatan asset:', error);
@@ -550,12 +781,14 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
       const normalizedAdditional = normalizeField(data.fasilitas_tambahan || '', 'Additional Facilities');
       const normalizedRequirements = normalizeField(data.ketentuan_umum || '', 'General Requirements');
 
+      const normalizedCategoryValue = formatCategoryValue(parseCategoryIds(data.category));
+
       const payload = {
         title: data.title,
         short_location: data.short_location,
         location: data.location,
         area: data.area || null,
-        category: data.category || null,
+        category: normalizedCategoryValue || null,
         description: normalizedDescription,
         fasilitas: normalizedFacilities,
         fasilitas_tambahan: normalizedAdditional,
@@ -718,17 +951,29 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const deleteItem = async (id: string) => {
-    const confirmed = window.confirm('Delete this asset? This action cannot be undone.');
-    if (!confirmed) {
+  const openDeleteDialog = (asset: PemanfaatanAsset) => {
+    setDeletingItem(asset);
+    setDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setDeletingItem(null);
+    setDeleteSubmitting(false);
+  };
+
+  const deleteItem = async () => {
+    if (!deletingItem?.id) {
       return;
     }
     try {
-      const response = await pemanfaatanAssetService.delete(id);
+      setDeleteSubmitting(true);
+      const response = await pemanfaatanAssetService.delete(deletingItem.id);
       if (response.error) {
         throw new Error(response.error);
       }
       toast({ title: 'Deleted', description: 'Asset deleted successfully' });
+      closeDeleteDialog();
       await fetchAll();
     } catch (error) {
       console.error('Error deleting pemanfaatan asset:', error);
@@ -737,6 +982,8 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
         description: 'Failed to delete asset',
         variant: 'destructive',
       });
+    } finally {
+      setDeleteSubmitting(false);
     }
   };
 
@@ -774,6 +1021,43 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
 
   return (
     <div className="space-y-6">
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeDeleteDialog();
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {deletingItem?.title ? `Delete ${deletingItem.title}` : 'Delete Asset'}
+            </DialogTitle>
+            <DialogDescription>
+              {deletingItem?.title
+                ? `This action cannot be undone. ${deletingItem.title} will be permanently removed.`
+                : 'This action cannot be undone. The selected asset will be permanently removed.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={closeDeleteDialog}>
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={deleteItem}
+              disabled={deleteSubmitting}
+            >
+              {deleteSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              <Trash className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Layanan Pemanfaatan Aset</h2>
@@ -817,153 +1101,155 @@ const PemanfaatanAssetManagement = ({ userRole }: { userRole: string }) => {
           </CardHeader>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto pr-1">
           {items.map((item) => {
-            const firstImage = item.image_url[0]?.path;
+            const categoryBadges = getCategoryBadges(item);
+
             return (
               <Card key={item.id} className="flex flex-col">
-                <CardHeader className="space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-lg">{item.title}</CardTitle>
-                      <CardDescription>
-                        {item.short_location || 'No short location'}
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-wrap gap-2 justify-end">
-                      {item.is_active && <Badge>Published</Badge>}
-                      {item.is_approved ? (
-                        <Badge variant="success">Approved</Badge>
-                      ) : item.is_rejected ? (
-                        <Badge variant="destructive">Rejected</Badge>
-                      ) : (
-                        <Badge variant="outline">Pending Approval</Badge>
-                      )}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium text-muted-foreground">Area</span>
-                      <p className="text-sm">
-                        {item.area_relation?.name ||
-                          areas.find((area) => area.id === item.area)?.name ||
-                          '—'}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium text-muted-foreground">Category</span>
-                      <p className="text-sm">
-                        {item.category_relation?.name ||
-                          facilityCategories.find((category) => category.id === item.category)?.name ||
-                          '—'}
-                      </p>
-                    </div>
-                  </div>
-                  {item.reason_rejected && item.is_rejected && (
-                    <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
-                      <p className="font-medium text-destructive">Alasan Penolakan</p>
-                      <p className="text-destructive/90">{item.reason_rejected}</p>
-                    </div>
-                  )}
-                </CardHeader>
-                {firstImage && (
-                  <div className="px-6">
-                    <img
-                      src={firstImage}
-                      alt={item.title}
-                      className="h-48 w-full rounded-md object-cover"
-                    />
-                  </div>
-                )}
-                <CardContent className="flex-1 space-y-3 pt-4">
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Address</p>
-                    <p className="text-sm">{item.location || '—'}</p>
+                    <CardTitle className="text-lg leading-snug">{item.title}</CardTitle>
+                    <CardDescription>
+                      {item.short_location || 'No short location'}
+                    </CardDescription>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Capacity</p>
-                      <p className="text-sm">{item.kapasitas || '—'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Dimensions</p>
-                      <p className="text-sm">{item.ukuran || '—'}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Price</p>
-                      <p className="text-sm">{item.tarif || '—'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Overtime</p>
-                      <p className="text-sm">{item.overtime || '—'}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">Description</p>
-                    <p className="text-sm text-muted-foreground">
-                      {summarizeJsonField(item.description_raw ?? item.description)}
-                    </p>
-                  </div>
-                </CardContent>
-                <div className="px-6 pb-4 flex flex-wrap items-center justify-between gap-3">
-                  {canEdit && item.id && (
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          checked={!!item.is_active}
-                          onCheckedChange={(checked) => togglePublish(item.id!, checked)}
-                        />
-                        <span className="text-sm">Publish</span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex flex-wrap gap-2 ml-auto">
-                    {canEdit && item.id && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openWithAsset(item)}
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    )}
-                    {canApprove && !item.is_approved && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => approveItem(item.id!)}
-                      >
-                        <Check className="w-4 h-4 mr-2" />
-                        Approve
-                      </Button>
-                    )}
-                    {canApprove && !item.is_rejected && !item.is_approved && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => openReject(item.id!)}
-                      >
-                        <Ban className="w-4 h-4 mr-2" />
-                        Reject
-                      </Button>
-                    )}
-                    {canEdit && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteItem(item.id!)}
-                      >
-                        <Trash className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {item.is_active && <Badge>Published</Badge>}
+                    {item.is_approved ? (
+                      <Badge variant="success">Approved</Badge>
+                    ) : item.is_rejected ? (
+                      <Badge variant="destructive">Rejected</Badge>
+                    ) : (
+                      // <Badge variant="outline">Pending Approval</Badge>
+                      <></>
                     )}
                   </div>
                 </div>
-              </Card>
-            );
+                <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Area</span>
+                    <p>
+                      {item.area_relation?.name ||
+                        areas.find((area) => area.id === item.area)?.name ||
+                        '—'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Category</span>
+                    {categoryBadges.length ? (
+                      <div className="flex flex-wrap gap-2">
+                        {categoryBadges.map((category) => (
+                          <Badge
+                            key={`${item.id ?? 'asset'}-${category.id}`}
+                            variant="outline"
+                          >
+                            {category.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>—</p>
+                    )}
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <span className="font-medium text-muted-foreground">Address</span>
+                    <p>{item.location || '—'}</p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1 space-y-4 text-sm">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Capacity</span>
+                    <p>{item.kapasitas || '—'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Dimensions</span>
+                    <p>{item.ukuran || '—'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Price</span>
+                    <p>{item.tarif || '—'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="font-medium text-muted-foreground">Overtime</span>
+                    <p>{item.overtime || '—'}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <span className="font-medium text-muted-foreground">Description</span>
+                  <p className="text-muted-foreground">
+                    {summarizeJsonField(item.description_raw ?? item.description)}
+                  </p>
+                </div>
+                {item.is_rejected && item.reason_rejected?.trim() ? (
+                  <div className="rounded-md bg-destructive/10 p-3">
+                    <span className="font-medium">Alasan Penolakan: </span>
+                    <span className="text-muted-foreground">{item.reason_rejected}</span>
+                  </div>
+                ) : null}
+              </CardContent>
+              <CardFooter className="flex-col items-start gap-3">
+                {canEdit && item.id ? (
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={!!item.is_active}
+                      onCheckedChange={(checked) => togglePublish(item.id!, checked)}
+                    />
+                    <span className="text-sm">Publish</span>
+                  </div>
+                ) : null}
+                <div className="flex w-full flex-wrap gap-2">
+                  {canEdit && item.id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openWithAsset(item)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
+                  {canApprove && !item.is_approved && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => approveItem(item.id!)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Approve
+                    </Button>
+                  )}
+                  {canApprove && !item.is_rejected && !item.is_approved && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => openReject(item.id!)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Ban className="w-4 h-4 mr-2" />
+                      Reject
+                    </Button>
+                  )}
+                  {canEdit && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => openDeleteDialog(item)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Trash className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              </CardFooter>
+            </Card>
+          );
           })}
         </div>
       )}
