@@ -276,6 +276,6 @@ export const categoriesLayananAsetFasilitas = {
   getAllCategories: () => apiClient.getAll('tb_categories_layananaset_fasilitas'),
 }
 
-export const pemanfaatanAssetService = {
-  getAll: () => apiClient.getAll('tb_pemanfaatanasset')
-}
+// export const pemanfaatanAssetService = {
+//   getAll: () => apiClient.getAll('tb_pemanfaatanasset')
+// }
