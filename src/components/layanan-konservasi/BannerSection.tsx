@@ -1,12 +1,16 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { assetUrl } from '@/lib/asset-url';
+import { useTranslation } from 'react-i18next';
 // Remove old getImageUrl
 
 const BannerSection = () => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
   const [slides, setSlides] = React.useState([]);
+  const [translatedSlides, setTranslatedSlides] = useState([]);
   const [currentSlide, setCurrentSlide] = React.useState(0);
+
   // TODO: Replace this with API call to fetch banners from backend
   // For now, use a sample with the correct image URL format
   const defaultSlides = [
@@ -16,6 +20,17 @@ const BannerSection = () => {
       image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
     }
   ];
+
+  useEffect(() => {
+    if (slides.length > 0) {
+      const translated = slides.map(slide => ({
+        ...slide,
+        title: t(slide.title),
+        subtitle: t(slide.subtitle),
+      }));
+      setTranslatedSlides(translated);
+    }
+  }, [slides, t]);
 
   useEffect(() => {
     if (slides.length > 0) {
@@ -46,12 +61,9 @@ const BannerSection = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-  useEffect(() => {
-    setSlides(defaultSlides);
-  }, []);
-
   // Log all slide image URLs on render for debugging
   useEffect(() => {
+    setSlides(defaultSlides);
   }, [slides]);
 
   return (
@@ -90,10 +102,10 @@ const BannerSection = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto scroll-reveal">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
-              {slides.length > 0 && slides[currentSlide].title}
+              {translatedSlides.length > 0 && translatedSlides[currentSlide].title}
             </h1>
             <p className="text-xl text-muted-foreground max-w-8xl mx-autox px-6 pt-5 leading-relaxed">
-              {slides.length > 0 && slides[currentSlide].subtitle}
+              {translatedSlides.length > 0 && translatedSlides[currentSlide].subtitle}
             </p>
           </div>
         </div>
