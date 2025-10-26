@@ -142,69 +142,69 @@ const NewsSection = () => {
                 onClick={() => { setIsPaused(true); carouselApi?.scrollNext(); }}
               />
               <CarouselContent>
-                {news.map((article, index) => (
-                  <CarouselItem
-                    key={article.id}
-                    className="md:basis-1/2 lg:basis-1/3 py-5"
-                    aria-label={`Slide ${index + 1} of ${news.length}`}
-                  >
-                    <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce h-full flex flex-col p-2">
-                      <div className="aspect-video relative overflow-hidden">
-                        <img
-                          src={getNewsImageUrl(article.image || article.image_url)}
-                          alt={article.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-4 left-4">
-                          <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                            {article.category || article.categories}
-                          </span>
-                        </div>
-                      </div>
-                      <CardContent className="p-6 flex-1 flex flex-col">
-                        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: fixBrokenHtmlTags(article.title)
-                            }}
+                  {news.map((article, index) => (
+                    <CarouselItem
+                      key={article.id}
+                      className="md:basis-1/2 lg:basis-1/3 py-5"
+                      aria-label={`Slide ${index + 1} of ${news.length}`}
+                    >
+                      <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce h-full flex flex-col p-2">
+                        <div className="aspect-video relative overflow-hidden">
+                          <img
+                            src={getNewsImageUrl(article.image || article.image_url)}
+                            alt={article.title}
+                            className="w-full h-full object-cover"
                           />
-                        </h3>
-                        <p className="text-muted-foreground mb-4 line-clamp-3">
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: fixBrokenHtmlTags(article.excerpt || article.subtitle || article.description)
-                            }}
-                          />
-                        </p>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                          <div className="flex items-center gap-2">
-                            <Calendar size={14} />
-                            <span>
-                              {article.date
-                                ? new Date(article.date).toLocaleDateString('id-ID')
-                                : article.published_date
-                                  ? new Date(article.published_date).toLocaleDateString('id-ID')
-                                  : ''}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <User size={14} />
-                            <span>
-                              {Array.isArray(article.author)
-                                ? article.author.join(', ')
-                                : article.author}
+                          <div className="absolute top-4 left-4">
+                            <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                              {article.category || article.categories}
                             </span>
                           </div>
                         </div>
-                        <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
-                          {t('news.button.readMore')}
-                          <ArrowRight size={16} />
-                        </Link>
-                      </CardContent>
-                    </Card>
+                        <CardContent className="p-6 flex-1 flex flex-col">
+                          <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: fixBrokenHtmlTags(article.title)
+                              }}
+                            />
+                          </h3>
+                          <p className="text-muted-foreground mb-4 line-clamp-3">
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: fixBrokenHtmlTags(article.excerpt || article.subtitle || article.description)
+                              }}
+                            />
+                          </p>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                            <div className="flex items-center gap-2">
+                              <Calendar size={14} />
+                              <span>
+                                {article.date
+                                  ? new Date(article.date).toLocaleDateString('id-ID')
+                                  : article.published_date
+                                    ? new Date(article.published_date).toLocaleDateString('id-ID')
+                                    : ''}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <User size={14} />
+                              <span>
+                                {Array.isArray(article.author)
+                                  ? article.author.join(', ')
+                                  : article.author}
+                              </span>
+                            </div>
+                          </div>
+                          <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
+                            {t('news.button.readMore')}
+                            <ArrowRight size={16} />
+                          </Link>
+                        </CardContent>
+                      </Card>
                     </CarouselItem>
                   )
-                )}
+                  )}
               </CarouselContent>
               {/* Pause/Resume Button */}
               {/* <div className="absolute right-4 bottom-4 z-10">
