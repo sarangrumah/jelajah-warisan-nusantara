@@ -190,7 +190,9 @@ const ContactSection = () => {
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <info.icon size={24} className="text-primary" />
-                      <CardTitle className="text-lg" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(info.title)) }} />
+                      <CardTitle className="text-lg">
+                        <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(info.title)) }} />
+                      </CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -199,8 +201,9 @@ const ContactSection = () => {
                         <p
                           key={detailIndex}
                           className="text-muted-foreground text-sm"
-                          dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(detail)) }}
-                        />
+                        >
+                         <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(detail)) }} />
+                        </p>
                       ))}
                     </div>
                   </CardContent>
@@ -307,7 +310,9 @@ const ContactSection = () => {
               <Accordion type="single" collapsible className="w-full">
                 {faqs.length > 0 && faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
-                    <AccordionTrigger className="text-left" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.question) }} />
+                    <AccordionTrigger className="text-left">
+                      <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.question) }} />
+                    </AccordionTrigger>
                     <AccordionContent>
                       <p
                         className="text-muted-foreground leading-relaxed"
