@@ -132,34 +132,34 @@ const ContactSection = () => {
   const contactInfo = [
     {
       icon: MapPin,
-      title: t('contact.office.title'),
+      title: 'contact.office.title',
       details: [
-        t('contact.office.address1'),
-        t('contact.office.address2'),
-        t('contact.office.address3')
+        'contact.office.address1',
+        'contact.office.address2',
+        'contact.office.address3'
       ]
     },
     {
       icon: Phone,
-      title: t('contact.whatsapp'),
+      title: 'contact.whatsapp',
       details: [
         '+6281295953929'
       ]
     },
     {
       icon: Mail,
-      title: t('contact.email'),
+      title: 'contact.email',
       details: [
         'museumcb@kemenbud.go.id'
       ]
     },
     {
       icon: Clock,
-      title: t('contact.hours.title'),
+      title: 'contact.hours.title',
       details: [
-        t('contact.hours.monThu'),
-        t('contact.hours.fri'),
-        t('contact.hours.weekend')
+        'contact.hours.monThu',
+        'contact.hours.fri',
+        'contact.hours.weekend'
       ]
     }
   ];
@@ -190,15 +190,17 @@ const ContactSection = () => {
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <info.icon size={24} className="text-primary" />
-                      <CardTitle className="text-lg">{info.title}</CardTitle>
+                      <CardTitle className="text-lg" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(info.title)) }} />
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-1">
                       {info.details.map((detail, detailIndex) => (
-                        <p key={detailIndex} className="text-muted-foreground text-sm">
-                          {detail}
-                        </p>
+                        <p
+                          key={detailIndex}
+                          className="text-muted-foreground text-sm"
+                          dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(t(detail)) }}
+                        />
                       ))}
                     </div>
                   </CardContent>
@@ -305,9 +307,7 @@ const ContactSection = () => {
               <Accordion type="single" collapsible className="w-full">
                 {faqs.length > 0 && faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {faq.question}
-                    </AccordionTrigger>
+                    <AccordionTrigger className="text-left" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.question) }} />
                     <AccordionContent>
                       <p
                         className="text-muted-foreground leading-relaxed"
