@@ -115,7 +115,7 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
         <QuillEditor
           value={formData.description || ''}
           onChange={(html) => setFormData(p => ({ ...p, description: html }))}
-          height={200}
+          height={100}
           placeholder="Describe this memory"
         />
       </div>

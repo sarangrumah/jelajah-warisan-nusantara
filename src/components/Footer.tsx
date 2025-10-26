@@ -20,7 +20,7 @@ const Footer = () => {
     { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
     { label: t('nav.career'), href: '/career' },
     { label: t('nav.ppid'), href: '/ppid' },
-    { label: t('nav.sop'), href: '/sop' },
+    { label: t('nav.sop'), href: '/prosedur-operasional-standar' },
   ];
 
   return (

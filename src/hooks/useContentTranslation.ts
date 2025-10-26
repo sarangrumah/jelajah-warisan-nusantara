@@ -7,7 +7,7 @@ import translationService from '@/lib/translation-service';
  * @param content - The content to translate (can be string or object with multiple fields)
  * @param sourceLang - Source language code (default: 'id' for Indonesian)
  */
-export function useContentTranslation<T extends string | Record<string, any>>(
+export function useContentTranslation<T extends string | Record<string, any> | any[]>(
   content: T | null | undefined,
   sourceLang: string = 'id'
 ): { translatedContent: T | null; isTranslating: boolean; error: string | null } {
@@ -17,8 +17,17 @@ export function useContentTranslation<T extends string | Record<string, any>>(
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Clear cache on language change
+    i18n.on('languageChanged', () => {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        Object.keys(window.sessionStorage).forEach(key => {
+          if (key.startsWith('translation_')) {
+            window.sessionStorage.removeItem(key);
+          }
+        });
+      }
+    });
     const translateContent = async () => {
-      // If no content, return null
       if (!content) {
         setTranslatedContent(null);
         return;
@@ -26,7 +35,6 @@ export function useContentTranslation<T extends string | Record<string, any>>(
 
       const currentLang = i18n.language;
 
-      // If current language is same as source, return original content
       if (currentLang === sourceLang) {
         setTranslatedContent(content);
         return;
@@ -36,43 +44,81 @@ export function useContentTranslation<T extends string | Record<string, any>>(
       setError(null);
 
       try {
-        // Handle string content
         if (typeof content === 'string') {
           const result = await translationService.translate(content, currentLang, sourceLang);
           if (result.success) {
             setTranslatedContent(result.translatedText as T);
           } else {
             setError(result.error || 'Translation failed');
-            setTranslatedContent(content); // Fallback to original
+            setTranslatedContent(content);
           }
-        }
-        // Handle object content (translate all string fields)
-        else if (typeof content === 'object' && content !== null) {
-          const translated: any = { ...content };
-          const fields = Object.keys(content);
-
-          for (const field of fields) {
-            const value = (content as any)[field];
-            
-            // Only translate string values that are not empty or just a dash
-            if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
-              const result = await translationService.translate(value, currentLang, sourceLang);
-              if (result.success) {
-                translated[field] = result.translatedText;
-              } else {
-                translated[field] = value; // Keep original on error
-              }
-            } else {
-              translated[field] = value; // Keep non-string or empty values as is
+        } else if (typeof content === 'object' && content !== null) {
+          // Collect all strings to be translated
+          const stringsToTranslate: string[] = [];
+          const collectStrings = (obj: any) => {
+            if (Array.isArray(obj)) {
+              obj.forEach(collectStrings);
+            } else if (typeof obj === 'object' && obj !== null) {
+              Object.values(obj).forEach((value: any) => {
+                if (typeof value === 'string' && value && value.trim() !== '' && value.trim() !== '-') {
+                  stringsToTranslate.push(value);
+                } else if (typeof value === 'object') {
+                  collectStrings(value);
+                }
+              });
             }
-          }
+          };
+          collectStrings(content);
 
-          setTranslatedContent(translated as T);
+          if (stringsToTranslate.length > 0) {
+            // Chunking strategy: process in smaller batches to avoid timeouts
+            const CHUNK_SIZE = 20; // Number of texts per batch
+            const chunks = [];
+            for (let i = 0; i < stringsToTranslate.length; i += CHUNK_SIZE) {
+              chunks.push(stringsToTranslate.slice(i, i + CHUNK_SIZE));
+            }
+
+            // Process chunks sequentially to avoid overloading the server
+            const allResults = [];
+            for (const chunk of chunks) {
+              const chunkResult = await translationService.translateBatch(chunk, currentLang, sourceLang);
+              allResults.push(...chunkResult);
+            }
+            
+            // Create the translation map from the combined results
+            const translatedMap = new Map(
+              allResults.map((res, i) => [stringsToTranslate[i], res.translatedText])
+            );
+
+            // Apply translations back to the content structure
+            const applyTranslations = (obj: any): any => {
+              if (Array.isArray(obj)) {
+                return obj.map(applyTranslations);
+              } else if (typeof obj === 'object' && obj !== null) {
+                const newObj: any = { ...obj };
+                for (const key in newObj) {
+                  const value = newObj[key];
+                  if (typeof value === 'string' && translatedMap.has(value)) {
+                    newObj[key] = translatedMap.get(value);
+                  } else if (typeof value === 'object') {
+                    newObj[key] = applyTranslations(value);
+                  }
+                }
+                return newObj;
+              }
+              return obj;
+            };
+            setTranslatedContent(applyTranslations(content));
+          } else {
+            setTranslatedContent(content);
+          }
+        } else {
+          setTranslatedContent(content);
         }
       } catch (err) {
         console.error('Translation error:', err);
         setError(err instanceof Error ? err.message : 'Translation failed');
-        setTranslatedContent(content); // Fallback to original
+        setTranslatedContent(content);
       } finally {
         setIsTranslating(false);
       }

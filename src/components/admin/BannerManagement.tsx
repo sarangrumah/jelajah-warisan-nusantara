@@ -119,7 +119,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
             id="button_url_1"
             value={formData.button_label_1}
             onChange={(e) => setFormData(prev => ({ ...prev, button_label_1: e.target.value }))}
-            required
           />
         </div>
         <div className="space-y-2">
@@ -128,7 +127,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
             id="button_url_2"
             value={formData.button_url_1}
             onChange={(e) => setFormData(prev => ({ ...prev, button_url_1: e.target.value }))}
-            required
           />
         </div>
       </div>
@@ -140,7 +138,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
             id="button_url_1"
             value={formData.button_label_2}
             onChange={(e) => setFormData(prev => ({ ...prev, button_label_2: e.target.value }))}
-            required
           />
         </div>
         <div className="space-y-2">
@@ -149,7 +146,6 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
             id="button_url_2"
             value={formData.button_url_2}
             onChange={(e) => setFormData(prev => ({ ...prev, button_url_2: e.target.value }))}
-            required
           />
         </div>
       </div>

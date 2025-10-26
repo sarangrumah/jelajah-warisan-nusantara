@@ -59,7 +59,6 @@ const HeroSection = () => {
     try {
       const response = await bannerService.getAll();
       if (response.error) {
-        console.log('Error fetching slides:', response.error);
         setSlides(defaultSlides);
       }
       if(response.data.length === 0) {
@@ -80,9 +79,6 @@ const HeroSection = () => {
   const fetchVideos = async () => {
     try {
       const response = await heroVideoService.getAll();
-      if (response.error) {
-        console.log('Error fetching videos:', response.error)
-      }
       setVideoList(response.data || defaultVideos);
     } catch (error) {
       console.error('Error fetching videos:', error)

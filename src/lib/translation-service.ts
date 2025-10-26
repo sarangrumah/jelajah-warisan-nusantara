@@ -1,134 +1,70 @@
+const LIBRETRANSLATE_API = 'http://localhost:5000/translate';
+
+// In-memory cache
+const cache = new Map<string, string>();
+
+type TranslateTextParams = {
+  text: string;
+  source: string;
+  target: string;
+};
+
 /**
- * Frontend Translation Service
- * Communicates with backend LibreTranslate API to translate content
+ * Translates a given text using the LibreTranslate API.
+ * Caches results to avoid redundant API calls.
+ * @param {TranslateTextParams} params - The text to translate and language codes.
+ * @returns {Promise<string>} - The translated text.
  */
-
-interface TranslationResult {
-  translatedText: string;
-  success: boolean;
-  error?: string;
-}
-
-class TranslationService {
-  private baseUrl: string;
-  private cache: Map<string, string>;
-
-    constructor() {
-        // console.log(import.meta.env.VITE_API_URL);
-    this.baseUrl = import.meta.env.VITE_API_URL || 'https://museumcagarbudaya.kemenbud.go.id/';
-    this.cache = new Map();
+export const translateText = async ({ text, source, target }: TranslateTextParams): Promise<string> => {
+  // If source and target are the same, no need to translate.
+  if (source === target) {
+    return text;
   }
 
-  /**
-   * Generate cache key for translation
-   */
-  private getCacheKey(text: string, targetLang: string, sourceLang: string): string {
-    return `${sourceLang}-${targetLang}-${text}`;
+  // If the text is empty or just whitespace, don't call the API.
+  if (!text?.trim()) {
+    return text;
   }
 
-  /**
-   * Translate text using backend LibreTranslate service
-   * @param text - Text to translate
-   * @param targetLang - Target language code (e.g., 'en', 'id')
-   * @param sourceLang - Source language code (default: 'id' for Indonesian)
-   */
-  async translate(
-    text: string,
-    targetLang: string,
-    sourceLang: string = 'id'
-  ): Promise<TranslationResult> {
-    // If source and target are the same, return original text
-    if (sourceLang === targetLang) {
-      return {
-        translatedText: text,
-        success: true
-      };
-    }
+  const cacheKey = `${source}-${target}-${text}`;
 
-    // If text is empty or just a dash, return as is
-    if (!text || text.trim() === '' || text.trim() === '-') {
-      return {
-        translatedText: text,
-        success: true
-      };
-    }
-
-    // Check cache first
-    const cacheKey = this.getCacheKey(text, targetLang, sourceLang);
-    if (this.cache.has(cacheKey)) {
-      return {
-        translatedText: this.cache.get(cacheKey)!,
-        success: true
-      };
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}/api/translate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          targetLang,
-          sourceLang
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Translation failed');
-      }
-
-      const data = await response.json();
-      const translatedText = data.translatedText || text;
-
-      // Cache the result
-      this.cache.set(cacheKey, translatedText);
-
-      return {
-        translatedText,
-        success: true
-      };
-    } catch (error) {
-      console.error('Translation error:', error);
-      return {
-        translatedText: text, // Return original text as fallback
-        success: false,
-        error: error instanceof Error ? error.message : 'Translation failed'
-      };
-    }
+  // Check if the translation is already in the cache.
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)!;
   }
 
-  /**
-   * Translate multiple texts in batch
-   * @param texts - Array of texts to translate
-   * @param targetLang - Target language code
-   * @param sourceLang - Source language code
-   */
-  async translateBatch(
-    texts: string[],
-    targetLang: string,
-    sourceLang: string = 'id'
-  ): Promise<TranslationResult[]> {
-    const results: TranslationResult[] = [];
+  try {
+    const response = await fetch(LIBRETRANSLATE_API, {
+      method: 'POST',
+      body: JSON.stringify({
+        q: text,
+        source: source,
+        target: target,
+        format: 'text',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    for (const text of texts) {
-      const result = await this.translate(text, targetLang, sourceLang);
-      results.push(result);
+    if (!response.ok) {
+      // It's often better to return the original text than to show an error.
+      console.error(`Translation API failed with status: ${response.status}`);
+      return text;
     }
 
-    return results;
-  }
+    const data = await response.json();
+    const translatedText = data.translatedText;
 
-  /**
-   * Clear translation cache
-   */
-  clearCache(): void {
-    this.cache.clear();
-  }
-}
+    // Store the successful translation in the cache.
+    if (translatedText) {
+      cache.set(cacheKey, translatedText);
+    }
 
-// Export singleton instance
-export const translationService = new TranslationService();
-export default translationService;
+    return translatedText || text;
+  } catch (error) {
+    console.error('Error calling translation API:', error);
+    // On failure, return the original text to prevent the UI from breaking.
+    return text;
+  }
+};

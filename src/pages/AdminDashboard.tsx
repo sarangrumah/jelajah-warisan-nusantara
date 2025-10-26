@@ -16,20 +16,19 @@ import SitesManagement from '@/components/admin/SiteManagement';
 import AgendaManagement from '@/components/admin/EventManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';
-import CareerManagement from '@/components/admin/CareerManagement';
 import UserManagement from '@/components/admin/UserManagement';
 import CareerPostingManagement from '@/components/admin/CareerPostingManagement';
 import CareerSubmissionManagement from '@/components/admin/CareerSubmissionManagement';
 import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
+import PemanfaatanAssetManagement from '@/components/admin/PemanfaatanAssetManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
 import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
-import ActivityLogManagement from "@/components/admin/ActivityLogManagement";
-import TranslationManagement from "@/components/admin/TranslationManagement";
+import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
+import TranslationManagement from '@/components/admin/TranslationManagement';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -41,12 +40,9 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      console.log('👤 User object:', user);
-      console.log('🔐 User roles:', user.roles);
       // User roles are already included in the auth response
       // Get the primary role (first role if multiple)
       const primaryRole = user.roles && user.roles.length > 0 ? user.roles[0] : 'viewer';
-      console.log('🎯 Primary role set to:', primaryRole);
       setUserRole(primaryRole);
     }
   }, [user]);
@@ -164,6 +160,7 @@ const AdminDashboard = () => {
           {activeTab === 'career-mgmt' && <CareerPostingManagement userRole={userRole} />}
           {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
           {activeTab === 'memoryworld' && <MemoryWorldManagement userRole={userRole} />}
+          {activeTab === 'pemanfaatan-asset' && <PemanfaatanAssetManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {/* {activeTab === 'career' && <CareerManagement />} */}

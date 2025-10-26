@@ -1,12 +1,11 @@
 import { useEffect, useCallback } from 'react';
 
 export const usePerformanceMonitoring = () => {
-  const reportWebVitals = useCallback((metric: any) => {
+  const reportWebVitals = useCallback((_metric: any) => {
     // In production, send to analytics service
     if (process.env.NODE_ENV === 'production') {
-      console.log('Web Vital:', metric);
       // Example: Send to Google Analytics, DataDog, etc.
-      // analytics.track('web_vital', metric);
+      // analytics.track('web_vital', _metric);
     }
   }, []);
 
@@ -25,15 +24,14 @@ export const usePerformanceMonitoring = () => {
           load: navigation.loadEventEnd - navigation.loadEventStart,
         };
 
-        console.log('Performance Metrics:', metrics);
         
         // Alert if performance is poor
         if (metrics.ttfb > 2000) {
-          console.warn('Slow TTFB detected:', metrics.ttfb + 'ms');
+          // console.warn('Slow TTFB detected:', metrics.ttfb + 'ms');
         }
         
         if (metrics.load > 3000) {
-          console.warn('Slow page load detected:', metrics.load + 'ms');
+          // console.warn('Slow page load detected:', metrics.load + 'ms');
         }
       }
     }
@@ -66,8 +64,8 @@ export const usePerformanceMonitoring = () => {
         
         // Cleanup observer
         return () => observer.disconnect();
-      } catch (error) {
-        console.warn('Performance Observer not supported:', error);
+      } catch {
+        // Performance Observer not supported in all browsers
       }
     }
 

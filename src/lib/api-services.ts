@@ -1,4 +1,3 @@
-import { get } from 'http';
 import { apiClient } from './api-client';
 
 export const authService = {
@@ -49,7 +48,7 @@ export const newsService = {
 
 // Agenda Items
 export const agendaService = {
-  getAll: () => apiClient.getAll('agenda_items'), // Get all for admin, filtering happens in components
+  getAll: (params?: Record<string, any>) => apiClient.getAll('agenda_items', params),
   getPublished: () => apiClient.getAll('agenda_items', { is_published: 'true' }),
   getById: (id: string) => apiClient.getById('agenda_items', id),
   create: (data: any) => apiClient.create('agenda_items', data),
@@ -132,6 +131,21 @@ export const memoryWorldService = {
   delete: (id: string) => apiClient.delete('tb_memoryoftheworld', id),
   approve: (id: string) => apiClient.approve('tb_memoryoftheworld', id),
   reject: (id: string, reason: string) => apiClient.reject('tb_memoryoftheworld', id, reason),
+};
+
+export const pemanfaatanAssetService = {
+  approve: (id: string) => apiClient.approve('tb_pemanfaatanasset', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_pemanfaatanasset', id, reason),
+  getAll: () => apiClient.getAll('tb_pemanfaatanasset'),
+  getById: (id: string) => apiClient.getById('tb_pemanfaatanasset', id),
+  create: (data: any) => apiClient.create('tb_pemanfaatanasset', data),
+  update: (id: string, data: any) => apiClient.update('tb_pemanfaatanasset', id, data),
+  delete: (id: string) => apiClient.delete('tb_pemanfaatanasset', id),
+};
+
+export const pemanfaatanAssetCategories = {
+  getAreas: () => apiClient.getAll('tb_categories_layananaset_area'),
+  getFacilities: () => apiClient.getAll('tb_categories_layananaset_fasilitas'),
 };
 
 export const collectionCategoryService = {

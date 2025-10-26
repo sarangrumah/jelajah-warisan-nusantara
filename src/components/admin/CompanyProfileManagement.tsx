@@ -3,14 +3,12 @@ import { contentService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ImageUpload } from '@/components/ui/image-upload';
-import RichTextEditor from '../ui/rich-text-editor';
 import QuillEditor from '@/components/ui/quill-editor';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -22,7 +20,9 @@ function fixBrokenHtmlTags(html: string): string {
 
 // Helper to render a plain text preview from potential HTML input
 function stripHtml(input?: string): string {
-  if (!input) return '';
+  if (!input) {
+    return '';
+  }
   return input.replace(/<[^>]*>/g, '').trim();
 }
 
@@ -538,7 +538,6 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
       // };
 
       let response;
-      console.log("ini form datanya", formData)
       if (editingProfile?.id) {
         response = await contentService.update(editingProfile.id, formData);
         if (response.error) {throw new Error(response.error)};
@@ -579,7 +578,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
-  const togglePublished = async (id: string, isPublished: boolean) => {
+  const _togglePublished = async (id: string, isPublished: boolean) => {
     try {
       const response = await contentService.update(id, { is_published: isPublished });
       if (response.error) {throw new Error(response.error)};
@@ -759,7 +758,7 @@ const CompanyProfileManagement =  ({ userRole }: { userRole: string }) => {
                     <div>
                       <span className="font-medium">Address:</span>
                       <p className="text-muted-foreground line-clamp-2">
-                        {profile.address || 'No longitude'}
+                        {stripHtml(profile.address) || 'No longitude'}
                       </p>
                     </div>
                     <div className="flex gap-4 text-m">

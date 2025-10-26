@@ -11,33 +11,25 @@ const ManagementSectionDebug = () => {
   
   useEffect(() => {
     // Debug: Check what translations are loaded
-    console.log('=== ManagementSection Debug ===');
-    console.log('i18n ready:', ready);
-    console.log('Current language:', i18n.language);
-    console.log('Available languages:', i18n.languages);
     
     // Try to get the translation store
     const store = (i18n as any).store;
     if (store && store.data) {
-      console.log('Translation store data:', store.data);
       
       // Check if management translations exist
       const currentLang = i18n.language;
       const translations = store.data[currentLang]?.translation || {};
-      console.log('All translation keys:', Object.keys(translations));
       
       // Filter management keys
       const managementKeys = Object.keys(translations).filter(key => 
         key.includes('management')
       );
-      console.log('Management translation keys:', managementKeys);
       
       // Show actual values
       const managementTranslations: any = {};
       managementKeys.forEach(key => {
         managementTranslations[key] = translations[key];
       });
-      console.log('Management translations:', managementTranslations);
       
       setDebugInfo({
         ready,
@@ -49,9 +41,6 @@ const ManagementSectionDebug = () => {
     }
     
     // Test specific translations
-    console.log('t("management.museum.title"):', t('management.museum.title'));
-    console.log('t("management.heritage.title"):', t('management.heritage.title'));
-    console.log('t("management.mainServices"):', t('management.mainServices'));
   }, [t, i18n, ready]);
   
   // Define cards inside useMemo to make them reactive to language changes

@@ -12,6 +12,8 @@ interface JoinConfig {
   foreignKey: string;
   type: 'left' | 'inner' | 'has_many';
   fields?: string[];
+  localKeyCast?: string;
+  foreignKeyCast?: string;
 }
 
 /**
@@ -28,7 +30,7 @@ function getTranslatableFields(tableName: string): string[] {
     'tb_banner': ['title', 'subtitle', 'description'],
     'tb_memoryoftheworld': ['title', 'description'],
     'tb_company': ['name', 'description', 'vision', 'mission'],
-    'tb_pemanfaatan_aset': ['title', 'description', 'location'],
+    'tb_pemanfaatanasset': ['title', 'description', 'location'],
   };
 
   return translatableFieldsMap[tableName] || [];
@@ -103,8 +105,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             selectFields += `, ${joinSelect}`;
 
             const joinType = rel.type === 'left' ? 'LEFT JOIN' : 'INNER JOIN';
+            const localKeyExpr = `${tableName}.${rel.localKey}${rel.localKeyCast || ''}`;
+            const foreignKeyExpr = `${rel.table}.${rel.foreignKey}${rel.foreignKeyCast || ''}`;
             joins.push(
-              `${joinType} ${rel.table} ON ${tableName}.${rel.localKey} = ${rel.table}.${rel.foreignKey}`
+              `${joinType} ${rel.table} ON ${localKeyExpr} = ${foreignKeyExpr}`
             );
           }
         }
@@ -137,7 +141,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         let paramIndex = 1;
 
         for (const [key, value] of Object.entries(filters)) {
-          if (value === undefined || key === 'include') continue;
+          if (value === undefined || key === 'include') { continue; }
 
           if (key === 'search') {
             const conditions = [];
@@ -159,6 +163,27 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           }
         }
 
+        if (tableName === 'tb_pemanfaatanasset') {
+          selectFields += `,
+            (
+              SELECT COALESCE(
+                json_agg(json_build_object('id', cat.id::text, 'name', cat.name))
+                  FILTER (WHERE cat.id IS NOT NULL),
+                '[]'::json
+              )
+              FROM tb_categories_layananaset_fasilitas cat
+              WHERE cat.id::text = ANY (
+                string_to_array(
+                  NULLIF(
+                    regexp_replace(${tableName}.category::text, '\\s+', '', 'g'),
+                    ''
+                  ),
+                  ','
+                )
+              )
+            ) AS category_relation`;
+        }
+
         const whereClause = whereConditions.length > 0
           ? `WHERE ${whereConditions.join(' AND ')}`
           : '';
@@ -173,11 +198,15 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
         `;
 
+        console.time(`[PERF] Query for ${tableName}`);
         const result = await query(queryText, [...params, limit, offset]);
+        console.timeEnd(`[PERF] Query for ${tableName}`);
         
-        // Translate content if language is not Indonesian
+        // Translate content if language is not Indonesian and feature is enabled
         let rows = result.rows;
-        if (targetLang !== 'id') {
+        const isTranslationEnabled = process.env.ENABLE_CONTENT_TRANSLATION === 'true';
+
+        if (isTranslationEnabled && targetLang !== 'id') {
           // Define translatable fields per table
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
@@ -222,11 +251,16 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         for (const { name: relName, config: rel } of flatJoins) {
           const joinSelect = buildBelongsToSelect(relName, rel);
           if (joinSelect) {
+            const localValue = (record as Record<string, unknown>)[rel.localKey];
+            if (localValue === undefined || localValue === null || localValue === '') {
+              continue;
+            }
+
             const joinResult = await query(
               `SELECT ${joinSelect}
                FROM ${rel.table}
-               WHERE ${rel.table}.${rel.foreignKey} = $1`,
-              [id]
+               WHERE ${rel.table}.${rel.foreignKey}${rel.foreignKeyCast || ''} = $1`,
+              [localValue]
             );
             if (joinResult.rows[0]) {
               Object.assign(record, joinResult.rows[0]);
@@ -261,7 +295,30 @@ export const createCrudController = (tableName: string, fields: string[]) => {
             }
           }
         }
-        
+
+        if (tableName === 'tb_pemanfaatanasset') {
+          const categoryResult = await query(
+            `SELECT COALESCE(
+                json_agg(json_build_object('id', cat.id::text, 'name', cat.name))
+                  FILTER (WHERE cat.id IS NOT NULL),
+                '[]'::json
+              ) AS categories
+             FROM tb_categories_layananaset_fasilitas cat
+             WHERE cat.id::text = ANY (
+               string_to_array(
+                 NULLIF(
+                   regexp_replace($1::text, '\\s+', '', 'g'),
+                   ''
+                 ),
+                 ','
+               )
+             )`,
+            [record.category]
+          );
+
+          record.category_relation = categoryResult.rows[0]?.categories ?? [];
+        }
+
         // Translate content if language is not Indonesian
         if (targetLang !== 'id') {
           const translatableFields = getTranslatableFields(tableName);
@@ -309,7 +366,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (tableName === 'tb_sites' && typeof insertData.opening_hours === 'string') {
           try {
             insertData.opening_hours = JSON.parse(insertData.opening_hours);
-          } catch (_e) {
+          } catch {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -317,7 +374,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         } else if (tableName === 'tb_sites' && typeof insertData.facilities === 'string') {
           try {
             insertData.facilities = JSON.parse(insertData.facilities);
-          } catch (_e) {
+          } catch {
             return res.status(400).json({
               error: 'Invalid JSON in opening_hours'
             });
@@ -351,17 +408,16 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           insertData.created_by = req.user.id;
         }
 
-
-        const excludedOnCreate = ['updated_by', 'updated_at'];
-        const validFields = fields
-          .filter(f => 
-            insertData[f] !== undefined && 
-            !excludedOnCreate.includes(f)
-          );
-
-        // Handle JSON/JSONB fields by stringifying values and casting placeholders
+const excludedOnCreate = ['updated_by', 'updated_at'];
+const validFields = fields
+  .filter(f =>
+    insertData[f] !== undefined &&
+    !excludedOnCreate.includes(f)
+  );
+// Handle JSON/JSONB fields by stringifying values and casting placeholders
         const JSON_FIELDS: Record<string, string[]> = {
           tb_sites: ['opening_hours'],
+          // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
         };
         const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
@@ -378,16 +434,12 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           .join(', ');
 
         await client.query('BEGIN');
-
-
         await client.query(
           `INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`,
           values
         );
 
         // console.log(`INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`)
-        
-
         // Insert nested (unchanged)
         if (tableName === 'tb_company' && companyLeadership.length > 0) {
           const createdBy = insertData.created_by || 'system';
@@ -427,7 +479,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           const createdBy = insertData.created_by || 'system';
           for (const item of gallery) {
             const filePath = (item && (item.path || item.upload_file)) || item;
-            if (!filePath) continue;
+            if (!filePath) { continue; }
             await client.query(
               `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
                VALUES ($1, $2, $3, $4, $4, $5)`,
@@ -562,6 +614,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (hasMainUpdates) {
           const JSON_FIELDS: Record<string, string[]> = {
             tb_sites: ['opening_hours'],
+            // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
           };
           const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
@@ -691,7 +744,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           );
 
           for (const img of images as any[]) {
-            if (!img) continue;
+            if (!img) { continue; }
 
             const imageId = img.id as string | undefined;
             const filePath = img.path || img.upload_file || img.url;

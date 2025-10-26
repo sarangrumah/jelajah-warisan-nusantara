@@ -10,17 +10,13 @@ export const museumStat = {
 }
 
 export const categories = [
-  { id: 'semua', label: 'Semua Event' },
-  { id: 'event', label: 'Event' },
-  { id: 'pameranTemporer', label: 'Pameran Temporer' },
-  // { id: 'pameran', label: 'Pameran' },
-  // { id: 'workshop', label: 'Workshop' },
-  // { id: 'konservasi', label: 'Konservasi' },
-  // { id: 'edukasi', label: 'Edukasi' },
+  { id: 'semua', label: 'agenda.categories.all' },
+  { id: 'event', label: 'agenda.categories.event' },
+  { id: 'pameranTemporer', label: 'agenda.categories.temporaryExhibition' },
 ];
 
 export const status = {
-  upcoming: 'Upcoming',
-  registration: 'Registration',
-  ongoing: 'Ongoing',
-}
+  upcoming: 'agenda.status.upcoming',
+  registration: 'agenda.status.registration',
+  ongoing: 'agenda.status.ongoing',
+};

@@ -1,5 +1,4 @@
-
-import { FieldConfigs, RelationshipConfig } from '../helper/types'; // Optional: define types
+// import { FieldConfigs, RelationshipConfig } from '../helper/types'; // Optional: define types
 
 export const tableConfigs = {
   banners: ['id', 'title', 'subtitle', 'description', 'image_url', 'start_date', 'end_date', 'is_published', 'created_by', 'created_at', 'updated_at'],
@@ -40,8 +39,8 @@ export const tableConfigs = {
     'latitude','longitude','is_active', 'is_approved','is_rejected','reason_rejected','created_at','created_by','updated_at','updated_by'],
   tb_events:['id','name','category','subtitle','description','sites_id','location','address','start_published_date','end_published_date','start_date','end_date','contact','website','banner_img','ticket_price','ticket_url','is_active','is_approved','is_rejected','reason_rejected','created_at','created_by','updated_at','updated_by'],
   tb_faqs:  ['id','question','answer','category','order_index','file_url','is_active','is_published','created_at','created_by','updated_at','updated_by'],
-  tb_sop: ['id','title','subtitle','description','publish_date','category','document_url','author','is_active','is_approved','is_rejected','reason_rejected','created_at','created_by','updated_at','updated_by']
-  ,tb_career_management: [
+  tb_sop: ['id','title','subtitle','description','publish_date','category','document_url','author','is_active','is_approved','is_rejected','reason_rejected','created_at','created_by','updated_at','updated_by'],
+  tb_career_management: [
     'id',
     'title',
     'subtitle',
@@ -62,8 +61,8 @@ export const tableConfigs = {
     'created_by',
     'updated_at',
     'updated_by'
-  ]
-  ,tb_career_submission_management: [
+  ],
+  tb_career_submission_management: [
     'id',
     'career_id',
     'name_volunteer',
@@ -145,7 +144,6 @@ export const tableConfigs = {
     'updated_by',
     'updated_at'
   ],
-
   tb_pemanfaatanasset: [
     'id',
     'title',
@@ -162,17 +160,43 @@ export const tableConfigs = {
     'ketentuan_umum',
     'kapasitas',
     'ukuran',
+    'is_active',
+    'is_approved',
+    'is_rejected',
+    'reason_rejected',
+    'created_by',
+    'updated_by',
+    'created_at',
+    'updated_at'
+  ],
+  tb_categories_layananaset_area: [
+    'id',
+    'name',
     'created_by',
     'created_at',
     'updated_by',
     'updated_at'
   ],
 
-  tb_categories_collections: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
-  tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
   tb_categories_layananaset_area: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
-  tb_categories_layananaset_fasilitas: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
 
+  tb_categories_layananaset_fasilitas: [
+    'id',
+    'name',
+    'created_by',
+    'created_at',
+    'updated_by',
+    'updated_at'
+  ],
+  tb_categories_collections: [
+    'id',
+    'name',
+    'created_by',
+    'updated_by',
+    'created_at',
+    'updated_at'
+  ],
+  tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at']
 };
 
 export const tableRelationships = {
@@ -218,6 +242,26 @@ export const tableRelationships = {
       foreignKey: 'id',
       type: 'left',
       fields: ['id', 'name']
+    }
+  },
+  tb_pemanfaatanasset: {
+    category_relation: {
+      table: 'tb_categories_layananaset_fasilitas',
+      localKey: 'category',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name'],
+      localKeyCast: '::text',
+      foreignKeyCast: '::text'
+    },
+    location_relation: {
+      table: 'tb_categories_layananaset_area',
+      localKey: 'area',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name'],
+      localKeyCast: '::text',
+      foreignKeyCast: '::text'
     }
   },
   tb_career_submission_management: {
@@ -276,7 +320,6 @@ export const autoJoinRelations = {
   tb_company: ['company_leadership', 'company_visitor']
 } as const;
 
-
 export const approvalConfig = {
   tb_banner: {
     requiresApproval: true,
@@ -309,10 +352,13 @@ export const approvalConfig = {
   tb_master_collection: {
     requiresApproval: true,
     autoActivateOnApprove: true
+  },
+  tb_pemanfaatanasset: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
   }
 } as const;
-
-type AutoJoinRelations = typeof autoJoinRelations;
-type RelationKey<T extends string> = T extends keyof AutoJoinRelations
-  ? (typeof autoJoinRelations)[T][number]
-  : never;
+// type AutoJoinRelations = typeof autoJoinRelations;
+// type RelationKey<T extends string> = T extends keyof AutoJoinRelations
+//   ? (typeof autoJoinRelations)[T][number]
+//   : never;
