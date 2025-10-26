@@ -203,7 +203,7 @@ const NewsSection = () => {
                       </CardContent>
                     </Card>
                     </CarouselItem>
-                  ))
+                  )
                 )}
               </CarouselContent>
               {/* Pause/Resume Button */}
