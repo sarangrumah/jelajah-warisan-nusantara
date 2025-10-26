@@ -4500,19 +4500,19 @@ https-proxy-agent@^7.0.1, https-proxy-agent@^7.0.6:
     agent-base "^7.1.2"
     debug "4"
 
-i18next-browser-languagedetector@^8.2.0:
+i18next-browser-languagedetector@^8.0.0:
   version "8.2.0"
   resolved "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-8.2.0.tgz"
   integrity sha512-P+3zEKLnOF0qmiesW383vsLdtQVyKtCNA9cjSoKCppTKPQVfKd2W8hbVo5ZhNJKDqeM7BOcvNoKJOjpHh4Js9g==
   dependencies:
     "@babel/runtime" "^7.23.2"
 
-i18next@^25.3.2, "i18next@>= 23.2.3":
-  version "25.3.2"
-  resolved "https://registry.npmjs.org/i18next/-/i18next-25.3.2.tgz"
-  integrity sha512-JSnbZDxRVbphc5jiptxr3o2zocy5dEqpVm9qCGdJwRNO+9saUJS0/u4LnM/13C23fUEWxAylPqKU/NpMV/IjqA==
+i18next@^23.12.2, "i18next@>= 23.2.3":
+  version "23.16.8"
+  resolved "https://registry.npmjs.org/i18next/-/i18next-23.16.8.tgz"
+  integrity sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==
   dependencies:
-    "@babel/runtime" "^7.27.6"
+    "@babel/runtime" "^7.23.2"
 
 iconv-lite@^0.6.3, iconv-lite@0.6.3:
   version "0.6.3"
@@ -5627,7 +5627,7 @@ react-hook-form@^7.55.0, react-hook-form@^7.61.1:
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.61.1.tgz"
   integrity sha512-2vbXUFDYgqEgM2RcXcAT2PwDW/80QARi+PKmHy5q2KhuKvOlG8iIYgf7eIlIANR5trW9fJbP4r5aub3a4egsew==
 
-react-i18next@^15.6.1:
+react-i18next@^15.0.0:
   version "15.6.1"
   resolved "https://registry.npmjs.org/react-i18next/-/react-i18next-15.6.1.tgz"
   integrity sha512-uGrzSsOUUe2sDBG/+FJq2J1MM+Y4368/QW8OLEKSFvnDflHBbZhSd1u3UkW0Z06rMhZmnB/AQrhCpYfE5/5XNg==
