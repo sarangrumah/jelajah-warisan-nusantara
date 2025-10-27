@@ -528,6 +528,55 @@ export const resources = {
           readMore: "Read More",
           viewAll: "View All News"
         }
+      },
+      // Contact Section
+      contact: {
+        title: "Contact Us",
+        subtitle: "Get in touch with us for any inquiries or assistance",
+        infoTitle: "Contact Information",
+        socialMedia: "Social Media",
+        office: {
+          title: "Office Address",
+          address1: "Jalan Medan Merdeka Barat No. 12",
+          address2: "Jakarta Pusat 10110",
+          address3: "Indonesia"
+        },
+        whatsapp: "WhatsApp",
+        email: "Email",
+        hours: {
+          title: "Working Hours",
+          monThu: "Monday - Thursday: 08:00 - 16:00 WIB",
+          fri: "Friday: 08:00 - 16:30 WIB",
+          weekend: "Saturday - Sunday: Closed"
+        },
+        form: {
+          title: "Send Us a Message",
+          subtitle: "We'll get back to you as soon as possible",
+          name: "Full Name",
+          namePlaceholder: "Enter your full name",
+          email: "Email Address",
+          emailPlaceholder: "Enter your email address",
+          subject: "Subject",
+          subjectPlaceholder: "Enter the subject",
+          message: "Message",
+          messagePlaceholder: "Enter your message",
+          submit: "Send Message"
+        },
+        faq: {
+          title: "Frequently Asked Questions",
+          subtitle: "Find answers to common questions"
+        },
+        error: {
+          title: "Error",
+          message: "An error occurred while sending your message. Please try again."
+        },
+        validation: {
+          required: "All fields are required"
+        },
+        success: {
+          title: "Success",
+          message: "Your message has been sent successfully. We will get back to you soon."
+        }
       }
     }
   },
@@ -1057,6 +1106,55 @@ export const resources = {
         button: {
           readMore: "Baca Selengkapnya",
           viewAll: "Lihat Semua Berita"
+        }
+      },
+      // Contact Section
+      contact: {
+        title: "Hubungi Kami",
+        subtitle: "Hubungi kami untuk pertanyaan atau bantuan apapun",
+        infoTitle: "Informasi Kontak",
+        socialMedia: "Media Sosial",
+        office: {
+          title: "Alamat Kantor",
+          address1: "Jalan Medan Merdeka Barat No. 12",
+          address2: "Jakarta Pusat 10110",
+          address3: "Indonesia"
+        },
+        whatsapp: "WhatsApp",
+        email: "Email",
+        hours: {
+          title: "Jam Kerja",
+          monThu: "Senin - Kamis: 08:00 - 16:00 WIB",
+          fri: "Jumat: 08:00 - 16:30 WIB",
+          weekend: "Sabtu - Minggu: Tutup"
+        },
+        form: {
+          title: "Kirim Pesan",
+          subtitle: "Kami akan membalas pesan Anda secepatnya",
+          name: "Nama Lengkap",
+          namePlaceholder: "Masukkan nama lengkap Anda",
+          email: "Alamat Email",
+          emailPlaceholder: "Masukkan alamat email Anda",
+          subject: "Subjek",
+          subjectPlaceholder: "Masukkan subjek pesan",
+          message: "Pesan",
+          messagePlaceholder: "Masukkan pesan Anda",
+          submit: "Kirim Pesan"
+        },
+        faq: {
+          title: "Pertanyaan yang Sering Diajukan",
+          subtitle: "Temukan jawaban untuk pertanyaan umum"
+        },
+        error: {
+          title: "Kesalahan",
+          message: "Terjadi kesalahan saat mengirim pesan Anda. Silakan coba lagi."
+        },
+        validation: {
+          required: "Semua bidang wajib diisi"
+        },
+        success: {
+          title: "Berhasil",
+          message: "Pesan Anda telah berhasil dikirim. Kami akan membalas segera."
         }
       }
     }
