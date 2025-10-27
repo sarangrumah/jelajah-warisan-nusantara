@@ -195,8 +195,8 @@ export const tableConfigs = {
     'updated_at'
   ],
   tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
-  merchandise_categories: ['id', 'name', 'description', 'is_published', 'created_by', 'created_at', 'updated_at', 'updated_by'],
-  merchandise_products: ['id', 'name', 'description', 'short_description', 'price', 'category_id', 'images', 'is_published', 'is_approved', 'is_rejected', 'reason_rejected', 'whatsapp_number', 'created_by', 'created_at', 'updated_at', 'updated_by']
+  merchandise_categories: ['id', 'name', 'description', 'image_url', 'is_published', 'created_by', 'created_at', 'updated_at'],
+  merchandise_products: ['id', 'name', 'description', 'short_description', 'price', 'category_id', 'images', 'is_published', 'is_approved', 'is_rejected', 'reason_rejected', 'whatsapp_number', 'created_by', 'created_at', 'updated_at']
 };
 
 export const tableRelationships = {

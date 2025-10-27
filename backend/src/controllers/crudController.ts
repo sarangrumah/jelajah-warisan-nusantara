@@ -933,8 +933,10 @@ const validFields = fields
           params.push(autoActivate);
         }
 
-        setClauses.push(`updated_by = $${params.length + 1}`);
-        params.push(idUser);
+        if (fields.includes('updated_by')) {
+          setClauses.push(`updated_by = $${params.length + 1}`);
+          params.push(idUser);
+        }
 
         setClauses.push(`updated_at = $${params.length + 1}`);
         params.push(now);
@@ -1025,8 +1027,10 @@ const validFields = fields
           params.push(computedReason);
         }
 
-        setClauses.push(`updated_by = $${params.length + 1}`);
-        params.push(idUser);
+        if (fields.includes('updated_by')) {
+          setClauses.push(`updated_by = $${params.length + 1}`);
+          params.push(idUser);
+        }
 
         setClauses.push(`updated_at = $${params.length + 1}`);
         params.push(now);
