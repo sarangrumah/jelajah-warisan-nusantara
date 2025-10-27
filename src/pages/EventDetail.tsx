@@ -98,17 +98,9 @@ const EventDetail = () => {
     // Create WhatsApp share message
     const message = `Halo! Saya ingin berbagi informasi event menarik dari Museum Cagar dan Budaya:\n\n${eventTitle}\n\nLihat detail event di: ${eventUrl}\n\n*Jelajah Warisan Nusantara* - Melestarikan Warisan Budaya Indonesia`;
     
-    // If company WhatsApp number is available, use it
-    if (companyWhatsApp) {
-      // Format WhatsApp number (remove any non-digit characters except +)
-      const formattedNumber = companyWhatsApp.replace(/[^\d+]/g, '');
-      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
-    } else {
-      // Fallback to regular WhatsApp share
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
-    }
+    // Open WhatsApp share dialog (no specific recipient)
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   // Ticket purchase function
