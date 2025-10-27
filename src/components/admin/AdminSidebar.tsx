@@ -14,7 +14,8 @@ import {
   BarChart3,
   Menu,
   Key,
-  Languages
+  Languages,
+  ShoppingBag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,6 +42,7 @@ const menuItems = [
   { id: 'pemanfaatan-asset', label: 'Pemanfaatan Aset', icon: FileText },
   { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
   { id: 'career-submissions', label: 'Submissions', icon: Users },
+  { id: 'merchandise', label: 'Merchandise', icon: ShoppingBag },
   { id: 'faq', label: 'FAQ', icon: Settings },
   { id: 'translations', label: 'Translations', icon: Languages },
   { id: 'activity-log', label: 'Activity Log', icon: FileText },

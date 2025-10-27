@@ -23,6 +23,7 @@ import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
 import PemanfaatanAssetManagement from '@/components/admin/PemanfaatanAssetManagement';
+import MerchandiseManagement from '@/components/admin/MerchandiseManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
 import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
@@ -163,6 +164,7 @@ const AdminDashboard = () => {
           {activeTab === 'pemanfaatan-asset' && <PemanfaatanAssetManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
+          {activeTab === 'merchandise' && <MerchandiseManagement userRole={userRole} />}
           {/* {activeTab === 'career' && <CareerManagement />} */}
           {activeTab === 'users' && <UserManagement />}
         </div>

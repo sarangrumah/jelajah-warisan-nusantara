@@ -279,3 +279,24 @@ export const categoriesLayananAsetFasilitas = {
 // export const pemanfaatanAssetService = {
 //   getAll: () => apiClient.getAll('tb_pemanfaatanasset')
 // }
+
+// Merchandise Categories
+export const merchandiseCategoryService = {
+  getAll: () => apiClient.getAll('merchandise_categories'),
+  getById: (id: string) => apiClient.getById('merchandise_categories', id),
+  create: (data: any) => apiClient.create('merchandise_categories', data),
+  update: (id: string, data: any) => apiClient.update('merchandise_categories', id, data),
+  delete: (id: string) => apiClient.delete('merchandise_categories', id),
+};
+
+// Merchandise Products
+export const merchandiseProductService = {
+  getAll: (params?: Record<string, any>) => apiClient.getAll('merchandise_products', params),
+  getPublished: () => apiClient.getAll('merchandise_products', { is_published: 'true', is_approved: 'true' }),
+  getById: (id: string) => apiClient.getById('merchandise_products', id),
+  create: (data: any) => apiClient.create('merchandise_products', data),
+  update: (id: string, data: any) => apiClient.update('merchandise_products', id, data),
+  delete: (id: string) => apiClient.delete('merchandise_products', id),
+  approve: (id: string) => apiClient.approve('merchandise_products', id),
+  reject: (id: string, reason: string) => apiClient.reject('merchandise_products', id, reason),
+};

@@ -36,6 +36,8 @@ import FloatingButtons from "@/components/FloatingButtons";
 import PemanfaatanAset from "./pages/PemanfaatanAset";
 import PemanfaatanAsetDetail from "./pages/PemanfaatanAsetDetail";
 import MemoryOfWorldDetail from "./pages/MemoryOfWorldDetail";
+import Merchandise from "./pages/Merchandise";
+import MerchandiseDetail from "./pages/MerchandiseDetail";
 import ProcedureDetail from "./components/about/ProcedureDetail";
 import { useScrollReveal } from "./hooks/useScrollReveal";
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -81,6 +83,8 @@ const App = () => {
               <Route path="/collection/:id" element={<CollectionDetail />} />
               <Route path="/mow" element={<MemoryOfWorld />} />
               <Route path="/mow/:id" element={<MemoryOfWorldDetail />} />
+              <Route path="/merchandise" element={<Merchandise />} />
+              <Route path="/merchandise/:id" element={<MerchandiseDetail />} />
               <Route path="/sites" element={<NotFound />} />
               <Route path="/sites/:id" element={<NotFound />} />
               <Route path="/event/:id" element={<EventDetail />} />
