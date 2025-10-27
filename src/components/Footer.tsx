@@ -14,11 +14,11 @@ const Footer = () => {
     { label: t('nav.agenda'), href: '/agenda' },
     { label: t('nav.tentangKami'), href: '/tentang-kami' },
     { label: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
-    { label: t('nav.layananKonservasi'), href: '/layanan-konservasi' },
+    { label: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
     { label: t('nav.mediaPublikasi'), href: '/media-publikasi' },
     { label: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
     { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
-    { label: t('nav.career'), href: '/career' },
+    { label: t('nav.career'), href: '/karir' },
     { label: t('nav.ppid'), href: '/ppid' },
     { label: t('nav.sop'), href: '/prosedur-operasional-standar' },
   ];
