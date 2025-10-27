@@ -911,6 +911,7 @@ const validFields = fields
         const now = new Date().toISOString();
 
         const hasIsActive = fields.includes('is_active');
+        const hasIsPublished = fields.includes('is_published');
         const hasReason = fields.includes('reason_rejected');
 
         const params: any[] = [id];
@@ -925,6 +926,10 @@ const validFields = fields
 
         if (hasIsActive) {
           setClauses.push(`is_active = CASE WHEN $${params.length + 1} THEN true ELSE is_active END`);
+          params.push(autoActivate);
+        } else if (hasIsPublished && autoActivate) {
+          // For tables without is_active but with is_published (like merchandise_products)
+          setClauses.push(`is_published = CASE WHEN $${params.length + 1} THEN true ELSE is_published END`);
           params.push(autoActivate);
         }
 
@@ -1000,6 +1005,7 @@ const validFields = fields
 
         const now = new Date().toISOString();
         const hasIsActive = fields.includes('is_active');
+        const hasIsPublished = fields.includes('is_published');
 
         const params: any[] = [id];
         const setClauses = [
@@ -1009,6 +1015,9 @@ const validFields = fields
 
         if (hasIsActive) {
           setClauses.push('is_active = false');
+        } else if (hasIsPublished) {
+          // For tables without is_active but with is_published (like merchandise_products)
+          setClauses.push('is_published = false');
         }
 
         if (hasReasonField) {
