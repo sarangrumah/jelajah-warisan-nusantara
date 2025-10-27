@@ -171,9 +171,9 @@ const EventDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div key={event.id}>
+      <div key={event.id} className="pt-20">
         {/* Hero Image */}
-          <section className="relative h-96x overflow-hidden h-[86vh]">
+          <section className="relative overflow-hidden h-[60vh]">
             <img
               src={event.image_url ? event.image_url : logo}
               alt={event.title}
