@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { mediaService } from '@/lib/api-services';
 
 // Child component for a single news article card with translation
-function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: any, handleReadMoreClick: (url: string) => void, getNewsImageUrl: (filename: string) => string }) {
+function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: any, handleReadMoreClick: (id: string) => void, getNewsImageUrl: (filename: string) => string }) {
   const { translatedText: title } = useTranslate(article.title);
   const { translatedText: excerpt } = useTranslate(article.excerpt);
   const { translatedText: readMoreLabel } = useTranslate('Baca Selengkapnya');
@@ -45,7 +46,7 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
             <span>Admin</span>
           </div>
         </div>
-        <button onClick={() => handleReadMoreClick(article.file_url || article.url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+        <button onClick={() => handleReadMoreClick(article.id)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
           {readMoreLabel}
           <ArrowRight size={16} />
         </button>
@@ -55,7 +56,6 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
 }
 
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
-const newsFiles = import.meta.glob('../../assets/berita/*', { eager: true });
 
 function getNewsImageUrl(filename: string) {
   if (
@@ -74,27 +74,6 @@ function getNewsImageUrl(filename: string) {
   // Fallback: try public/assets/news/ for production
   if (justFile) {
     return `/assets/news/${justFile}`;
-  }
-  return undefined;
-}
-
-function getNewsFileUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/berita/${justFile}`;
   }
   return undefined;
 }
@@ -159,19 +138,10 @@ const NewsListSection = () => {
     }
   });
 
-  const handleReadMoreClick = (filename: string) => {
-    const fileUrl = getNewsFileUrl(filename);
-    if (fileUrl) {
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      console.error('File URL not found for:', filename);
-    }
+  const navigate = useNavigate();
+
+  const handleReadMoreClick = (articleId: string) => {
+    navigate(`/news/${articleId}`);
   };
 
   return (
