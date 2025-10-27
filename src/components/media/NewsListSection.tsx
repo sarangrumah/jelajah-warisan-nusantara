@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Calendar, User, ArrowRight, Download } from 'lucide-react';
+import { Search, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -45,7 +45,7 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
             <span>Admin</span>
           </div>
         </div>
-        <button onClick={() => handleReadMoreClick(article.file_url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+        <button onClick={() => handleReadMoreClick(article.file_url || article.url)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
           {readMoreLabel}
           <ArrowRight size={16} />
         </button>
@@ -159,19 +159,19 @@ const NewsListSection = () => {
     }
   });
 
-  const handleOpenFile = (filename: string) => {
-    return getNewsFileUrl(filename);
-  };
-
-//   const handleReadMoreClick = (article) => {
-  const handleReadMoreClick = (articleUrl: string) => {
-    const link = document.createElement('a');
-    link.href = articleUrl;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleReadMoreClick = (filename: string) => {
+    const fileUrl = getNewsFileUrl(filename);
+    if (fileUrl) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      console.error('File URL not found for:', filename);
+    }
   };
 
   return (

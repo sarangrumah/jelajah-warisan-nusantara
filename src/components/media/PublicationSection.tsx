@@ -10,12 +10,13 @@ const PublicationSection = () => {
   //   { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
   // ];
 
-  const downloadFromUrl = (url) => {
+  const downloadFromUrl = (url: string) => {
+    // Convert src/assets paths to public assets paths
+    const publicUrl = url.replace('/src/assets/Berita/', '/assets/Berita/');
     const link = document.createElement("a");
-    link.href = url;
-    // link.download = filename || "download";
-    link.rel="noopener noreferrer";
-    link.target="_blank";
+    link.href = publicUrl;
+    link.rel = "noopener noreferrer";
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
