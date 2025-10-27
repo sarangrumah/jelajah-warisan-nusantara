@@ -6,33 +6,43 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { defaultEvents } from '@/../database/default-data';
-import { agendaService, EventsService } from '@/lib/api-services';
+import { agendaService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-  const [events, setEvents] = useState([]);
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const fetchEvents = async () => {
+  const fetchEvent = async () => {
     try {
-      const response = await EventsService.getAll();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching events:', response.error);
-        setEvents(defaultEvents);
+      if (!id) {
+        console.error('No event ID provided');
+        setEvent(null);
+        setLoading(false);
+        return;
+      }
+      
+      const response = await agendaService.getById(id);
+      if (response.error) {
+        console.error('Error fetching event:', response.error);
+        setEvent(null);
       } else {
-        const filteredEvents = response.data.filter((event: any) => event.id === id);
-        setEvents(filteredEvents);
+        setEvent(response.data);
       }
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('Error fetching event:', error);
+      setEvent(null);
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    fetchEvent();
+  }, [id]);
 
   // const filteredEvent = events.filter((event) => event.id.toString() === id);
 
@@ -90,22 +100,57 @@ const EventDetail = () => {
     document.body.removeChild(link);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-20">
+          <div className="flex items-center justify-center h-64">
+            <span className="text-lg text-muted-foreground">
+              {t('Loading event details...')}
+            </span>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-20">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">{t('Event not found')}</h1>
+            <Link to="/agenda">
+              <Button variant="outline">
+                <ArrowLeft size={16} className="mr-2" />
+                {t('Back to Agenda')}
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       {/* Back Button */}
-      <div className="container mx-auto px-4 pt-8x py-10">
+      <div className="container mx-auto px-4 pt-8 py-10">
         <Link to="/agenda">
-          <Button variant="outline" className="mb-6 hidden">
+          <Button variant="outline" className="mb-6">
             <ArrowLeft size={16} className="mr-2" />
             {t('Back to Agenda')}
           </Button>
         </Link>
       </div>
 
-      {events && events.map((event) => (
-        <div key={event.id}>
+      <div key={event.id}>
         {/* Hero Image */}
           <section className="relative h-96x overflow-hidden h-[86vh]">
             <img
@@ -135,9 +180,13 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold mb-4">{t('About This Event')}</h2>
                     <div className="space-y-4 text-muted-foreground">
-                      {event.description.split('\n\n').map((paragraph, index) => (
-                        <p key={index}>{paragraph}</p>
-                      ))}
+                      {event.description ? (
+                        event.description.split('\n\n').map((paragraph, index) => (
+                          <p key={index}>{paragraph}</p>
+                        ))
+                      ) : (
+                        <p>{t('No description available')}</p>
+                      )}
                     </div>
                   </CardContent>
                   {/* <CardContent className="p-6">
@@ -218,7 +267,7 @@ const EventDetail = () => {
                         <MapPin size={16} className="mr-3 text-primary mt-1" />
                         <div>
                           <div className="font-semibold text-sm">{event.location}</div>
-                          <div className="text-sm text-muted-foreground">{event.address}</div>
+                          <div className="text-sm text-muted-foreground">{event.address || t('No address provided')}</div>
                         </div>
                       </div>
                       
@@ -231,14 +280,23 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Contact Information')}</h3>
                     <div className="space-y-3 pb-5">
-                      <div className="flex items-center">
-                        <Phone size={16} className="mr-3 text-primary" />
-                        <span className="text-sm">{event.contact.phone}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Mail size={16} className="mr-3 text-primary" />
-                        <span className="text-sm">{event.contact.email}</span>
-                      </div>
+                      {event.contact_phone && (
+                        <div className="flex items-center">
+                          <Phone size={16} className="mr-3 text-primary" />
+                          <span className="text-sm">{event.contact_phone}</span>
+                        </div>
+                      )}
+                      {event.contact_email && (
+                        <div className="flex items-center">
+                          <Mail size={16} className="mr-3 text-primary" />
+                          <span className="text-sm">{event.contact_email}</span>
+                        </div>
+                      )}
+                      {!event.contact_phone && !event.contact_email && (
+                        <div className="text-sm text-muted-foreground">
+                          {t('No contact information available')}
+                        </div>
+                      )}
                     </div>
                     {/* <button 
                       className="bg-gradient-to-r w-full from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
@@ -257,7 +315,7 @@ const EventDetail = () => {
                           <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
                           <span className="text-sm text-muted-foreground">{req}</span>
                         </li>
-                      ))}
+                      </div>
                     </ul>
                   </CardContent>
                 </Card> */}
@@ -288,7 +346,6 @@ const EventDetail = () => {
             </div>
           </section>
         </div>
-      ))}
 
       <Footer />
     </div>
