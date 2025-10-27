@@ -1,20 +1,44 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Calendar, MapPin, Phone, Mail, Share2 } from 'lucide-react';
+import { Calendar, MapPin, Phone, Mail, Share2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { agendaService } from '@/lib/api-services';
+import { agendaService, contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
+
+interface CompanyProfile {
+  whatsapp?: string;
+}
 
 const EventDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [companyWhatsApp, setCompanyWhatsApp] = useState<string>('');
+
+  // Fetch company profile to get WhatsApp number
+  useEffect(() => {
+    const fetchCompanyProfile = async () => {
+      try {
+        const response = await contentService.getAll();
+        if (response.data && response.data.length > 0) {
+          const company = response.data[0] as CompanyProfile;
+          if (company.whatsapp) {
+            setCompanyWhatsApp(company.whatsapp);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching company profile:', error);
+      }
+    };
+
+    fetchCompanyProfile();
+  }, []);
 
   const fetchEvent = async () => {
     try {
@@ -44,8 +68,6 @@ const EventDetail = () => {
     fetchEvent();
   }, [id]);
 
-  // const filteredEvent = events.filter((event) => event.id.toString() === id);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming': return 'bg-blue-500';
@@ -64,40 +86,55 @@ const EventDetail = () => {
     }
   };
 
-  // function parseSchedule(str: string) {
-  //   try {
-  //     let clean = str.trim();
-  //     clean = clean.replace(/^\{\{/, "[").replace(/\}\}$/, "]");
-  //     if (!clean.includes("{")) {
-  //       clean = clean.replace(/\[\s*'/, "[{ '");
-  //     } else {
-  //       clean = clean.replace(/\[\s*'/, "[{ '");
-  //     }
-      
-  //     if (!clean.includes("}")) {
-  //       clean = clean.replace(/}?\s*]$/, "}]");
-  //     } else {
-  //       clean = clean.replace(/}?\s*]$/, "}]");
-  //     }
-  //     clean = `[${clean}]`;
-  //     clean = clean.replace(/'/g, '"');
-  //     const parsed = JSON.parse(clean);
-  //     return Array.isArray(parsed[0]) ? parsed[0] : parsed;
-  //   } catch (e) {
-  //     console.error("Parsing error:", e);
-  //     return [];
-  //   }
-  // }
+  // WhatsApp share function
+  const handleShare = () => {
+    if (!event) {
+      return;
+    }
 
-  const shareEventHandler = (url) => {
-    const link = document.createElement("a");
-    link.href = url;
-    // link.download = filename || "download";
-    link.rel="noopener noreferrer";
-    link.target="_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const eventTitle = event.title || 'Event Menarik';
+    const eventUrl = window.location.href;
+    
+    // Create WhatsApp share message
+    const message = `Halo! Saya ingin berbagi informasi event menarik dari Museum Cagar dan Budaya:\n\n${eventTitle}\n\nLihat detail event di: ${eventUrl}\n\n*Jelajah Warisan Nusantara* - Melestarikan Warisan Budaya Indonesia`;
+    
+    // If company WhatsApp number is available, use it
+    if (companyWhatsApp) {
+      // Format WhatsApp number (remove any non-digit characters except +)
+      const formattedNumber = companyWhatsApp.replace(/[^\d+]/g, '');
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // Fallback to regular WhatsApp share
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  };
+
+  // Ticket purchase function
+  const handleTicketPurchase = () => {
+    if (!event) {
+      return;
+    }
+
+    // If event has ticket_url, use it
+    if (event.ticket_url) {
+      window.open(event.ticket_url, '_blank');
+      return;
+    }
+
+    // Fallback to WhatsApp for ticket purchase
+    const eventTitle = event.title || 'Event Menarik';
+    const message = `Halo! Saya tertarik untuk membeli tiket event:\n\n${eventTitle}\n\nBisa dibantu untuk informasi pembelian tiketnya?`;
+    
+    if (companyWhatsApp) {
+      const formattedNumber = companyWhatsApp.replace(/[^\d+]/g, '');
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    } else {
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
   };
 
   if (loading) {
@@ -123,12 +160,6 @@ const EventDetail = () => {
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">{t('Event not found')}</h1>
-            <Link to="/agenda">
-              <Button variant="outline">
-                <ArrowLeft size={16} className="mr-2" />
-                {t('Back to Agenda')}
-              </Button>
-            </Link>
           </div>
         </div>
         <Footer />
@@ -140,16 +171,6 @@ const EventDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Back Button */}
-      <div className="container mx-auto px-4 pt-8 py-10">
-        <Link to="/agenda">
-          <Button variant="outline" className="mb-6">
-            <ArrowLeft size={16} className="mr-2" />
-            {t('Back to Agenda')}
-          </Button>
-        </Link>
-      </div>
-
       <div key={event.id}>
         {/* Hero Image */}
           <section className="relative h-96x overflow-hidden h-[86vh]">
@@ -298,38 +319,16 @@ const EventDetail = () => {
                         </div>
                       )}
                     </div>
-                    {/* <button 
-                      className="bg-gradient-to-r w-full from-primary to-secondary to-primary-glowx text-primary-foreground px-7 py-1 rounded-lg text-sm hover:scale-105 transition-bounce heritage-glow">
-                      Beli Tiket
-                    </button> */}
                   </CardContent>
                 </Card>
-
-                {/* Requirements */}
-                {/* <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-4">{t('Requirements')}</h3>
-                    <ul className="space-y-2">
-                      {event.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
-                          <span className="text-sm text-muted-foreground">{req}</span>
-                        </li>
-                      </div>
-                    </ul>
-                  </CardContent>
-                </Card> */}
 
                 {/* Actions */}
                 <Card>
                   <CardContent className="p-6 space-y-3">
-                    {/* <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
-                      {t('Register Now')}
-                    </Button> */}
                     <Button 
                       variant="outline" 
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                      onClick={handleShare}
                     >
                       <Share2 size={16} className="mr-2" />
                       {t('Bagikan')}
@@ -337,7 +336,7 @@ const EventDetail = () => {
                     <Button 
                       variant="outline" 
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                      onClick={handleTicketPurchase}
                     >Beli Tiket
                     </Button>
                   </CardContent>
