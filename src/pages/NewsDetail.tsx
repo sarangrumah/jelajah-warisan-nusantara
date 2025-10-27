@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { mediaService } from '@/lib/api-services';
+import { mediaService, contentService } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -36,9 +36,14 @@ function getNewsImageUrl(filename: string) {
   }
   return undefined;
 }
+interface CompanyProfile {
+  whatsapp?: string;
+}
+
 const NewsDetail = () => {
   const { pathname } = useLocation();
   const { id } = useParams();
+  const [companyWhatsApp, setCompanyWhatsApp] = useState<string>('');
   interface MediaArticle {
     id: string;
     title: string;
@@ -72,6 +77,25 @@ const NewsDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  // Fetch company profile to get WhatsApp number
+  useEffect(() => {
+    const fetchCompanyProfile = async () => {
+      try {
+        const response = await contentService.getAll();
+        if (response.data && response.data.length > 0) {
+          const company = response.data[0] as CompanyProfile;
+          if (company.whatsapp) {
+            setCompanyWhatsApp(company.whatsapp);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching company profile:', error);
+      }
+    };
+
+    fetchCompanyProfile();
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -101,6 +125,31 @@ const NewsDetail = () => {
     }
     return () => { mounted = false; };
   }, [id]);
+
+  // WhatsApp share function
+  const handleShare = () => {
+    if (!article) {
+      return;
+    }
+
+    const articleTitle = article.title || 'Artikel Menarik';
+    const articleUrl = window.location.href;
+    
+    // Create WhatsApp share message
+    const message = `Halo! Saya ingin berbagi artikel menarik dari Museum Cagar dan Budaya:\n\n${articleTitle}\n\nBaca selengkapnya di: ${articleUrl}\n\n*Jelajah Warisan Nusantara* - Melestarikan Warisan Budaya Indonesia`;
+    
+    // If company WhatsApp number is available, use it
+    if (companyWhatsApp) {
+      // Format WhatsApp number (remove any non-digit characters except +)
+      const formattedNumber = companyWhatsApp.replace(/[^\d+]/g, '');
+      const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    } else {
+      // Fallback to regular WhatsApp share
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  };
 
   if (loading) {
     return (
@@ -253,7 +302,7 @@ const NewsDetail = () => {
                     Bantu sebarkan informasi penting tentang pelestarian warisan budaya Indonesia
                   </p>
                 </div>
-                <Button>
+                <Button onClick={handleShare}>
                   <Share2 className="mr-2 h-4 w-4" />
                   Bagikan
                 </Button>
