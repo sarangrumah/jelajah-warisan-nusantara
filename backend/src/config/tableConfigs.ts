@@ -194,7 +194,9 @@ export const tableConfigs = {
     'created_at',
     'updated_at'
   ],
-  tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at']
+  tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
+  merchandise_categories: ['id', 'name', 'description', 'is_published', 'created_by', 'created_at', 'updated_at', 'updated_by'],
+  merchandise_products: ['id', 'name', 'description', 'short_description', 'price', 'category_id', 'images', 'is_published', 'is_approved', 'is_rejected', 'reason_rejected', 'whatsapp_number', 'created_by', 'created_at', 'updated_at', 'updated_by']
 };
 
 export const tableRelationships = {
@@ -309,13 +311,23 @@ export const tableRelationships = {
       type: 'has_many',
       fields: ['id', 'visitor_count', 'year', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     }
+  },
+  merchandise_products: {
+    category: {
+      table: 'merchandise_categories',
+      localKey: 'category_id',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name', 'description']
+    }
   }
 };
 
 export const autoJoinRelations = {
   tb_events: ['site'],
   tb_sites: ['images','type','categories'],
-  tb_company: ['company_leadership', 'company_visitor']
+  tb_company: ['company_leadership', 'company_visitor'],
+  merchandise_products: ['category']
 } as const;
 
 export const approvalConfig = {
@@ -352,6 +364,10 @@ export const approvalConfig = {
     autoActivateOnApprove: true
   },
   tb_pemanfaatanasset: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
+  },
+  merchandise_products: {
     requiresApproval: true,
     autoActivateOnApprove: true
   }
