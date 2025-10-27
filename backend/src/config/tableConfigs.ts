@@ -312,22 +312,12 @@ export const tableRelationships = {
       fields: ['id', 'visitor_count', 'year', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     }
   },
-  merchandise_products: {
-    category: {
-      table: 'merchandise_categories',
-      localKey: 'category_id',
-      foreignKey: 'id',
-      type: 'left',
-      fields: ['id', 'name', 'description']
-    }
-  }
 };
 
 export const autoJoinRelations = {
   tb_events: ['site'],
   tb_sites: ['images','type','categories'],
-  tb_company: ['company_leadership', 'company_visitor'],
-  merchandise_products: ['category']
+  tb_company: ['company_leadership', 'company_visitor']
 } as const;
 
 export const approvalConfig = {
