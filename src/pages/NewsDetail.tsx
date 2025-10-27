@@ -195,9 +195,12 @@ const NewsDetail = () => {
                 <div className="flex items-center gap-2">
                   <User size={16} />
                   <div className='flex gap-3'>
-                    {article.author.length > 0 && article.author.map((author: string, index: number) => (
-                      <span className="underline" key={index}>{author}</span>
-                    ))}
+                    {Array.isArray(article.author)
+                      ? article.author.map((author: string, index: number) => (
+                          <span className="underline" key={index}>{author}</span>
+                        ))
+                      : article.author && <span className="underline">{article.author}</span>
+                    }
                   </div>
                 </div>
               </div>
@@ -219,6 +222,18 @@ const NewsDetail = () => {
               />
             </div>
           </div>
+
+          {/* Description under image */}
+          {article.description && (
+            <div className="mb-8">
+              <div className="prose prose-lg max-w-none">
+                <div
+                  className="text-muted-foreground leading-relaxed italic"
+                  dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(article.description) }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Article content */}
           <div className="prose prose-lg max-w-none">
