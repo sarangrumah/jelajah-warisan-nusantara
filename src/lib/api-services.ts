@@ -73,7 +73,6 @@ export const TypesAndCategoriesSites = {
 };
 
 export const TypesAndCategoriesEvent = {
-  getAllTypes: () => apiClient.getAll('tb_sites'),
   getAllCategories: () => apiClient.getAll('tb_categories_event'),
 };
 

@@ -208,14 +208,12 @@ export const tableRelationships = {
       type: 'left', 
       fields: ['id', 'name', 'address'] // only these are joined
     },
-    categories : {
-      site: {
-        table: 'tb_categories_event',
-        localKey: 'category',
-        foreignKey: 'id',
-        type: 'left', 
-        fields: ['id', 'name', 'address'] // only these are joined
-      },
+    category: {
+      table: 'tb_categories_event',
+      localKey: 'category',
+      foreignKey: 'id',
+      type: 'left',
+      fields: ['id', 'name']
     }
   },
   // Memory of the World relations
@@ -315,7 +313,7 @@ export const tableRelationships = {
 };
 
 export const autoJoinRelations = {
-  tb_events: ['site'],
+  tb_events: ['site', 'category'],
   tb_sites: ['images','type','categories'],
   tb_company: ['company_leadership', 'company_visitor']
 } as const;

@@ -3,11 +3,10 @@ import { Calendar, MapPin, Clock, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { agendaService, EventsService } from '@/lib/api-services';
-import { eventCategories, defaultEvents } from '@/../database/default-data';
+import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
+import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
-import { set } from 'zod';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
 
@@ -33,11 +32,46 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaList = () => {
-  // const [events, setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
-
   const [events, setEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await TypesAndCategoriesEvent.getAllCategories();
+      if (response.error) {
+        console.error('Error fetching categories:', response.error);
+        // Fallback to default categories if API fails
+        setCategories([
+          { id: 'semua', name: 'Semua Event' },
+          { id: 'pameran', name: 'Pameran' },
+          { id: 'workshop', name: 'Workshop' },
+          { id: 'seminar', name: 'Seminar' },
+          { id: 'festival', name: 'Festival' }
+        ]);
+      } else {
+        // Add "All Events" option and map database categories
+        const categoryOptions = [
+          { id: 'semua', name: 'Semua Event' },
+          ...response.data.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name
+          }))
+        ];
+        setCategories(categoryOptions);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategories([
+        { id: 'semua', name: 'Semua Event' },
+        { id: 'pameran', name: 'Pameran' },
+        { id: 'workshop', name: 'Workshop' },
+        { id: 'seminar', name: 'Seminar' },
+        { id: 'festival', name: 'Festival' }
+      ]);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -47,7 +81,7 @@ const AgendaList = () => {
         setEvents(defaultEvents);
       } else {
         const filteredEvents = response.data.filter((event: any) => (
-          event.is_active === true 
+          event.is_active === true
           && event.is_approved === true
           && new Date(event.start_published_date) <= new Date()
           && new Date(event.end_published_date) >= new Date()
@@ -58,19 +92,22 @@ const AgendaList = () => {
       console.error('Error fetching events:', error);
     }
   };
+
   useEffect(() => {
     fetchEvents();
+    fetchCategories();
   }, []);
 
   const filteredEvents = events.filter(event => {
-    if(activeCategory === 'semua') {
+    if (activeCategory === 'semua') {
       const matchesSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
+                           event.description?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     } else {
-      const matchesSearch = event.category.toLowerCase() === activeCategory.toLowerCase() && (event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           event.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchesSearch && event.category === activeCategory;
+      const matchesSearch = event.category === activeCategory &&
+                           (event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            event.description?.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSearch;
     }
   });
   
@@ -108,14 +145,14 @@ const AgendaList = () => {
             </div>
             
             <div className="flex flex-wrap gap-2">
-              {eventCategories.map((category) => (
+              {categories.map((category) => (
                 <Button
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}
                   onClick={() => setActiveCategory(category.id)}
                   className="text-sm"
                 >
-                  {category.label}
+                  {category.name}
                 </Button>
               ))}
             </div>
