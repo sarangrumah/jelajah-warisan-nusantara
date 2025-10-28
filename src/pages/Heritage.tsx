@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
-import { museumService } from '@/lib/api-services';
+import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -70,8 +70,40 @@ const Heritage = () => {
       console.error('Error fetching heritages:', error);
     }
   };
+
+  const fetchTypesAndCategories = async () => {
+    try {
+      // Fetch all types first
+      const typesResponse = await TypesAndCategoriesSites.getAllTypes();
+      if (typesResponse.error) {
+        console.error('Error fetching types:', typesResponse.error);
+        return;
+      }
+      setTypes(typesResponse.data || []);
+
+      // Find "cagar budaya" type
+      const cagarBudayaType = typesResponse.data?.find((t: any) => {
+        const name = typeof t.name === 'string' ? t.name : (typeof t.title === 'string' ? t.title : undefined);
+        return name?.toLowerCase() === 'cagar budaya';
+      });
+
+      if (cagarBudayaType?.id) {
+        // Fetch categories for "cagar budaya" type
+        const categoriesResponse = await TypesAndCategoriesSites.getAllCategories(cagarBudayaType.id);
+        if (categoriesResponse.error) {
+          console.error('Error fetching categories:', categoriesResponse.error);
+          return;
+        }
+        setCategories(categoriesResponse.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching types and categories:', error);
+    }
+  };
+
   useEffect(() => {
     fetchHeritages();
+    fetchTypesAndCategories();
   }, []);
 
   useEffect(() => {
