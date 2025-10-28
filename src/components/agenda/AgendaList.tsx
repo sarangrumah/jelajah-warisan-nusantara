@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Search } from 'lucide-react';
+import { Calendar, MapPin, Clock, Search, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
@@ -144,17 +145,20 @@ const AgendaList = () => {
               />
             </div>
             
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={activeCategory === category.id ? "default" : "outline"}
-                  onClick={() => setActiveCategory(category.id)}
-                  className="text-sm"
-                >
-                  {category.name}
-                </Button>
-              ))}
+            <div className="flex items-center gap-2">
+              <Filter size={20} className="text-muted-foreground" />
+              <Select value={activeCategory} onValueChange={setActiveCategory}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
