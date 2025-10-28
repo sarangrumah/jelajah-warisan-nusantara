@@ -53,36 +53,37 @@ const FileUploadPDF = ({
   const validateFile = (file: File): string | null => {
     // Check file type
     if (file.type !== 'application/pdf') {
-      return `Invalid file type. Only PDF files are allowed. Got: ${file.type}`;
+      return `File type not allowed. Only PDF files are accepted. Detected: ${file.type || 'unknown'}`;
     }
 
     // Check file extension
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      return 'Invalid file extension. Only .pdf files are allowed.';
+      return 'File extension not allowed. Only .pdf files are accepted.';
     }
 
     // Check file size
     const maxBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxBytes) {
-      return `File too large. Maximum size is ${maxSizeMB}MB. Got: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      return `File too large. Maximum size is ${maxSizeMB}MB. Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
     }
 
     // Check if file is not empty
     if (file.size === 0) {
-      return 'File is empty. Please select a valid PDF file.';
+      return 'File appears to be empty. Please select a valid PDF file.';
     }
 
     // Check for potential malicious file names
     const maliciousPatterns = [
-      /\.\.\//, // Path traversal
-      /\/\//,   // Double slash
-      /\\/,     // Backslash (Windows paths)
-      /\.(exe|bat|cmd|sh|js|html|htm|php|py|rb|pl)$/i, // Executable or script extensions
+      { pattern: /\.\.\//, message: 'File name contains path traversal characters (..)' },
+      { pattern: /\/\//, message: 'File name contains double slashes' },
+      { pattern: /\\/, message: 'File name contains backslashes' },
+      { pattern: /\.(exe|bat|cmd|sh|js|html|htm|php|py|rb|pl)$/i, message: 'File type not allowed (executable/script files)' },
+      { pattern: /^\./, message: 'File name starts with a dot' },
     ];
     
-    for (const pattern of maliciousPatterns) {
+    for (const { pattern, message } of maliciousPatterns) {
       if (pattern.test(file.name)) {
-        return 'Invalid file name. Please use a safe file name.';
+        return `Security issue detected: ${message}. Please rename the file and try again.`;
       }
     }
 
@@ -119,7 +120,7 @@ const FileUploadPDF = ({
       // PDF header validation
       const isValidPDF = await validatePDFHeader(file);
       if (!isValidPDF) {
-        throw new Error('Invalid PDF file. The file does not appear to be a valid PDF document.');
+        throw new Error('Security check failed: File does not appear to be a valid PDF document. Please upload a genuine PDF file.');
       }
 
       const response = await uploadService.uploadFile(file, bucket);
@@ -139,7 +140,6 @@ const FileUploadPDF = ({
 
 
       onUploadComplete?.(response.data!.url, file.name);
-      
       toast({
         title: 'Success',
         description: `File "${file.name}" uploaded successfully`,
