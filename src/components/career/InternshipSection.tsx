@@ -13,8 +13,7 @@ import { useEffect, useState } from 'react';
 import FileUploadPDF from '@/components/FileUploadPDF';
 import { useLocation } from 'react-router-dom';
 import InternshipProgram from './InternshipProgram';
-import { careerMgmtService } from '@/lib/api-services';
-import { useTranslation } from 'react-i18next';
+import { careerMgmtService, careerSubmissionService } from '@/lib/api-services';
 
 const registrationSchema = z.object({
   fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
@@ -50,18 +49,18 @@ const InternshipSection = () => {
         if(response.error || response.data.length === 0) {
           console.error('Error fetching internship programs:', response.error);
         } else {
-          const filteredInternshipPrograms = response.data.filter((program: { 
+          const filteredInternshipPrograms = response.data.filter((program: {
               is_active: boolean;
               is_approved: boolean;
               is_rejected: boolean;
-              publish_date: Date;
-              end_publish_date: Date;
+              publish_date: string;
+              end_publish_date: string;
           }) => (
-              program.is_active === true 
-              && program.is_approved === true 
-              && program.is_rejected === false 
-              && new Date(program.publish_date) >= new Date()
-              && new Date(program.end_publish_date) <= new Date()
+              program.is_active === true
+              && program.is_approved === true
+              && program.is_rejected === false
+              && new Date(program.publish_date) <= new Date()
+              && new Date(program.end_publish_date) >= new Date()
           ));
           setInternshipPrograms(filteredInternshipPrograms);
         }
@@ -110,10 +109,44 @@ const InternshipSection = () => {
     }
   });
 
-  const onSubmit = async (_data: RegistrationFormData) => {
+  const onSubmit = async (data: RegistrationFormData) => {
     try {
-      // Here you would typically upload files and submit form data
+      // Find the selected program to get its ID
+      const selectedProgram = internshipPrograms.find((program: any) => program.id === data.internshipProgram);
       
+      if (!selectedProgram) {
+        toast({
+          title: "Error",
+          description: "Program magang tidak valid.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Prepare submission data
+      const submissionData = {
+        career_id: data.internshipProgram,
+        name_volunteer: data.fullName,
+        email: data.email,
+        mobile_phone: data.phone,
+        university_name: data.university,
+        major: data.major,
+        semester: parseInt(data.semester),
+        ipk: data.gpa ? parseFloat(data.gpa) : null,
+        motivation: data.motivation,
+        cv_url: data.cv,
+        transcript_url: data.transcript,
+        cover_letter_url: data.coverLetter || '',
+        application_status: 'pending'
+      };
+
+      // Submit the application
+      const response = await careerSubmissionService.create(submissionData);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       toast({
         title: "Pendaftaran Berhasil!",
         description: "Aplikasi magang Anda telah dikirim. Tim kami akan menghubungi Anda dalam 1-2 minggu.",
@@ -121,7 +154,8 @@ const InternshipSection = () => {
       
       form.reset();
       setIsDialogOpen(false);
-    } catch {
+    } catch (error) {
+      console.error('Error submitting application:', error);
       toast({
         title: "Error",
         description: "Gagal mengirim aplikasi. Silakan coba lagi.",
@@ -362,11 +396,11 @@ const InternshipSection = () => {
                               <FormControl>
                                 <select {...field} className="w-full p-2 border border-input rounded-md bg-background">
                                   <option value="">Pilih program magang</option>
-                                  {/* {InternshipProgram.map((program) => (
+                                  {internshipPrograms.map((program: any) => (
                                     <option key={program.id} value={program.id}>
                                       {program.title}
                                     </option>
-                                  ))} */}
+                                  ))}
                                 </select>
                               </FormControl>
                               <FormMessage />
