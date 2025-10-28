@@ -60,8 +60,8 @@ const InternshipSection = () => {
               program.is_active === true 
               && program.is_approved === true 
               && program.is_rejected === false 
-              && new Date(program.publish_date) <= new Date()
-              && new Date(program.end_publish_date) >= new Date()
+              && new Date(program.publish_date) >= new Date()
+              && new Date(program.end_publish_date) <= new Date()
           ));
           setInternshipPrograms(filteredInternshipPrograms);
         }
