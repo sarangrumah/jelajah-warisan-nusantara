@@ -15,19 +15,90 @@ import { useLocation } from 'react-router-dom';
 import InternshipProgram from './InternshipProgram';
 import { careerMgmtService, careerSubmissionService } from '@/lib/api-services';
 
+// Security validation functions
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .replace(/<script>/gi, '')
+    .replace(/<\/script>/gi, '')
+    .trim();
+};
+
+const validatePDFUrl = (url: string): boolean => {
+  // Check if URL is from allowed domains and is a PDF
+  const allowedDomains = [
+    'localhost',
+    '127.0.0.1',
+    'mcb-jelajah-warisan-nusantara',
+    // Add your production domains here
+  ];
+  
+  try {
+    const urlObj = new URL(url);
+    const isAllowedDomain = allowedDomains.some(domain =>
+      urlObj.hostname.includes(domain)
+    );
+    
+    const isPDF = url.toLowerCase().endsWith('.pdf') ||
+                  url.toLowerCase().includes('.pdf') ||
+                  url.toLowerCase().includes('application/pdf');
+    
+    return isAllowedDomain && isPDF;
+  } catch {
+    return false;
+  }
+};
+
 const registrationSchema = z.object({
-  fullName: z.string().min(2, 'Nama lengkap minimal 2 karakter'),
-  email: z.string().email('Email tidak valid'),
-  phone: z.string().min(10, 'Nomor telepon minimal 10 digit'),
-  university: z.string().min(2, 'Nama Sekolah / Universitas harus diisi'),
-  major: z.string().min(2, 'Program studi harus diisi'),
-  semester: z.string().min(1, 'Semester harus diisi'),
-  gpa: z.string().optional(),
-  internshipProgram: z.string().min(1, 'Program magang harus dipilih'),
-  motivation: z.string().min(50, 'Motivasi minimal 50 karakter'),
-  cv: z.string().url('URL CV tidak valid').min(1, 'CV harus diupload'),
-  transcript: z.string().url('URL transkrip tidak valid').min(1, 'Transkrip harus diupload'),
-  coverLetter: z.string().url().optional(),
+  fullName: z.string()
+    .min(2, 'Nama lengkap minimal 2 karakter')
+    .max(100, 'Nama lengkap maksimal 100 karakter')
+    .refine(val => !/[<>{}]|script|javascript/i.test(val), 'Nama tidak boleh mengandung karakter berbahaya'),
+  email: z.string()
+    .email('Email tidak valid')
+    .max(150, 'Email maksimal 150 karakter')
+    .refine(val => !/[<>{}]|script|javascript/i.test(val), 'Email tidak valid'),
+  phone: z.string()
+    .min(10, 'Nomor telepon minimal 10 digit')
+    .max(20, 'Nomor telepon maksimal 20 digit')
+    .regex(/^[0-9+\-\s()]+$/, 'Nomor telepon hanya boleh berisi angka, +, -, dan spasi'),
+  university: z.string()
+    .min(2, 'Nama Sekolah / Universitas harus diisi')
+    .max(200, 'Nama universitas maksimal 200 karakter')
+    .refine(val => !/[<>{}]|script|javascript/i.test(val), 'Nama universitas tidak valid'),
+  major: z.string()
+    .min(2, 'Program studi harus diisi')
+    .max(100, 'Program studi maksimal 100 karakter')
+    .refine(val => !/[<>{}]|script|javascript/i.test(val), 'Program studi tidak valid'),
+  semester: z.string()
+    .min(1, 'Semester harus diisi')
+    .max(2, 'Semester maksimal 2 digit')
+    .regex(/^[0-9]+$/, 'Semester harus berupa angka'),
+  gpa: z.string()
+    .optional()
+    .refine(val => !val || /^[0-9.]*$/.test(val || ''), 'IPK harus berupa angka atau desimal')
+    .refine(val => !val || (parseFloat(val || '0') >= 0 && parseFloat(val || '0') <= 4.0), 'IPK harus antara 0 dan 4.0'),
+  internshipProgram: z.string()
+    .min(1, 'Program magang harus dipilih')
+    .uuid('ID program magang tidak valid'),
+  motivation: z.string()
+    .min(50, 'Motivasi minimal 50 karakter')
+    .max(2000, 'Motivasi maksimal 2000 karakter')
+    .refine(val => !/<script|javascript:|on\w+=/i.test(val), 'Motivasi mengandung konten berbahaya'),
+  cv: z.string()
+    .url('URL CV tidak valid')
+    .min(1, 'CV harus diupload')
+    .refine(val => validatePDFUrl(val), 'File CV harus berupa PDF yang valid'),
+  transcript: z.string()
+    .url('URL transkrip tidak valid')
+    .min(1, 'Transkrip harus diupload')
+    .refine(val => validatePDFUrl(val), 'File transkrip harus berupa PDF yang valid'),
+  coverLetter: z.string()
+    .url()
+    .optional()
+    .refine(val => !val || validatePDFUrl(val || ''), 'File surat pengantar harus berupa PDF yang valid'),
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -123,20 +194,44 @@ const InternshipSection = () => {
         return;
       }
 
+      // Sanitize all text inputs to prevent XSS and injection attacks
+      const sanitizedData = {
+        ...data,
+        fullName: sanitizeInput(data.fullName),
+        email: sanitizeInput(data.email),
+        phone: sanitizeInput(data.phone),
+        university: sanitizeInput(data.university),
+        major: sanitizeInput(data.major),
+        motivation: sanitizeInput(data.motivation),
+      };
+
+      // Additional validation for PDF URLs to prevent PDF injection
+      const pdfUrls = [sanitizedData.cv, sanitizedData.transcript, sanitizedData.coverLetter].filter(Boolean);
+      for (const url of pdfUrls) {
+        if (!validatePDFUrl(url)) {
+          toast({
+            title: "Error",
+            description: "URL dokumen tidak valid atau tidak aman.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       // Prepare submission data
       const submissionData = {
-        career_id: data.internshipProgram,
-        name_volunteer: data.fullName,
-        email: data.email,
-        mobile_phone: data.phone,
-        university_name: data.university,
-        major: data.major,
-        semester: parseInt(data.semester),
-        ipk: data.gpa ? parseFloat(data.gpa) : null,
-        motivation: data.motivation,
-        cv_url: data.cv,
-        transcript_url: data.transcript,
-        cover_letter_url: data.coverLetter || '',
+        career_id: sanitizedData.internshipProgram,
+        name_volunteer: sanitizedData.fullName,
+        email: sanitizedData.email,
+        mobile_phone: sanitizedData.phone,
+        university_name: sanitizedData.university,
+        major: sanitizedData.major,
+        semester: parseInt(sanitizedData.semester),
+        ipk: sanitizedData.gpa ? parseFloat(sanitizedData.gpa) : null,
+        motivation: sanitizedData.motivation,
+        cv_url: sanitizedData.cv,
+        transcript_url: sanitizedData.transcript,
+        cover_letter_url: sanitizedData.coverLetter || '',
         application_status: 'pending'
       };
 

@@ -72,6 +72,20 @@ const FileUploadPDF = ({
       return 'File is empty. Please select a valid PDF file.';
     }
 
+    // Check for potential malicious file names
+    const maliciousPatterns = [
+      /\.\.\//, // Path traversal
+      /\/\//,   // Double slash
+      /\\/,     // Backslash (Windows paths)
+      /\.(exe|bat|cmd|sh|js|html|htm|php|py|rb|pl)$/i, // Executable or script extensions
+    ];
+    
+    for (const pattern of maliciousPatterns) {
+      if (pattern.test(file.name)) {
+        return 'Invalid file name. Please use a safe file name.';
+      }
+    }
+
     return null;
   };
 
@@ -151,7 +165,9 @@ const FileUploadPDF = ({
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     await uploadFile(file);
   };
@@ -159,7 +175,9 @@ const FileUploadPDF = ({
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     await uploadFile(file);
   };

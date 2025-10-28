@@ -14,7 +14,7 @@ const sanitizeFilename = (originalName: string) => {
     .basename(originalName || '', ext)
     .toLowerCase()
     .replace(/\s+/g, '-') // spaces -> dashes
-    .replace(/[^a-z0-9-_\.]/g, ''); // remove unsafe chars
+    .replace(/[^a-z0-9-_.]/g, ''); // remove unsafe chars
   const safeBase = base || 'file';
   return { base: safeBase, ext: ext || '' };
 };
@@ -73,23 +73,44 @@ const resolveBucket = (rawBucket: any) => {
 
 bucketWhitelist.forEach(ensureBucketPath);
 
+// Enhanced file validation functions
+const validatePDFFile = (file: any): boolean => {
+  // Check MIME type
+  if (file.mimetype !== 'application/pdf') {
+    return false;
+  }
+  
+  // Check file extension
+  if (!file.originalname.toLowerCase().endsWith('.pdf')) {
+    return false;
+  }
+  
+  // Check for potential malicious file names
+  const maliciousPatterns = [
+    /\.\.\//, // Path traversal
+    /\/\//,   // Double slash
+    /\\/,     // Backslash (Windows paths)
+    /\.(exe|bat|cmd|sh|js|html|htm|php|py|rb|pl)$/i, // Executable or script extensions
+  ];
+  
+  for (const pattern of maliciousPatterns) {
+    if (pattern.test(file.originalname)) {
+      return false;
+    }
+  }
+  
+  return true;
+};
+
 // File filter for PDF files
 const pdfFileFilter = (req: any, file: any, cb: any) => {
-  if (file.mimetype === 'application/pdf') {
+  if (validatePDFFile(file)) {
     cb(null, true);
   } else {
-    cb(new Error('Only PDF files are allowed'), false);
+    cb(new Error('Only valid PDF files are allowed'), false);
   }
 };
 
-// File filter for images
-const imageFileFilter = (req: any, file: any, cb: any) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed'), false);
-  }
-};
 
 // Multer configuration for different buckets
 const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) => {
@@ -99,8 +120,8 @@ const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) 
         try {
           // Always save to backend/uploads/{bucket}
           cb(null, ensureBucketPath(bucket));
-        } catch (err) {
-          cb(err as Error, uploadDir);
+        } catch (_err) {
+          cb(_err as Error, uploadDir);
         }
       },
       filename: (req, file, cb) => {
@@ -118,7 +139,6 @@ const createMulterConfig = (bucket: string, fileFilter: any, sizeLimit: number) 
     limits: { fileSize: sizeLimit }
   });
 };
-
 // Different upload configurations
 const uploadPDF = createMulterConfig('documents', pdfFileFilter, 10 * 1024 * 1024); // 10MB
 const uploadCV = createMulterConfig('cv-uploads', pdfFileFilter, 5 * 1024 * 1024); // 5MB
@@ -142,7 +162,7 @@ const uploadMulter = multer({
         const dir = ensureBucketPath(bucket);
         const finalName = ensureUniqueFilename(dir, file.originalname);
         cb(null, finalName);
-      } catch (e) {
+      } catch {
         const fallback = `${uuidv4()}${path.extname(file.originalname)}`;
         cb(null, fallback);
       }
