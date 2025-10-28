@@ -49,14 +49,9 @@ const FileUploadPDF = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Frontend validation
+  // Enhanced frontend validation
   const validateFile = (file: File): string | null => {
-    // Check file type
-    if (file.type !== 'application/pdf') {
-      return `File type not allowed. Only PDF files are accepted. Detected: ${file.type || 'unknown'}`;
-    }
-
-    // Check file extension
+    // Check file extension first (most reliable)
     if (!file.name.toLowerCase().endsWith('.pdf')) {
       return 'File extension not allowed. Only .pdf files are accepted.';
     }
@@ -87,22 +82,54 @@ const FileUploadPDF = ({
       }
     }
 
+    // Check MIME type as secondary validation (browser may not always set this correctly)
+    if (file.type && file.type !== 'application/pdf' && file.type !== 'application/octet-stream') {
+      return `File type not allowed. Only PDF files are accepted. Detected: ${file.type}`;
+    }
+
     return null;
   };
 
-  // Additional PDF header validation
+  // Enhanced PDF header validation
   const validatePDFHeader = async (file: File): Promise<boolean> => {
     return new Promise((resolve) => {
+      // If file is too small for header check but has .pdf extension, allow it
+      if (file.size < 5) {
+        // Very small file - could be empty or corrupted
+        // We'll rely on file extension and let backend handle further validation
+        resolve(true);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
-        const arrayBuffer = e.target?.result as ArrayBuffer;
-        const bytes = new Uint8Array(arrayBuffer.slice(0, 5));
-        const header = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
-        
-        // PDF files should start with %PDF-
-        resolve(header === '%PDF-');
+        try {
+          const arrayBuffer = e.target?.result as ArrayBuffer;
+          if (!arrayBuffer || arrayBuffer.byteLength < 5) {
+            resolve(false);
+            return;
+          }
+          
+          const bytes = new Uint8Array(arrayBuffer.slice(0, 5));
+          const header = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+          
+          // PDF files should start with %PDF-
+          const isValidPDF = header === '%PDF-';
+          
+          if (!isValidPDF) {
+            console.warn('Invalid PDF header detected:', header, 'for file:', file.name);
+          }
+          
+          resolve(isValidPDF);
+        } catch (error) {
+          console.error('Error reading PDF header:', error);
+          resolve(false);
+        }
       };
-      reader.onerror = () => resolve(false);
+      reader.onerror = () => {
+        console.error('FileReader error during PDF header validation');
+        resolve(false);
+      };
       reader.readAsArrayBuffer(file.slice(0, 5));
     });
   };
@@ -137,8 +164,6 @@ const FileUploadPDF = ({
           url: response.data!.url,
         }
       });
-
-
       onUploadComplete?.(response.data!.url, file.name);
       toast({
         title: 'Success',
