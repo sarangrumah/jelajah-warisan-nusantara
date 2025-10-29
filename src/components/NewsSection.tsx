@@ -43,34 +43,43 @@ function getNewsImageUrl(filename: string) {
   return undefined;
 }
 
-function getNewsFileUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
+// function getNewsFileUrl(filename: string) {
+//   if (
+//     typeof filename === 'string' &&
+//     (filename.startsWith('http://') ||
+//       filename.startsWith('https://') ||
+//       filename.startsWith('/assets/'))
+//   ) {
+//     return filename;
+//   }
+//   const justFile = filename?.split('/').pop() || filename;
+//   const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
+//   if (match) {
+//     return (match[1] as { default: string }).default;
+//   }
   // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/berita/${justFile}`;
-  }
-  return undefined;
-}
+//   if (justFile) {
+//     return `/assets/berita/${justFile}`;
+//   }
+//   return undefined;
+// }
 
 const NewsSection = () => {
   const { t } = useTranslation();
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const { data: news, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
+  const { data: news_data, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
 
+  const news = news_data.filter((item: {
+    is_active: boolean;
+    is_approved: boolean;
+    is_rejected: boolean;
+  }) => (
+    item.is_active === true 
+    && item.is_approved === true 
+    && item.is_rejected === false
+  )).slice(0, 6);
   // Auto-slide logic
   React.useEffect(() => {
     if (!carouselApi || isPaused) { return; }

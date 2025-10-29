@@ -7,8 +7,7 @@ import { Filter, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { defaultMemories } from '@/../database/default-data';
-import { collectionService, memoryWorldService } from '@/lib/api-services';
+import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -29,7 +28,7 @@ function getCollectionImageUrl(filename: string) {
   }
   // Try to resolve using Vite's import
   const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  return match ? (match[1] as { default: string }).default : filename;
 }
 const MemoryOfWorld = () => {
   const { t } = useTranslation();
@@ -43,19 +42,28 @@ const MemoryOfWorld = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchMemories = async () => {
-    try {
-      const response = await memoryWorldService.getAll();
-      if(response.error) {
-        console.error('Error fetching memories:', response.error);
-      } else {
-        setMemories(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching memories:', error);
-    }
-  }
   useEffect(() => {
+    const fetchMemories = async () => {
+      try {
+        const response = await memoryWorldService.getAll();
+        if(response.error) {
+          console.error('Error fetching memories:', response.error);
+        } else {
+          const filteredMemories = response.data.filter((memory: { 
+            is_active: boolean; 
+            is_approved: boolean; 
+            is_rejected: boolean;
+          }) => (
+            memory.is_active === true 
+            && memory.is_approved === true
+            && memory.is_rejected === false
+          ));
+          setMemories(filteredMemories);
+        }
+      } catch (error) {
+        console.error('Error fetching memories:', error);
+      }
+    }
     fetchMemories();
   }, []);
 
@@ -122,13 +130,6 @@ const MemoryOfWorld = () => {
                   {category.name}
                 </SelectItem>
               ))}
-              {/* <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
-              <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
-              <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>
-              <SelectItem value="history">{t('filter.collection.categoryHistory')}</SelectItem>
-              <SelectItem value="numismatic">{t('filter.collection.categoryNumismatic')}</SelectItem>
-              <SelectItem value="prehistorical">{t('filter.collection.categoryPreHistorical')}</SelectItem>
-              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem> */}
             </SelectContent>
           </Select>
         </div>

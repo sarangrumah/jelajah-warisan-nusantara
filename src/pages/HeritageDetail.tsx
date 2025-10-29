@@ -5,10 +5,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+import parse from 'html-react-parser';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -49,7 +49,6 @@ const HeritageDetail = () => {
       const response = await museumService.getAll();
       if(response.error || response.data.length === 0) {
         console.error('Error fetching heritages:', response.error);
-        setHeritages(mapSlidesWithImageUrl(defaultHeritages));
       } else {
         setHeritages(mapSlidesWithImageUrl(response.data));
       }
@@ -188,7 +187,7 @@ const HeritageDetail = () => {
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Fasilitas')}</h4>
-                      <div className="flex flex-wrap gap-2">{heritage.facilities}
+                      <div className="flex flex-wrap gap-2">{parse(heritage.facilities)}
                         {/* {heritage.facilities && heritage.facilities.map((facility, index) => (
                           <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
                             {facility}

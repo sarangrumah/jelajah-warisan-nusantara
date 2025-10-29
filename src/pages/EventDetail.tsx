@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Phone, Mail, Share2 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -6,21 +6,50 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { agendaService, contentService } from '@/lib/api-services';
+import { EventsService, contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
+import parse from 'html-react-parser';
 
+const eventImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
+
+function getEventsImageUrl(filename: string) {
+  if (
+    typeof filename === 'string' &&
+    (filename.startsWith('http://') ||
+      filename.startsWith('https://') ||
+      filename.startsWith('/assets/'))
+  ) {
+    return filename;
+  }
+  const justFile = filename?.split('/').pop() || filename;
+  // Try museums first
+  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
+  if (match) {
+    return (match[1] as { default: string }).default;
+  }
+  // Fallback: try public/assets/museums/ or public/assets/images/ for production
+  if (justFile) {
+    return `/assets/museums/${justFile}`;
+  }
+  return '/placeholder.svg';
+}
 interface CompanyProfile {
   whatsapp?: string;
 }
 
 const EventDetail = () => {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const { t } = useTranslation();
   const [event, setEvent] = useState(null);
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [companyWhatsApp, setCompanyWhatsApp] = useState<string>('');
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   // Fetch company profile to get WhatsApp number
   useEffect(() => {
     const fetchCompanyProfile = async () => {
@@ -40,33 +69,64 @@ const EventDetail = () => {
     fetchCompanyProfile();
   }, []);
 
-  const fetchEvent = async () => {
-    try {
-      if (!id) {
-        console.error('No event ID provided');
-        setEvent(null);
-        setLoading(false);
-        return;
-      }
-      
-      const response = await agendaService.getById(id);
-      if (response.error) {
-        console.error('Error fetching event:', response.error);
-        setEvent(null);
-      } else {
-        setEvent(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching event:', error);
-      setEvent(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        if (!id) {
+          console.error('No event ID provided');
+          setEvent(null);
+          setLoading(false);
+          return;
+        }
+        
+        const response = await EventsService.getAll();
+        if (response.error) {
+          console.error('Error fetching event:', response.error);
+          setEvent(null);
+        } else {
+          const foundEvent = response.data.find(
+            (event: { id: string }) => event.id === id
+          );
+          if (!foundEvent) {
+            console.warn(`Event with ID ${id} not found`);
+            setEvent(null);
+          } else {
+            setEvent(foundEvent);
+            setStatus(getEventStatus(foundEvent));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching event:', error);
+        setEvent(null);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchEvent();
   }, [id]);
+  // console.log(event)
+
+  const getEventStatus = (event) => {
+    const now = new Date();
+
+    if (event.start_published_date === null && new Date(event.start_date) > now) {
+      return 'upcoming';
+    }
+
+    if (new Date(event.start_published_date) < now && new Date(event.start_date) > now) {
+      return 'registration';
+    }
+
+    if (new Date(event.start_date) <= now && new Date(event.end_date) >= now) {
+      return 'ongoing';
+    }
+
+    if (new Date(event.end_date) < now) {
+      return 'finished';
+    }
+
+    return 'unknown';
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -166,15 +226,28 @@ const EventDetail = () => {
       <div key={event.id} className="pt-20">
         {/* Hero Image */}
           <section className="relative overflow-hidden h-[60vh]">
-            <img
+            {/* <img
               src={event.image_url ? event.image_url : logo}
               alt={event.title}
               className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
+            /> */}
+            <img
+              src={
+                (() => {
+                  const imageCandidate = event.banner_img || '';
+                  const resolved = getEventsImageUrl(imageCandidate);
+                  // Use logo as placeholder if no image
+                  return (resolved && resolved !== '/placeholder.svg')
+                    ? resolved
+                    : logo;
+                })()}
+              alt={event.name}
+              className={event.banner_img ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(event.status)}`}>
-                {getStatusLabel(event.status)}
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(status)}`}>
+                {getStatusLabel(status)}
               </span>
             </div>
             <div className="absolute bottom-4 left-8 w-[70%] text-white">
@@ -195,7 +268,7 @@ const EventDetail = () => {
                     <div className="space-y-4 text-muted-foreground">
                       {event.description ? (
                         event.description.split('\n\n').map((paragraph, index) => (
-                          <p key={index}>{paragraph}</p>
+                          <p key={index}>{parse(paragraph)}</p>
                         ))
                       ) : (
                         <p>{t('No description available')}</p>
@@ -279,8 +352,8 @@ const EventDetail = () => {
                       <div className="flex items-start">
                         <MapPin size={16} className="mr-3 text-primary mt-1" />
                         <div>
-                          <div className="font-semibold text-sm">{event.location}</div>
-                          <div className="text-sm text-muted-foreground">{event.address || t('No address provided')}</div>
+                          <div className="font-semibold text-sm">{parse(event.location)}</div>
+                          <div className="text-sm text-muted-foreground">{parse(event.address) || t('No address provided')}</div>
                         </div>
                       </div>
                       
@@ -293,10 +366,10 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">{t('Contact Information')}</h3>
                     <div className="space-y-3 pb-5">
-                      {event.contact_phone && (
+                      {event.contact && (
                         <div className="flex items-center">
                           <Phone size={16} className="mr-3 text-primary" />
-                          <span className="text-sm">{event.contact_phone}</span>
+                          <span className="text-sm">{event.contact}</span>
                         </div>
                       )}
                       {event.contact_email && (
@@ -305,7 +378,7 @@ const EventDetail = () => {
                           <span className="text-sm">{event.contact_email}</span>
                         </div>
                       )}
-                      {!event.contact_phone && !event.contact_email && (
+                      {!event.contact && (
                         <div className="text-sm text-muted-foreground">
                           {t('No contact information available')}
                         </div>

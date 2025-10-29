@@ -6,9 +6,8 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
-import { museumService } from '@/lib/api-services';
+import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -59,25 +58,29 @@ const MuseumDetail = () => {
   const { pathname } = useLocation();
   
   const [museums, setMuseums] = useState([]);
+  const [type, setType] = useState('');
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchMuseums = async () => {
-    try {
-      const response = await museumService.getAll();
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching museums:', response.error);
-        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
-      } else {
-        setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  }
   useEffect(() => {
+    const fetchMuseums = async () => {
+      try {
+        const [response, typeResponse] = await Promise.all([
+          museumService.getAll(),
+          TypesAndCategoriesSites.getAllTypes()
+        ])
+        if(response.error || typeResponse.error) {
+          console.error('Error fetching museums:', response.error || typeResponse.error);
+        } else {
+          setMuseums(mapSlidesWithImageUrl(response.data));
+          setType((typeResponse.data as [{ name: string; id: string }]).find((t: { name: string; }) => t.name.toLowerCase() === 'museum')?.id);
+        }
+      } catch (error) {
+        console.error('Error fetching museums:', error);
+      }
+    }
     fetchMuseums();
   }, []);
 
@@ -113,7 +116,7 @@ const MuseumDetail = () => {
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute bottom-8 left-8 text-white">
             <Badge className="mb-2">
-              {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
+              {museum.type === type ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
               <span

@@ -5,9 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
-import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
+import parse from 'html-react-parser';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
 
@@ -23,7 +23,7 @@ function getEventImageUrl(filename: string) {
   const justFile = filename?.split('/').pop() || filename;
   const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
   if (match) {
-    return (match[1] as any).default;
+    return (match[1] as { default: string }).default;
   }
   // Fallback: try public/assets/events/ for production
   if (justFile) {
@@ -55,7 +55,7 @@ const AgendaList = () => {
         // Add "All Events" option and map database categories
         const categoryOptions = [
           { id: 'semua', name: 'Semua Event' },
-          ...response.data.map((cat: any) => ({
+          ...response.data.map((cat: { id: string; name: string }) => ({
             id: cat.id,
             name: cat.name
           }))
@@ -79,9 +79,13 @@ const AgendaList = () => {
       const response = await EventsService.getAll();
       if (response.error || response.data.length === 0) {
         console.error('Error fetching events:', response.error);
-        setEvents(defaultEvents);
       } else {
-        const filteredEvents = response.data.filter((event: any) => (
+        const filteredEvents = response.data.filter((event: {
+          is_active: boolean;
+          is_approved: boolean;
+          start_published_date: Date;
+          end_published_date: Date;
+        }) => (
           event.is_active === true
           && event.is_approved === true
           && new Date(event.start_published_date) <= new Date()
@@ -112,6 +116,27 @@ const AgendaList = () => {
     }
   });
   
+  const getEventStatus = (event) => {
+    const now = new Date();
+
+    if (event.start_published_date === null && new Date(event.start_date) > now) {
+      return 'upcoming';
+    }
+
+    if (new Date(event.start_published_date) < now && new Date(event.start_date) > now) {
+      return 'registration';
+    }
+
+    if (new Date(event.start_date) <= now && new Date(event.end_date) >= now) {
+      return 'ongoing';
+    }
+
+    if (new Date(event.end_date) < now) {
+      return 'finished';
+    }
+
+    return 'unknown';
+  };
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming': return 'bg-blue-500';
@@ -170,7 +195,7 @@ const AgendaList = () => {
                   <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
                     <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
-                      {getStatusLabel(event.status)}
+                      {getStatusLabel(getEventStatus(event))}
                     </div>
                     <img
                       src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
@@ -184,7 +209,7 @@ const AgendaList = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {event.description}
+                  {parse(event.description)}
                 </p>
                 
                 <div className="space-y-2 mb-[4rem]">
@@ -205,7 +230,7 @@ const AgendaList = () => {
                   {event.location && (
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-primary" />
-                      <span>{event.location}</span>
+                      <span>{parse(event.location)}</span>
                     </div>
                   )}
                 </div>
