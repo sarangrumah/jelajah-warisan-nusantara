@@ -20,6 +20,33 @@ const PLACEHOLDER_IMAGE = '/placeholder.svg';
 function getAssetImageUrl(filename: string) {
   return assetUrl(filename) || PLACEHOLDER_IMAGE;
 }
+
+function extractImagePath(imageData: any): string {
+  if (!imageData) return '';
+  
+  // If it's already a string URL, return it
+  if (typeof imageData === 'string') {
+    return imageData;
+  }
+  
+  // If it's an array, get the first image path
+  if (Array.isArray(imageData)) {
+    const firstImage = imageData[0];
+    if (typeof firstImage === 'string') {
+      return firstImage;
+    }
+    if (firstImage && typeof firstImage === 'object' && firstImage.path) {
+      return firstImage.path;
+    }
+  }
+  
+  // If it's an object with path property
+  if (imageData && typeof imageData === 'object' && imageData.path) {
+    return imageData.path;
+  }
+  
+  return '';
+}
 const PemanfaatanAset = () => {
 	const { t } = useTranslation();
 	const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +61,7 @@ const PemanfaatanAset = () => {
     }, [pathname]);
 
     useEffect(() => {
-        const fetchAllCategories = async () => {            
+        const fetchAllCategories = async () => {
             try {
                 const [assetsResponse, areaResponse, fasilitasResponse] = await Promise.all([
                     pemanfaatanAssetService.getAll(),
@@ -200,7 +227,7 @@ const PemanfaatanAset = () => {
                                     <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                                         <div className="aspect-video overflow-hidden rounded-t-lg pt-5x p-3">
                                             <img
-                                                src={getAssetImageUrl(Array.isArray(item.image_url) ? item.image_url[0]?.path : item.image_url)}
+                                                src={getAssetImageUrl(extractImagePath(item.image_url))}
                                                 alt={item.title}
                                                 className="w-full h-full object-cover object-center"
                                             />

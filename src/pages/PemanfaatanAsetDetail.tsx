@@ -16,6 +16,33 @@ function getMuseumImageUrl(filename: string | undefined | null) {
   return assetUrl(filename || '') || PLACEHOLDER_IMAGE;
 }
 
+function extractImagePath(imageData: any): string {
+  if (!imageData) return '';
+  
+  // If it's already a string URL, return it
+  if (typeof imageData === 'string') {
+    return imageData;
+  }
+  
+  // If it's an array, get the first image path
+  if (Array.isArray(imageData)) {
+    const firstImage = imageData[0];
+    if (typeof firstImage === 'string') {
+      return firstImage;
+    }
+    if (firstImage && typeof firstImage === 'object' && firstImage.path) {
+      return firstImage.path;
+    }
+  }
+  
+  // If it's an object with path property
+  if (imageData && typeof imageData === 'object' && imageData.path) {
+    return imageData.path;
+  }
+  
+  return '';
+}
+
 const PemanfaatanAsetDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
@@ -63,7 +90,7 @@ const PemanfaatanAsetDetail = () => {
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
           <section className="relative h-96 overflow-hidden pt-10">
             <img
-              src={getMuseumImageUrl(Array.isArray(asset.image_url) ? asset.image_url[0]?.path : asset.image_url)}
+              src={getMuseumImageUrl(extractImagePath(asset.image_url))}
               alt={asset.name}
               className="w-full h-full object-cover"
             />

@@ -139,7 +139,9 @@ const deserializeImages = (raw: unknown): AssetImage[] => {
       return [];
     }
     try {
-      const parsed = JSON.parse(raw);
+      // First decode HTML entities, then parse JSON
+      const decoded = raw.replace(/"/g, '"');
+      const parsed = JSON.parse(decoded);
       if (Array.isArray(parsed)) {
         return deserializeImages(parsed);
       }
