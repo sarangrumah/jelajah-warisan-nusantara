@@ -10,6 +10,7 @@ import { Select as Select, SelectContent, SelectGroup, SelectItem, SelectLabel, 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanAssetService } from '@/lib/api-services';
+import { ImageCarousel } from '@/components/ui/image-carousel';
 // import { CardDescription } from '@/components/ui/card';
 // import { Checkbox } from '@/components/ui/checkbox';
 // import { Label } from '@/components/ui/label';
@@ -17,39 +18,34 @@ import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanA
 
 import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-function getAssetImageUrl(filename: string) {
-  // If it's an upload path (starts with /uploads/), return as-is without assetUrl processing
-  if (filename && filename.startsWith('/uploads/')) {
-    return filename;
-  }
-  return assetUrl(filename) || PLACEHOLDER_IMAGE;
-}
 
-function extractImagePath(imageData: any): string {
-  if (!imageData) return '';
+function extractImagePaths(imageData: any): string[] {
+  if (!imageData) return [PLACEHOLDER_IMAGE];
   
-  // If it's already a string URL, return it
+  // If it's already a string URL, return as array
   if (typeof imageData === 'string') {
-    return imageData;
+    return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
   }
   
-  // If it's an array, get the first image path
+  // If it's an array, process all images
   if (Array.isArray(imageData)) {
-    const firstImage = imageData[0];
-    if (typeof firstImage === 'string') {
-      return firstImage;
-    }
-    if (firstImage && typeof firstImage === 'object' && firstImage.path) {
-      return firstImage.path;
-    }
+    return imageData.map(item => {
+      if (typeof item === 'string') {
+        return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
+      }
+      if (item && typeof item === 'object' && item.path) {
+        return item.path.startsWith('/uploads/') ? item.path : assetUrl(item.path) || PLACEHOLDER_IMAGE;
+      }
+      return PLACEHOLDER_IMAGE;
+    }).filter(Boolean);
   }
   
   // If it's an object with path property
   if (imageData && typeof imageData === 'object' && imageData.path) {
-    return imageData.path;
+    return [imageData.path.startsWith('/uploads/') ? imageData.path : assetUrl(imageData.path) || PLACEHOLDER_IMAGE];
   }
   
-  return '';
+  return [PLACEHOLDER_IMAGE];
 }
 const PemanfaatanAset = () => {
 	const { t } = useTranslation();
@@ -224,16 +220,19 @@ const PemanfaatanAset = () => {
                     <div className='px-5'>
                         <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-5'>
                             {filteredAssets.map((item) => (
-                                <Link 
-                                key={item.id} 
+                                <Link
+                                key={item.id}
                                 to={`/pemanfaatan-aset/${item.id}`}
                                 >
                                     <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                        <div className="aspect-video overflow-hidden rounded-t-lg pt-5x p-3">
-                                            <img
-                                                src={getAssetImageUrl(extractImagePath(item.image_url))}
-                                                alt={item.title}
-                                                className="w-full h-full object-cover object-center"
+                                        <div className="aspect-video overflow-hidden rounded-t-lg">
+                                            <ImageCarousel
+                                                images={extractImagePaths(item.image_url)}
+                                                autoSlide={true}
+                                                autoSlideInterval={3000}
+                                                showControls={false}
+                                                showDots={true}
+                                                className="h-full"
                                             />
                                         </div>
                                         <CardHeader>

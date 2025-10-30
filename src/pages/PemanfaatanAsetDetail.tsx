@@ -9,43 +9,38 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { pemanfaatanAssetService } from '@/lib/api-services';
+import { ImageCarousel } from '@/components/ui/image-carousel';
 
 import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-function getMuseumImageUrl(filename: string | undefined | null) {
-  if (!filename) { return PLACEHOLDER_IMAGE };
-  // If it's an upload path (starts with /uploads/), return as-is without assetUrl processing
-  if (filename.startsWith('/uploads/')) {
-    return filename;
-  }
-  return assetUrl(filename) || PLACEHOLDER_IMAGE;
-}
 
-function extractImagePath(imageData: any): string {
-  if (!imageData) return '';
+function extractImagePaths(imageData: any): string[] {
+  if (!imageData) return [PLACEHOLDER_IMAGE];
   
-  // If it's already a string URL, return it
+  // If it's already a string URL, return as array
   if (typeof imageData === 'string') {
-    return imageData;
+    return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
   }
   
-  // If it's an array, get the first image path
+  // If it's an array, process all images
   if (Array.isArray(imageData)) {
-    const firstImage = imageData[0];
-    if (typeof firstImage === 'string') {
-      return firstImage;
-    }
-    if (firstImage && typeof firstImage === 'object' && firstImage.path) {
-      return firstImage.path;
-    }
+    return imageData.map(item => {
+      if (typeof item === 'string') {
+        return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
+      }
+      if (item && typeof item === 'object' && item.path) {
+        return item.path.startsWith('/uploads/') ? item.path : assetUrl(item.path) || PLACEHOLDER_IMAGE;
+      }
+      return PLACEHOLDER_IMAGE;
+    }).filter(Boolean);
   }
   
   // If it's an object with path property
   if (imageData && typeof imageData === 'object' && imageData.path) {
-    return imageData.path;
+    return [imageData.path.startsWith('/uploads/') ? imageData.path : assetUrl(imageData.path) || PLACEHOLDER_IMAGE];
   }
   
-  return '';
+  return [PLACEHOLDER_IMAGE];
 }
 
 const PemanfaatanAsetDetail = () => {
@@ -94,10 +89,12 @@ const PemanfaatanAsetDetail = () => {
       {assets.map((asset) => (
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
           <section className="relative h-96 overflow-hidden pt-10">
-            <img
-              src={getMuseumImageUrl(extractImagePath(asset.image_url))}
-              alt={asset.name}
-              className="w-full h-full object-cover"
+            <ImageCarousel
+              images={extractImagePaths(asset.image_url)}
+              autoSlide={false}
+              showControls={true}
+              showDots={true}
+              className="h-full"
             />
             <div className="absolute inset-0 bg-black/30" />
           </section>
