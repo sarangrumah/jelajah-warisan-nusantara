@@ -15,20 +15,10 @@ import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanA
 // import { Label } from '@/components/ui/label';
 // import Select from 'react-select';
 
-const collectionImages = import.meta.glob('../assets/images/*', { eager: true });
+import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 function getAssetImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-//   Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
+  return assetUrl(filename) || PLACEHOLDER_IMAGE;
 }
 const PemanfaatanAset = () => {
 	const { t } = useTranslation();
@@ -210,7 +200,7 @@ const PemanfaatanAset = () => {
                                     <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                                         <div className="aspect-video overflow-hidden rounded-t-lg pt-5x p-3">
                                             <img
-                                                src={(getAssetImageUrl(item.image_url?.split('/').pop() || item.image_url))}
+                                                src={getAssetImageUrl(Array.isArray(item.image_url) ? item.image_url[0]?.path : item.image_url)}
                                                 alt={item.title}
                                                 className="w-full h-full object-cover object-center"
                                             />

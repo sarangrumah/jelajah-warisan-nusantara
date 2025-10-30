@@ -598,7 +598,7 @@ const PemanfaatanAssetForm = ({
         label="Image Upload"
         value={formData.image_url}
         onChange={(images) => setFormData((prev) => ({ ...prev, image_url: images }))}
-        bucket="hero-sections"
+        bucket="pemanfaatan-assets"
         maxImages={10}
       />
 
