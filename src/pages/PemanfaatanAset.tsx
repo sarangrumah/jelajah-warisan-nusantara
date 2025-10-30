@@ -18,6 +18,10 @@ import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanA
 import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 function getAssetImageUrl(filename: string) {
+  // If it's an upload path (starts with /uploads/), return as-is without assetUrl processing
+  if (filename && filename.startsWith('/uploads/')) {
+    return filename;
+  }
   return assetUrl(filename) || PLACEHOLDER_IMAGE;
 }
 

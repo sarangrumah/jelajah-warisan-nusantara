@@ -13,7 +13,12 @@ import { pemanfaatanAssetService } from '@/lib/api-services';
 import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 function getMuseumImageUrl(filename: string | undefined | null) {
-  return assetUrl(filename || '') || PLACEHOLDER_IMAGE;
+  if (!filename) { return PLACEHOLDER_IMAGE };
+  // If it's an upload path (starts with /uploads/), return as-is without assetUrl processing
+  if (filename.startsWith('/uploads/')) {
+    return filename;
+  }
+  return assetUrl(filename) || PLACEHOLDER_IMAGE;
 }
 
 function extractImagePath(imageData: any): string {
