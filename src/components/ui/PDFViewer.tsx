@@ -23,11 +23,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ documentUrl, title = 'Document', 
     link.click();
     document.body.removeChild(link);
   };
-
-  const handleOpenInNewTab = () => {
-    window.open(documentUrl, '_blank', 'noopener,noreferrer');
-  };
-
+  
   if (!documentUrl) {
     return (
       <Card className={`border-dashed border-2 border-muted ${className}`}>
@@ -78,41 +74,37 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ documentUrl, title = 'Document', 
               <Download className="w-4 h-4 mr-2" />
               Unduh
             </Button>
-            {/* <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleOpenInNewTab}
-              className="flex-1"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Buka Tab Baru
-            </Button> */}
           </div>
         </CardContent>
       </Card>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl w-full h-[80vh]">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl w-full h-[80vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center justify-between">
               <span>{title}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1">
-            <iframe
-              src={documentUrl}
-              title={title}
-              className="w-full h-full border-0 rounded-lg"
-              style={{ minHeight: '500px' }}
-            />
+          <div className="flex-1 flex flex-col">
+            <div className="flex-1 bg-muted rounded-lg flex items-center justify-center">
+              <div className="text-center p-8">
+                <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">PDF tidak dapat ditampilkan secara langsung</h3>
+                <p className="text-muted-foreground mb-4">
+                  Dokumen PDF tidak dapat ditampilkan dalam aplikasi karena pembatasan keamanan.
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    variant="default"
+                    onClick={handleDownload}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Unduh Dokumen
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
