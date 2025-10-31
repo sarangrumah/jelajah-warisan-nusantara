@@ -297,12 +297,35 @@ const PemanfaatanAset = () => {
                                                 <span>Fasilitas</span>
                                                 <div className='px-5 py-2 border rounded-md'>
                                                     <ul>
-                                                    {Array.isArray(item.fasilitas) && item.fasilitas.length > 0 && item.fasilitas.map((facilityId, index) => {
-                                                        const facilityName = getCategoryNameById(facilityId, 'Fasilitas');
-                                                        return (
-                                                            <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{facilityName}</li>
-                                                        );
-                                                    })}
+                                                    {(() => {
+                                                        let fasilitasData = item.fasilitas;
+                                                        
+                                                        // Handle JSON string
+                                                        if (typeof fasilitasData === 'string') {
+                                                            try {
+                                                                fasilitasData = JSON.parse(fasilitasData);
+                                                            } catch (error) {
+                                                                console.error('Error parsing fasilitas JSON:', error);
+                                                            }
+                                                        }
+                                                        
+                                                        if (fasilitasData && typeof fasilitasData === 'object' && fasilitasData.content) {
+                                                            return (
+                                                                <div
+                                                                    className="text-[1rem] text-[#86807c] font-normal leading-none"
+                                                                    dangerouslySetInnerHTML={{ __html: fasilitasData.content }}
+                                                                />
+                                                            );
+                                                        } else if (Array.isArray(fasilitasData) && fasilitasData.length > 0) {
+                                                            return fasilitasData.map((facilityId, index) => {
+                                                                const facilityName = getCategoryNameById(facilityId, 'Fasilitas');
+                                                                return (
+                                                                    <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{facilityName}</li>
+                                                                );
+                                                            });
+                                                        }
+                                                        return null;
+                                                    })()}
                                                     </ul>
                                                 </div>
                                                 <div>

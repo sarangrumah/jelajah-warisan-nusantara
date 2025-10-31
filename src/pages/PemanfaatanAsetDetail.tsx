@@ -178,11 +178,14 @@ const PemanfaatanAsetDetail = () => {
                   <CardTitle className='text-start'>{'Ketentuan Umum'}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.ketentuan_umum) && asset.ketentuan_umum.length > 0 ?
-                      asset.ketentuan_umum.map((item, index) => <li key={index}>{item}</li>)
-                    : 'Tidak ada ketentuan umum'}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.ketentuan_umum === 'string'
+                        ? JSON.parse(asset.ketentuan_umum)?.content || 'Tidak ada ketentuan umum'
+                        : asset.ketentuan_umum?.content || 'Tidak ada ketentuan umum'
+                    ) }}
+                  />
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
@@ -204,25 +207,27 @@ const PemanfaatanAsetDetail = () => {
                   <p className="text-white leading-relaxed">
                     {'Fasilitas : '}
                   </p>
-                  <ul className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.fasilitas) && asset.fasilitas.length > 0 ?
-                      asset.fasilitas.map((facilityId, index) => (
-                        <li key={index}>{getCategoryNameById(facilityId, 'Fasilitas')}</li>
-                      ))
-                    : ''}
-                  </ul>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.fasilitas === 'string'
+                        ? JSON.parse(asset.fasilitas)?.content || ''
+                        : asset.fasilitas?.content || ''
+                    ) }}
+                  />
                 </CardContent>
                 <CardContent className='text-start'>
                   <p className="text-white leading-relaxed">
                     {'Fasilitas Tambahan : '}
                   </p>
-                  <ul className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.fasilitas_tambahan) && asset.fasilitas_tambahan.length > 0 ?
-                      asset.fasilitas_tambahan.map((facilityId, index) => (
-                        <li key={index}>{getCategoryNameById(facilityId, 'Fasilitas')}</li>
-                      ))
-                    : ''}
-                  </ul>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.fasilitas_tambahan === 'string'
+                        ? JSON.parse(asset.fasilitas_tambahan)?.content || ''
+                        : asset.fasilitas_tambahan?.content || ''
+                    ) }}
+                  />
                 </CardContent>
               </Card>
               <Card className='mt-4 pb-8'>
