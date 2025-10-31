@@ -131,23 +131,33 @@ const PemanfaatanAset = () => {
 
         // Check if item matches any of the selected filters
         const matchesFilters = filterCategories.some(filter => {
-            // Check if filter matches area
-            if (item.area === filter) {
-                return true;
-            }
-            
-            // Check if filter matches any facility
-            let fasilitasData = item.fasilitas;
-            if (typeof fasilitasData === 'string') {
-                try {
-                    fasilitasData = JSON.parse(fasilitasData);
-                } catch (error) {
-                    console.error('Error parsing fasilitas JSON:', error);
+            // Check if filter matches area (by name)
+            const areaCategory = categories.find(cat => cat.label === 'Area');
+            if (areaCategory) {
+                const areaItem = areaCategory.items.find(area => area.name === filter);
+                if (areaItem && item.area === areaItem.id) {
+                    return true;
                 }
             }
             
-            if (Array.isArray(fasilitasData) && fasilitasData.includes(filter)) {
-                return true;
+            // Check if filter matches any facility (by name)
+            const fasilitasCategory = categories.find(cat => cat.label === 'Fasilitas');
+            if (fasilitasCategory) {
+                const fasilitasItem = fasilitasCategory.items.find(facility => facility.name === filter);
+                if (fasilitasItem) {
+                    let fasilitasData = item.fasilitas;
+                    if (typeof fasilitasData === 'string') {
+                        try {
+                            fasilitasData = JSON.parse(fasilitasData);
+                        } catch (error) {
+                            console.error('Error parsing fasilitas JSON:', error);
+                        }
+                    }
+                    
+                    if (Array.isArray(fasilitasData) && fasilitasData.includes(fasilitasItem.id)) {
+                        return true;
+                    }
+                }
             }
             
             return false;
