@@ -73,7 +73,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
-          className="w-full h-full object-cover transition-transform duration-500"
+          className="w-full h-full object-contain transition-transform duration-500"
         />
       </div>
 

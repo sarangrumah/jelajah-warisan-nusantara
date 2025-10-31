@@ -147,13 +147,14 @@ const PemanfaatanAsetDetail = () => {
       <Header />
       {assets.map((asset) => (
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
-          <section className="relative h-500 overflow-hidden pt-10">
+          <section className="relative h-[500px] overflow-hidden pt-10">
             <ImageCarousel
               images={extractImagePaths(asset.image_url)}
-              autoSlide={false}
+              autoSlide={true}
+              autoSlideInterval={5000}
               showControls={true}
               showDots={true}
-              className="h-full"
+              className="h-full object-contain"
             />
           </section>
           <section className="container mx-auto px-4 py-5">
