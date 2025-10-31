@@ -159,7 +159,18 @@ const serializeImages = (images: AssetImage[]): string => {
   if (!images || images.length === 0) {
     return '[]';
   }
-  return JSON.stringify(images.map((image) => image.path));
+  return JSON.stringify(images.map((image) => {
+    // Extract only the filename from the path
+    const path = image.path;
+    if (path.startsWith('/uploads/')) {
+      return path.split('/').pop() || path;
+    }
+    // If it's already just a filename (no path), return as is
+    if (!path.includes('/')) {
+      return path;
+    }
+    return path;
+  }));
 };
 
 const extractImagePaths = (imageData: any): string[] => {
