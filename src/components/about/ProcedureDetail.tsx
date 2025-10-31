@@ -121,7 +121,7 @@ const ProcedureDetail = () => {
         if (isApproved === 't') {
             return <Badge variant="default" className="flex items-center gap-1"><CheckCircle size={14} /> Disetujui</Badge>;
         }
-        return <Badge variant="outline" className="flex items-center gap-1"><Clock size={14} /> Menunggu</Badge>;
+        // return <Badge variant="outline" className="flex items-center gap-1"><Clock size={14} /> Menunggu</Badge>;
     };
 
     return (
@@ -146,7 +146,7 @@ const ProcedureDetail = () => {
                                     <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
                                         {procedure.category}
                                     </span>
-                                    {getStatusBadge(procedure.is_active, procedure.is_approved, procedure.is_rejected)}
+                                    {/* {getStatusBadge(procedure.is_active, procedure.is_approved, procedure.is_rejected)} */}
                                 </div>
                                 
                                 <h1 className="text-4xl md:text-4xl font-bold text-foreground mb-4">{procedure.title}</h1>
@@ -189,7 +189,7 @@ const ProcedureDetail = () => {
                             </div>
 
                             {/* Additional Information */}
-                            <div className="bg-muted/30 rounded-lg p-6 mb-8">
+                            {/* <div className="bg-muted/30 rounded-lg p-6 mb-8">
                                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                                     <FileText size={18} />
                                     Informasi Tambahan
@@ -222,7 +222,7 @@ const ProcedureDetail = () => {
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Sidebar with PDF Viewer */}
@@ -235,7 +235,7 @@ const ProcedureDetail = () => {
                             )}
                             
                             {/* Quick Actions */}
-                            <div className="bg-card border rounded-lg p-6">
+                            {/* <div className="bg-card border rounded-lg p-6">
                                 <h3 className="text-lg font-semibold mb-4">Aksi Cepat</h3>
                                 <div className="space-y-3">
                                     {procedure.document_url && (
@@ -258,7 +258,7 @@ const ProcedureDetail = () => {
                                         </Button>
                                     )}
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

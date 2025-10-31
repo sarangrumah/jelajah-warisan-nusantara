@@ -78,7 +78,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ documentUrl, title = 'Document', 
               <Download className="w-4 h-4 mr-2" />
               Unduh
             </Button>
-            <Button 
+            {/* <Button 
               variant="outline" 
               size="sm" 
               onClick={handleOpenInNewTab}
@@ -86,7 +86,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ documentUrl, title = 'Document', 
             >
               <ExternalLink className="w-4 h-4 mr-2" />
               Buka Tab Baru
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>
