@@ -18,14 +18,14 @@ interface MemoryItem {
   image: string | null;
   start_publish_date: string;
   end_publish_date: string;
-  is_active: string;
-  is_approved: string;
+  is_active: boolean | string;
+  is_approved: boolean | string;
   created_by: string;
   created_at: string;
   updated_by: string | null;
   updated_at: string;
   thumbnails: string;
-  is_rejected: string;
+  is_rejected: boolean | string;
   categories_id: string | null;
   reason_rejected: string;
   excerpt: string | null;
@@ -108,9 +108,10 @@ const MemoryOfWorld = () => {
     const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
                        (!endPublishDate || currentDate <= endPublishDate);
     
-    const isActive = item.is_active === 't';
-    const isApproved = item.is_approved === 't';
-    const isNotRejected = item.is_rejected === 'f';
+    // Handle both string ('t'/'f') and boolean (true/false) values from API
+    const isActive = item.is_active === true || item.is_active === 't';
+    const isApproved = item.is_approved === true || item.is_approved === 't';
+    const isNotRejected = item.is_rejected === false || item.is_rejected === 'f';
     
     const shouldShow = matchesSearch && isPublished && isActive && isApproved && isNotRejected;
     

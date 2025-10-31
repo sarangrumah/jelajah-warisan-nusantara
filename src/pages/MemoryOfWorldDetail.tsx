@@ -15,14 +15,14 @@ interface MemoryItem {
   image: string | null;
   start_publish_date: string;
   end_publish_date: string;
-  is_active: string;
-  is_approved: string;
+  is_active: boolean | string;
+  is_approved: boolean | string;
   created_by: string;
   created_at: string;
   updated_by: string | null;
   updated_at: string;
   thumbnails: string;
-  is_rejected: string;
+  is_rejected: boolean | string;
   categories_id: string | null;
   reason_rejected: string;
   excerpt: string | null;
@@ -92,9 +92,9 @@ const MemoryOfWorldDetail = () => {
                 const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
                                    (!endPublishDate || currentDate <= endPublishDate);
                 
-                const isActive = memory.is_active === 't';
-                const isApproved = memory.is_approved === 't';
-                const isNotRejected = memory.is_rejected === 'f';
+                const isActive = memory.is_active === true || memory.is_active === 't';
+                const isApproved = memory.is_approved === true || memory.is_approved === 't';
+                const isNotRejected = memory.is_rejected === false || memory.is_rejected === 'f';
                 
                 if (isPublished && isActive && isApproved && isNotRejected) {
                     setMemories([memory]);
