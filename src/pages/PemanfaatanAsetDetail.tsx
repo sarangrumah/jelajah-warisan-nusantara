@@ -17,13 +17,31 @@ const PLACEHOLDER_IMAGE = '/placeholder.svg';
 function extractImagePaths(imageData: any): string[] {
   if (!imageData) return [PLACEHOLDER_IMAGE];
   
-  // If it's already a string URL, return as array
+  // Handle JSON string arrays
   if (typeof imageData === 'string') {
-    // Check if it's a UUID filename (no slashes, contains UUID pattern)
-    if (!imageData.includes('/') && imageData.includes('-')) {
-      return [`/uploads/images/${imageData}`];
+    try {
+      // Try to parse as JSON array
+      const parsed = JSON.parse(imageData);
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => {
+          if (typeof item === 'string') {
+            // Check if it's a UUID filename (no slashes, contains UUID pattern)
+            if (!item.includes('/') && item.includes('-')) {
+              return `/uploads/images/${item}`;
+            }
+            return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
+          }
+          return PLACEHOLDER_IMAGE;
+        }).filter(Boolean);
+      }
+    } catch (error) {
+      // If parsing fails, treat as single string
+      // Check if it's a UUID filename (no slashes, contains UUID pattern)
+      if (!imageData.includes('/') && imageData.includes('-')) {
+        return [`/uploads/images/${imageData}`];
+      }
+      return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
     }
-    return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
   }
   
   // If it's an array, process all images
