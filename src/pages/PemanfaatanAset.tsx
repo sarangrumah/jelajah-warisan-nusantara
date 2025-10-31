@@ -24,6 +24,10 @@ function extractImagePaths(imageData: any): string[] {
   
   // If it's already a string URL, return as array
   if (typeof imageData === 'string') {
+    // Check if it's a UUID filename (no slashes, contains UUID pattern)
+    if (!imageData.includes('/') && imageData.includes('-')) {
+      return [`/uploads/images/${imageData}`];
+    }
     return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
   }
   
@@ -31,10 +35,19 @@ function extractImagePaths(imageData: any): string[] {
   if (Array.isArray(imageData)) {
     return imageData.map(item => {
       if (typeof item === 'string') {
+        // Check if it's a UUID filename (no slashes, contains UUID pattern)
+        if (!item.includes('/') && item.includes('-')) {
+          return `/uploads/images/${item}`;
+        }
         return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
       }
       if (item && typeof item === 'object' && item.path) {
-        return item.path.startsWith('/uploads/') ? item.path : assetUrl(item.path) || PLACEHOLDER_IMAGE;
+        const path = item.path;
+        // Check if it's a UUID filename (no slashes, contains UUID pattern)
+        if (!path.includes('/') && path.includes('-')) {
+          return `/uploads/images/${path}`;
+        }
+        return path.startsWith('/uploads/') ? path : assetUrl(path) || PLACEHOLDER_IMAGE;
       }
       return PLACEHOLDER_IMAGE;
     }).filter(Boolean);
@@ -42,7 +55,12 @@ function extractImagePaths(imageData: any): string[] {
   
   // If it's an object with path property
   if (imageData && typeof imageData === 'object' && imageData.path) {
-    return [imageData.path.startsWith('/uploads/') ? imageData.path : assetUrl(imageData.path) || PLACEHOLDER_IMAGE];
+    const path = imageData.path;
+    // Check if it's a UUID filename (no slashes, contains UUID pattern)
+    if (!path.includes('/') && path.includes('-')) {
+      return [`/uploads/images/${path}`];
+    }
+    return [path.startsWith('/uploads/') ? path : assetUrl(path) || PLACEHOLDER_IMAGE];
   }
   
   return [PLACEHOLDER_IMAGE];

@@ -169,7 +169,8 @@ const serializeImages = (images: AssetImage[]): string => {
     if (!path.includes('/')) {
       return path;
     }
-    return path;
+    // For any other path format, extract just the filename
+    return path.split('/').pop() || path;
   }));
 };
 
