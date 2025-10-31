@@ -124,24 +124,44 @@ const PemanfaatanAset = () => {
     const filteredAssets = assets.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.description.toLowerCase().includes(searchTerm.toLowerCase());
-        if(filterCategories.length > 0) {
-            if(filterCategories.includes(item.area) && !filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))) {
-                return matchesSearch && filterCategories.includes(item.area)
-            } else if(!filterCategories.includes(item.area) && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))) {
-                return matchesSearch && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility))
-            } else{
-                return matchesSearch && (filterCategories.includes(item.area) && filterCategories.some(facility => Array.isArray(item.fasilitas) && item.fasilitas.includes(facility)));
-            }
+        
+        if (filterCategories.length === 0) {
+            return matchesSearch;
         }
-        return matchesSearch
+
+        // Check if item matches any of the selected filters
+        const matchesFilters = filterCategories.some(filter => {
+            // Check if filter matches area
+            if (item.area === filter) {
+                return true;
+            }
+            
+            // Check if filter matches any facility
+            let fasilitasData = item.fasilitas;
+            if (typeof fasilitasData === 'string') {
+                try {
+                    fasilitasData = JSON.parse(fasilitasData);
+                } catch (error) {
+                    console.error('Error parsing fasilitas JSON:', error);
+                }
+            }
+            
+            if (Array.isArray(fasilitasData) && fasilitasData.includes(filter)) {
+                return true;
+            }
+            
+            return false;
+        });
+
+        return matchesSearch && matchesFilters;
     });
 
     const handleFilterTypeChange = (filterType) => {
         const item = categories
             .flatMap((category) => category.items)
             .find((item) => item.id === filterType);
-        if (item) {
-            setFilterType(filterType);
+        if (item && !filterCategories.includes(item.name)) {
+            setFilterType('');
             setFilterCategories((prevFilters) => [...prevFilters, item.name]);
         }
     }

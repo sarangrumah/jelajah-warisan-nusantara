@@ -155,7 +155,6 @@ const PemanfaatanAsetDetail = () => {
               showDots={true}
               className="h-full"
             />
-            <div className="absolute inset-0 bg-black/30" />
           </section>
           <section className="container mx-auto px-4 py-5">
             <div className='flex mx-auto justify-center'>
