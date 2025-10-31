@@ -5,6 +5,28 @@ import { useLocation, useParams } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
 import { Card, CardContent } from '@/components/ui/card';
 import MemoryOfWorldGallery from '@/components/mow/MemoryOfWorldGallery';
+
+interface MemoryItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  date: string;
+  image: string | null;
+  start_publish_date: string;
+  end_publish_date: string;
+  is_active: string;
+  is_approved: string;
+  created_by: string;
+  created_at: string;
+  updated_by: string | null;
+  updated_at: string;
+  thumbnails: string;
+  is_rejected: string;
+  categories_id: string | null;
+  reason_rejected: string;
+  excerpt: string | null;
+}
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -32,10 +54,23 @@ function getImageUrl(imagePath: string) {
   return imagePath;
 }
 
+const parseDate = (dateString: string) => {
+  if (!dateString) return null;
+  // Handle DD/MM/YYYY format
+  const parts = dateString.split(' ')[0].split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+    const year = parseInt(parts[2], 10);
+    return new Date(year, month, day);
+  }
+  return new Date(dateString);
+};
+
 const MemoryOfWorldDetail = () => {
     const { id } = useParams();
     const { pathname } = useLocation();
-    const [memories, setMemories] = useState([]);
+    const [memories, setMemories] = useState<MemoryItem[]>([]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -48,7 +83,24 @@ const MemoryOfWorldDetail = () => {
             if (response.error) {
               console.error('Error fetching memory detail:', response.error);
             } else {
-                setMemories([response.data]);
+                // Check if the memory should be visible based on publish dates and status
+                const memory = response.data as MemoryItem;
+                const currentDate = new Date();
+                const startPublishDate = memory.start_publish_date ? parseDate(memory.start_publish_date) : null;
+                const endPublishDate = memory.end_publish_date ? parseDate(memory.end_publish_date) : null;
+                
+                const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
+                                   (!endPublishDate || currentDate <= endPublishDate);
+                
+                const isActive = memory.is_active === 't';
+                const isApproved = memory.is_approved === 't';
+                const isNotRejected = memory.is_rejected === 'f';
+                
+                if (isPublished && isActive && isApproved && isNotRejected) {
+                    setMemories([memory]);
+                } else {
+                    setMemories([]);
+                }
             }
           } catch (error) {
             console.error('Error fetching memory detail:', error);

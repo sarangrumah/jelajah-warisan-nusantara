@@ -10,6 +10,28 @@ import { Link, useLocation } from 'react-router-dom';
 import { defaultMemories } from '@/../database/default-data';
 import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
+
+interface MemoryItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  date: string;
+  image: string | null;
+  start_publish_date: string;
+  end_publish_date: string;
+  is_active: string;
+  is_approved: string;
+  created_by: string;
+  created_at: string;
+  updated_by: string | null;
+  updated_at: string;
+  thumbnails: string;
+  is_rejected: string;
+  categories_id: string | null;
+  reason_rejected: string;
+  excerpt: string | null;
+}
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -39,7 +61,7 @@ function getImageUrl(imagePath: string) {
 const MemoryOfWorld = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [memories, setMemories] = useState([]);
+  const [memories, setMemories] = useState<MemoryItem[]>([]);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterCategoriesMow, setFilterCategoriesMow] = useState([]);
   const { pathname } = useLocation();
@@ -54,7 +76,7 @@ const MemoryOfWorld = () => {
       if(response.error) {
         console.error('Error fetching memories:', response.error);
       } else {
-        setMemories(response.data);
+        setMemories(response.data as MemoryItem[]);
       }
     } catch (error) {
       console.error('Error fetching memories:', error);
@@ -80,6 +102,19 @@ const MemoryOfWorld = () => {
     fetchCategoriesMow();
   }, []);
 
+  const parseDate = (dateString: string) => {
+    if (!dateString) return null;
+    // Handle DD/MM/YYYY format
+    const parts = dateString.split(' ')[0].split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+    return new Date(dateString);
+  };
+
   const filteredMemories = memories.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
@@ -88,8 +123,8 @@ const MemoryOfWorld = () => {
     
     // Filter by publish dates and status
     const currentDate = new Date();
-    const startPublishDate = item.start_publish_date ? new Date(item.start_publish_date) : null;
-    const endPublishDate = item.end_publish_date ? new Date(item.end_publish_date) : null;
+    const startPublishDate = item.start_publish_date ? parseDate(item.start_publish_date) : null;
+    const endPublishDate = item.end_publish_date ? parseDate(item.end_publish_date) : null;
     
     const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
                        (!endPublishDate || currentDate <= endPublishDate);
