@@ -12,6 +12,26 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
+function getImageUrl(imagePath: string) {
+  if (!imagePath) return null;
+  
+  if (
+    typeof imagePath === 'string' &&
+    (imagePath.startsWith('http://') ||
+      imagePath.startsWith('https://') ||
+      imagePath.startsWith('/uploads/'))
+  ) {
+    return imagePath;
+  }
+  
+  // For relative paths starting with ../src/assets/
+  if (imagePath.startsWith('../src/assets/')) {
+    return imagePath.replace('../src/assets/', '/src/assets/');
+  }
+  
+  return imagePath;
+}
+
 const MemoryOfWorldDetail = () => {
     const { id } = useParams();
     const { pathname } = useLocation();
@@ -22,20 +42,21 @@ const MemoryOfWorldDetail = () => {
     }, [pathname]);
 
     useEffect(() => {
-        const fetchMemories = async () => {
+        const fetchMemoryDetail = async () => {
           try {
-            const response = await memoryWorldService.getAll();
-            if (response.error || response.data.length === 0) {
-              console.error('Error fetching memories:', response.error);
+            const response = await memoryWorldService.getById(id!);
+            if (response.error) {
+              console.error('Error fetching memory detail:', response.error);
             } else {
-                const filteredMemories = response.data.filter((memory: { id: string }) => memory.id === id);
-                setMemories(filteredMemories);
+                setMemories([response.data]);
             }
           } catch (error) {
-            console.error('Error fetching memories:', error);
+            console.error('Error fetching memory detail:', error);
           }
         };
-        fetchMemories();
+        if (id) {
+            fetchMemoryDetail();
+        }
     }, [id]);
 
     return (
@@ -47,9 +68,9 @@ const MemoryOfWorldDetail = () => {
                         <div className="space-y-4">
                             <div className="aspect-square overflow-hidden rounded-lg border">
                             <img
-                                src={memory.image ? memory.image : logo}
+                                src={getImageUrl(memory.thumbnails) || logo}
                                 alt={memory.title}
-                                className={memory.image_url ? "w-full h-full object-cover" : "w-full h-full object-contain"}
+                                className="w-full h-full object-cover"
                             />
                             </div>
                         </div>
@@ -59,16 +80,18 @@ const MemoryOfWorldDetail = () => {
                                   <span
                                     dangerouslySetInnerHTML={{
                                       __html: fixBrokenHtmlTags(memory.title)
-                                    }}
+                                      }}
                                   />
                                 </h1>
-                                <p className="text-xl text-muted-foreground">
-                                  <span
-                                    dangerouslySetInnerHTML={{
-                                      __html: fixBrokenHtmlTags(memory.subtitle)
-                                    }}
-                                  />
-                                </p>
+                                {memory.subtitle && (
+                                  <p className="text-xl text-muted-foreground">
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                          __html: fixBrokenHtmlTags(memory.subtitle)
+                                      }}
+                                    />
+                                  </p>
+                                )}
                             </div>
 
                             <Card>

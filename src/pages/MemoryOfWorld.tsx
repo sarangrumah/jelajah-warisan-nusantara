@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { defaultMemories } from '@/../database/default-data';
-import { collectionService, memoryWorldService } from '@/lib/api-services';
+import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -17,19 +17,24 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
-function getCollectionImageUrl(filename: string) {
+function getImageUrl(imagePath: string) {
+  if (!imagePath) return null;
+  
   if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+    typeof imagePath === 'string' &&
+    (imagePath.startsWith('http://') ||
+      imagePath.startsWith('https://') ||
+      imagePath.startsWith('/uploads/'))
   ) {
-    return filename;
+    return imagePath;
   }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as any).default : filename;
+  
+  // For relative paths starting with ../src/assets/
+  if (imagePath.startsWith('../src/assets/')) {
+    return imagePath.replace('../src/assets/', '/src/assets/');
+  }
+  
+  return imagePath;
 }
 const MemoryOfWorld = () => {
   const { t } = useTranslation();
@@ -78,8 +83,22 @@ const MemoryOfWorld = () => {
   const filteredMemories = memories.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
-    return matchesSearch && matchesFilter;
+    
+    const matchesCategory = filterCategory === 'all' || item.categories_id === filterCategory;
+    
+    // Filter by publish dates and status
+    const currentDate = new Date();
+    const startPublishDate = item.start_publish_date ? new Date(item.start_publish_date) : null;
+    const endPublishDate = item.end_publish_date ? new Date(item.end_publish_date) : null;
+    
+    const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
+                       (!endPublishDate || currentDate <= endPublishDate);
+    
+    const isActive = item.is_active === 't';
+    const isApproved = item.is_approved === 't';
+    const isNotRejected = item.is_rejected === 'f';
+    
+    return matchesSearch && matchesCategory && isPublished && isActive && isApproved && isNotRejected;
   });
 
   return (
@@ -140,7 +159,7 @@ const MemoryOfWorld = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
                   <img
-                    src={item.image ? getCollectionImageUrl(item.image.split('/').pop() || item.image) : logo}
+                    src={getImageUrl(item.thumbnails) || logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />
@@ -156,7 +175,7 @@ const MemoryOfWorld = () => {
                   <CardDescription>
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(item.description)
+                        __html: fixBrokenHtmlTags(item.subtitle)
                       }}
                     />
                   </CardDescription>
