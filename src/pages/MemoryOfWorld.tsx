@@ -2,13 +2,11 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Filter, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { defaultMemories } from '@/../database/default-data';
-import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
+import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 interface MemoryItem {
@@ -62,8 +60,6 @@ const MemoryOfWorld = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [memories, setMemories] = useState<MemoryItem[]>([]);
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterCategoriesMow, setFilterCategoriesMow] = useState([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -86,21 +82,6 @@ const MemoryOfWorld = () => {
     fetchMemories();
   }, []);
 
-  useEffect(() => {
-    const fetchCategoriesMow = async () => {
-      try {
-        const response = await categoriesMOW.getAllCategories();
-        if (response.error || !response.data) {
-          console.error('Error fetching categories:', response);
-        } else {
-          setFilterCategoriesMow(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    }
-    fetchCategoriesMow();
-  }, []);
 
   const parseDate = (dateString: string) => {
     if (!dateString) return null;
@@ -119,8 +100,6 @@ const MemoryOfWorld = () => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = filterCategory === 'all' || item.categories_id === filterCategory;
-    
     // Filter by publish dates and status
     const currentDate = new Date();
     const startPublishDate = item.start_publish_date ? parseDate(item.start_publish_date) : null;
@@ -133,7 +112,24 @@ const MemoryOfWorld = () => {
     const isApproved = item.is_approved === 't';
     const isNotRejected = item.is_rejected === 'f';
     
-    return matchesSearch && matchesCategory && isPublished && isActive && isApproved && isNotRejected;
+    const shouldShow = matchesSearch && isPublished && isActive && isApproved && isNotRejected;
+    
+    if (item.id === 'f70009f8-9c1c-4b8e-93b4-bd0350265546') {
+      console.log('Prambanan Candi debug:', {
+        title: item.title,
+        matchesSearch,
+        isPublished,
+        isActive: item.is_active,
+        isApproved: item.is_approved,
+        isNotRejected: item.is_rejected,
+        startPublishDate: startPublishDate?.toISOString(),
+        endPublishDate: endPublishDate?.toISOString(),
+        currentDate: currentDate.toISOString(),
+        shouldShow
+      });
+    }
+    
+    return shouldShow;
   });
 
   return (
@@ -152,7 +148,7 @@ const MemoryOfWorld = () => {
         </div>
       </section>
 
-      {/* Search and Filter */}
+      {/* Search */}
       <section className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
@@ -164,27 +160,6 @@ const MemoryOfWorld = () => {
               className="pl-10"
             />
           </div>
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-full md:w-48">
-              <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by category')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{'Semua Kategori'}</SelectItem> 
-              {filterCategoriesMow.length > 0 && filterCategoriesMow.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-              {/* <SelectItem value="ceramic">{t('filter.collection.categoryCeramic')}</SelectItem> 
-              <SelectItem value="etnograhpy">{t('filter.collection.categoryEtnograhpy')}</SelectItem>
-              <SelectItem value="archeology">{t('filter.collection.categoryArcheology')}</SelectItem>
-              <SelectItem value="history">{t('filter.collection.categoryHistory')}</SelectItem>
-              <SelectItem value="numismatic">{t('filter.collection.categoryNumismatic')}</SelectItem>
-              <SelectItem value="prehistorical">{t('filter.collection.categoryPreHistorical')}</SelectItem>
-              <SelectItem value="geographic">{t('filter.collection.categoryGeographic')}</SelectItem> */}
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Results */}
