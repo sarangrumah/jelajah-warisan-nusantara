@@ -137,11 +137,13 @@ const PemanfaatanAset = () => {
     });
 
     const handleFilterTypeChange = (filterType) => {
-        const itemName = categories
+        const item = categories
             .flatMap((category) => category.items)
-            .find((item) => item.id === filterType)?.name;
-        setFilterType(filterType);
-        setFilterCategories((prevFilters) => [...prevFilters, itemName]);
+            .find((item) => item.id === filterType);
+        if (item) {
+            setFilterType(filterType);
+            setFilterCategories((prevFilters) => [...prevFilters, item.name]);
+        }
     }
 
     const deleteFilter = (filter) => {
@@ -158,6 +160,16 @@ const PemanfaatanAset = () => {
             }
             return updatedFilters;
         });
+    }
+
+    // Helper function to get category name by ID
+    const getCategoryNameById = (id, categoryType) => {
+        const category = categories.find(cat => cat.label === categoryType);
+        if (category) {
+            const item = category.items.find(item => item.id === id);
+            return item ? item.name : id;
+        }
+        return id;
     }
 
     return (
@@ -280,14 +292,17 @@ const PemanfaatanAset = () => {
                                             </CardDescription> */}
                                             <div className='text-[#86807c] font-normal mt-2 flex flex-col gap-2'>
                                                 <div>{`Lokasi : ${item.location}`}</div>
-                                                <div>{`Kategori : ${item.category}`}</div>
-                                                <div>{`Area : ${item.area}`}</div>
+                                                    <div>{`Kategori : ${getCategoryNameById(item.category, 'Fasilitas')}`}</div>
+                                                    <div>{`Area : ${getCategoryNameById(item.area, 'Area')}`}</div>
                                                 <span>Fasilitas</span>
                                                 <div className='px-5 py-2 border rounded-md'>
                                                     <ul>
-                                                    {Array.isArray(item.fasilitas) && item.fasilitas.length > 0 && item.fasilitas.map((facility, index) => (
-                                                        <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{`${facility}`}</li>
-                                                        ))}
+                                                    {Array.isArray(item.fasilitas) && item.fasilitas.length > 0 && item.fasilitas.map((facilityId, index) => {
+                                                        const facilityName = getCategoryNameById(facilityId, 'Fasilitas');
+                                                        return (
+                                                            <li key={index} className='py-2 text-[1rem] text-[#86807c] font-normal leading-none'>{facilityName}</li>
+                                                        );
+                                                    })}
                                                     </ul>
                                                 </div>
                                                 <div>
@@ -308,7 +323,7 @@ const PemanfaatanAset = () => {
                 {(assets.length === 0 || filteredAssets.length === 0) && (
                     <div className="text-center py-12">
                         <p className="text-muted-foreground text-lg">
-                        {t('Data pemanfaatan aset untuk disewakan tidak ditemukan.')}
+                        {t('pemanfaatanAset.noData')}
                         </p>
                     </div>
                 )}

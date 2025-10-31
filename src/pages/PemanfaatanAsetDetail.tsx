@@ -8,10 +8,11 @@ import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { pemanfaatanAssetService } from '@/lib/api-services';
+import { pemanfaatanAssetService, categoriesLayananAsetArea, categoriesLayananAsetFasilitas } from '@/lib/api-services';
 import { ImageCarousel } from '@/components/ui/image-carousel';
 
 import { assetUrl } from '@/lib/asset-url';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function extractImagePaths(imageData: any): string[] {
@@ -84,35 +85,57 @@ const PemanfaatanAsetDetail = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const [assets, setAssets] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
-    const fetchAssets = async () => {
+    const fetchData = async () => {
       try {
-        const response = await pemanfaatanAssetService.getAll();
-        if(response.error || response.data.length === 0) {
-          console.error('Error fetching assets:', response.error);
+        const [assetsResponse, areaResponse, fasilitasResponse] = await Promise.all([
+          pemanfaatanAssetService.getAll(),
+          categoriesLayananAsetArea.getAllCategories(),
+          categoriesLayananAsetFasilitas.getAllCategories()
+        ]);
+        
+        if(assetsResponse.error || areaResponse.error || fasilitasResponse.error) {
+          console.error('Error fetching data:', assetsResponse.error || areaResponse.error || fasilitasResponse.error);
         } else {
-          const filteredAssets = response.data.filter((asset: { id: string }) => asset.id.toString() === id);
+          const filteredAssets = assetsResponse.data.filter((asset: { id: string }) => asset.id.toString() === id);
           setAssets(filteredAssets);
+          
+          const combinedCategories = [
+            {label:'Area', items: areaResponse.data},
+            {label:'Fasilitas', items: fasilitasResponse.data}
+          ];
+          setCategories(combinedCategories);
         }
       } catch (error) {
-        console.error('Error fetching assets:', error);
+        console.error('Error fetching data:', error);
       }
     }
-    fetchAssets();
+    fetchData();
   }, [id]);
+
+  // Helper function to get category name by ID
+  const getCategoryNameById = (id, categoryType) => {
+    const category = categories.find(cat => cat.label === categoryType);
+    if (category) {
+      const item = category.items.find(item => item.id === id);
+      return item ? item.name : id;
+    }
+    return id;
+  }
 
   if (assets.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Data pemanfaatan asset tidak ditemukan')}</h1>
-          <p className="text-muted-foreground">{t('Permintaan data tidak ditemukan.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('pemanfaatanAset.noData')}</h1>
+          <p className="text-muted-foreground">{t('common.notFound')}</p>
         </div>
         <Footer />
       </div>
@@ -146,9 +169,10 @@ const PemanfaatanAsetDetail = () => {
                   <CardTitle className='text-start'>{'Detail Acara'}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {asset.description}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(asset.description || '') }}
+                  />
                 </CardContent>
                 <CardHeader>
                   <CardTitle className='text-start'>{'Ketentuan Umum'}</CardTitle>
@@ -180,28 +204,34 @@ const PemanfaatanAsetDetail = () => {
                   <p className="text-white leading-relaxed">
                     {'Fasilitas : '}
                   </p>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
+                  <ul className="text-muted-foreground leading-relaxed ps-8">
                     {Array.isArray(asset.fasilitas) && asset.fasilitas.length > 0 ?
-                      asset.fasilitas.map((item, index) => <li key={index}>{item}</li>)
+                      asset.fasilitas.map((facilityId, index) => (
+                        <li key={index}>{getCategoryNameById(facilityId, 'Fasilitas')}</li>
+                      ))
                     : ''}
-                  </p>
+                  </ul>
                 </CardContent>
                 <CardContent className='text-start'>
                   <p className="text-white leading-relaxed">
                     {'Fasilitas Tambahan : '}
                   </p>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
+                  <ul className="text-muted-foreground leading-relaxed ps-8">
                     {Array.isArray(asset.fasilitas_tambahan) && asset.fasilitas_tambahan.length > 0 ?
-                      asset.fasilitas_tambahan.map((item, index) => <li key={index}>{item}</li>)
+                      asset.fasilitas_tambahan.map((facilityId, index) => (
+                        <li key={index}>{getCategoryNameById(facilityId, 'Fasilitas')}</li>
+                      ))
                     : ''}
-                  </p>
+                  </ul>
                 </CardContent>
               </Card>
               <Card className='mt-4 pb-8'>
                 <CardHeader>
                   <CardTitle className='text-start flex text-sm'>
                     <span className='py-2'>{'Detail'}</span>
-                    <Badge className='bg-muted-foreground text-background ms-5'>{asset.area}</Badge>
+                    <Badge className='bg-muted-foreground text-background ms-5'>
+                      {getCategoryNameById(asset.area, 'Area')}
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='flex text-start'>

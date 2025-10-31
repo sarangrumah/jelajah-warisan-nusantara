@@ -464,6 +464,9 @@ export const resources = {
           categoryMuseum: "Museums",
           categoryHeritage: "Heritage Sites",
         },
+        pemanfaatanAset: {
+          search: "Search asset utilization...",
+        },
         collection: {
           search: "Search collections...",
           categoryAll: "All Categories",
@@ -1043,6 +1046,9 @@ export const resources = {
           categoryMuseum: "Museum",
           categoryHeritage: "Cagar Budaya",
         },
+        pemanfaatanAset: {
+          search: "Cari pemanfaatan aset...",
+        },
         collection: {
           search: "Cari Koleksi...",
           categoryAll: "Semua Kategori",
@@ -1156,7 +1162,23 @@ export const resources = {
           title: "Berhasil",
           message: "Pesan Anda telah berhasil dikirim. Kami akan membalas segera."
         }
-      }
+      },
+      // Pemanfaatan Aset Section
+      pemanfaatanAset: {
+        title: "Asset Utilization",
+        subtitle: "Explore available assets for utilization",
+        noData: "No asset utilization data found."
+      },
+    },
+    // Pemanfaatan Aset Section
+    pemanfaatanAset: {
+      title: "Pemanfaatan Aset",
+      subtitle: "Jelajahi aset yang tersedia untuk dimanfaatkan",
+      noData: "Data pemanfaatan aset untuk disewakan tidak ditemukan."
+    },
+    common: {
+      notFound: "Data tidak ditemukan.",
+      requestNotFound: "Permintaan data tidak ditemukan."
     }
   }
 };
