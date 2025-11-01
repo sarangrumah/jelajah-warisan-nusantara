@@ -239,13 +239,17 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const { lang } = req.query;
         const targetLang = (lang as string) || 'id';
 
+        console.log(`[getById] Fetching ${tableName} with ID: ${id}`);
+
         // Base query
         const baseResult = await query(`SELECT * FROM ${tableName} WHERE id = $1`, [id]);
         if (baseResult.rows.length === 0) {
+          console.log(`[getById] Record not found: ${tableName} ${id}`);
           return res.status(404).json({ error: 'Record not found' });
         }
 
         let record = baseResult.rows[0];
+        console.log(`[getById] Found base record for ${tableName} ${id}`);
 
         // Add flat joins (belongs-to)
         for (const { name: relName, config: rel } of flatJoins) {
@@ -282,14 +286,19 @@ export const createCrudController = (tableName: string, fields: string[]) => {
                 .map((f: string) => `'${f}', ${childTable}.${f}`)
                 .join(', ');
 
-              const result = await query(
-                `SELECT json_agg(json_build_object(${jsonFields})) AS data
-                 FROM ${childTable}
-                 WHERE ${childTable}.${localKey} = $1`,
-                [id]
-              );
+              try {
+                const result = await query(
+                  `SELECT json_agg(json_build_object(${jsonFields})) AS data
+                   FROM ${childTable}
+                   WHERE ${childTable}.${localKey} = $1`,
+                  [id]
+                );
 
-              record[relKey] = result.rows[0].data || [];
+                record[relKey] = result.rows[0].data || [];
+              } catch (error) {
+                console.error(`Error fetching ${relKey} for ${tableName} ${id}:`, error);
+                record[relKey] = [];
+              }
             }
           }
         }
