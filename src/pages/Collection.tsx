@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { masterCollectionService, categoriesCollection } from '@/lib/api-services';
-import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -144,7 +143,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url ? getCollectionImageUrl(item.image_url.split('/').pop() || item.image_url) : logo}
+                    src={item.image_url ? getCollectionImageUrl(item.image_url.split('/').pop() || item.image_url) : '/placeholder.svg'}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />

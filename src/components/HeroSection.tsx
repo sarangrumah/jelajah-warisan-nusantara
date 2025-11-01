@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslate } from '@/hooks/useTranslate';
 import { bannerService } from '@/lib/api-services';
-import { defaultSlides } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -175,7 +174,6 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
       const response = await bannerService.getAll();
       if (response.error || !response.data || response.data.length === 0) {
         console.error('Error fetching slides:', response.error);
-        setSlides(mapSlidesWithImageUrl(defaultSlides));
       } else {
         const filteredSlides = response.data
           .filter((slide: any) => (

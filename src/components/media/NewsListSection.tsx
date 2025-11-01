@@ -46,7 +46,7 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
             <span>Admin</span>
           </div>
         </div>
-        <button onClick={() => handleReadMoreClick(article.id)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
+        <button onClick={() => handleReadMoreClick(article.id)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
           {readMoreLabel}
           <ArrowRight size={16} />
         </button>

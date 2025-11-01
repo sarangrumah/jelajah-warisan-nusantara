@@ -194,7 +194,7 @@ const AgendaList = () => {
                 <div className="aspect-video relative overflow-hidden">
                   <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                    <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                    <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(getEventStatus(event))}`}>
                       {getStatusLabel(getEventStatus(event))}
                     </div>
                     <img

@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { useLocation, useParams } from 'react-router-dom';
 import { sopService } from '@/lib/api-services';
 import { Calendar, User } from 'lucide-react';
+import parse from 'html-react-parser';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -72,7 +73,7 @@ const ProcedureDetail = () => {
                             <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">{procedure.category}</span>
                         </div>
                         <h1 className="text-4xl md:text-4xl font-bold text-foreground mb-6">{procedure.title}</h1>
-                        <p className="text-xl text-muted-foreground mb-6 leading-relaxed">{procedure.description}</p>
+                        <p className="text-xl text-muted-foreground mb-6 leading-relaxed">{parse(procedure.description)}</p>
                         <div className="flex items-center justify-between border-t border-b border-border py-4">
                             <div className="flex items-center gap-6 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
