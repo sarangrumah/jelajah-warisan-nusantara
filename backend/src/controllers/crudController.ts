@@ -285,7 +285,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
               const result = await query(
                 `SELECT json_agg(json_build_object(${jsonFields})) AS data
                  FROM ${childTable}
-                 WHERE ${childTable}.${foreignKey} = $1`,
+                 WHERE ${childTable}.${localKey} = $1`,
                 [id]
               );
 
