@@ -28,7 +28,7 @@ function getTranslatableFields(tableName: string): string[] {
     'tb_master_collection': ['name', 'description'],
     'tb_faqs': ['question', 'answer'],
     'tb_banner': ['title', 'subtitle', 'description'],
-    'tb_memoryoftheworld': ['title', 'description'],
+    'tb_memoryoftheworld': ['title', 'subtitle', 'description', 'thumbnails'],
     'tb_company': ['name', 'description', 'vision', 'mission'],
     'tb_pemanfaatanasset': ['title', 'description', 'location'],
   };
