@@ -220,8 +220,8 @@ export const tableRelationships = {
   tb_memoryoftheworld: {
     galleries: {
       table: 'tb_memoryoftheworld_gallery',
-      localKey: 'id',
-      foreignKey: 'id_memoryoftheworld',
+      localKey: 'id_memoryoftheworld',
+      foreignKey: 'id',
       type: 'has_many',
       fields: ['id', 'upload_file']
     }
