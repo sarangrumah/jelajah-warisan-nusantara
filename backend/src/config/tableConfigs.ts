@@ -220,8 +220,8 @@ export const tableRelationships = {
   tb_memoryoftheworld: {
     galleries: {
       table: 'tb_memoryoftheworld_gallery',
-      localKey: 'id_memoryoftheworld',
-      foreignKey: 'id',
+      localKey: 'id',
+      foreignKey: 'id_memoryoftheworld',
       type: 'has_many',
       fields: ['id', 'upload_file']
     }
@@ -267,8 +267,8 @@ export const tableRelationships = {
   tb_sites: {
     images: {
       table: 'tb_images',
-      localKey: 'sites_id',
-      foreignKey: 'id',
+      localKey: 'id',
+      foreignKey: 'sites_id',
       type: 'has_many', 
       fields: ['id', 'path']
     },
@@ -290,15 +290,15 @@ export const tableRelationships = {
   tb_company: {
     company_leadership: {
       table: 'tb_company_leadership',
-      localKey: 'company_id',
-      foreignKey: 'id',
+      localKey: 'id',
+      foreignKey: 'company_id',
       type: 'has_many',  // ← not 'left' or 'inner'
       fields: ['id', 'name', 'position', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     },
     company_visitor: {
       table: 'tb_company_visitor',
-      localKey: 'company_id',
-      foreignKey: 'id',
+      localKey: 'id',
+      foreignKey: 'company_id',
       type: 'has_many',
       fields: ['id', 'visitor_count', 'year', 'is_active', 'created_by', 'updated_by', 'created_at', 'updated_at']
     }
