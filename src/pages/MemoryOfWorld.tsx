@@ -26,7 +26,6 @@ interface MemoryItem {
   updated_at: string;
   thumbnails: string;
   is_rejected: boolean | string;
-  categories_id: string | null;
   reason_rejected: string;
   excerpt: string | null;
 }

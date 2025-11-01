@@ -272,26 +272,24 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const relations = tableRelationships[tableName as keyof typeof tableRelationships];
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
-            // Only "has many" (child has foreignKey to parent's id)
-            if (relConfig && typeof relConfig === 'object' && 'foreignKey' in relConfig) {
-              if ((relConfig as JoinConfig).foreignKey === 'id') {
-                const { table: childTable, localKey, fields: relFields } = relConfig as JoinConfig;
-                const childFields = relFields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
+            // Only "has many" relationships
+            if (relConfig && typeof relConfig === 'object' && 'type' in relConfig && (relConfig as JoinConfig).type === 'has_many') {
+              const { table: childTable, localKey, foreignKey, fields: relFields } = relConfig as JoinConfig;
+              const childFields = relFields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
 
-                const jsonFields = childFields
-                  .filter((f: string) => f !== localKey)
-                  .map((f: string) => `'${f}', ${childTable}.${f}`)
-                  .join(', ');
+              const jsonFields = childFields
+                .filter((f: string) => f !== foreignKey) // exclude foreignKey column
+                .map((f: string) => `'${f}', ${childTable}.${f}`)
+                .join(', ');
 
-                const result = await query(
-                  `SELECT json_agg(json_build_object(${jsonFields})) AS data
-                   FROM ${childTable}
-                   WHERE ${childTable}.${localKey} = $1`,
-                  [id]
-                );
+              const result = await query(
+                `SELECT json_agg(json_build_object(${jsonFields})) AS data
+                 FROM ${childTable}
+                 WHERE ${childTable}.${foreignKey} = $1`,
+                [id]
+              );
 
-                record[relKey] = result.rows[0].data || [];
-              }
+              record[relKey] = result.rows[0].data || [];
             }
           }
         }

@@ -224,13 +224,6 @@ export const tableRelationships = {
       foreignKey: 'id_memoryoftheworld',
       type: 'has_many',
       fields: ['id', 'upload_file']
-    },
-    category: {
-      table: 'tb_categories_collections',
-      localKey: 'categories_id',
-      foreignKey: 'id',
-      type: 'left',
-      fields: ['id', 'name']
     }
   },
   tb_master_collection: {
