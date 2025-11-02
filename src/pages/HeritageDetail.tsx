@@ -7,31 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
 import parse from 'html-react-parser';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
-const PLACEHOLDER_IMAGE = '/placeholder.svg';
-
-function getImageUrl(filename: string | undefined | null) {
-  if (!filename) { return PLACEHOLDER_IMAGE };
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // Try to resolve using Vite's import
-  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
 
 const HeritageDetail = () => {
@@ -44,25 +25,30 @@ const HeritageDetail = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchHeritages = async () => {
-    try {
-      const response = await museumService.getAll();
-      if(response.error || response.data.length === 0) {
-        console.error('Error fetching heritages:', response.error);
-      } else {
-        setHeritages(mapSlidesWithImageUrl(response.data));
-      }
-    } catch (error) {
-      console.error('Error fetching heritages:', error);
-    }
-  };
   useEffect(() => {
+    const fetchHeritages = async () => {
+      try {
+        const response = await museumService.getAll();
+        if(response.error || response.data.length === 0) {
+          console.error('Error fetching heritages:', response.error);
+        } else {
+          const filteredHeritages = response.data.filter((h:{id: string}) => h.id === id)
+          .map((museum: {img_banner: string}) => ({
+            ...museum,
+            image: museum.img_banner && !museum.img_banner.startsWith('/uploads/museum/')
+              ? `/uploads/museum/${museum.img_banner.split('/').pop()}`
+              : museum.img_banner
+          }));
+          setHeritages(filteredHeritages);
+        }
+      } catch (error) {
+        console.error('Error fetching heritages:', error);
+      }
+    };
     fetchHeritages();
-  }, []);
+  }, [id]);
 
-  const filteredHeritage = heritages.filter((h) => h.id.toString() === id);
-
-  if (filteredHeritage.length === 0) {
+  if (heritages.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -88,15 +74,20 @@ const HeritageDetail = () => {
         </Link>
       </div>
       {/* Hero Image */}
-      {filteredHeritage.map((heritage) => (
+      {heritages.map((heritage) => (
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl(heritage.img_banner?.split('/').pop() || heritage.img_banner)}
+            src={heritage.image}
             alt={heritage.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover parallax"
+            onError={(e) => {
+              console.error('[Museum] Image failed to load:', heritage.image);
+              (e.target as HTMLImageElement).src = '/placeholder.svg';
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-black/50" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" /> */}
           <div className="absolute bottom-8 left-8 text-white">
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
               <span

@@ -20,50 +20,6 @@ import {
   CarouselNext
 } from '@/components/ui/carousel';
 
-const newsImages = import.meta.glob('../assets/news/*', { eager: true });
-
-function getNewsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/news/${justFile}`;
-  }
-  return undefined;
-}
-
-// function getNewsFileUrl(filename: string) {
-//   if (
-//     typeof filename === 'string' &&
-//     (filename.startsWith('http://') ||
-//       filename.startsWith('https://') ||
-//       filename.startsWith('/assets/'))
-//   ) {
-//     return filename;
-//   }
-//   const justFile = filename?.split('/').pop() || filename;
-//   const match = Object.entries(newsFiles).find(([path]) => path.endsWith(justFile));
-//   if (match) {
-//     return (match[1] as { default: string }).default;
-//   }
-  // Fallback: try public/assets/news/ for production
-//   if (justFile) {
-//     return `/assets/berita/${justFile}`;
-//   }
-//   return undefined;
-// }
-
 const NewsSection = () => {
   const { t } = useTranslation();
   const [carouselApi, setCarouselApi] = React.useState(null);
@@ -79,7 +35,15 @@ const NewsSection = () => {
     item.is_active === true 
     && item.is_approved === true 
     && item.is_rejected === false
-  )).slice(0, 6);
+  ))
+  .slice(0, 6)
+  .map((item: any) => ({
+    ...item,
+    image: item.image_url && !item.image_url.startsWith('/uploads/events/')
+      ? `/uploads/images/${item.image_url.split('/').pop()}`
+      : item.image_url
+  }));
+
   // Auto-slide logic
   React.useEffect(() => {
     if (!carouselApi || isPaused) { return; }
@@ -160,9 +124,13 @@ const NewsSection = () => {
                       <Card className="overflow-hidden heritage-glow hover:scale-105 transition-bounce h-full flex flex-col p-2">
                         <div className="aspect-video relative overflow-hidden">
                           <img
-                            src={getNewsImageUrl(article.image || article.image_url)}
+                            src={article.image}
                             alt={article.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover parallax"
+                            onError={(e) => {
+                              console.error('[NewSection] Image failed to load:', article.image);
+                              (e.target as HTMLImageElement).src = '/placeholder.svg';
+                            }}
                           />
                           <div className="absolute top-4 left-4">
                             <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">

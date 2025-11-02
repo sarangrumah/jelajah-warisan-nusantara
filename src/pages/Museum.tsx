@@ -8,42 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
-const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
-
-function getMuseumsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  // Try museums first
-  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Try images as fallback
-  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return '/placeholder.svg';
 }
 
 const Museum = () => {
@@ -77,10 +46,16 @@ const Museum = () => {
           }) => (
             museum.is_active === true 
             && museum.is_approved === true
-            // && new Date(museum.start_publish_date) <= new Date()
-            // && new Date(museum.end_publish_date) >= new Date()
-          ));
-          setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
+            && new Date(museum.start_publish_date) <= new Date()
+            && new Date(museum.end_publish_date) >= new Date()
+          ))
+          .map((museum: {img_banner: string}) => ({
+            ...museum,
+            image: museum.img_banner && !museum.img_banner.startsWith('/uploads/museum/')
+              ? `/uploads/museum/${museum.img_banner.split('/').pop()}`
+              : museum.img_banner
+          }));
+          setMuseums(filteredMuseums);
         }
       } catch (error) {
         console.error('Error fetching museums:', error);
@@ -186,8 +161,10 @@ const Museum = () => {
           </div>
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
-              <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by type')} />
+              <div className='flex justify-start gap-1'>
+                <Filter size={20} />
+                <SelectValue placeholder={t('Filter by type')} />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{'Semua'}</SelectItem>
@@ -205,16 +182,13 @@ const Museum = () => {
               <Link to={`/museum/${item.id}`}>
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={(() => {
-                      const imageCandidate = item.img_banner || '';
-                      const resolved = getMuseumsImageUrl(imageCandidate);
-                      // Use logo as placeholder if no image
-                      return (resolved && resolved !== '/placeholder.svg')
-                        ? resolved
-                        : '/src/assets/MCB-Logo.png';
-                    })()}
+                    src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover object-bottom"
+                    className="w-full h-full object-cover parallax"
+                    onError={(e) => {
+                      console.error('[Museum] Image failed to load:', item.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
               </Link>

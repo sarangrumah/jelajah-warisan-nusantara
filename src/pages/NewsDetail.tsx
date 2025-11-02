@@ -14,28 +14,28 @@ function fixBrokenHtmlTags(html: string): string {
 import { useEffect, useState } from 'react';
 // Utility to fix broken HTML tags like < p > to <p>
 
-const newsImages = import.meta.glob('../assets/news/*', { eager: true });
+// const newsImages = import.meta.glob('../assets/news/*', { eager: true });
 
-function getNewsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-    filename.startsWith('https://') ||
-    filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/news/${justFile}`;
-  }
-  return undefined;
-}
+// function getNewsImageUrl(filename: string) {
+//   if (
+//     typeof filename === 'string' &&
+//     (filename.startsWith('http://') ||
+//     filename.startsWith('https://') ||
+//     filename.startsWith('/assets/'))
+//   ) {
+//     return filename;
+//   }
+//   const justFile = filename?.split('/').pop() || filename;
+//   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
+//   if (match) {
+//     return (match[1] as { default: string }).default;
+//   }
+//   // Fallback: try public/assets/news/ for production
+//   if (justFile) {
+//     return `/assets/news/${justFile}`;
+//   }
+//   return undefined;
+// }
 interface CompanyProfile {
   whatsapp?: string;
 }
@@ -109,6 +109,9 @@ const NewsDetail = () => {
               // Only show if active and approved
               const data = response.data as MediaArticle;
               if (data && data.is_active === true && data.is_approved === true) {
+                data.image = data.image_url && !data.image_url.startsWith('/uploads/images/')
+                  ? `/uploads/images/${data.image_url.split('/').pop()}`
+                  : data.image_url;
                 setArticle(data);
               } else {
                 setArticle(null);
@@ -265,9 +268,13 @@ const NewsDetail = () => {
           <div className="mb-8">
             <div className="aspect-video relative overflow-hidden rounded-lg shadow-lg">
               <img 
-                src={getNewsImageUrl(article.image_url)} 
+                src={article.image} 
                 alt={article.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error('[NewsDetail] Image failed to load:', article.image);
+                  (e.target as HTMLImageElement).src = '/placeholder.svg';
+                }}
               />
             </div>
           </div>

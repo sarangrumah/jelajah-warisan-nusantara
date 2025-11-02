@@ -12,7 +12,6 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
-import logo from '@/assets/MCB-Logo.png';
 
 import {
   Carousel,
@@ -21,28 +20,6 @@ import {
   CarouselPrevious,
   CarouselNext
 } from '@/components/ui/carousel';
-
-const eventImages = import.meta.glob('../assets/events/*', { eager: true });
-
-function getEventImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  if (justFile) {
-    return `/assets/events/${justFile}`;
-  }
-  return undefined;
-}
 
 const AgendaCard = ({ event }) => {
   const { t } = useTranslation();
@@ -95,13 +72,13 @@ const AgendaCard = ({ event }) => {
           {getStatusLabel(getEventStatus(event))}
         </div>
         <img
-          src={
-            event.image_url
-              ? getEventImageUrl(event.image_url) || logo
-              : logo
-          }
+          src={event.image}
           alt={event.title}
-          className="w-full h-full object-contain object-center"
+          className="w-full h-full object-cover parallax"
+          onError={(e) => {
+            console.error('[EventSection] Image failed to load:', event.image);
+            (e.target as HTMLImageElement).src = '/placeholder.svg';
+          }}
         />
       </div>
 
@@ -176,7 +153,14 @@ const AgendaSection = () => {
     event.is_active === true
     && event.is_approved === true
     && event.is_rejected === false
-  )).slice(0, 6) || [];
+  ))
+  .slice(0, 6)
+  .map((event: any) => ({
+    ...event,
+    image: event.banner_img && !event.banner_img.startsWith('/uploads/events/')
+      ? `/uploads/events/${event.banner_img.split('/').pop()}`
+      : event.banner_img
+  })) || [];
 
   const filteredEvents = activeCategory === 'semua'
     ? displayedEvents
@@ -211,11 +195,6 @@ const AgendaSection = () => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
-          {/* {[
-            { id: 'semua', label: t('agenda.categories.all', 'All Events') },
-            { id: 'event', label: t('agenda.categories.event', 'Event') },
-            { id: 'pameranTemporer', label: t('agenda.categories.temporaryExhibition', 'Temporary Exhibition') }
-          ] */}
           <button
             onClick={() => setActiveCategory('semua')}
             className={`px-6 py-3 rounded-full font-semibold transition-heritage ${

@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { memoryWorldService } from '@/lib/api-services';
-import logo from '@/assets/MCB-Logo.png';
 
 interface MemoryItem {
   id: string;
@@ -37,7 +36,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 function getImageUrl(imagePath: string) {
-  if (!imagePath) return null;
+  if (!imagePath) {return null};
   
   if (
     typeof imagePath === 'string' &&
@@ -65,25 +64,32 @@ const MemoryOfWorld = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchMemories = async () => {
-    try {
-      const response = await memoryWorldService.getAll();
-      if(response.error) {
-        console.error('Error fetching memories:', response.error);
-      } else {
-        setMemories(response.data as MemoryItem[]);
-      }
-    } catch (error) {
-      console.error('Error fetching memories:', error);
-    }
-  }
   useEffect(() => {
+    const fetchMemories = async () => {
+      try {
+        const response = await memoryWorldService.getAll();
+        if(response.error) {
+          console.error('Error fetching memories:', response.error);
+        } else {
+          const mappedMemories = response.data.map((memory: {
+            id: string; thumbnails: string
+          }) => ({
+            ...memory,
+            image: memory.thumbnails && !memory.thumbnails.startsWith('/uploads/memory-thumbnails/')
+              ? `/uploads/memory-thumbnails/${memory.thumbnails.split('/').pop()}`
+              : memory.thumbnails
+          }))
+          setMemories(mappedMemories as MemoryItem[]);
+        }
+      } catch (error) {
+        console.error('Error fetching memories:', error);
+      }
+    }
     fetchMemories();
   }, []);
 
-
   const parseDate = (dateString: string) => {
-    if (!dateString) return null;
+    if (!dateString) {return null};
     // Handle DD/MM/YYYY format
     const parts = dateString.split(' ')[0].split('/');
     if (parts.length === 3) {
@@ -112,7 +118,11 @@ const MemoryOfWorld = () => {
     const isApproved = item.is_approved === true || item.is_approved === 't';
     const isNotRejected = item.is_rejected === false || item.is_rejected === 'f';
     
-    const shouldShow = matchesSearch && isPublished && isActive && isApproved && isNotRejected;
+    const shouldShow = matchesSearch 
+        && isPublished 
+        && isActive 
+        && isApproved 
+        && isNotRejected;
     
     if (item.id === 'f70009f8-9c1c-4b8e-93b4-bd0350265546') {
       console.log('Prambanan Candi debug:', {
@@ -169,9 +179,13 @@ const MemoryOfWorld = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
                   <img
-                    src={getImageUrl(item.thumbnails) || logo}
+                    src={item.image}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
+                    onError={(e) => {
+                      console.error('[Collection] Image failed to load:', item.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
                 <CardHeader>

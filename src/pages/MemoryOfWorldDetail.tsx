@@ -35,7 +35,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 function getImageUrl(imagePath: string) {
-  if (!imagePath) return null;
+  if (!imagePath) {return null};
   
   if (
     typeof imagePath === 'string' &&
@@ -55,7 +55,7 @@ function getImageUrl(imagePath: string) {
 }
 
 const parseDate = (dateString: string) => {
-  if (!dateString) return null;
+  if (!dateString) {return null};
   // Handle DD/MM/YYYY format
   const parts = dateString.split(' ')[0].split('/');
   if (parts.length === 3) {

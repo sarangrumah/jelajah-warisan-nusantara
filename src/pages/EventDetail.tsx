@@ -8,32 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { EventsService, contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
-import logo from '@/assets/MCB-Logo.png';
 import parse from 'html-react-parser';
-
-const eventImages = import.meta.glob('../assets/hero-sections/*', { eager: true });
-
-function getEventsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  // Try museums first
-  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return '/placeholder.svg';
-}
 interface CompanyProfile {
   whatsapp?: string;
 }
@@ -84,8 +59,16 @@ const EventDetail = () => {
           console.error('Error fetching event:', response.error);
           setEvent(null);
         } else {
-          const foundEvent = response.data.find(
-            (event: { id: string }) => event.id === id
+          const foundEvent = response.data.map((event: {
+            id: string; banner_img: string
+          }) => ({
+            ...event,
+            image: event.banner_img && !event.banner_img.startsWith('/uploads/images/')
+              ? `/uploads/images/${event.banner_img.split('/').pop()}`
+              : event.banner_img
+          }))
+          .find(
+            (event) => event.id === id
           );
           if (!foundEvent) {
             console.warn(`Event with ID ${id} not found`);
@@ -104,7 +87,6 @@ const EventDetail = () => {
     };
     fetchEvent();
   }, [id]);
-  // console.log(event)
 
   const getEventStatus = (event) => {
     const now = new Date();
@@ -223,29 +205,21 @@ const EventDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div key={event.id} className="pt-20">
+      <div key={event.id} className="pt-20x">
         {/* Hero Image */}
-          <section className="relative overflow-hidden h-[60vh]">
-            {/* <img
-              src={event.image_url ? event.image_url : logo}
-              alt={event.title}
-              className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
-            /> */}
+          <section className="relative h-96 overflow-hidden">
             <img
-              src={
-                (() => {
-                  const imageCandidate = event.banner_img || '';
-                  const resolved = getEventsImageUrl(imageCandidate);
-                  // Use logo as placeholder if no image
-                  return (resolved && resolved !== '/placeholder.svg')
-                    ? resolved
-                    : logo;
-                })()}
+              src={event.image}
               alt={event.name}
-              className={event.banner_img ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
+              className="w-full h-full object-cover parallax"
+              onError={(e) => {
+                console.error('[EventDetail] Image failed to load:', event.image);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
+              }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-            <div className="absolute bottom-6 right-8">
+            <div className="absolute inset-0 bg-black/50" />
+            {/* <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" /> */}
+            <div className="absolute bottom-6 left-8">
               <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(status)}`}>
                 {getStatusLabel(status)}
               </span>
@@ -275,63 +249,7 @@ const EventDetail = () => {
                       )}
                     </div>
                   </CardContent>
-                  {/* <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
-                    <ul className="space-y-2">
-                      {event.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent> */}
                 </Card>
-
-                {/* Highlights */}
-                {/* <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-4">{t('Event Highlights')}</h3>
-                    <ul className="space-y-2">
-                      {event.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3 mt-2 flex-shrink-0" />
-                          <span className="text-muted-foreground">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card> */}
-
-                {/* Schedule */}
-                {/* <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-4">{t('Event Schedule')}</h3>
-                    <div className="space-y-4">
-                      {typeof event.schedule === 'string' ? parseSchedule(event.schedule).map((item: any, index: number) => (
-                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
-                          <div className="text-sm font-semibold text-primary min-w-24">
-                            {item.time}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {item.activity}
-                          </div>
-                        </div>
-                      ))
-                      : 
-                      event.schedule.map((item, index) => (
-                        <div key={index} className="flex gap-4 pb-4 border-b border-border last:border-0">
-                          <div className="text-sm font-semibold text-primary min-w-24">
-                            {item.time}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {item.activity}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card> */}
               </div>
 
               {/* Sidebar */}

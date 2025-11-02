@@ -179,6 +179,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
           .filter((slide: any) => (
             slide.is_active === true
             && slide.is_approved === true
+            && slide.is_rejected === false
             && new Date(slide.start_publish_date) <= new Date()
             && new Date(slide.end_publish_date) >= new Date()
           ))

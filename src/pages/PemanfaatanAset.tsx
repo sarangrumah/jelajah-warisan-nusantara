@@ -11,16 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { categoriesLayananAsetArea, categoriesLayananAsetFasilitas, pemanfaatanAssetService } from '@/lib/api-services';
 import { ImageCarousel } from '@/components/ui/image-carousel';
-// import { CardDescription } from '@/components/ui/card';
-// import { Checkbox } from '@/components/ui/checkbox';
-// import { Label } from '@/components/ui/label';
-// import Select from 'react-select';
 
 import { assetUrl } from '@/lib/asset-url';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function extractImagePaths(imageData: any): string[] {
-  if (!imageData) return [PLACEHOLDER_IMAGE];
+  if (!imageData) {return [PLACEHOLDER_IMAGE]};
   
   // Handle JSON string arrays
   if (typeof imageData === 'string') {
@@ -42,6 +38,7 @@ function extractImagePaths(imageData: any): string[] {
     } catch (error) {
       // If parsing fails, treat as single string
       // Check if it's a UUID filename (no slashes, contains UUID pattern)
+      console.error(error);
       if (!imageData.includes('/') && imageData.includes('-')) {
         return [`/uploads/images/${imageData}`];
       }
@@ -170,8 +167,9 @@ const PemanfaatanAset = () => {
         const item = categories
             .flatMap((category) => category.items)
             .find((item) => item.id === filterType);
-        if (item && !filterCategories.includes(item.name)) {
-            setFilterType('');
+            if (item && !filterCategories.includes(item.name)) {
+            setFilterType(filterType)
+            // setFilterType('');
             setFilterCategories((prevFilters) => [...prevFilters, item.name]);
         }
     }
@@ -270,31 +268,6 @@ const PemanfaatanAset = () => {
 
                 {/* Results */}
                 <div className="flex gap-5 mt-8">
-                    {/* <div className='w-1/4 hidden'>
-                        <div className='pb-5'>
-                            {options.map((option) => (
-                                <div key={option.id} className='pt-5'>
-                                    <span>{option.label}</span>
-                                    <div className='flex flex-col gap-2 mt-2 pb-5'>
-                                        <div className='flex flex-col gap-2'>
-                                            {option.items.map((item, index) => (
-                                            <div key={index} className='flex gap-2'>
-                                                <Checkbox 
-                                                    id={item.value} 
-                                                    value={item.value}
-                                                    checked={filterCategories.includes(item.value)}
-                                                    onCheckedChange={(isChecked) => handleCheckedChange(item.value, isChecked)}
-                                                />
-                                                <Label htmlFor={item.value}>{item.label}</Label>
-                                            </div>    
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {options.at(-1) !== option && <hr />}
-                                </div>
-                            ))}
-                        </div>
-                    </div> */}
                     <div className='px-5'>
                         <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-5'>
                             {filteredAssets.map((item) => (
@@ -331,7 +304,7 @@ const PemanfaatanAset = () => {
                                                         let fasilitasData = item.fasilitas;
                                                         
                                                         // Handle JSON string
-                                                        if (typeof fasilitasData === 'string') {
+                                                        if (fasilitasData && typeof fasilitasData === 'string') {
                                                             try {
                                                                 fasilitasData = JSON.parse(fasilitasData);
                                                             } catch (error) {

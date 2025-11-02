@@ -16,38 +16,43 @@ function fixBrokenHtmlTags(html: string): string {
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
-import logo from '@/assets/MCB-Logo.png';
 
 const CollectionDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const [collections, setCollections] = useState([]);
+  const [collection, setCollection] = useState(null);
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchCollections = async () => {
+  useEffect(() => {
+    const fetchCollections = async () => {
       try {
         const response = await masterCollectionService.getAll();
   
         if (response.error) {
           console.error('Error fetching collections:', response.error);
         }
-  
-        setCollections(response.data || defaultCollections);
+        const foundCollection = response.data.map((collection: {
+          id: string; image_url: string; image: string
+        }) => ({
+          ...collection,
+          image: collection.image_url && !collection.image_url.startsWith('/uploads/images/')
+            ? `/uploads/images/${collection.image_url.split('/').pop()}`
+            : collection.image_url
+        }))
+        .find(collection => collection.id === id);
+        setCollection(foundCollection);
       } catch (error) {
         console.error('Error fetching collections:', error);
       }
     };
-    useEffect(() => {
-      fetchCollections();
-    }, []);
+    fetchCollections();
+  }, [id]);
 
-  const filteredCollection = collections.filter(collection => collection.id.toString() === id);
-
-  if (filteredCollection.length === 0) {
+  if (collection === null) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -65,8 +70,7 @@ const CollectionDetail = () => {
       <Header />
       
       {/* Breadcrumb */}
-      {filteredCollection.map(collection => (
-       <div key={collection.id}> 
+       <div> 
           <section className="border-b hidden">
             <div className="container mx-auto px-4 py-4">
               <Link to="/collection">
@@ -85,9 +89,13 @@ const CollectionDetail = () => {
               <div className="space-y-4">
                 <div className="aspect-square overflow-hidden rounded-lg border">
                   <img
-                    src={collection.image_url ? collection.image_url : logo}
+                    src={collection.image}
                     alt={collection.title}
                     className={collection.image_url ? "w-full h-full object-cover" : "w-full h-full object-contain"}
+                    onError={(e) => {
+                      console.error('[EventDetail] Image failed to load:', collection.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
               </div>
@@ -182,8 +190,6 @@ const CollectionDetail = () => {
             </div>
           </section>
         </div>
-      ))}
-
       <Footer />
     </div>
   );

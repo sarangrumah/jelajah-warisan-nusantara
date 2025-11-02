@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
+import parse from 'html-react-parser';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -17,8 +17,6 @@ function fixBrokenHtmlTags(html: string): string {
 }
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
-const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
-const PLACEHOLDER_IMAGE = '/placeholder.svg';
 const shareEventHandler = (museumLink: string) => {
   let url = `https://${museumLink}`;
   if (
@@ -37,20 +35,6 @@ const shareEventHandler = (museumLink: string) => {
   link.click();
   document.body.removeChild(link);
 };
-function getMuseumImageUrl(filename: string | undefined | null) {
-  if (!filename) { return PLACEHOLDER_IMAGE };
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // Try to resolve using Vite's import
-  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
-}
 
 const MuseumDetail = () => {
   const { id } = useParams();
@@ -74,7 +58,14 @@ const MuseumDetail = () => {
         if(response.error || typeResponse.error) {
           console.error('Error fetching museums:', response.error || typeResponse.error);
         } else {
-          setMuseums(mapSlidesWithImageUrl(response.data));
+          const filteredMuseums = response.data.filter((m:{id: string}) => m.id === id)
+          .map((museum: {img_banner: string}) => ({
+            ...museum,
+            image: museum.img_banner && !museum.img_banner.startsWith('/uploads/museum/')
+              ? `/uploads/museum/${museum.img_banner.split('/').pop()}`
+              : museum.img_banner
+          }));
+          setMuseums(filteredMuseums);
           setType((typeResponse.data as [{ name: string; id: string }]).find((t: { name: string; }) => t.name.toLowerCase() === 'museum')?.id);
         }
       } catch (error) {
@@ -82,11 +73,9 @@ const MuseumDetail = () => {
       }
     }
     fetchMuseums();
-  }, []);
+  }, [id]);
 
-  const filteredMuseum = museums.filter((m) => m.id === id);
-
-  if (filteredMuseum.length === 0) {
+  if (museums.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -104,14 +93,18 @@ const MuseumDetail = () => {
       <Header />
       
       {/* Hero Section */}
-      {filteredMuseum.map((museum) => (
+      {museums.map((museum) => (
         <div key={museum.id}>
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+            src={museum.image}
             alt={museum.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover parallax"
+            onError={(e) => {
+              console.error('[Museum] Image failed to load:', museum.image);
+              (e.target as HTMLImageElement).src = '/placeholder.svg';
+            }}
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute bottom-8 left-8 text-white">
@@ -192,7 +185,7 @@ const MuseumDetail = () => {
                     <MapPin className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.location')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.address}</p>
+                      <div className="text-sm text-muted-foreground">{parse(museum.address)}</div>
                     </div>
                   </div>
 

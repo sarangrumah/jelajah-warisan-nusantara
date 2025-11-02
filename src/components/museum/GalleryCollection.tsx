@@ -2,59 +2,37 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { defaultCollections } from '@/../database/default-data';
 import { masterCollectionService } from '@/lib/api-services';
-import logo from '@/assets/MCB-Logo.png';
-
-const collectionImages = import.meta.glob('../../assets/museums/*', { eager: true });
-const PLACEHOLDER_IMAGE = '/placeholder.svg';
-
-function getCollectionImageUrl(filename: string | undefined | null) {
-  if (!filename) { return PLACEHOLDER_IMAGE };
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-    filename.startsWith('https://') ||
-    filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
-}
 
 const GalleryCollection = ({museum}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
   const [collections, setCollections] = useState([]);
 
-  const fetchCollections = async () => {
-    try {
-      const response = await masterCollectionService.getAll();
-
-      if (response.error) {
-        console.error('Error fetching collections:', response.error);
-        setCollections(defaultCollections);
-      }
-
-      if(response.data.length === 0) {
-        setCollections(defaultCollections);
-      } else {
-        setCollections(response.data);
-      }
-
-    } catch (error) {
-      console.error('Error fetching collections:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await masterCollectionService.getAll();
+  
+        if (response.error) {
+          console.error('Error fetching collections:', response.error);
+        } else {
+          setCollections(response.data);
+        }
+  
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+      }
+    };
     fetchCollections();
   }, []);
 
   const galleries = collections.filter(collection => collection.museum_name === museum);
-  const images = galleries.map((gallery) => gallery.image_url);
+  const images = galleries.map((gallery) => (
+    gallery.image_url && !gallery.image_url.startsWith('/uploads/images/')
+      ? `/uploads/images/${gallery.image_url.split('/').pop()}`
+      : gallery.image_url
+  ));
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {
@@ -87,10 +65,14 @@ const GalleryCollection = ({museum}) => {
         <div className="relative flex items-center justify-center w-full h-[320px] overflow-hidden pt-5">
           {images.length === 1 ? (
             <img
-              src={getCollectionImageUrl(images[0])}
+              src={images[0]}
               alt="gallery"
-              onClick={() => setSelectedImage(getCollectionImageUrl(images[0]))}
+              onClick={() => setSelectedImage(images[0])}
               className="absolute rounded-2xl object-cover cursor-pointer max-h-[90%] max-w-[90%] opacity-100"
+              onError={(e) => {
+                console.error('[Museum] Image failed to load:', images[0]);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
+              }}
             />
           ) : (
             images.length > 1 ? 
@@ -102,9 +84,9 @@ const GalleryCollection = ({museum}) => {
                 return (
                   <img
                     key={index}
-                    src={getCollectionImageUrl(images[index])}
+                    src={images[index]}
                     alt={`gallery-${index}`}
-                    onClick={() => isCenter && setSelectedImage(getCollectionImageUrl(images[index]))}
+                    onClick={() => isCenter && setSelectedImage(images[index])}
                     className={`absolute rounded-2xl object-cover cursor-pointer transition-all duration-500 ${
                       isCenter
                         ? "max-w-[80%] max-h-[95%] z-20 opacity-100"
@@ -121,12 +103,16 @@ const GalleryCollection = ({museum}) => {
                         isCenter ? 1 : 0.9
                       })`,
                     }}
+                    onError={(e) => {
+                      console.error('[Museum] Image failed to load:', images[index]);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 );
               }
             ) : (
               <img
-                src={logo}
+                src='/placeholder.svg'
                 alt="gallery"
                 className="w-full h-full object-contain"
               />
