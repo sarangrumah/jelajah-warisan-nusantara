@@ -8,24 +8,76 @@ import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { pemanfaatanAssetService } from '@/lib/api-services';
+import { pemanfaatanAssetService, categoriesLayananAsetArea, categoriesLayananAsetFasilitas } from '@/lib/api-services';
+import { ImageCarousel } from '@/components/ui/image-carousel';
 
-const museumImages = import.meta.glob('../assets/images/*', { eager: true });
+import { assetUrl } from '@/lib/asset-url';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
-function getMuseumImageUrl(filename: string | undefined | null) {
-  if (!filename) { return PLACEHOLDER_IMAGE };
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/')) ||
-      filename.startsWith('/src/assets/images/')
-  ) {
-    return filename;
+
+function extractImagePaths(imageData: any): string[] {
+  if (!imageData) return [PLACEHOLDER_IMAGE];
+  
+  // Handle JSON string arrays
+  if (typeof imageData === 'string') {
+    try {
+      // Try to parse as JSON array
+      const parsed = JSON.parse(imageData);
+      if (Array.isArray(parsed)) {
+        return parsed.map(item => {
+          if (typeof item === 'string') {
+            // Check if it's a UUID filename (no slashes, contains UUID pattern)
+            if (!item.includes('/') && item.includes('-')) {
+              return `/uploads/images/${item}`;
+            }
+            return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
+          }
+          return PLACEHOLDER_IMAGE;
+        }).filter(Boolean);
+      }
+    } catch (error) {
+      // If parsing fails, treat as single string
+      // Check if it's a UUID filename (no slashes, contains UUID pattern)
+      if (!imageData.includes('/') && imageData.includes('-')) {
+        return [`/uploads/images/${imageData}`];
+      }
+      return [imageData.startsWith('/uploads/') ? imageData : assetUrl(imageData) || PLACEHOLDER_IMAGE];
+    }
   }
-  // Try to resolve using Vite's import
-  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
+  
+  // If it's an array, process all images
+  if (Array.isArray(imageData)) {
+    return imageData.map(item => {
+      if (typeof item === 'string') {
+        // Check if it's a UUID filename (no slashes, contains UUID pattern)
+        if (!item.includes('/') && item.includes('-')) {
+          return `/uploads/images/${item}`;
+        }
+        return item.startsWith('/uploads/') ? item : assetUrl(item) || PLACEHOLDER_IMAGE;
+      }
+      if (item && typeof item === 'object' && item.path) {
+        const path = item.path;
+        // Check if it's a UUID filename (no slashes, contains UUID pattern)
+        if (!path.includes('/') && path.includes('-')) {
+          return `/uploads/images/${path}`;
+        }
+        return path.startsWith('/uploads/') ? path : assetUrl(path) || PLACEHOLDER_IMAGE;
+      }
+      return PLACEHOLDER_IMAGE;
+    }).filter(Boolean);
+  }
+  
+  // If it's an object with path property
+  if (imageData && typeof imageData === 'object' && imageData.path) {
+    const path = imageData.path;
+    // Check if it's a UUID filename (no slashes, contains UUID pattern)
+    if (!path.includes('/') && path.includes('-')) {
+      return [`/uploads/images/${path}`];
+    }
+    return [path.startsWith('/uploads/') ? path : assetUrl(path) || PLACEHOLDER_IMAGE];
+  }
+  
+  return [PLACEHOLDER_IMAGE];
 }
 
 const PemanfaatanAsetDetail = () => {
@@ -33,35 +85,57 @@ const PemanfaatanAsetDetail = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const [assets, setAssets] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
-    const fetchAssets = async () => {
+    const fetchData = async () => {
       try {
-        const response = await pemanfaatanAssetService.getAll();
-        if(response.error || response.data.length === 0) {
-          console.error('Error fetching assets:', response.error);
+        const [assetsResponse, areaResponse, fasilitasResponse] = await Promise.all([
+          pemanfaatanAssetService.getAll(),
+          categoriesLayananAsetArea.getAllCategories(),
+          categoriesLayananAsetFasilitas.getAllCategories()
+        ]);
+        
+        if(assetsResponse.error || areaResponse.error || fasilitasResponse.error) {
+          console.error('Error fetching data:', assetsResponse.error || areaResponse.error || fasilitasResponse.error);
         } else {
-          const filteredAssets = response.data.filter((asset: { id: string }) => asset.id.toString() === id);
+          const filteredAssets = assetsResponse.data.filter((asset: { id: string }) => asset.id.toString() === id);
           setAssets(filteredAssets);
+          
+          const combinedCategories = [
+            {label:'Area', items: areaResponse.data},
+            {label:'Fasilitas', items: fasilitasResponse.data}
+          ];
+          setCategories(combinedCategories);
         }
       } catch (error) {
-        console.error('Error fetching assets:', error);
+        console.error('Error fetching data:', error);
       }
     }
-    fetchAssets();
+    fetchData();
   }, [id]);
+
+  // Helper function to get category name by ID
+  const getCategoryNameById = (id, categoryType) => {
+    const category = categories.find(cat => cat.label === categoryType);
+    if (category) {
+      const item = category.items.find(item => item.id === id);
+      return item ? item.name : id;
+    }
+    return id;
+  }
 
   if (assets.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Data pemanfaatan asset tidak ditemukan')}</h1>
-          <p className="text-muted-foreground">{t('Permintaan data tidak ditemukan.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('pemanfaatanAset.noData')}</h1>
+          <p className="text-muted-foreground">{t('common.notFound')}</p>
         </div>
         <Footer />
       </div>
@@ -73,13 +147,15 @@ const PemanfaatanAsetDetail = () => {
       <Header />
       {assets.map((asset) => (
         <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
-          <section className="relative h-96 overflow-hidden pt-10">
-            <img
-              src={getMuseumImageUrl(asset.image_url?.split('/').pop() || asset.image_url)}
-              alt={asset.name}
-              className="w-full h-full object-cover"
+          <section className="relative h-[500px] overflow-hidden pt-10">
+            <ImageCarousel
+              images={extractImagePaths(asset.image_url)}
+              autoSlide={true}
+              autoSlideInterval={5000}
+              showControls={true}
+              showDots={true}
+              className="h-full object-contain"
             />
-            <div className="absolute inset-0 bg-black/30" />
           </section>
           <section className="container mx-auto px-4 py-5">
             <div className='flex mx-auto justify-center'>
@@ -93,19 +169,23 @@ const PemanfaatanAsetDetail = () => {
                   <CardTitle className='text-start'>{'Detail Acara'}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {asset.description}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(asset.description || '') }}
+                  />
                 </CardContent>
                 <CardHeader>
                   <CardTitle className='text-start'>{'Ketentuan Umum'}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.ketentuan_umum) && asset.ketentuan_umum.length > 0 ?
-                      asset.ketentuan_umum.map((item, index) => <li key={index}>{item}</li>)
-                    : 'Tidak ada ketentuan umum'}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.ketentuan_umum === 'string'
+                        ? JSON.parse(asset.ketentuan_umum)?.content || 'Tidak ada ketentuan umum'
+                        : asset.ketentuan_umum?.content || 'Tidak ada ketentuan umum'
+                    ) }}
+                  />
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
@@ -127,28 +207,36 @@ const PemanfaatanAsetDetail = () => {
                   <p className="text-white leading-relaxed">
                     {'Fasilitas : '}
                   </p>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.fasilitas) && asset.fasilitas.length > 0 ?
-                      asset.fasilitas.map((item, index) => <li key={index}>{item}</li>)
-                    : ''}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.fasilitas === 'string'
+                        ? JSON.parse(asset.fasilitas)?.content || ''
+                        : asset.fasilitas?.content || ''
+                    ) }}
+                  />
                 </CardContent>
                 <CardContent className='text-start'>
                   <p className="text-white leading-relaxed">
                     {'Fasilitas Tambahan : '}
                   </p>
-                  <p className="text-muted-foreground leading-relaxed ps-8">
-                    {Array.isArray(asset.fasilitas_tambahan) && asset.fasilitas_tambahan.length > 0 ?
-                      asset.fasilitas_tambahan.map((item, index) => <li key={index}>{item}</li>)
-                    : ''}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed ps-8"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(
+                      typeof asset.fasilitas_tambahan === 'string'
+                        ? JSON.parse(asset.fasilitas_tambahan)?.content || ''
+                        : asset.fasilitas_tambahan?.content || ''
+                    ) }}
+                  />
                 </CardContent>
               </Card>
               <Card className='mt-4 pb-8'>
                 <CardHeader>
                   <CardTitle className='text-start flex text-sm'>
                     <span className='py-2'>{'Detail'}</span>
-                    <Badge className='bg-muted-foreground text-background ms-5'>{asset.area}</Badge>
+                    <Badge className='bg-muted-foreground text-background ms-5'>
+                      {getCategoryNameById(asset.area, 'Area')}
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='flex text-start'>

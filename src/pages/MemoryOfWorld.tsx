@@ -2,13 +2,33 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Filter, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import { categoriesMOW, memoryWorldService } from '@/lib/api-services';
+import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
+
+interface MemoryItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  date: string;
+  image: string | null;
+  start_publish_date: string;
+  end_publish_date: string;
+  is_active: boolean | string;
+  is_approved: boolean | string;
+  created_by: string;
+  created_at: string;
+  updated_by: string | null;
+  updated_at: string;
+  thumbnails: string;
+  is_rejected: boolean | string;
+  reason_rejected: string;
+  excerpt: string | null;
+}
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -16,78 +36,100 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-const collectionImages = import.meta.glob('../assets/collections/*', { eager: true });
-function getCollectionImageUrl(filename: string) {
+function getImageUrl(imagePath: string) {
+  if (!imagePath) return null;
+  
   if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+    typeof imagePath === 'string' &&
+    (imagePath.startsWith('http://') ||
+      imagePath.startsWith('https://') ||
+      imagePath.startsWith('/uploads/'))
   ) {
-    return filename;
+    return imagePath;
   }
-  // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
-  return match ? (match[1] as { default: string }).default : filename;
+  
+  // For relative paths starting with ../src/assets/
+  if (imagePath.startsWith('../src/assets/')) {
+    return imagePath.replace('../src/assets/', '/src/assets/');
+  }
+  
+  return imagePath;
 }
 const MemoryOfWorld = () => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [memories, setMemories] = useState([]);
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterCategoriesMow, setFilterCategoriesMow] = useState([]);
+  const [memories, setMemories] = useState<MemoryItem[]>([]);
   const { pathname } = useLocation();
       
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const response = await memoryWorldService.getAll();
-        if(response.error) {
-          console.error('Error fetching memories:', response.error);
-        } else {
-          const filteredMemories = response.data.filter((memory: { 
-            is_active: boolean; 
-            is_approved: boolean; 
-            is_rejected: boolean;
-          }) => (
-            memory.is_active === true 
-            && memory.is_approved === true
-            && memory.is_rejected === false
-          ));
-          setMemories(filteredMemories);
-        }
-      } catch (error) {
-        console.error('Error fetching memories:', error);
+  const fetchMemories = async () => {
+    try {
+      const response = await memoryWorldService.getAll();
+      if(response.error) {
+        console.error('Error fetching memories:', response.error);
+      } else {
+        setMemories(response.data as MemoryItem[]);
       }
+    } catch (error) {
+      console.error('Error fetching memories:', error);
     }
+  }
+  useEffect(() => {
     fetchMemories();
   }, []);
 
-  useEffect(() => {
-    const fetchCategoriesMow = async () => {
-      try {
-        const response = await categoriesMOW.getAllCategories();
-        if (response.error || !response.data) {
-          console.error('Error fetching categories:', response);
-        } else {
-          setFilterCategoriesMow(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
+
+  const parseDate = (dateString: string) => {
+    if (!dateString) return null;
+    // Handle DD/MM/YYYY format
+    const parts = dateString.split(' ')[0].split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
     }
-    fetchCategoriesMow();
-  }, []);
+    return new Date(dateString);
+  };
 
   const filteredMemories = memories.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterCategory === 'all' || item.category === filterCategory;
-    return matchesSearch && matchesFilter;
+    
+    // Filter by publish dates and status
+    const currentDate = new Date();
+    const startPublishDate = item.start_publish_date ? parseDate(item.start_publish_date) : null;
+    const endPublishDate = item.end_publish_date ? parseDate(item.end_publish_date) : null;
+    
+    const isPublished = (!startPublishDate || currentDate >= startPublishDate) &&
+                       (!endPublishDate || currentDate <= endPublishDate);
+    
+    // Handle both string ('t'/'f') and boolean (true/false) values from API
+    const isActive = item.is_active === true || item.is_active === 't';
+    const isApproved = item.is_approved === true || item.is_approved === 't';
+    const isNotRejected = item.is_rejected === false || item.is_rejected === 'f';
+    
+    const shouldShow = matchesSearch && isPublished && isActive && isApproved && isNotRejected;
+    
+    if (item.id === 'f70009f8-9c1c-4b8e-93b4-bd0350265546') {
+      console.log('Prambanan Candi debug:', {
+        title: item.title,
+        matchesSearch,
+        isPublished,
+        isActive: item.is_active,
+        isApproved: item.is_approved,
+        isNotRejected: item.is_rejected,
+        startPublishDate: startPublishDate?.toISOString(),
+        endPublishDate: endPublishDate?.toISOString(),
+        currentDate: currentDate.toISOString(),
+        shouldShow
+      });
+    }
+    
+    return shouldShow;
   });
 
   return (
@@ -106,7 +148,7 @@ const MemoryOfWorld = () => {
         </div>
       </section>
 
-      {/* Search and Filter */}
+      {/* Search */}
       <section className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
@@ -118,20 +160,6 @@ const MemoryOfWorld = () => {
               className="pl-10"
             />
           </div>
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-full md:w-48">
-              <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by category')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{'Semua Kategori'}</SelectItem> 
-              {filterCategoriesMow.length > 0 && filterCategoriesMow.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Results */}
@@ -141,7 +169,7 @@ const MemoryOfWorld = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg pt-5">
                   <img
-                    src={item.image ? getCollectionImageUrl(item.image.split('/').pop() || item.image) : logo}
+                    src={getImageUrl(item.thumbnails) || logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />
@@ -157,7 +185,7 @@ const MemoryOfWorld = () => {
                   <CardDescription>
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(item.description)
+                        __html: fixBrokenHtmlTags(item.subtitle)
                       }}
                     />
                   </CardDescription>

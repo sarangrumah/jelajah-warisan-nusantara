@@ -28,7 +28,7 @@ function getTranslatableFields(tableName: string): string[] {
     'tb_master_collection': ['name', 'description'],
     'tb_faqs': ['question', 'answer'],
     'tb_banner': ['title', 'subtitle', 'description'],
-    'tb_memoryoftheworld': ['title', 'description'],
+    'tb_memoryoftheworld': ['title', 'subtitle', 'description', 'thumbnails'],
     'tb_company': ['name', 'description', 'vision', 'mission'],
     'tb_pemanfaatanasset': ['title', 'description', 'location'],
   };
@@ -239,13 +239,17 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const { lang } = req.query;
         const targetLang = (lang as string) || 'id';
 
+        console.log(`[getById] Fetching ${tableName} with ID: ${id}`);
+
         // Base query
         const baseResult = await query(`SELECT * FROM ${tableName} WHERE id = $1`, [id]);
         if (baseResult.rows.length === 0) {
+          console.log(`[getById] Record not found: ${tableName} ${id}`);
           return res.status(404).json({ error: 'Record not found' });
         }
 
         let record = baseResult.rows[0];
+        console.log(`[getById] Found base record for ${tableName} ${id}`);
 
         // Add flat joins (belongs-to)
         for (const { name: relName, config: rel } of flatJoins) {
@@ -272,17 +276,17 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const relations = tableRelationships[tableName as keyof typeof tableRelationships];
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
-            // Only "has many" (child has foreignKey to parent's id)
-            if (relConfig && typeof relConfig === 'object' && 'foreignKey' in relConfig) {
-              if ((relConfig as JoinConfig).foreignKey === 'id') {
-                const { table: childTable, localKey, fields: relFields } = relConfig as JoinConfig;
-                const childFields = relFields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
+            // Only "has many" relationships
+            if (relConfig && typeof relConfig === 'object' && 'type' in relConfig && (relConfig as JoinConfig).type === 'has_many') {
+              const { table: childTable, localKey, foreignKey, fields: relFields } = relConfig as JoinConfig;
+              const childFields = relFields || Object.keys(tableConfigs[childTable as keyof typeof tableConfigs] || {});
 
-                const jsonFields = childFields
-                  .filter((f: string) => f !== localKey)
-                  .map((f: string) => `'${f}', ${childTable}.${f}`)
-                  .join(', ');
+              const jsonFields = childFields
+                .filter((f: string) => f !== foreignKey) // exclude foreignKey column
+                .map((f: string) => `'${f}', ${childTable}.${f}`)
+                .join(', ');
 
+              try {
                 const result = await query(
                   `SELECT json_agg(json_build_object(${jsonFields})) AS data
                    FROM ${childTable}
@@ -291,6 +295,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
                 );
 
                 record[relKey] = result.rows[0].data || [];
+              } catch (error) {
+                console.error(`Error fetching ${relKey} for ${tableName} ${id}:`, error);
+                record[relKey] = [];
               }
             }
           }

@@ -58,7 +58,7 @@ interface CategoryOption {
 
 interface AssetImage {
   path: string;
-  sites?: string;
+  sites: string;
 }
 
 interface PemanfaatanAsset {
@@ -131,7 +131,7 @@ const deserializeImages = (raw: unknown): AssetImage[] => {
         }
         return null;
       })
-      .filter((item): item is AssetImage => Boolean(item) && item.path !== '');
+      .filter((item) => Boolean(item) && item.path !== '') as AssetImage[];
   }
 
   if (typeof raw === 'string') {
@@ -139,7 +139,9 @@ const deserializeImages = (raw: unknown): AssetImage[] => {
       return [];
     }
     try {
-      const parsed = JSON.parse(raw);
+      // First decode HTML entities, then parse JSON
+      const decoded = raw.replace(/"/g, '"');
+      const parsed = JSON.parse(decoded);
       if (Array.isArray(parsed)) {
         return deserializeImages(parsed);
       }
@@ -157,7 +159,48 @@ const serializeImages = (images: AssetImage[]): string => {
   if (!images || images.length === 0) {
     return '[]';
   }
-  return JSON.stringify(images.map((image) => image.path));
+  return JSON.stringify(images.map((image) => {
+    // Extract only the filename from the path
+    const path = image.path;
+    if (path.startsWith('/uploads/')) {
+      return path.split('/').pop() || path;
+    }
+    // If it's already just a filename (no path), return as is
+    if (!path.includes('/')) {
+      return path;
+    }
+    // For any other path format, extract just the filename
+    return path.split('/').pop() || path;
+  }));
+};
+
+const extractImagePaths = (imageData: any): string[] => {
+  if (!imageData) return [];
+  
+  // If it's already a string URL, return as array
+  if (typeof imageData === 'string') {
+    return [imageData.startsWith('/uploads/') ? imageData : imageData];
+  }
+  
+  // If it's an array, process all images
+  if (Array.isArray(imageData)) {
+    return imageData.map(item => {
+      if (typeof item === 'string') {
+        return item.startsWith('/uploads/') ? item : item;
+      }
+      if (item && typeof item === 'object' && item.path) {
+        return item.path.startsWith('/uploads/') ? item.path : item.path;
+      }
+      return '';
+    }).filter(Boolean);
+  }
+  
+  // If it's an object with path property
+  if (imageData && typeof imageData === 'object' && imageData.path) {
+    return [imageData.path.startsWith('/uploads/') ? imageData.path : imageData.path];
+  }
+  
+  return [];
 };
 
 const stripHtml = (html: string) => html
@@ -598,7 +641,7 @@ const PemanfaatanAssetForm = ({
         label="Image Upload"
         value={formData.image_url}
         onChange={(images) => setFormData((prev) => ({ ...prev, image_url: images }))}
-        bucket="hero-sections"
+        bucket="pemanfaatan-assets"
         maxImages={10}
       />
 

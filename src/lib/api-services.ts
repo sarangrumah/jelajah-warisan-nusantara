@@ -260,7 +260,7 @@ export const categoriesCollection = {
 };
 
 export const categoriesMOW = {
-  getAllCategories: () => apiClient.getAll('tb_categories_mow'),
+  getAllCategories: () => apiClient.getAll('tb_categories_collections'),
 };
 
 export const memoryOfWorldGalleryService = {

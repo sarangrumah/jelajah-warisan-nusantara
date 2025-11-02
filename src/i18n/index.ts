@@ -464,21 +464,18 @@ export const resources = {
           categoryMuseum: "Museums",
           categoryHeritage: "Heritage Sites",
         },
+        pemanfaatanAset: {
+          search: "Search asset utilization...",
+        },
         collection: {
           search: "Search collections...",
           categoryAll: "All Categories",
-          // categoryWeapon: "Weapons",
-          // categorySculpture: "Sculptures",
-          // categoryManuscript: "Manuscripts",
-          // categoryTextile: "Textiles",
-          // categoryJewelry: "Jewelry",
           categoryCeramic: "Ceramics",
           categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
           categoryHistory: "History",
           categoryNumismatic: "Numismatic & Heraldic",
           categoryPreHistorical: "PreHistorical",
-          // categoryCeramics: "Ceramics",
           categoryGeographic: "Geographic",
         },
         heritage: {
@@ -491,12 +488,6 @@ export const resources = {
         mow: {
           search: "Search memory of the world...",
           categoryAll: "All Categories",
-          // categoryWeapon: "Weapons",
-          // categorySculpture: "Sculptures",
-          // categoryManuscript: "Manuscripts",
-          // categoryTextile: "Textiles",
-          // categoryJewelry: "Jewelry",
-          // categoryCeramic: "Ceramics",
           categoryCeramic: "Ceramics",
           categoryEtnograhpy: "Ethnography",
           categoryArcheology: "Archeology",
@@ -577,6 +568,16 @@ export const resources = {
           title: "Success",
           message: "Your message has been sent successfully. We will get back to you soon."
         }
+      },
+      // Pemanfaatan Aset Section
+      pemanfaatanAset: {
+        title: "Asset Utilization",
+        subtitle: "Explore available assets for utilization",
+        noData: "No asset utilization data found."
+      },
+      common: {
+        notFound: "Data not found.",
+        requestNotFound: "Requested data not found."
       }
     }
   },
@@ -603,6 +604,12 @@ export const resources = {
         pemanfaatanAset: "Pemanfaatan Aset",
         // peraturan: "Peraturan",
         admin: "Admin"
+      },
+      // Pemanfaatan Aset Section
+      pemanfaatanAset: {
+        title: "Pemanfaatan Aset",
+        subtitle: "Jelajahi aset yang tersedia untuk dimanfaatkan",
+        noData: "Data pemanfaatan aset untuk disewakan tidak ditemukan."
       },
       // Hero Section
       hero: {
@@ -653,7 +660,6 @@ export const resources = {
         title: "Sistem Terintegrasi Nasional",
         description: "Pengelolaan profesional museum dan situs cagar budaya di seluruh Indonesia dengan sistem modern dan terintegrasi.",
         mainServices: "Layanan Utama",
-        // museum.title: "Museum",
         museum: {
           title: "Museum",
           description: "Pengelolaan koleksi, pameran, dan program edukasi di seluruh museum Indonesia",
@@ -1043,15 +1049,12 @@ export const resources = {
           categoryMuseum: "Museum",
           categoryHeritage: "Cagar Budaya",
         },
+        pemanfaatanAset: {
+          search: "Cari pemanfaatan aset...",
+        },
         collection: {
           search: "Cari Koleksi...",
           categoryAll: "Semua Kategori",
-          // categoryWeapon: "Senjata",
-          // categorySculpture: "Patung",
-          // categoryManuscript: "Manuskrip",
-          // categoryTextile: "Tekstil",
-          // categoryJewelry: "Perhiasan",
-          // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
           categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
@@ -1070,12 +1073,6 @@ export const resources = {
         mow: {
           search: "Cari memori dunia...",
           categoryAll: "Semua Kategori",
-          // categoryWeapon: "Senjata",
-          // categorySculpture: "Patung",
-          // categoryManuscript: "Manuskrip",
-          // categoryTextile: "Tekstil",
-          // categoryJewelry: "Perhiasan",
-          // categoryCeramic: "Keramik",
           categoryCeramic: "Keramik",
           categoryEtnograhpy: "Etnografi",
           categoryArcheology: "Arkeologi",
