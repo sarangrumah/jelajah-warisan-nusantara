@@ -4,6 +4,7 @@ import { createCrudController } from '../controllers/crudController';
 import { tableConfigs } from '../config/tableConfigs';
 import translationRoutes from './translations';
 import translateRoutes from './translate';
+import uploadRoutes from './upload';
 // import { translateResponse } from '../middleware/translateResponse'; // DISABLED - using frontend i18n instead
 
 const router = Router();
@@ -17,6 +18,9 @@ router.use('/translations', translationRoutes);
 
 // Content translation route (LibreTranslate API)
 router.use('/translate', translateRoutes);
+
+// Upload route for media files
+router.use('/upload', uploadRoutes);
 
 // Create CRUD routes for each table
 console.log('[API ROUTER] Registering CRUD routes for tables:', Object.keys(tableConfigs));

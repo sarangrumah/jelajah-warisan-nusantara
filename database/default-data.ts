@@ -4411,7 +4411,7 @@ export const publications = [
   {
     title: '[Siaran Pers] Kemarin Pameran Fosil Manusia Purba Tarik Hampir 10000 Pengunjung di Museum Nasional Indonesia',
     description: 'Laporan lengkap kegiatan dan pencapaian Direktorat Museum dan Cagar Budaya tahun 2023',
-    type: 'Laporan Tahunan',
+    type: 'publication',
     category: 'berita',
     year: '2023',
     size: '12.5 MB',
@@ -4423,7 +4423,7 @@ export const publications = [
   {
     title: '[Siaran Pers] Museum Nasional Indonesia Rayakan Hari Disabilitas Internasional melalui Kampanye Pekan Inklusivitas',
     description: 'Panduan teknis konservasi dan perawatan koleksi museum',
-    type: 'Panduan Teknis',
+    type: 'publication',
     category: 'berita',
     year: '2023',
     size: '8.2 MB',
@@ -4435,7 +4435,7 @@ export const publications = [
   {
     title: '[Sipres] Resmikan Pameran Kompetisi BAAA #5, Menteri Kebudayaan Berharap Ruang Ini Menjadi Ajang Pembelajaran Budaya yang Inklusif, Interaktif, dan Relevan Bagi Generasi Muda',
     description: 'Katalog lengkap koleksi Museum Nasional Indonesia',
-    type: 'Katalog',
+    type: 'publication',
     category: 'berita',
     year: '2023',
     size: '45.7 MB',
@@ -4447,7 +4447,7 @@ export const publications = [
   {
     title: 'BERITA MEMPERINGATI HARI FILM NASIONAL',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4459,7 +4459,7 @@ export const publications = [
   {
     title: 'INFORMASI KEGIATAN -  Pameran Misykat (1)',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4471,7 +4471,7 @@ export const publications = [
   {
     title: 'Informasi Kegiatan Pameran SUNTING',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4483,7 +4483,7 @@ export const publications = [
   {
     title: 'MCB Tandatangani Perjanjian Strategis dengan Mitra Prancis',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4495,7 +4495,7 @@ export const publications = [
   {
     title: 'Menteri Kebudayaan Ajak Para Pakar Kolaborasi Berdiskusi dan Berbagi Pengetahuan Untuk Kemajuan Kebudayaan',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4507,7 +4507,7 @@ export const publications = [
   {
     title: 'Siaran Berita-Resmikan Pameran Jejak Perlawanan “Sang Presiden 2001” Tribut untuk Hardi (1951-2023), Menteri Fadli Zon Kenang Hardi Sosok Yang Kreatif dan Kritis',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'berita',
     year: '2022',
     size: '5.4 MB',
@@ -4519,7 +4519,7 @@ export const publications = [
   {
     title: 'SIARAN PERS - Pameran Fosil Manusia Purba di Museum Nasional Tarik Lebih dari 12000 Pengunjung dalam Dua Hari Terakhir',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'pengumuman',
     year: '2022',
     size: '5.4 MB',
@@ -4531,7 +4531,7 @@ export const publications = [
   {
     title: 'Sipres - Angkat Hasjim Djojohadikusumo Sebagai Ketua Dewan Penyantun, Menteri Kebudayaan Harapkan Dukungan Seluruh Stakeholder Dalam Memajukan Museum dan Cagar Budaya',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'pengumuman',
     year: '2022',
     size: '5.4 MB',
@@ -4543,7 +4543,7 @@ export const publications = [
   {
     title: 'Sipres - Menteri Kebudayaan Nilai Semesta Arkiv Sebagai Spirit Baru Kreativitas Tanpa Batas',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'artikel',
     year: '2022',
     size: '5.4 MB',
@@ -4555,7 +4555,7 @@ export const publications = [
   {
     title: 'Sipres - Menteri Kebudayaan Sambut Baik Pameran Kongsi Sebagai Media Pemersatu Bangsa',
     description: 'Standar operasional pengelolaan museum di Indonesia',
-    type: 'Standar',
+    type: 'publication',
     category: 'kemitraan',
     year: '2022',
     size: '5.4 MB',

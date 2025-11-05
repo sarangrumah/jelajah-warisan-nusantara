@@ -54,6 +54,7 @@ app.use(cors({
   origin: [
     // Development origins
     'http://localhost:5173',
+    'http://localhost:5177',
     'http://localhost:8080',
     'http://localhost:8081',
     'http://127.0.0.1:5173',
@@ -178,13 +179,13 @@ app.listen(PORT, async () => {
   console.log(`🌐 Translation middleware: Active (Local LibreTranslate)`);
   
   // Warm up translation cache with popular content
-  try {
-    await warmUpCache(pool);
-    const stats = getCacheStats();
-    console.log(`💾 Translation cache ready: ${stats.totalTranslations} translations (${stats.cacheSizeKB} KB)`);
-  } catch (error) {
-    console.error('⚠️  Failed to warm up cache:', error);
-  }
+  // try {
+  //   await warmUpCache(pool);
+  //   const stats = getCacheStats();
+  //   console.log(`💾 Translation cache ready: ${stats.totalTranslations} translations (${stats.cacheSizeKB} KB)`);
+  // } catch (error) {
+  //   console.error('⚠️  Failed to warm up cache:', error);
+  // }
 });
 
 export default app;

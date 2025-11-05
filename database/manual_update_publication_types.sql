@@ -1,0 +1,13 @@
+UPDATE tb_media SET type = 'publication' WHERE title = '[Siaran Pers] Kemarin Pameran Fosil Manusia Purba Tarik Hampir 10000 Pengunjung di Museum Nasional Indonesia';
+UPDATE tb_media SET type = 'publication' WHERE title = '[Siaran Pers] Museum Nasional Indonesia Rayakan Hari Disabilitas Internasional melalui Kampanye Pekan Inklusivitas';
+UPDATE tb_media SET type = 'publication' WHERE title = '[Sipres] Resmikan Pameran Kompetisi BAAA #5, Menteri Kebudayaan Berharap Ruang Ini Menjadi Ajang Pembelajaran Budaya yang Inklusif, Interaktif, dan Relevan Bagi Generasi Muda';
+UPDATE tb_media SET type = 'publication' WHERE title = 'BERITA MEMPERINGATI HARI FILM NASIONAL';
+UPDATE tb_media SET type = 'publication' WHERE title = 'INFORMASI KEGIATAN -  Pameran Misykat (1)';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Informasi Kegiatan Pameran SUNTING';
+UPDATE tb_media SET type = 'publication' WHERE title = 'MCB Tandatangani Perjanjian Strategis dengan Mitra Prancis';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Menteri Kebudayaan Ajak Para Pakar Kolaborasi Berdiskusi dan Berbagi Pengetahuan Untuk Kemajuan Kebudayaan';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Siaran Berita-Resmikan Pameran Jejak Perlawanan “Sang Presiden 2001” Tribut untuk Hardi (1951-2023), Menteri Fadli Zon Kenang Hardi Sosok Yang Kreatif dan Kritis';
+UPDATE tb_media SET type = 'publication' WHERE title = 'SIARAN PERS - Pameran Fosil Manusia Purba di Museum Nasional Tarik Lebih dari 12000 Pengunjung dalam Dua Hari Terakhir';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Sipres - Angkat Hasjim Djojohadikusumo Sebagai Ketua Dewan Penyantun, Menteri Kebudayaan Harapkan Dukungan Seluruh Stakeholder Dalam Memajukan Museum dan Cagar Budaya';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Sipres - Menteri Kebudayaan Nilai Semesta Arkiv Sebagai Spirit Baru Kreativitas Tanpa Batas';
+UPDATE tb_media SET type = 'publication' WHERE title = 'Sipres - Menteri Kebudayaan Sambut Baik Pameran Kongsi Sebagai Media Pemersatu Bangsa';

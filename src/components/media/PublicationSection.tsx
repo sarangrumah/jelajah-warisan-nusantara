@@ -1,14 +1,28 @@
+import { useState, useEffect } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { publications } from '@/../database/default-data';
+import { mediaService } from '@/lib/api-services';
 
 const PublicationSection = () => {
-  // const budgetData = [
-  //   { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
-  //   { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
-  //   { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
-  // ];
+  const [publications, setPublications] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        const response = await mediaService.getAll();
+        if (response.data) {
+          console.log('Fetched publications:', response.data);
+          const publicationData = response.data.filter((item: any) => item.type === 'publication');
+          setPublications(publicationData);
+        }
+      } catch (error) {
+        console.error('Error fetching publications:', error);
+      }
+    };
+
+    fetchPublications();
+  }, []);
 
   const downloadFromUrl = (url: string) => {
     // Convert src/assets paths to public assets paths

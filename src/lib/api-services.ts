@@ -119,6 +119,7 @@ export const mediaService = {
   delete: (id: string) => apiClient.delete('tb_media', id),
   approve: (id: string) => apiClient.approve('tb_media', id),
   reject: (id: string, reason: string) => apiClient.reject('tb_media', id, reason),
+  upload: (file: File) => apiClient.uploadFile(file, 'media'),
 };
 
 // Memory of The World
