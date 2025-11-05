@@ -11,7 +11,7 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-import { agendaService } from '@/lib/api-services';
+import { EventsService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 import {
@@ -25,23 +25,28 @@ import {
 const eventImages = import.meta.glob('../assets/events/*', { eager: true });
 
 function getEventImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
+  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  if (typeof filename !== 'string' || !filename) {
+    return undefined;
+  }
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
     return filename;
   }
-  const justFile = filename?.split('/').pop() || filename;
+  if (filename.startsWith('/uploads/')) {
+    return `${VITE_API_URL}${filename}`;
+  }
+  if (filename.startsWith('/assets/')) {
+    return filename;
+  }
+  
+  const justFile = filename.split('/').pop();
   const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as any).default;
   }
-  if (justFile) {
-    return `/assets/events/${justFile}`;
-  }
-  return undefined;
+  
+  // Fallback for local assets if needed, though backend URLs are preferred
+  return `/assets/events/${justFile}`;
 }
 
 const AgendaCard = ({ event }) => {
@@ -75,8 +80,8 @@ const AgendaCard = ({ event }) => {
         </div>
         <img
           src={
-            event.image_url
-              ? getEventImageUrl(event.image_url) || logo
+            event.banner_img
+              ? getEventImageUrl(event.banner_img) || logo
               : logo
           }
           alt={event.title}
@@ -135,7 +140,7 @@ const AgendaSection = () => {
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, _setCurrentIndex] = useState(0);
   const [_isPaused, setIsPaused] = useState(false);
-  const { data: events, loading: _isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
+  const { data: events, loading: _isTranslating } = useContent(EventsService, { limit: 6, active: true, approved: true });
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
