@@ -3,7 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i-18next';
 import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -21,13 +21,16 @@ import {
 } from '@/components/ui/carousel';
 
 const newsImages = import.meta.glob('../assets/news/*', { eager: true });
+const newsFiles = import.meta.glob('../assets/berita/*', { eager: true });
+
 
 function getNewsImageUrl(filename: string) {
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+      filename.startsWith('/assets/') ||
+      filename.startsWith('/uploads/'))
   ) {
     return filename;
   }
@@ -69,7 +72,12 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const { data: news, loading, error: _error } = useContent(mediaService, { limit: 6, is_active: true, is_approved: true });
+  const { data: news, loading, error: _error } = useContent(mediaService, {
+    limit: 6,
+    is_active: true,
+    is_approved: true,
+    published_date: { lte: new Date().toISOString() },
+  });
 
   // Auto-slide logic
   React.useEffect(() => {
