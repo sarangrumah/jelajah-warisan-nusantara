@@ -1,17 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
-
-function fixBrokenHtmlTags(html: string): string {
-  if (!html) { return html; }
-  return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
-             .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-import { EventsService } from '@/lib/api-services';
+import { sanitizeHtml } from '@/lib/sanitize-html';
+import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
 import {
@@ -45,7 +39,6 @@ function getEventImageUrl(filename: string) {
     return (match[1] as any).default;
   }
   
-  // Fallback for local assets if needed, though backend URLs are preferred
   return `/assets/events/${justFile}`;
 }
 
@@ -72,7 +65,6 @@ const AgendaCard = ({ event }) => {
 
   return (
     <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
-      {/* Event Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
         <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
@@ -88,13 +80,11 @@ const AgendaCard = ({ event }) => {
           className="w-full h-full object-contain object-center"
         />
       </div>
-
-      {/* Event Content */}
       <div className="p-6 mb-9 flex-1 flex flex-col">
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
           <span
             dangerouslySetInnerHTML={{
-              __html: fixBrokenHtmlTags(event.title)
+              __html: sanitizeHtml(event.title || '')
             }}
           />
         </h3>
@@ -102,7 +92,7 @@ const AgendaCard = ({ event }) => {
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
           <span
             dangerouslySetInnerHTML={{
-              __html: fixBrokenHtmlTags(event.description)
+              __html: sanitizeHtml(event.description || '')
             }}
           />
         </p>
@@ -110,15 +100,15 @@ const AgendaCard = ({ event }) => {
         <div className="space-y-2 mb-6">
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar size={16} className="mr-3 text-primary" />
-            {event.date}
+            {event.start_date ? new Date(event.start_date).toLocaleDateString() : 'Date not available'}
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <Clock size={16} className="mr-3 text-primary" />
-            {event.time}
+            {event.start_date ? new Date(event.start_date).toLocaleTimeString() : 'Time not available'}
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin size={16} className="mr-3 text-primary" />
-            {event.location}
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.location || 'Location not specified') }} />
           </div>
         </div>
       </div>
@@ -137,21 +127,36 @@ const AgendaCard = ({ event }) => {
 const AgendaSection = () => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
+  const [categories, setCategories] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);
-  const [currentIndex, _setCurrentIndex] = useState(0);
-  const [_isPaused, setIsPaused] = useState(false);
-  const { data: events, loading: _isTranslating } = useContent(EventsService, { limit: 6, active: true, approved: true });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const { data: events, loading: isTranslating } = useContent(EventsService, { limit: 10, active: true, approved: true });
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await TypesAndCategoriesEvent.getAllCategories();
+        if (!response.error) {
+          setCategories(response.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  const displayedEvents = events || [];
+  const sortedEvents = (events || []).sort((a,b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
 
   const filteredEvents = activeCategory === 'semua'
-    ? displayedEvents
-    : displayedEvents.filter((event: any) => event.category === activeCategory);
+    ? sortedEvents
+    : sortedEvents.filter((event: any) => event.category === activeCategory);
 
   return (
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
@@ -167,9 +172,8 @@ const AgendaSection = () => {
 
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
           {[
-            { id: 'semua', label: t('agenda.categories.all', 'All Events') },
-            { id: 'event', label: t('agenda.categories.event', 'Event') },
-            { id: 'pameranTemporer', label: t('agenda.categories.temporaryExhibition', 'Temporary Exhibition') }
+            { id: 'semua', name: t('agenda.categories.all', 'All Events') },
+            ...categories
           ].map((category) => (
             <button
               key={category.id}
@@ -180,13 +184,13 @@ const AgendaSection = () => {
                   : 'bg-card border border-border text-foreground hover:bg-muted'
               }`}
             >
-              {category.label}
+              {category.name}
             </button>
           ))}
         </div>
 
         <div className="relative mb-12 scroll-reveal">
-          {_isTranslating ? (
+          {isTranslating ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
                 {t('agenda.loading', 'Loading events...')}
@@ -226,7 +230,7 @@ const AgendaSection = () => {
                 ))}
               </CarouselContent>
               <div className="sr-only" aria-live="polite" aria-atomic="true">
-                {filteredEvents[currentIndex]
+                {filteredEvents.length > 0 && filteredEvents[currentIndex]
                   ? `Showing slide ${currentIndex + 1} of ${filteredEvents.length}: ${filteredEvents[currentIndex].title}`
                   : ""}
               </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { EventsService, TypesAndCategoriesEvent, museumService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { sanitizeHtml } from '@/lib/sanitize-html';
-import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+
+const QuillEditor = lazy(() => import('@/components/ui/quill-editor'));
 
 interface EventItem {
   id?: string;
@@ -329,32 +330,38 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <QuillEditor
-          value={formData.description || ''}
-          onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
-          height={100}
-          placeholder="Describe the event"
-        />
+        <Suspense fallback={<div>Loading editor...</div>}>
+          <QuillEditor
+            value={formData.description || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, description: html }))}
+            height={100}
+            placeholder="Describe the event"
+          />
+        </Suspense>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
-        <QuillEditor
-          value={formData.address || ''}
-          onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
-          height={100}
-          placeholder="Enter address"
-        />
+        <Suspense fallback={<div>Loading editor...</div>}>
+          <QuillEditor
+            value={formData.address || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, address: html }))}
+            height={100}
+            placeholder="Enter address"
+          />
+        </Suspense>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="location">Location</Label>
-        <QuillEditor
-          value={formData.location || ''}
-          onChange={(html) => setFormData(prev => ({ ...prev, location: html }))}
-          height={100}
-          placeholder="Enter location details"
-        />
+        <Suspense fallback={<div>Loading editor...</div>}>
+          <QuillEditor
+            value={formData.location || ''}
+            onChange={(html) => setFormData(prev => ({ ...prev, location: html }))}
+            height={100}
+            placeholder="Enter location details"
+          />
+        </Suspense>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
