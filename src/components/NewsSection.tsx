@@ -3,7 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
-// import { useTranslation } from 'react-i-18next';
+import { useTranslation } from 'react-i18next';
 import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -68,7 +68,7 @@ function getNewsFileUrl(filename: string) {
 }
 
 const NewsSection = () => {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
@@ -113,10 +113,10 @@ const NewsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            {('news.title')}
+            {t('news.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {('news.subtitle')}
+            {t('news.subtitle')}
           </p>
         </div>
 
@@ -124,7 +124,7 @@ const NewsSection = () => {
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
-                {('news.loading')}
+                {t('news.loading')}
               </span>
             </div>
           ) : (
@@ -161,6 +161,11 @@ const NewsSection = () => {
                             src={getNewsImageUrl(article.image || article.image_url)}
                             alt={article.title}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.onerror = null; // prevent infinite loop
+                              target.src = '/logo.png';
+                            }}
                           />
                           <div className="absolute top-4 left-4">
                             <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
@@ -204,7 +209,7 @@ const NewsSection = () => {
                             </div>
                           </div>
                           <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
-                            {('news.button.readMore')}
+                            {t('news.button.readMore')}
                             <ArrowRight size={16} />
                           </Link>
                         </CardContent>
@@ -240,7 +245,7 @@ const NewsSection = () => {
         <div className="text-center scroll-reveal">
           <Link to={'/media-publikasi'}>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              {('news.button.viewAll')}
+              {t('news.button.viewAll')}
             </button>
           </Link>
         </div>
