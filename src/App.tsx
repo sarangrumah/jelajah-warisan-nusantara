@@ -31,6 +31,7 @@ import MemoryOfWorld from "./pages/MemoryOfWorld";
 
 import { useLoading } from "@/components/LoadingContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import PublicationManagement from "@/components/admin/PublicationManagement";
 
 import FloatingButtons from "@/components/FloatingButtons";
 import PemanfaatanAset from "./pages/PemanfaatanAset";
@@ -91,6 +92,7 @@ const App = () => {
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

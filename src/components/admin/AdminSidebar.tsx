@@ -37,6 +37,7 @@ const menuItems = [
   { id: 'master-collection', label: 'Collections', icon: FileText },
   { id: 'agenda', label: 'Event', icon: Calendar },
   { id: 'media', label: 'Media', icon: FileText },
+  { id: 'publication', label: 'Publication', icon: FileText },
   { id: 'sop', label: 'SOP', icon: FileText },
   { id: 'memoryworld', label: 'Memory World', icon: FileText },
   { id: 'pemanfaatan-asset', label: 'Pemanfaatan Aset', icon: FileText },

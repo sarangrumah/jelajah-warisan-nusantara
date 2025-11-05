@@ -122,6 +122,17 @@ export const mediaService = {
   upload: (file: File) => apiClient.uploadFile(file, 'media'),
 };
 
+// Publications
+export const publicationService = {
+  getAll: () => apiClient.getAll('tb_publication'),
+  getById: (id: string) => apiClient.getById('tb_publication', id),
+  create: (data: any) => apiClient.create('tb_publication', data),
+  update: (id: string, data: any) => apiClient.update('tb_publication', id, data),
+  delete: (id: string) => apiClient.delete('tb_publication', id),
+  approve: (id: string) => apiClient.approve('tb_publication', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_publication', id, reason),
+};
+
 // Memory of The World
 export const memoryWorldService = {
   getAll: () => apiClient.getAll('tb_memoryoftheworld'),

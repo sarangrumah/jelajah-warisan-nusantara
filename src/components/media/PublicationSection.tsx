@@ -13,8 +13,8 @@ const PublicationSection = () => {
         const response = await mediaService.getAll();
         if (response.data) {
           console.log('Fetched publications:', response.data);
-          const publicationData = response.data.filter((item: any) => item.type === 'publication');
-          setPublications(publicationData);
+          console.log('Fetched publications:', response.data);
+          setPublications(response.data);
         }
       } catch (error) {
         console.error('Error fetching publications:', error);
