@@ -13,13 +13,23 @@ const BannerSection = () => {
 
   // TODO: Replace this with API call to fetch banners from backend
   // For now, use a sample with the correct image URL format
-  const defaultSlides = [
-    {
-      title: 'Contoh Banner',
-      subtitle: 'Ini adalah contoh banner dengan URL gambar dari upload admin.',
-      image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
-    }
-  ];
+  // Log all slide image URLs on render for debugging
+  useEffect(() => {
+    const defaultSlides = [
+      {
+        title: 'Contoh Banner',
+        subtitle: 'Ini adalah contoh banner dengan URL gambar dari upload admin.',
+        image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
+      }
+    ];
+    const mappedSlides = defaultSlides.map((slide) => ({
+      ...slide,
+      image: slide.image && !slide.image.startsWith('/uploads/hero-sections/')
+        ? `/uploads/hero-sections/${slide.image.split('/').pop()}`
+        : slide.image
+    }));
+    setSlides(mappedSlides);
+  }, []);
 
   useEffect(() => {
     if (slides.length > 0) {
@@ -61,10 +71,6 @@ const BannerSection = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-  // Log all slide image URLs on render for debugging
-  useEffect(() => {
-    setSlides(defaultSlides);
-  }, [slides]);
 
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">
@@ -83,8 +89,9 @@ const BannerSection = () => {
               onLoad={() => {
                 setIsLoading(false);
               }}
-              onError={() => {
+              onError={(e) => {
                 console.error('[BannerSection] Image failed to load:', slide.image);
+                (e.target as HTMLImageElement).src = '/placeholder.svg';
                 setIsLoading(false);
               }}
             />

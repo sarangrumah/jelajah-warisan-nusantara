@@ -5,47 +5,14 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
-const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
-
-function getMuseumsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  // Try museums first
-  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Try images as fallback
-  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return '/placeholder.svg';
 }
 
 const Museum = () => {
@@ -63,28 +30,37 @@ const Museum = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const fetchMuseums = async () => {
-    try {
-      const response = await museumService.getAll();
-
-      if (response.error || response.data.length === 0) {
-        console.error('Error fetching museums:', response.error);
-        setMuseums(mapSlidesWithImageUrl(defaultMuseums));
-      } else {
-        const filteredMuseums = response.data.filter((museum: any) => (
-          museum.is_active === true 
-          && museum.is_approved === true
-          // && new Date(museum.start_publish_date) <= new Date()
-          // && new Date(museum.end_publish_date) >= new Date()
-        ));
-        setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching museums:', error);
-    }
-  };
-
   useEffect(() => {
+    const fetchMuseums = async () => {
+      try {
+        const response = await museumService.getAll();
+  
+        if (response.error || response.data.length === 0) {
+          console.error('Error fetching museums:', response.error);
+        } else {
+          const filteredMuseums = response.data.filter((museum: {
+            is_active: boolean;
+            is_approved: boolean;
+            start_publish_date: Date;
+            end_publish_date: Date;
+          }) => (
+            museum.is_active === true 
+            && museum.is_approved === true
+            && new Date(museum.start_publish_date) <= new Date()
+            && new Date(museum.end_publish_date) >= new Date()
+          ))
+          .map((museum: {img_banner: string}) => ({
+            ...museum,
+            image: museum.img_banner && !museum.img_banner.startsWith('/uploads/museum/')
+              ? `/uploads/museum/${museum.img_banner.split('/').pop()}`
+              : museum.img_banner
+          }));
+          setMuseums(filteredMuseums);
+        }
+      } catch (error) {
+        console.error('Error fetching museums:', error);
+      }
+    };
     fetchMuseums();
   }, []);
   
@@ -140,23 +116,23 @@ const Museum = () => {
     }
   }, [type, types]);
 
-  const handleVisitMuseum = (museumLink: string) => {
-    let url = `https://${museumLink}`;
-    if (
-      typeof museumLink === 'string' &&
-      (museumLink.startsWith('http://') ||
-        museumLink.startsWith('https://'))
-    ) {
-      url = museumLink;
-    }
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  // const handleVisitMuseum = (museumLink: string) => {
+  //   let url = `https://${museumLink}`;
+  //   if (
+  //     typeof museumLink === 'string' &&
+  //     (museumLink.startsWith('http://') ||
+  //       museumLink.startsWith('https://'))
+  //   ) {
+  //     url = museumLink;
+  //   }
+  //   const link = document.createElement('a');
+  //   link.href = url;
+  //   link.target = '_blank';
+  //   link.rel = 'noopener noreferrer';
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   return (
     <div className="min-h-screen bg-background">
@@ -185,8 +161,10 @@ const Museum = () => {
           </div>
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
-              <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by type')} />
+              <div className='flex justify-start gap-1'>
+                <Filter size={20} />
+                <SelectValue placeholder={t('Filter by type')} />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{'Semua'}</SelectItem>
@@ -204,19 +182,18 @@ const Museum = () => {
               <Link to={`/museum/${item.id}`}>
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={(() => {
-                      const imageCandidate = item.img_banner || '';
-                      const resolved = getMuseumsImageUrl(imageCandidate);
-                      // Use logo as placeholder if no image
-                      return (resolved && resolved !== '/placeholder.svg')
-                        ? resolved
-                        : '/src/assets/MCB-Logo.png';
-                    })()}
+                    src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover object-bottom"
+                    className="w-full h-full object-cover parallax"
+                    onError={(e) => {
+                      console.error('[Museum] Image failed to load:', item.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
-                <div className="flex-1 flex flex-col">
+              </Link>
+              <div className="flex-1 flex flex-col justify-between">
+                <Link to={`/museum/${item.id}`}>
                   <CardHeader>
                     <CardTitle className="text-lg">
                       <span
@@ -233,25 +210,25 @@ const Museum = () => {
                       />
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <div className="flex-1" />
-                    <div className="flex gap-2 mt-6">
-                      <button
-                        className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
-                        type="button"
-                      >
-                        Beli Tiket
-                      </button>
-                      <Link
-                        to={`/museum/${item.id}`}
-                        className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
-                      >
-                        Kunjungi Museum
-                      </Link>
-                    </div>
-                  </CardContent>
-                </div>
-              </Link>
+                </Link>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="flex-1" />
+                  <div className="flex gap-2 mt-auto">
+                    <button
+                      className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
+                      type="button"
+                    >
+                      Beli Tiket
+                    </button>
+                    <Link
+                      to={`/museum/${item.id}`}
+                      className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
+                    >
+                      Kunjungi Museum
+                    </Link>
+                  </div>
+                </CardContent>
+              </div>
             </Card>
           ))}
         </div>

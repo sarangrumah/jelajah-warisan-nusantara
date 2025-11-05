@@ -8,43 +8,12 @@ import { Input } from '@/components/ui/input';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { defaultHeritages } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
-}
-
-const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
-const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
-
-function getMuseumsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  // Try museums first
-  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Try images as fallback
-  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return '/placeholder.svg';
 }
 const Heritage = () => {
   const { t } = useTranslation();
@@ -64,8 +33,26 @@ const Heritage = () => {
       const response = await museumService.getAll();
       if(response.error) {
         console.error('Error fetching heritages:', response.error);
+      } else {
+        const filteredHeritages = response.data.filter((heritage: {
+            is_active: boolean;
+            is_approved: boolean;
+            start_publish_date: Date;
+            end_publish_date: Date;
+          }) => (
+            heritage.is_active === true 
+            && heritage.is_approved === true
+            && new Date(heritage.start_publish_date) <= new Date()
+            && new Date(heritage.end_publish_date) >= new Date()
+          ))
+          .map((heritage: {img_banner: string}) => ({
+            ...heritage,
+            image: heritage.img_banner && !heritage.img_banner.startsWith('/uploads/sites/')
+              ? `/uploads/sites/${heritage.img_banner.split('/').pop()}`
+              : heritage.img_banner
+          }));
+        setHeritages(filteredHeritages);
       }
-      setHeritages(response.data || defaultHeritages);
     } catch (error) {
       console.error('Error fetching heritages:', error);
     }
@@ -82,7 +69,7 @@ const Heritage = () => {
       setTypes(typesResponse.data || []);
 
       // Find "cagar budaya" type
-      const cagarBudayaType = typesResponse.data?.find((t: any) => {
+      const cagarBudayaType: { id?: string; name?: string; } = typesResponse.data?.find((t: { name: string; title: string; }) => {
         const name = typeof t.name === 'string' ? t.name : (typeof t.title === 'string' ? t.title : undefined);
         return name?.toLowerCase() === 'cagar budaya';
       });
@@ -180,8 +167,10 @@ const Heritage = () => {
           </div>
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
-              <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by type')} />
+              <div className='flex justify-start gap-1'>
+                <Filter size={20} />
+                <SelectValue placeholder={t('Filter by type')} />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{'Semua'}</SelectItem>
@@ -199,16 +188,13 @@ const Heritage = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={(() => {
-                      const imageCandidate = item.img_banner || '';
-                      const resolved = getMuseumsImageUrl(imageCandidate);
-                      // Use logo as placeholder if no image
-                      return (resolved && resolved !== '/placeholder.svg')
-                        ? resolved
-                        : '/src/assets/MCB-Logo.png';
-                    })()}
+                    src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover parallax"
+                    onError={(e) => {
+                      console.error('[Heritage] Image failed to load:', item.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
                   />
                 </div>
                 <CardHeader>

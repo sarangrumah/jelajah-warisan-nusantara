@@ -16,7 +16,7 @@ import { sanitizeHtml } from '@/lib/sanitize-html';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function extractImagePaths(imageData: any): string[] {
-  if (!imageData) return [PLACEHOLDER_IMAGE];
+  if (!imageData) {return [PLACEHOLDER_IMAGE]};
   
   // Handle JSON string arrays
   if (typeof imageData === 'string') {
@@ -38,6 +38,7 @@ function extractImagePaths(imageData: any): string[] {
     } catch (error) {
       // If parsing fails, treat as single string
       // Check if it's a UUID filename (no slashes, contains UUID pattern)
+      console.error(error);
       if (!imageData.includes('/') && imageData.includes('-')) {
         return [`/uploads/images/${imageData}`];
       }
@@ -171,7 +172,7 @@ const PemanfaatanAsetDetail = () => {
                 <CardContent className='text-start'>
                   <div
                     className="text-muted-foreground leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(asset.description || '') }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(asset.description && JSON.parse(asset.description).content || '') }}
                   />
                 </CardContent>
                 <CardHeader>
@@ -181,7 +182,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.ketentuan_umum === 'string'
+                      asset.ketentuan_umum &&typeof asset.ketentuan_umum === 'string'
                         ? JSON.parse(asset.ketentuan_umum)?.content || 'Tidak ada ketentuan umum'
                         : asset.ketentuan_umum?.content || 'Tidak ada ketentuan umum'
                     ) }}
@@ -210,7 +211,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.fasilitas === 'string'
+                      asset.fasilitas && typeof asset.fasilitas === 'string'
                         ? JSON.parse(asset.fasilitas)?.content || ''
                         : asset.fasilitas?.content || ''
                     ) }}
@@ -223,7 +224,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.fasilitas_tambahan === 'string'
+                      asset.fasilitas_tambahan && typeof asset.fasilitas_tambahan === 'string'
                         ? JSON.parse(asset.fasilitas_tambahan)?.content || ''
                         : asset.fasilitas_tambahan?.content || ''
                     ) }}

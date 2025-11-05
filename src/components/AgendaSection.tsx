@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,7 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-import { agendaService } from '@/lib/api-services';
-import logo from '@/assets/MCB-Logo.png';
+import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 
 import {
   Carousel,
@@ -22,31 +21,30 @@ import {
   CarouselNext
 } from '@/components/ui/carousel';
 
-const eventImages = import.meta.glob('../assets/events/*', { eager: true });
-
-function getEventImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as any).default;
-  }
-  if (justFile) {
-    return `/assets/events/${justFile}`;
-  }
-  return undefined;
-}
-
 const AgendaCard = ({ event }) => {
   const { t } = useTranslation();
 
+  const getEventStatus = (event) => {
+    const now = new Date();
+
+    if (event.start_published_date === null && new Date(event.start_date) > now) {
+      return 'upcoming';
+    }
+
+    if (new Date(event.start_published_date) < now && new Date(event.start_date) > now) {
+      return 'registration';
+    }
+
+    if (new Date(event.start_date) <= now && new Date(event.end_date) >= now) {
+      return 'ongoing';
+    }
+
+    if (new Date(event.end_date) < now) {
+      return 'finished';
+    }
+
+    return 'unknown';
+  };
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming': return 'bg-blue-500';
@@ -70,17 +68,17 @@ const AgendaCard = ({ event }) => {
       {/* Event Image */}
       <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-        <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
-          {getStatusLabel(event.status)}
+        <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(getEventStatus(event))}`}>
+          {getStatusLabel(getEventStatus(event))}
         </div>
         <img
-          src={
-            event.image_url
-              ? getEventImageUrl(event.image_url) || logo
-              : logo
-          }
+          src={event.image}
           alt={event.title}
-          className="w-full h-full object-contain object-center"
+          className="w-full h-full object-cover parallax"
+          onError={(e) => {
+            console.error('[EventSection] Image failed to load:', event.image);
+            (e.target as HTMLImageElement).src = '/placeholder.svg';
+          }}
         />
       </div>
 
@@ -113,7 +111,11 @@ const AgendaCard = ({ event }) => {
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin size={16} className="mr-3 text-primary" />
-            {event.location}
+            <span
+              dangerouslySetInnerHTML={{
+              __html: fixBrokenHtmlTags(event.location)
+            }}
+            />
           </div>
         </div>
       </div>
@@ -135,18 +137,50 @@ const AgendaSection = () => {
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, _setCurrentIndex] = useState(0);
   const [_isPaused, setIsPaused] = useState(false);
-  const { data: events, loading: _isTranslating } = useContent(agendaService, { limit: 6, active: true, approved: true });
+  const { data: events, loading: _isTranslating } = useContent(EventsService, { limit: 6, active: true, approved: true });
+  const [eventCategories, setEventCategories] = useState([]);
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
   const handleFocus = () => setIsPaused(true);
   const handleBlur = () => setIsPaused(false);
 
-  const displayedEvents = events || [];
+  const displayedEvents = events.filter((event: {
+    is_active: boolean, 
+    is_approved: boolean,
+    is_rejected: boolean
+  }) => (
+    event.is_active === true
+    && event.is_approved === true
+    && event.is_rejected === false
+  ))
+  .slice(0, 6)
+  .map((event: any) => ({
+    ...event,
+    image: event.banner_img && !event.banner_img.startsWith('/uploads/events/')
+      ? `/uploads/events/${event.banner_img.split('/').pop()}`
+      : event.banner_img
+  })) || [];
 
   const filteredEvents = activeCategory === 'semua'
     ? displayedEvents
-    : displayedEvents.filter((event: any) => event.category === activeCategory);
+    : displayedEvents.filter((event: {category: {id: string}}) => event.category.id === activeCategory);
+  
+  useEffect(() => {
+    const fetchEventCategory = async () => {
+      try {
+        const response = await TypesAndCategoriesEvent.getAllCategories();
+        if (response.error) {
+          console.error('Error fetching events:', response.error);
+        } else {
+          setEventCategories(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    }
+    fetchEventCategory();
+  }, []);
 
   return (
     <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
@@ -161,11 +195,17 @@ const AgendaSection = () => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
-          {[
-            { id: 'semua', label: t('agenda.categories.all', 'All Events') },
-            { id: 'event', label: t('agenda.categories.event', 'Event') },
-            { id: 'pameranTemporer', label: t('agenda.categories.temporaryExhibition', 'Temporary Exhibition') }
-          ].map((category) => (
+          <button
+            onClick={() => setActiveCategory('semua')}
+            className={`px-6 py-3 rounded-full font-semibold transition-heritage ${
+              activeCategory === 'semua'
+                ? 'bg-gradient-to-r from-primary to-primary-glow text-primary-foreground heritage-glow'
+                : 'bg-card border border-border text-foreground hover:bg-muted'
+            }`}
+          >
+            Semua Agenda
+          </button>
+          {eventCategories && eventCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
@@ -175,7 +215,7 @@ const AgendaSection = () => {
                   : 'bg-card border border-border text-foreground hover:bg-muted'
               }`}
             >
-              {category.label}
+              {category.name}
             </button>
           ))}
         </div>

@@ -8,7 +8,15 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { mediaService } from '@/lib/api-services';
 
 // Child component for a single news article card with translation
-function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: any, handleReadMoreClick: (id: string) => void, getNewsImageUrl: (filename: string) => string }) {
+function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: { 
+  id: string; 
+  title: string; 
+  excerpt: string; 
+  published_at: string; 
+  created_at: string; 
+  featured_image_url: string; 
+  categories: string; 
+}, handleReadMoreClick: (id: string) => void, getNewsImageUrl: (filename: string) => string }) {
   const { translatedText: title } = useTranslate(article.title);
   const { translatedText: excerpt } = useTranslate(article.excerpt);
   const { translatedText: readMoreLabel } = useTranslate('Baca Selengkapnya');
@@ -24,32 +32,36 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
           />
         </div>
       )}
-      <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-          {title}
-        </h3>
-        <p className="text-muted-foreground mb-4 line-clamp-3">
-          {excerpt}
-        </p>
-        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-          <div className="flex items-center gap-2">
-            <Calendar size={14} />
-            <span>
-              {article.published_at 
-                ? new Date(article.published_at).toLocaleDateString('id-ID')
-                : new Date(article.created_at).toLocaleDateString('id-ID')
-              }
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <User size={14} />
-            <span>Admin</span>
+      <CardContent className="p-6 flex flex-1 flex-col h-full justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+            {title}
+          </h3>
+          <p className="text-muted-foreground mb-4 line-clamp-3">
+            {excerpt}
+          </p>
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar size={14} />
+              <span>
+                {article.published_at 
+                  ? new Date(article.published_at).toLocaleDateString('id-ID')
+                  : new Date(article.created_at).toLocaleDateString('id-ID')
+                }
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <User size={14} />
+              <span>Admin</span>
+            </div>
           </div>
         </div>
-        <button onClick={() => handleReadMoreClick(article.id)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors">
-          {readMoreLabel}
-          <ArrowRight size={16} />
-        </button>
+        <div>
+          <button onClick={() => handleReadMoreClick(article.id)} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
+            {readMoreLabel}
+            <ArrowRight size={16} />
+          </button>
+        </div>
       </CardContent>
     </Card>
   );
@@ -110,11 +122,13 @@ const NewsListSection = () => {
             is_approved: boolean;
             is_rejected: boolean;
             published_date: Date;
+            categories: string;
           }) => (
             article.is_active === true
             && article.is_approved === true
             && article.is_rejected === false
             && new Date(article.published_date) <= new Date()
+            && article.categories.toLowerCase() === 'berita'
           ));
           setArticles(filteredArticles);
         }
@@ -174,7 +188,11 @@ const NewsListSection = () => {
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}
                   onClick={() => setActiveCategory(category.id)}
-                  className="text-sm"
+                  className={`text-sm ${
+                    activeCategory === category.id
+                      ? 'bg-gradient-to-r from-primary to-primary-glow text-primary-foreground heritage-glow'
+                      : 'bg-card border border-border text-foreground hover:bg-muted'
+                  }`}
                 >
                   {category.name}
                 </Button>
