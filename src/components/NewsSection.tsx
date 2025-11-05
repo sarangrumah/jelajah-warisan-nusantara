@@ -79,6 +79,10 @@ const NewsSection = () => {
     published_date: { lte: new Date().toISOString() },
   });
 
+  console.log('NewsSection loading state:', loading);
+  console.log('NewsSection data:', news);
+  console.log('NewsSection error:', _error);
+
   // Auto-slide logic
   React.useEffect(() => {
     if (!carouselApi || isPaused) { return; }
