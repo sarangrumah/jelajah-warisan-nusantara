@@ -21,9 +21,8 @@ interface Media {
   image_url: string 
   file_url: string ; 
   categories: string ;
-  subtitle: string ;
-  type: string;
-  description: string ;
+  subtitle: string ; 
+  description: string ;  
   source: string ; 
   author: string[] ; 
   is_active: boolean; 
@@ -243,7 +242,6 @@ const emptyMedia: Media = {
   description: "",
   source: "",
   author: [],
-  type: 'news',
   is_active: false,
   is_approved: false,
   is_rejected: false,
@@ -257,13 +255,11 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const [mediaItems, setMediaItems] = useState<Media[]>([]);
   const [media, setMedia] = useState<Media>();
   const [loading, setLoading] = useState(true);
-  const [mediaType, setMediaType] = useState('news');
   const [saving, setSaving] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media>(emptyMedia);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [isDialogDelete, setIsDialogDelete] = useState(false);
-  const filteredMediaItems = mediaItems.filter(item => item.type === mediaType);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -531,23 +527,13 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Media & Publication Management</h2>
           <p className="text-muted-foreground">Manage news articles and publications</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <Select value={mediaType} onValueChange={setMediaType}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="news">News</SelectItem>
-              <SelectItem value="publication">Publication</SelectItem>
-            </SelectContent>
-          </Select>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              { userRole !== "approver" && userRole !== "viewer" ? <Button onClick={() => setEditingMedia(emptyMedia)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Media
-              </Button> : <div></div>}
-            </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            { userRole !== "approver" && userRole !== "viewer" ? <Button onClick={() => setEditingMedia(emptyMedia)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Media
+            </Button> : <div></div>}
+          </DialogTrigger>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>
@@ -570,8 +556,6 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
           </DialogContent>
         </Dialog>
       </div>
-      </div>
-
       <div className="flex justify-between items-center">
         {media != null  ? <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
