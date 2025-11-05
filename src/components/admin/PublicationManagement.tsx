@@ -463,7 +463,6 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
             />
           </DialogContent>
         </Dialog>
-        </div>
       </div>
 
       <div className="flex justify-between items-center">
