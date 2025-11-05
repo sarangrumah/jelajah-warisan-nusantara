@@ -24,6 +24,7 @@ import MasterCollectionManagement from '@/components/admin/MasterCollectionManag
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
 import PemanfaatanAssetManagement from '@/components/admin/PemanfaatanAssetManagement';
 import MerchandiseManagement from '@/components/admin/MerchandiseManagement';
+import PublicationManagement from '@/components/admin/PublicationManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
 import { authService } from '@/lib/api-services';
 import { useToast } from '@/hooks/use-toast';
@@ -165,6 +166,7 @@ const AdminDashboard = () => {
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {activeTab === 'merchandise' && <MerchandiseManagement userRole={userRole} />}
+          {activeTab === 'publication' && <PublicationManagement userRole={userRole} />}
           {/* {activeTab === 'career' && <CareerManagement />} */}
           {activeTab === 'users' && <UserManagement />}
         </div>
