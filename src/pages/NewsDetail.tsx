@@ -21,7 +21,8 @@ function getNewsImageUrl(filename: string) {
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
     filename.startsWith('https://') ||
-    filename.startsWith('/assets/'))
+    filename.startsWith('/assets/') ||
+    filename.startsWith('/uploads/'))
   ) {
     return filename;
   }
@@ -264,10 +265,16 @@ const NewsDetail = () => {
           {/* Featured image */}
           <div className="mb-8">
             <div className="aspect-video relative overflow-hidden rounded-lg shadow-lg">
-              <img 
-                src={getNewsImageUrl(article.image_url)} 
+              <img
+                src={getNewsImageUrl(article.image_url)}
                 alt={article.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.endsWith('/logo.png')) return; // Prevent infinite loop
+                  target.onerror = null; // Prevent repeated triggers
+                  target.src = '/logo.png';
+                }}
               />
             </div>
           </div>
