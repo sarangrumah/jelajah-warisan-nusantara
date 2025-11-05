@@ -27,7 +27,7 @@ function getEventImageUrl(filename: string) {
     return filename;
   }
   if (filename.startsWith('/uploads/')) {
-    return `${VITE_API_URL}${filename}`;
+    return filename;
   }
   if (filename.startsWith('/assets/')) {
     return filename;
