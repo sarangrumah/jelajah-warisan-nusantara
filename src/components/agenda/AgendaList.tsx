@@ -8,6 +8,7 @@ import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
+import sanitizeHtml from 'sanitize-html';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
 
@@ -33,6 +34,9 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaList = () => {
+  const createMarkup = (htmlContent: string) => {
+    return { __html: sanitizeHtml(htmlContent) };
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('semua');
   const [events, setEvents] = useState([]);
@@ -153,7 +157,7 @@ const AgendaList = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem key={`category-${category.id}`} value={category.id}>
                       {category.name}
                     </SelectItem>
                   ))}
@@ -165,7 +169,7 @@ const AgendaList = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event) => (
-            <Card key={event.id} className="relative overflow-hidden heritage-glow hover:scale-105 transition-bounce">
+            <Card key={`event-${event.id}`} className="relative overflow-hidden heritage-glow hover:scale-105 transition-transform">
                 <div className="aspect-video relative overflow-hidden">
                   <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
@@ -180,32 +184,32 @@ const AgendaList = () => {
                   </div>
                 </div>
               <CardHeader>
-                <CardTitle className="text-xl line-clamp-2">{event.name}</CardTitle>
+                <CardTitle className="text-xl line-clamp-2" dangerouslySetInnerHTML={createMarkup(event.name)} />
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {event.description}
-                </p>
+                <p className="text-muted-foreground mb-4 line-clamp-3"
+                  dangerouslySetInnerHTML={createMarkup(event.description)}
+                />
                 
                 <div className="space-y-2 mb-[4rem]">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-primary" />
                     {/* <span>{formatDate(event.date)}</span> */}
-                    <span>{event.date}</span>
+                    <span dangerouslySetInnerHTML={createMarkup(event.date)} />
                   </div>
                   
                   {event.time && (
                     <div className="flex items-center gap-2 text-sm">
                       <Clock size={16} className="text-primary" />
                       {/* <span>{formatTime(event.time)} WIB</span> */}
-                      <span>{event.time}</span>
+                      <span dangerouslySetInnerHTML={createMarkup(event.time)} />
                     </div>
                   )}
                   
                   {event.location && (
                     <div className="flex items-center gap-2 text-sm">
                       <MapPin size={16} className="text-primary" />
-                      <span>{event.location}</span>
+                      <span dangerouslySetInnerHTML={createMarkup(event.location)} />
                     </div>
                   )}
                 </div>
