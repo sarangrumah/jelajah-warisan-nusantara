@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { agendaService, contentService } from '@/lib/api-services';
+import { EventsService, contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -49,7 +49,7 @@ const EventDetail = () => {
         return;
       }
       
-      const response = await agendaService.getById(id);
+      const response = await EventsService.getById(id);
       if (response.error) {
         console.error('Error fetching event:', response.error);
         setEvent(null);
@@ -92,7 +92,7 @@ const EventDetail = () => {
       return;
     }
 
-    const eventTitle = event.title || 'Event Menarik';
+    const eventTitle = event.name || 'Event Menarik';
     const eventUrl = window.location.href;
     
     // Create WhatsApp share message
@@ -116,7 +116,7 @@ const EventDetail = () => {
     }
 
     // Fallback to WhatsApp for ticket purchase
-    const eventTitle = event.title || 'Event Menarik';
+    const eventTitle = event.name || 'Event Menarik';
     const message = `Halo! Saya tertarik untuk membeli tiket event:\n\n${eventTitle}\n\nBisa dibantu untuk informasi pembelian tiketnya?`;
     
     if (companyWhatsApp) {
@@ -168,7 +168,7 @@ const EventDetail = () => {
           <section className="relative overflow-hidden h-[60vh]">
             <img
               src={event.image_url ? event.image_url : logo}
-              alt={event.title}
+              alt={event.name}
               className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -178,7 +178,7 @@ const EventDetail = () => {
               </span>
             </div>
             <div className="absolute bottom-4 left-8 w-[70%] text-white">
-              <h1 className="text-4xl md:text-4xl font-bold mb-2">{event.title}</h1>
+              <h1 className="text-4xl md:text-4xl font-bold mb-2">{event.name}</h1>
               {/* <p className="text-xl">{event.description}</p> */}
             </div>
           </section>
