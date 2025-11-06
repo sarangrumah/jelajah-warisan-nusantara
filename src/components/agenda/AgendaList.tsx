@@ -169,60 +169,60 @@ const AgendaList = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((event) => (
-            <Card key={`event-${event.id}`} className="relative overflow-hidden heritage-glow hover:scale-105 transition-transform">
-                <div className="aspect-video relative overflow-hidden">
-                  <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                    <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
-                      {getStatusLabel(event.status)}
+            <Link to={`/event/${event.id}`} key={`event-link-${event.id}`} className="block a-exclude">
+              <Card key={`event-${event.id}`} className="relative overflow-hidden heritage-glow h-full transition-transform transform hover:scale-105">
+                  <div className="aspect-video relative overflow-hidden">
+                    <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+                      <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                        {getStatusLabel(event.status)}
+                      </div>
+                      <img
+                        src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
+                        alt={event.name}
+                        className="w-full h-full object-contain object-center"
+                      />
                     </div>
-                    <img
-                      src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
-                      alt={event.name}
-                      className="w-full h-full object-contain object-center"
-                    />
                   </div>
-                </div>
-              <CardHeader>
-                <CardTitle className="text-xl line-clamp-2" dangerouslySetInnerHTML={createMarkup(event.name)} />
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4 line-clamp-3"
-                  dangerouslySetInnerHTML={createMarkup(event.description)}
-                />
-                
-                <div className="space-y-2 mb-[4rem]">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar size={16} className="text-primary" />
-                    {/* <span>{formatDate(event.date)}</span> */}
-                    <span dangerouslySetInnerHTML={createMarkup(event.date)} />
+                <CardHeader>
+                  <CardTitle className="text-xl line-clamp-2" dangerouslySetInnerHTML={createMarkup(event.name)} />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4 line-clamp-3"
+                    dangerouslySetInnerHTML={createMarkup(event.description)}
+                  />
+                  
+                  <div className="space-y-2 mb-[4rem]">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar size={16} className="text-primary" />
+                      {/* <span>{formatDate(event.date)}</span> */}
+                      <span dangerouslySetInnerHTML={createMarkup(event.date)} />
+                    </div>
+                    
+                    {event.time && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock size={16} className="text-primary" />
+                        {/* <span>{formatTime(event.time)} WIB</span> */}
+                        <span dangerouslySetInnerHTML={createMarkup(event.time)} />
+                      </div>
+                    )}
+                    
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <MapPin size={16} className="text-primary" />
+                        <span dangerouslySetInnerHTML={createMarkup(event.location)} />
+                      </div>
+                    )}
                   </div>
                   
-                  {event.time && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock size={16} className="text-primary" />
-                      {/* <span>{formatTime(event.time)} WIB</span> */}
-                      <span dangerouslySetInnerHTML={createMarkup(event.time)} />
-                    </div>
-                  )}
-                  
-                  {event.location && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin size={16} className="text-primary" />
-                      <span dangerouslySetInnerHTML={createMarkup(event.location)} />
-                    </div>
-                  )}
-                </div>
-                
-                <div className='p-6 absolute left-0 bottom-0 right-0'>
-                <Link to={`/event/${event.id}`}>
-                  <Button className="w-full">
-                    Detail Acara
-                  </Button>
-                </Link>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className='p-6 absolute left-0 bottom-0 right-0'>
+                    <Button className="w-full !a-exclude">
+                      Detail Acara
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
