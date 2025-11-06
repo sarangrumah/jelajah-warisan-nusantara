@@ -121,7 +121,7 @@ const Collection = () => {
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
-                    src={item.image_url ? `http://localhost:3000/uploads/${item.image_url.split('/').pop()}` : logo}
+                    src={item.image_url ? `/uploads/${item.image_url.split('/').pop()}` : logo}
                     alt={item.title}
                     className="w-full h-full object-contain object-center"
                   />
