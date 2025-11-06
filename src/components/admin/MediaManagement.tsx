@@ -116,7 +116,9 @@ const MediaForm = ({ media, onSave, onCancel, saving }: {
             <SelectContent>
               <SelectItem value="Berita">Berita</SelectItem>
               <SelectItem value="Artikel">Artikel</SelectItem>
-              <SelectItem value="Kemitraan">Kemitraan</SelectItem>
+              <SelectItem value="Informasi">Informasi Kegiatan</SelectItem>
+              {/* <SelectItem value="Kemitraan">Kemitraan</SelectItem> */}
+              <SelectItem value="Laporan">Laporan</SelectItem>
               <SelectItem value="Pengumuman">Pengumuman</SelectItem>
             </SelectContent>
           </Select>
