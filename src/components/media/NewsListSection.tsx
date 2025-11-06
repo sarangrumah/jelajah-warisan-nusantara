@@ -91,9 +91,11 @@ const NewsListSection = () => {
 
     const categories = [
         { id: 'semua', name: useTranslate('Semua').translatedText },
-        { id: 'berita', name: useTranslate('Berita').translatedText },
-        { id: 'kemitraan', name: useTranslate('Kemitraan').translatedText },
+        // { id: 'berita', name: useTranslate('Berita').translatedText },
         { id: 'artikel', name: useTranslate('Artikel').translatedText },
+        { id: 'informasi', name: useTranslate('Informasi Kegiatan').translatedText },
+        // { id: 'kemitraan', name: useTranslate('Kemitraan').translatedText },
+        { id: 'laporan', name: useTranslate('Laporan').translatedText },
         { id: 'pengumuman', name: useTranslate('Pengumuman').translatedText },
     ];
 
