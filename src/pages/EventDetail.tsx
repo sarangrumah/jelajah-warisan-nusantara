@@ -9,12 +9,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { EventsService, contentService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
+import sanitizeHtml from 'sanitize-html';
 
 interface CompanyProfile {
   whatsapp?: string;
 }
 
 const EventDetail = () => {
+  const createMarkup = (htmlContent: string) => {
+    return { __html: sanitizeHtml(htmlContent) };
+  };
   const { id } = useParams();
   const { t } = useTranslation();
   const [event, setEvent] = useState(null);
@@ -178,7 +182,7 @@ const EventDetail = () => {
               </span>
             </div>
             <div className="absolute bottom-4 left-8 w-[70%] text-white">
-              <h1 className="text-4xl md:text-4xl font-bold mb-2">{event.name}</h1>
+              <h1 className="text-4xl md:text-4xl font-bold mb-2" dangerouslySetInnerHTML={createMarkup(event.name)} />
               {/* <p className="text-xl">{event.description}</p> */}
             </div>
           </section>
@@ -193,13 +197,7 @@ const EventDetail = () => {
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-bold mb-4">{t('About This Event')}</h2>
                     <div className="space-y-4 text-muted-foreground">
-                      {event.description ? (
-                        event.description.split('\n\n').map((paragraph, index) => (
-                          <p key={index}>{paragraph}</p>
-                        ))
-                      ) : (
-                        <p>{t('No description available')}</p>
-                      )}
+                      <div dangerouslySetInnerHTML={createMarkup(event.description)} />
                     </div>
                   </CardContent>
                   {/* <CardContent className="p-6">
@@ -271,16 +269,16 @@ const EventDetail = () => {
                       <div className="flex items-start">
                         <Calendar size={16} className="mr-3 text-primary mt-1" />
                         <div>
-                          <div className="font-semibold text-sm">{event.date}</div>
-                          <div className="text-sm text-muted-foreground">{event.time}</div>
+                          <div className="font-semibold text-sm" dangerouslySetInnerHTML={createMarkup(event.date)} />
+                          <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={createMarkup(event.time)} />
                         </div>
                       </div>
                       
                       <div className="flex items-start">
                         <MapPin size={16} className="mr-3 text-primary mt-1" />
                         <div>
-                          <div className="font-semibold text-sm">{event.location}</div>
-                          <div className="text-sm text-muted-foreground">{event.address || t('No address provided')}</div>
+                          <div className="font-semibold text-sm" dangerouslySetInnerHTML={createMarkup(event.location)} />
+                          <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={createMarkup(event.address || t('No address provided'))} />
                         </div>
                       </div>
                       
