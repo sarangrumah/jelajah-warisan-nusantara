@@ -137,14 +137,27 @@ const PublicationForm = ({ publication, onSave, onCancel, saving }: {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="url">File URL (document link)</Label>
-        <Input
-          id="url"
-          value={formData.url}
-          onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-          placeholder="https://example.com/document.pdf"
-          required
+        <Label htmlFor="file">File (PDF Document)</Label>
+        <FileUpload
+          onSuccess={(url, size) => {
+            setFormData(prev => ({
+              ...prev,
+              url: url,
+              size: (size / 1024 / 1024).toFixed(2) + ' MB',
+             }));
+          }}
+          onError={(error) => {
+             // Handle error, e.g., show a toast
+            console.error(error);
+           }}
+           bucket="publication"
+          acceptedFileTypes={{ 'application/pdf': ['.pdf'] }}
         />
+        {formData.url && (
+        <div className="text-sm">
+          Current file: <a href={formData.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">{formData.url.split('/').pop()}</a>
+        </div>
+        )}
       </div>
 
       <div className="flex items-center space-x-2">
@@ -242,6 +255,15 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
       if (item.id) {
         await publicationService.update(item.id, payload);
       } else {
+        if (!payload.url) {
+          toast({
+            title: 'File required',
+            description: 'Please upload a PDF document before saving.',
+            variant: 'destructive',
+          });
+          setSaving(false);
+          return;
+        }
         await publicationService.create(payload);
       }
 
