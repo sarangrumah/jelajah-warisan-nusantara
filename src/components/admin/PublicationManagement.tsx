@@ -14,6 +14,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import QuillEditor from '@/components/ui/quill-editor';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+import { FileUpload } from '@/components/ui/file-upload';
 
 interface Publication {
   id: string;
