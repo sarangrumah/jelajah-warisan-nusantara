@@ -10,11 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Edit, Save, X, Plus, Trash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ImageUpload } from '@/components/ui/image-upload';
+import FileUploadPDF from '@/components/FileUploadPDF';
 import QuillEditor from '@/components/ui/quill-editor';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
-import { FileUpload } from '@/components/ui/file-upload';
 
 interface Publication {
   id: string;
@@ -137,29 +136,12 @@ const PublicationForm = ({ publication, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="file">File (PDF Document)</Label>
-        <FileUpload
-          onSuccess={(url, size) => {
-            setFormData(prev => ({
-              ...prev,
-              url: url,
-              size: (size / 1024 / 1024).toFixed(2) + ' MB',
-             }));
-          }}
-          onError={(error) => {
-             // Handle error, e.g., show a toast
-            console.error(error);
-           }}
-           bucket="publication"
-          acceptedFileTypes={{ 'application/pdf': ['.pdf'] }}
-        />
-        {formData.url && (
-        <div className="text-sm">
-          Current file: <a href={formData.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">{formData.url.split('/').pop()}</a>
-        </div>
-        )}
-      </div>
+      <FileUploadPDF
+        bucket="publication"
+        label="Document Upload (PDF)"
+        onUploadComplete={(url) => setFormData(prev => ({ ...prev, url: url }))}
+        required={!formData.id}
+      />
 
       <div className="flex items-center space-x-2">
         <Switch
@@ -256,15 +238,6 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
       if (item.id) {
         await publicationService.update(item.id, payload);
       } else {
-        if (!payload.url) {
-          toast({
-            title: 'File required',
-            description: 'Please upload a PDF document before saving.',
-            variant: 'destructive',
-          });
-          setSaving(false);
-          return;
-        }
         await publicationService.create(payload);
       }
 

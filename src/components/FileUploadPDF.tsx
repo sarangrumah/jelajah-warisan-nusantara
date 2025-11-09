@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 interface FileUploadProps {
-  bucket: 'documents' | 'cv-uploads' | 'transcripts' | 'cover-letters';
+  bucket: 'documents' | 'cv-uploads' | 'transcripts' | 'cover-letters' | 'publication';
   onUploadComplete?: (url: string, fileName: string) => void;
   onUploadError?: (error: string) => void;
   maxSizeMB?: number;
@@ -35,12 +35,12 @@ const FileUploadPDF = ({
   bucket,
   onUploadComplete,
   onUploadError,
-  maxSizeMB = bucket === 'documents' ? 10 : 5,
+  maxSizeMB = bucket === 'documents' || bucket === 'publication' ? 10 : 5,
   className,
   accept = '.pdf',
   required = false,
   label = 'Upload PDF File',
-  description = `Max size: ${bucket === 'documents' ? '10' : '5'}MB. Only PDF files allowed.`,
+  description = `Max size: ${bucket === 'documents' || bucket === 'publication' ? '10' : '5'}MB. Only PDF files allowed.`,
 }: FileUploadProps) => {
   const [uploadState, setUploadState] = useState<UploadState>({
     uploading: false,
