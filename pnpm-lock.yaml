@@ -1787,11 +1787,6 @@ packages:
     cpu: [s390x]
     os: [linux]
 
-  '@rollup/rollup-linux-x64-gnu@4.52.5':
-    resolution: {integrity: sha512-hXGLYpdhiNElzN770+H2nlx+jRog8TyynpTVzdlc6bndktjKWyZyiCsuDAlpd+j+W+WNqfcyAWz9HxxIGfZm1Q==}
-    cpu: [x64]
-    os: [linux]
-
   '@rollup/rollup-linux-x64-musl@4.52.5':
     resolution: {integrity: sha512-arCGIcuNKjBoKAXD+y7XomR9gY6Mw7HnFBv5Rw7wQRvwYLR7gBAgV7Mb2QTyjXfTveBNFAtPt46/36vV9STLNg==}
     cpu: [x64]
@@ -6298,9 +6293,6 @@ snapshots:
   '@rollup/rollup-linux-s390x-gnu@4.52.5':
     optional: true
 
-  '@rollup/rollup-linux-x64-gnu@4.52.5':
-    optional: true
-
   '@rollup/rollup-linux-x64-musl@4.52.5':
     optional: true
 
@@ -8697,7 +8689,6 @@ snapshots:
       '@rollup/rollup-linux-riscv64-gnu': 4.52.5
       '@rollup/rollup-linux-riscv64-musl': 4.52.5
       '@rollup/rollup-linux-s390x-gnu': 4.52.5
-      '@rollup/rollup-linux-x64-gnu': 4.52.5
       '@rollup/rollup-linux-x64-musl': 4.52.5
       '@rollup/rollup-openharmony-arm64': 4.52.5
       '@rollup/rollup-win32-arm64-msvc': 4.52.5
