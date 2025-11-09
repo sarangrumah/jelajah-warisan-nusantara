@@ -46,7 +46,8 @@ const bucketWhitelist = [
   'sites',
   'events',
   'museum',
-  'memory-thumbnails'
+  'memory-thumbnails',
+  'publication'
 ];
 
 const allowedBuckets = new Set(bucketWhitelist);
