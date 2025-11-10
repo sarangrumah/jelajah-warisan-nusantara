@@ -238,6 +238,24 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
       if (item.id) {
         await publicationService.update(item.id, payload);
       } else {
+        if (!item.url) {
+          toast({
+            title: 'File Required',
+            description: 'Please upload a PDF document before saving.',
+            variant: 'destructive',
+          });
+          setSaving(false);
+          return;
+        }
+        if (!payload.url) {
+          toast({
+            title: 'File Required',
+            description: 'Please upload a PDF document before saving.',
+            variant: 'destructive',
+          });
+          setSaving(false);
+          return;
+        }
         await publicationService.create(payload);
       }
 
