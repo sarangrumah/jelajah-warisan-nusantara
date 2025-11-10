@@ -30,3 +30,4 @@ backend/uploads/videos/*.mp4
 src/assets/hero-sections/*.mp4
 src/assets/images/collections/*
 
+backend/.env

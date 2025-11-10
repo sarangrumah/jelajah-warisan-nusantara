@@ -171,7 +171,7 @@ const uploadMulter = multer({
   }),
   fileFilter: (req, file, cb) => {
     const bucket = resolveBucket(req.body.bucket);
-    const pdfBuckets = new Set(['documents', 'cv-uploads', 'transcripts', 'cover-letters']);
+    const pdfBuckets = new Set(['documents', 'cv-uploads', 'transcripts', 'cover-letters', 'publication']);
 
     if (pdfBuckets.has(bucket)) {
       // PDF files for these buckets
