@@ -197,7 +197,7 @@ export const tableConfigs = {
   tb_categories_mow: ['id', 'name', 'created_by', 'created_at', 'updated_by', 'updated_at'],
   merchandise_categories: ['id', 'name', 'description', 'image_url', 'is_published', 'created_by', 'created_at', 'updated_at'],
   merchandise_products: ['id', 'name', 'description', 'short_description', 'price', 'category_id', 'images', 'is_published', 'is_approved', 'is_rejected', 'reason_rejected', 'whatsapp_number', 'created_by', 'created_at', 'updated_at'],
-  tb_publication: ['id', 'title', 'description', 'type', 'category', 'year', 'size', 'pages', 'downloadCount', 'published_at', 'url', 'is_active', 'is_approved', 'is_rejected', 'reason_rejected', 'created_at', 'updated_at']
+  tb_publication: ['id', 'title', 'description', 'type', 'category', 'year', 'size', 'pages', 'downloadCount', 'published_at', 'url', 'is_active', 'created_at', 'updated_at', 'is_approved', 'is_rejected', 'reason_rejected']
 };
 
 export const tableRelationships = {
@@ -352,13 +352,13 @@ export const approvalConfig = {
   merchandise_products: {
     requiresApproval: true,
     autoActivateOnApprove: true
+  },
+  tb_publication: {
+    requiresApproval: true,
+    autoActivateOnApprove: true
   }
 } as const;
 
-export const tb_publication = {
-  requiresApproval: true,
-  autoActivateOnApprove: true
-};
 // type AutoJoinRelations = typeof autoJoinRelations;
 // type RelationKey<T extends string> = T extends keyof AutoJoinRelations
 //   ? (typeof autoJoinRelations)[T][number]

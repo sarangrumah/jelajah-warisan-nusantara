@@ -19,7 +19,6 @@ interface Publication {
   id: string;
   title: string;
   description: string;
-  type: 'publication';
   category: string;
   year: string;
   size: string;
@@ -99,7 +98,7 @@ const PublicationForm = ({ publication, onSave, onCancel, saving }: {
                 const value = e.target.value;
                 setFormData(prev => ({
                   ...prev,
-                  published_at: value
+                  published_at: value ? `${value}T00:00:00.000Z` : ''
                 }));
               }}
               required
@@ -171,20 +170,19 @@ const emptyPublication: Publication = {
   id: "",
   title: "",
   description: "",
-  type: 'publication',
   category: "berita",
   year: new Date().getFullYear().toString(),
   size: "0 MB",
   pages: 0,
   downloadCount: 0,
-  published_at: new Date().toISOString().split('T')[0],
+  published_at: new Date().toISOString(),
   url: "",
   is_active: false,
   is_approved: false,
   is_rejected: false,
   reason_rejected: '',
   created_at: "",
-  updated_at: "",
+  updated_at: ""
 };
 
 
@@ -233,12 +231,23 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
   const savePublication = async (item: Partial<Publication>) => {
     setSaving(true);
     try {
-       const payload: Partial<Publication> = { ...item, type: 'publication' };
+      // Remove type field since it's not in the database schema
+      const { type, ...publicationData } = item;
+      const payload: Partial<Publication> = { ...publicationData };
 
+      console.log('Saving publication payload:', payload);
+
+      let response;
       if (item.id) {
-        await publicationService.update(item.id, payload);
+        response = await publicationService.update(item.id, payload);
       } else {
-        await publicationService.create(payload);
+        response = await publicationService.create(payload);
+      }
+
+      console.log('Save response:', response);
+
+      if (response.error) {
+        throw new Error(response.error);
       }
 
       toast({
@@ -252,7 +261,7 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
       console.error('Error saving publication:', error);
       toast({
         title: 'Error',
-        description: 'Failed to save publication',
+        description: `Failed to save publication: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
