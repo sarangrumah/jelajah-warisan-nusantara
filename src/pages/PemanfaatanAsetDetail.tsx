@@ -133,6 +133,29 @@ const PemanfaatanAsetDetail = () => {
     return id;
   }
 
+  // Helper function to safely extract content from JSON or HTML strings
+  const getContent = (data: any, fallback: string = ''): string => {
+    if (!data) return fallback;
+    
+    if (typeof data === 'string') {
+      try {
+        // Try to parse as JSON first
+        const parsed = JSON.parse(data);
+        return parsed?.content || data; // Return content if exists, otherwise return the original string
+      } catch (error) {
+        // If parsing fails, treat as HTML content
+        return data;
+      }
+    }
+    
+    // If it's an object with content property
+    if (data && typeof data === 'object' && data.content) {
+      return data.content;
+    }
+    
+    return fallback;
+  }
+
   if (!assets || assets.length === 0) {
     return (
       <div className="min-h-screen bg-background">
@@ -186,9 +209,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.ketentuan_umum === 'string'
-                        ? JSON.parse(asset.ketentuan_umum)?.content || 'Tidak ada ketentuan umum'
-                        : asset.ketentuan_umum?.content || 'Tidak ada ketentuan umum'
+                      getContent(asset.ketentuan_umum, 'Tidak ada ketentuan umum')
                     ) }}
                   />
                 </CardContent>
@@ -215,9 +236,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.fasilitas === 'string'
-                        ? JSON.parse(asset.fasilitas)?.content || ''
-                        : asset.fasilitas?.content || ''
+                      getContent(asset.fasilitas, '')
                     ) }}
                   />
                 </CardContent>
@@ -228,9 +247,7 @@ const PemanfaatanAsetDetail = () => {
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      typeof asset.fasilitas_tambahan === 'string'
-                        ? JSON.parse(asset.fasilitas_tambahan)?.content || ''
-                        : asset.fasilitas_tambahan?.content || ''
+                      getContent(asset.fasilitas_tambahan, '')
                     ) }}
                   />
                 </CardContent>
