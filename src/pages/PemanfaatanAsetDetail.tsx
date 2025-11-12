@@ -94,17 +94,21 @@ const PemanfaatanAsetDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [assetsResponse, areaResponse, fasilitasResponse] = await Promise.all([
-          pemanfaatanAssetService.getAll(),
+        if (!id) {
+          console.error('No asset ID provided');
+          return;
+        }
+
+        const [assetResponse, areaResponse, fasilitasResponse] = await Promise.all([
+          pemanfaatanAssetService.getById(id),
           categoriesLayananAsetArea.getAllCategories(),
           categoriesLayananAsetFasilitas.getAllCategories()
         ]);
         
-        if(assetsResponse.error || areaResponse.error || fasilitasResponse.error) {
-          console.error('Error fetching data:', assetsResponse.error || areaResponse.error || fasilitasResponse.error);
+        if(assetResponse.error || areaResponse.error || fasilitasResponse.error) {
+          console.error('Error fetching data:', assetResponse.error || areaResponse.error || fasilitasResponse.error);
         } else {
-          const filteredAssets = assetsResponse.data.filter((asset: { id: string }) => asset.id.toString() === id);
-          setAssets(filteredAssets);
+          setAssets(assetResponse.data ? [assetResponse.data] : []);
           
           const combinedCategories = [
             {label:'Area', items: areaResponse.data},
@@ -129,7 +133,7 @@ const PemanfaatanAsetDetail = () => {
     return id;
   }
 
-  if (assets.length === 0) {
+  if (!assets || assets.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -142,29 +146,30 @@ const PemanfaatanAsetDetail = () => {
     );
   }
 
+  const asset = assets[0];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      {assets.map((asset) => (
-        <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
-          <section className="relative h-[500px] overflow-hidden pt-10">
-            <ImageCarousel
-              images={extractImagePaths(asset.image_url)}
-              autoSlide={true}
-              autoSlideInterval={5000}
-              showControls={true}
-              showDots={true}
-              className="h-full object-contain"
-            />
-          </section>
-          <section className="container mx-auto px-4 py-5">
-            <div className='flex mx-auto justify-center'>
-              <MapPin className="mb-2 mx-1" />
-              {asset.short_location}
-            </div>
-            <div className="grid grid-cols-1 py-10">
-              <div className="lg:col-span-2">
-                <Card>
+      <div key={asset.id} className="container mx-auto px-4 py-16 text-center">
+        <section className="relative h-[500px] overflow-hidden pt-10">
+          <ImageCarousel
+            images={extractImagePaths(asset.image_url)}
+            autoSlide={true}
+            autoSlideInterval={5000}
+            showControls={true}
+            showDots={true}
+            className="h-full object-contain"
+          />
+        </section>
+        <section className="container mx-auto px-4 py-5">
+          <div className='flex mx-auto justify-center'>
+            <MapPin className="mb-2 mx-1" />
+            {asset.short_location}
+          </div>
+          <div className="grid grid-cols-1 py-10">
+            <div className="lg:col-span-2">
+              <Card>
                 <CardHeader>
                   <CardTitle className='text-start'>{'Detail Acara'}</CardTitle>
                 </CardHeader>
@@ -264,7 +269,7 @@ const PemanfaatanAsetDetail = () => {
                   </p>
                 </CardContent>
                 <CardContent className='flex text-start'>
-                  <Button 
+                  <Button
                     onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
                     className="w-[15rem] bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                   >
@@ -272,14 +277,13 @@ const PemanfaatanAsetDetail = () => {
                   </Button>
                 </CardContent>
               </Card>
-              </div>
             </div>
-          </section>
-        </div>
-      ))}
+          </div>
+        </section>
+      </div>
       <Footer />
     </div>
-  )
+  );
 }
 
 export default PemanfaatanAsetDetail
