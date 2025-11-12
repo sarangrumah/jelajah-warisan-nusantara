@@ -367,12 +367,24 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
       const userId = userResult.rows[0].id;
 
+      // Check if there's an active reset token for this user (within last 1 hour)
+      const existingTokenResult = await query(
+        'SELECT created_at FROM password_reset_tokens WHERE user_id = $1 AND created_at > NOW() - INTERVAL \'1 hour\' AND used = false',
+        [userId]
+      );
+
+      if (existingTokenResult.rows.length > 0) {
+        return res.status(429).json({
+          error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 1 jam.'
+        });
+      }
+
       // Generate secure reset token
       const resetToken = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
-      // Delete any existing reset tokens for this user
-      await query('DELETE FROM password_reset_tokens WHERE user_id = $1', [userId]);
+      // Delete any expired reset tokens for this user
+      await query('DELETE FROM password_reset_tokens WHERE user_id = $1 AND expires_at < NOW()', [userId]);
 
       // Store new reset token
       await query(
