@@ -2,9 +2,11 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { query } from '../config/database';
 import { body, validationResult } from 'express-validator';
 import { AuthRequest } from '../middleware/auth';
+import { emailService } from '../services/emailService';
 
 export const signUpValidation = [
   body('email').isEmail().normalizeEmail(),
@@ -327,6 +329,149 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
     console.error('Change password error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Password reset validation
+export const forgotPasswordValidation = [
+  body('email').isEmail().normalizeEmail()
+];
+
+export const resetPasswordValidation = [
+  body('token').isLength({ min: 1 }).withMessage('Token is required'),
+  body('new_password').isLength({ min: 8 }).withMessage('New password must be at least 8 characters'),
+  body('confirm_password').custom((value, { req }) => value === req.body.new_password)
+    .withMessage('Confirmation password must match the new password')
+];
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { email } = req.body;
+
+    // Check if user exists
+    const userResult = await query('SELECT id FROM users WHERE email = $1', [email]);
+    
+    if (userResult.rows.length === 0) {
+      // Don't reveal if user exists or not for security
+      return res.json({
+        message: 'If an account with that email exists, a password reset link has been sent.'
+      });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    // Generate secure reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    // Delete any existing reset tokens for this user
+    await query('DELETE FROM password_reset_tokens WHERE user_id = $1', [userId]);
+
+    // Store new reset token
+    await query(
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+      [userId, resetToken, expiresAt]
+    );
+
+    // Send password reset email
+    const emailSent = await emailService.sendPasswordResetEmail(email, resetToken);
+
+    if (!emailSent) {
+      console.error('Failed to send password reset email to:', email);
+      return res.status(500).json({ error: 'Failed to send password reset email. Please try again later.' });
+    }
+
+    res.json({
+      message: 'If an account with that email exists, a password reset link has been sent.'
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const validateResetToken = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+
+    const tokenResult = await query(
+      'SELECT user_id FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW() AND used = false',
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    res.json({ valid: true });
+  } catch (error) {
+    console.error('Validate reset token error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Validation failed', details: errors.array() });
+    }
+
+    const { token, new_password } = req.body;
+
+    // Validate token
+    const tokenResult = await query(
+      'SELECT user_id FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW() AND used = false',
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    const userId = tokenResult.rows[0].user_id;
+
+    // Check if new password is same as current password
+    const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+    
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ error: 'User not found' });
+    }
+
+    const { password_hash } = userResult.rows[0];
+    const isSamePassword = await bcrypt.compare(new_password, password_hash);
+    
+    if (isSamePassword) {
+      return res.status(400).json({ error: 'New password must be different from current password' });
+    }
+
+    // Hash new password
+    const newHash = await bcrypt.hash(new_password, 12);
+
+    // Update password
+    await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, userId]);
+
+    // Mark token as used
+    await query('UPDATE password_reset_tokens SET used = true WHERE token = $1', [token]);
+
+    // Get user email for notification
+    const emailResult = await query('SELECT email FROM users WHERE id = $1', [userId]);
+    const userEmail = emailResult.rows[0]?.email;
+
+    // Send success notification email
+    if (userEmail) {
+      await emailService.sendPasswordResetSuccessEmail(userEmail);
+    }
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

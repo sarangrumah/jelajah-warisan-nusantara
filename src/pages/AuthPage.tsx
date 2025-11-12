@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, LogIn } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
 
 const AuthPage = () => {
@@ -103,6 +103,15 @@ const AuthPage = () => {
               )}
               {isSubmitting ? 'Memproses...' : 'Masuk'}
             </Button>
+
+            <div className="text-center pt-4">
+              <Link
+                to="/auth/forgot-password"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Lupa password?
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

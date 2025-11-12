@@ -120,6 +120,29 @@ class ApiClient {
     });
   }
 
+  // Password reset methods
+  async forgotPassword(email: string): Promise<ApiResponse<{ message: string }>> {
+    return this.request<{ message: string }>('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string, confirmPassword: string): Promise<ApiResponse<{ message: string }>> {
+    return this.request<{ message: string }>('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        token,
+        new_password: newPassword,
+        confirm_password: confirmPassword
+      }),
+    });
+  }
+
+  async validateResetToken(token: string): Promise<ApiResponse<{ valid: boolean }>> {
+    return this.request<{ valid: boolean }>(`/api/auth/validate-reset-token/${token}`);
+  }
+
   setToken(token: string): void {
     this.token = token;
     localStorage.setItem('auth_token', token);

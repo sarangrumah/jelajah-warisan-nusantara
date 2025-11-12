@@ -22,6 +22,8 @@ import EventDetail from "./pages/EventDetail";
 import NewsDetail from "./pages/NewsDetail";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import StandarOperasionalProsedur from "./pages/StandarOperasionalProsedur";
 import StrukturOrganisasi from "./pages/StrukturOrganisasi";
@@ -91,6 +93,8 @@ const App = () => {
               <Route path="/event/:id" element={<EventDetail />} />
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/auth/reset-password/:token" element={<ResetPasswordPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
