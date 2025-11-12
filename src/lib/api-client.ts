@@ -60,7 +60,17 @@ class ApiClient {
         },
       });
   
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // Handle non-JSON responses (like HTML error pages)
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        return { error: 'Server error occurred' };
+      }
   
       if (!response.ok) {
         return { error: data.error || data.message || 'An error occurred' };
@@ -68,7 +78,8 @@ class ApiClient {
   
       return { data };
     } catch (error) {
-      return { error: 'Network error occurred ' + error };
+      console.error('Network error:', error);
+      return { error: 'Network error occurred' };
     } finally {
       setGlobalLoading(false);
     }
