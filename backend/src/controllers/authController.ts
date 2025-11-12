@@ -335,7 +335,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
 
 // Password reset validation
 export const forgotPasswordValidation = [
-  body('email').isEmail().normalizeEmail()
+  body('email').isEmail()
 ];
 
 export const resetPasswordValidation = [
