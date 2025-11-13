@@ -23,11 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 *.mp4
+# Environment files
 .env
-*.pem
+.env.*
 backend/.env
+backend/.env.*
+*.pem
 backend/uploads/videos/*.mp4
 src/assets/hero-sections/*.mp4
 src/assets/images/collections/*
-
-backend/.env

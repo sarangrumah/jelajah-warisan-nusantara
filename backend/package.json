@@ -7,6 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
+    "start:production": "NODE_ENV=production node dist/server.js",
+    "dev:production": "NODE_ENV=production tsx watch src/server.ts",
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:translations": "tsx src/scripts/migrate-translations.ts",
     "add:ui-translations": "tsx src/scripts/add-ui-translations.ts",

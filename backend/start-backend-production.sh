@@ -1,4 +1,8 @@
 #!/bin/bash
+echo "Starting backend in production mode..."
+export NODE_ENV=production
+node dist/server.js
+#!/bin/bash
 
 # Production Backend Startup Script
 # This script starts the backend server on the correct port

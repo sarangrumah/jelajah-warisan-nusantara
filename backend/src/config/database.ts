@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 console.log('🔍 Database Configuration:');
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set (hidden for security)' : 'NOT SET');
 console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set (hidden for security)' : 'NOT SET');
 
 // Use DATABASE_URL if available, otherwise use individual environment variables
 let config: PoolConfig;
@@ -19,7 +19,7 @@ if (process.env.DATABASE_URL) {
     user: dbUrl.username,
     password: decodeURIComponent(dbUrl.password),
     database: dbUrl.pathname.replace('/', ''),
-    ssl: false
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
   };
 } else {
   config = {
@@ -28,7 +28,7 @@ if (process.env.DATABASE_URL) {
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME || 'mcb_db',
-    ssl: false // Disable SSL for local connections
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
   };
 }
 
@@ -37,7 +37,7 @@ const pool = new Pool(config);
 // Test database connection
 pool.connect()
   .then(client => {
-    console.log('✅ Database connected successfully');
+    console.log(`✅ Database connected successfully (${process.env.NODE_ENV || 'development'})`);
     client.release();
   })
   .catch(error => {
