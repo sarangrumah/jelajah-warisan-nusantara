@@ -19,7 +19,7 @@ import {
 const eventImages = import.meta.glob('../assets/events/*', { eager: true });
 
 function getEventImageUrl(filename: string) {
-  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
   if (typeof filename !== 'string' || !filename) {
     return undefined;
   }

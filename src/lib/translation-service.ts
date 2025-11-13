@@ -1,4 +1,4 @@
-const LIBRETRANSLATE_API = 'http://localhost:5000/translate';
+const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
 
 // In-memory cache
 const cache = new Map<string, string>();

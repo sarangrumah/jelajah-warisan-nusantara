@@ -29,7 +29,6 @@ export const CSP_POLICY = {
   ],
   'connect-src': [
     "'self'",
-    "https://localhost:3000",
     "https://museumcagarbudaya.kemenbud.go.id",
   ],
   'frame-ancestors': ["'none'"],

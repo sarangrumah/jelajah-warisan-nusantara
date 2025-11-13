@@ -52,7 +52,7 @@ export const MediaGalleryUpload = ({
     };
 
     try {
-      const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
+      const base = typeof window !== 'undefined' ? window.location.origin : import.meta.env.VITE_API_URL || '';
       const parsed = new URL(url, base);
       const segments = parsed.pathname.split('/').filter(Boolean);
       const fileName = segments.pop() || '';

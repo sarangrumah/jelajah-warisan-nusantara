@@ -19,7 +19,7 @@ const Sites = () => {
   const getCollection = async () => {
     setGlobalLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/collections`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/collections`);
       const data = await response.json();
       setCollections(data);
     } catch (error) {
