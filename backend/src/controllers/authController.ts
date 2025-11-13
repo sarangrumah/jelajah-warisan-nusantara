@@ -367,15 +367,15 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
       const userId = userResult.rows[0].id;
 
-      // Check if there's an active reset token for this user (within last 1 hour)
+      // Check if there's an active reset token for this user (within last 3 minutes)
       const existingTokenResult = await query(
-        'SELECT created_at FROM password_reset_tokens WHERE user_id = $1 AND created_at > NOW() - INTERVAL \'1 hour\' AND used = false',
+        'SELECT created_at FROM password_reset_tokens WHERE user_id = $1 AND created_at > NOW() - INTERVAL \'3 minutes\' AND used = false',
         [userId]
       );
 
       if (existingTokenResult.rows.length > 0) {
         return res.status(429).json({
-          error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 1 jam.'
+          error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 3 menit.'
         });
       }
 
