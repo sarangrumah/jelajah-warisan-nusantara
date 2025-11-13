@@ -154,7 +154,7 @@ app.delete('/api/translations/:id', async (req, res) => {
 });
 
 // --- Start server ---
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Translation API running on port ${PORT}`);
 });
