@@ -60,7 +60,7 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://museumcagarbudaya.kemenbud.go.id';
     const resetUrl = `${frontendUrl}/auth/reset-password/${resetToken}`;
 
     const subject = 'Reset Password - Museum dan Cagar Budaya';
