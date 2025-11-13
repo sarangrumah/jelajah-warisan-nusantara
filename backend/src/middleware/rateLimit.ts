@@ -2,10 +2,10 @@ import rateLimit from 'express-rate-limit';
 
 // Rate limiter for password reset requests
 export const passwordResetLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour window
-  max: 3, // limit each IP to 3 password reset requests per hour
+  windowMs: 3 * 60 * 1000, // 3 minutes window
+  max: 3, // limit each IP to 3 password reset requests per 3 minutes
   message: {
-    error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 1 jam.'
+    error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 3 menit.'
   },
   standardHeaders: true,
   legacyHeaders: false,
