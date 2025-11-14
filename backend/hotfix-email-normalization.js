@@ -12,9 +12,9 @@ const mixedCaseEmail = 'Sarangrumah.Dev@Gmail.com';
 
 console.log('📧 Testing email normalization consistency:\n');
 
-// Test signInValidation (with normalizeEmail)
+// Test signInValidation (with normalizeEmail preserving dots)
 const signInValidation = [
-  body('email').isEmail().normalizeEmail()
+  body('email').isEmail().normalizeEmail({ gmail_remove_dots: false })
 ];
 
 const signInReq = { body: { email: mixedCaseEmail } };
@@ -28,9 +28,9 @@ Promise.all(signInValidation.map(validation => validation.run(signInReq)))
       console.log(`❌ SignIn: Validation failed`);
     }
     
-    // Test forgotPasswordValidation (with normalizeEmail - after our fix)
+    // Test forgotPasswordValidation (with normalizeEmail preserving dots - after our fix)
     const forgotPasswordValidation = [
-      body('email').isEmail().normalizeEmail()
+      body('email').isEmail().normalizeEmail({ gmail_remove_dots: false })
     ];
     
     const forgotReq = { body: { email: mixedCaseEmail } };

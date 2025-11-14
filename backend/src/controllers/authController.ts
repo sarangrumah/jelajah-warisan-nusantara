@@ -15,7 +15,7 @@ export const signUpValidation = [
 ];
 
 export const signInValidation = [
-  body('email').isEmail().normalizeEmail(),
+  body('email').isEmail().normalizeEmail({ gmail_remove_dots: false }),
   body('password').isLength({ min: 1 })
 ];
 
@@ -348,7 +348,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
 
 // Password reset validation
 export const forgotPasswordValidation = [
-  body('email').isEmail().normalizeEmail()
+  body('email').isEmail().normalizeEmail({ gmail_remove_dots: false })
 ];
 
 export const resetPasswordValidation = [
