@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ interface MerchandiseBannerProps {
 }
 
 const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) => {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasSnappedRef = useRef(false);
 
@@ -197,7 +199,7 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
                       size="lg"
                       className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                     >
-                      Lihat Detail
+                      {t('merchandise.viewDetails')}
                     </Button>
                   </Link>
                   <Button
@@ -209,7 +211,7 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
                       window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
                     }}
                   >
-                    Beli Sekarang
+                    {t('merchandise.buyNow')}
                   </Button>
                 </div>
               </div>

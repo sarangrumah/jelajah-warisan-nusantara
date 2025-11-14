@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Search, Filter, ShoppingCart, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,6 +39,7 @@ interface MerchandiseCategory {
 }
 
 const MerchandiseProductList = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState<MerchandiseProduct[]>([]);
   const [categories, setCategories] = useState<MerchandiseCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,9 +140,9 @@ const MerchandiseProductList = () => {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4">Merchandise Collection</h2>
+        <h2 className="text-3xl font-bold mb-4">{t('merchandise.title')}</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Temukan berbagai merchandise menarik dari museum kami. Setiap pembelian mendukung pelestarian warisan budaya.
+          {t('merchandise.subtitle')}
         </p>
       </div>
 
@@ -150,7 +152,7 @@ const MerchandiseProductList = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Cari produk..."
+              placeholder={t('merchandise.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -162,10 +164,10 @@ const MerchandiseProductList = () => {
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-[180px]">
               <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Semua Kategori" />
+              <SelectValue placeholder={t('merchandise.allCategories')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Kategori</SelectItem>
+              <SelectItem value="all">{t('merchandise.allCategories')}</SelectItem>
               {categories
                 .filter(category => category.is_published)
                 .map(category => (
@@ -178,12 +180,12 @@ const MerchandiseProductList = () => {
 
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Urutkan" />
+              <SelectValue placeholder={t('merchandise.sortBy')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="name">Nama A-Z</SelectItem>
-              <SelectItem value="price-low">Harga Terendah</SelectItem>
-              <SelectItem value="price-high">Harga Tertinggi</SelectItem>
+              <SelectItem value="name">{t('merchandise.sortByName')}</SelectItem>
+              <SelectItem value="price-low">{t('merchandise.sortByPriceLow')}</SelectItem>
+              <SelectItem value="price-high">{t('merchandise.sortByPriceHigh')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -193,19 +195,19 @@ const MerchandiseProductList = () => {
       {filteredAndSortedProducts.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-muted-foreground mb-4">
-            {searchQuery || selectedCategory !== 'all' 
-              ? 'Tidak ada produk yang sesuai dengan filter Anda.' 
-              : 'Belum ada produk merchandise yang tersedia.'}
+            {searchQuery || selectedCategory !== 'all'
+              ? t('merchandise.noResults')
+              : t('merchandise.noProducts')}
           </div>
           {(searchQuery || selectedCategory !== 'all') && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCategory('all');
               }}
             >
-              Reset Filter
+              {t('merchandise.resetFilter')}
             </Button>
           )}
         </div>
@@ -260,7 +262,7 @@ const MerchandiseProductList = () => {
                   >
                     <Link to={`/merchandise/${product.id}`}>
                       <Eye className="h-4 w-4 mr-2" />
-                      Detail
+                      {t('merchandise.viewDetails')}
                     </Link>
                   </Button>
                   <Button 
@@ -269,7 +271,7 @@ const MerchandiseProductList = () => {
                     onClick={() => handleBuyClick(product)}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
-                    Beli
+                    {t('merchandise.buy')}
                   </Button>
                 </CardFooter>
               </Card>
@@ -280,7 +282,10 @@ const MerchandiseProductList = () => {
 
       {/* Results Count */}
       <div className="text-center text-muted-foreground">
-        Menampilkan {filteredAndSortedProducts.length} dari {products.filter(p => p.is_published && p.is_approved && !p.is_rejected).length} produk
+        {t('merchandise.showingResults', {
+          count: filteredAndSortedProducts.length,
+          total: products.filter(p => p.is_published && p.is_approved && !p.is_rejected).length
+        })}
       </div>
     </div>
   );

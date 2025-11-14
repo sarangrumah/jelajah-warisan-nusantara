@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_LOAD_ONLY=id,en
+      - LT_THREADS=4
+      - LT_DISABLE_WEB_UI=false
+    volumes:
+      - libretranslate_cache:/home/libretranslate/.cache
+    restart: unless-stopped
+
+volumes:
+  libretranslate_cache:

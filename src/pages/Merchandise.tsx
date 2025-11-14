@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,6 +8,7 @@ import MerchandiseProductList from '@/components/MerchandiseProductList';
 import SectionWrapper from '@/components/SectionWrapper';
 
 const Merchandise = () => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   
   useEffect(() => {

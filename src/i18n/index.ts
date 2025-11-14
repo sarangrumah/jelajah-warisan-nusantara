@@ -1155,6 +1155,83 @@ export const resources = {
           title: "Berhasil",
           message: "Pesan Anda telah berhasil dikirim. Kami akan membalas segera."
         }
+      },
+      // Merchandise Section
+      merchandise: {
+        title: "Koleksi Merchandise",
+        subtitle: "Temukan berbagai merchandise menarik dari museum kami. Setiap pembelian mendukung pelestarian warisan budaya.",
+        searchPlaceholder: "Cari produk...",
+        allCategories: "Semua Kategori",
+        sortBy: "Urutkan",
+        sortByName: "Nama A-Z",
+        sortByPriceLow: "Harga Terendah",
+        sortByPriceHigh: "Harga Tertinggi",
+        noResults: "Tidak ada produk yang sesuai dengan filter Anda.",
+        noProducts: "Belum ada produk merchandise yang tersedia.",
+        resetFilter: "Reset Filter",
+        viewDetails: "Lihat Detail",
+        buy: "Beli",
+        buyNow: "Beli Sekarang",
+        backToMerchandise: "Kembali ke Merchandise",
+        productNotFound: "Produk Tidak Ditemukan",
+        productNotFoundMessage: "Produk yang Anda cari tidak ditemukan atau tidak tersedia.",
+        productInfo: "Informasi Produk",
+        category: "Kategori",
+        status: "Status",
+        available: "Tersedia",
+        awaitingApproval: "Menunggu Persetujuan",
+        contactSeller: "Hubungi Penjual",
+        contactSellerMessage: "Untuk informasi lebih lanjut atau pertanyaan tentang produk ini, silakan hubungi melalui WhatsApp di nomor {{number}}",
+        purchaseInfo: "Informasi Pembelian",
+        purchaseInfoItems: [
+          "Produk ini dapat dibeli langsung melalui WhatsApp",
+          "Pastikan untuk menanyakan ketersediaan stok sebelum memesan",
+          "Informasi pengiriman dan pembayaran akan dibahas langsung dengan penjual",
+          "Produk asli dan berkualitas dari museum kami"
+        ],
+        showingResults: "Menampilkan {{count}} dari {{total}} produk",
+        noCategory: "Tidak ada kategori"
+      }
+    }
+  },
+  en: {
+    translation: {
+      // ... existing English translations ...
+      // Merchandise Section
+      merchandise: {
+        title: "Merchandise Collection",
+        subtitle: "Discover various interesting merchandise from our museum. Every purchase supports cultural heritage preservation.",
+        searchPlaceholder: "Search products...",
+        allCategories: "All Categories",
+        sortBy: "Sort By",
+        sortByName: "Name A-Z",
+        sortByPriceLow: "Price Low to High",
+        sortByPriceHigh: "Price High to Low",
+        noResults: "No products match your filters.",
+        noProducts: "No merchandise products available yet.",
+        resetFilter: "Reset Filter",
+        viewDetails: "View Details",
+        buy: "Buy",
+        buyNow: "Buy Now",
+        backToMerchandise: "Back to Merchandise",
+        productNotFound: "Product Not Found",
+        productNotFoundMessage: "The product you're looking for was not found or is not available.",
+        productInfo: "Product Information",
+        category: "Category",
+        status: "Status",
+        available: "Available",
+        awaitingApproval: "Awaiting Approval",
+        contactSeller: "Contact Seller",
+        contactSellerMessage: "For more information or questions about this product, please contact via WhatsApp at number {{number}}",
+        purchaseInfo: "Purchase Information",
+        purchaseInfoItems: [
+          "This product can be purchased directly via WhatsApp",
+          "Make sure to check stock availability before ordering",
+          "Shipping and payment information will be discussed directly with the seller",
+          "Authentic and quality products from our museum"
+        ],
+        showingResults: "Showing {{count}} of {{total}} products",
+        noCategory: "No category"
       }
     }
   }

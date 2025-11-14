@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ShoppingCart, Package, Tag, Info } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -31,6 +32,7 @@ interface MerchandiseProduct {
 }
 
 const MerchandiseDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<MerchandiseProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -96,14 +98,14 @@ const MerchandiseDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">Produk Tidak Ditemukan</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('merchandise.productNotFound')}</h1>
           <p className="text-muted-foreground mb-8">
-            Produk yang Anda cari tidak ditemukan atau tidak tersedia.
+            {t('merchandise.productNotFoundMessage')}
           </p>
           <Button asChild>
             <Link to="/merchandise">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Kembali ke Merchandise
+              {t('merchandise.backToMerchandise')}
             </Link>
           </Button>
         </div>
@@ -189,22 +191,22 @@ const MerchandiseDetail = () => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
-                size="lg" 
+                size="lg"
                 className="flex-1"
                 onClick={handleBuyClick}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Beli Sekarang
+                {t('merchandise.buyNow')}
               </Button>
               <Button 
                 variant="outline" 
-                size="lg" 
+                size="lg"
                 className="flex-1"
                 asChild
               >
                 <Link to="/merchandise">
                   <ArrowLeft className="w-5 h-5 mr-2" />
-                  Kembali
+                  {t('merchandise.backToMerchandise')}
                 </Link>
               </Button>
             </div>
@@ -214,7 +216,7 @@ const MerchandiseDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Info className="w-5 h-5" />
-                  Informasi Produk
+                  {t('merchandise.productInfo')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -231,9 +233,9 @@ const MerchandiseDetail = () => {
                   <div className="flex items-center gap-3">
                     <Package className="text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">Kategori</p>
+                      <p className="font-semibold">{t('merchandise.category')}</p>
                       <p className="text-sm text-muted-foreground">
-                        {product.category?.name || 'Tidak ada kategori'}
+                        {product.category?.name || t('merchandise.noCategory')}
                       </p>
                     </div>
                   </div>
@@ -241,9 +243,9 @@ const MerchandiseDetail = () => {
                   <div className="flex items-center gap-3">
                     <Tag className="text-primary" size={20} />
                     <div>
-                      <p className="font-semibold">Status</p>
+                      <p className="font-semibold">{t('merchandise.status')}</p>
                       <p className="text-sm text-muted-foreground">
-                        {product.is_approved ? 'Tersedia' : 'Menunggu Persetujuan'}
+                        {product.is_approved ? t('merchandise.available') : t('merchandise.awaitingApproval')}
                       </p>
                     </div>
                   </div>
@@ -251,13 +253,9 @@ const MerchandiseDetail = () => {
 
                 {product.whatsapp_number && (
                   <div className="bg-muted/50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Hubungi Penjual</h4>
+                    <h4 className="font-semibold mb-2">{t('merchandise.contactSeller')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      Untuk informasi lebih lanjut atau pertanyaan tentang produk ini, 
-                      silakan hubungi melalui WhatsApp di nomor{' '}
-                      <span className="font-medium text-foreground">
-                        {product.whatsapp_number}
-                      </span>
+                      {t('merchandise.contactSellerMessage', { number: product.whatsapp_number })}
                     </p>
                   </div>
                 )}
@@ -267,13 +265,12 @@ const MerchandiseDetail = () => {
             {/* Additional Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Informasi Pembelian</CardTitle>
+                <CardTitle>{t('merchandise.purchaseInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>• Produk ini dapat dibeli langsung melalui WhatsApp</p>
-                <p>• Pastikan untuk menanyakan ketersediaan stok sebelum memesan</p>
-                <p>• Informasi pengiriman dan pembayaran akan dibahas langsung dengan penjual</p>
-                <p>• Produk asli dan berkualitas dari museum kami</p>
+                {t('merchandise.purchaseInfoItems', { returnObjects: true }).map((item: string, index: number) => (
+                  <p key={index}>• {item}</p>
+                ))}
               </CardContent>
             </Card>
           </div>
