@@ -1,7 +1,7 @@
 import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslationManager } from '@/contexts/TranslationContext';
-import { translateText } from '@/lib/translation-service';
+import { optimizedTranslationService } from '@/lib/optimized-translation-service';
 
 /**
  * A hook to dynamically translate a given string.
@@ -43,7 +43,7 @@ export const useTranslate = (sourceText: string) => {
       setLoading(true);
       setTranslating(componentId, true);
 
-      const result = await translateText({
+      const result = await optimizedTranslationService.translateText({
         text: sourceText,
         source: 'id',
         target: targetLanguage,

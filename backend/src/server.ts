@@ -14,6 +14,7 @@ import uploadRoutes from './routes/upload';
 import usersRoutes from './routes/users';
 import activityLogRoutes from './routes/activityLog';
 import translationCacheRoutes from './routes/translationCache';
+import translateOptimizedRoutes from './routes/translateOptimized';
 
 // Import translation utilities
 import { warmUpCache, getCacheStats, clearTranslationCache } from './middleware/translateResponse';
@@ -137,6 +138,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/activity-log', activityLogRoutes);
 app.use('/api/translation-cache', translationCacheRoutes);
+app.use('/api/translate-optimized', translateOptimizedRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
