@@ -190,9 +190,6 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
                 </p>
               )}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-4">
-                  {formatPrice(currentSlideObj.price)}
-                </div>
                 <div className="flex gap-4">
                   <Link to={`/merchandise/${currentSlideObj.id}`}>
                     <Button

@@ -120,19 +120,6 @@ const MerchandiseDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Breadcrumb */}
-      <section className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/merchandise" className="hover:text-foreground transition-colors">
-              Merchandise
-            </Link>
-            <span>/</span>
-            <span className="text-foreground">{product.name}</span>
-          </div>
-        </div>
-      </section>
-
       {/* Content */}
       <section className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
