@@ -114,7 +114,7 @@ export const signIn = async (req: Request, res: Response) => {
     const userResult = await query(
       `SELECT u.id, u.email, u.password_hash, p.display_name,
               COALESCE(
-                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL), 
+                array_agg(ur.role) FILTER (WHERE ur.role IS NOT NULL),
                 ARRAY[]::app_role[]
               ) as roles
        FROM users u
@@ -135,11 +135,24 @@ export const signIn = async (req: Request, res: Response) => {
     const user = userResult.rows[0];
     console.log('👤 Found user:', { id: user.id, email: user.email, hasPassword: !!user.password_hash });
     
+    // Check if password_hash exists
+    if (!user.password_hash) {
+      console.log('❌ No password hash found for user:', email);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     console.log('🔑 Password validation result:', isValidPassword);
 
     if (!isValidPassword) {
       console.log('❌ Invalid password for user:', email);
+      console.log('🔍 Debug info:', {
+        email: email,
+        userId: user.id,
+        passwordLength: password.length,
+        passwordHashLength: user.password_hash.length,
+        passwordHashStartsWith: user.password_hash.substring(0, 10) + '...'
+      });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -179,7 +192,7 @@ export const signIn = async (req: Request, res: Response) => {
       token
     });
   } catch (error) {
-    console.error('Sign in error:', error);
+    console.error('❌ Sign in error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -353,12 +366,14 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
 
     const { email } = req.body;
+    console.log(`🔐 Password reset requested for: ${email}`);
 
     try {
       // Check if user exists
       const userResult = await query('SELECT id FROM users WHERE email = $1', [email]);
       
       if (userResult.rows.length === 0) {
+        console.log(`❌ User not found for password reset: ${email}`);
         // Don't reveal if user exists or not for security
         return res.json({
           message: 'If an account with that email exists, a password reset link has been sent.'
@@ -366,6 +381,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       }
 
       const userId = userResult.rows[0].id;
+      console.log(`✅ User found for password reset: ${email} (ID: ${userId})`);
 
       // Check if there's an active reset token for this user (within last 3 minutes)
       const existingTokenResult = await query(
@@ -374,6 +390,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       );
 
       if (existingTokenResult.rows.length > 0) {
+        console.log(`⚠️ Rate limit hit for password reset: ${email}`);
         return res.status(429).json({
           error: 'Terlalu banyak permintaan reset password. Silakan coba lagi dalam 3 menit.'
         });
@@ -381,10 +398,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
       // Generate secure reset token
       const resetToken = crypto.randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now (extended from 1 hour)
 
       // Delete any expired reset tokens for this user
-      await query('DELETE FROM password_reset_tokens WHERE user_id = $1 AND expires_at < NOW()', [userId]);
+      const deleteResult = await query('DELETE FROM password_reset_tokens WHERE user_id = $1 AND expires_at < NOW()', [userId]);
+      console.log(`🗑️ Deleted ${deleteResult.rowCount} expired tokens for user: ${userId}`);
 
       // Store new reset token
       await query(
@@ -392,26 +410,29 @@ export const forgotPassword = async (req: Request, res: Response) => {
         [userId, resetToken, expiresAt]
       );
 
+      console.log(`✅ Password reset token created for user: ${userId}, expires: ${expiresAt}`);
+
       // Send password reset email
       const emailSent = await emailService.sendPasswordResetEmail(email, resetToken);
 
       if (!emailSent) {
-        console.error('Failed to send password reset email to:', email);
+        console.error('❌ Failed to send password reset email to:', email);
         return res.status(500).json({ error: 'Failed to send password reset email. Please try again later.' });
       }
 
+      console.log(`✅ Password reset email sent successfully to: ${email}`);
       res.json({
         message: 'If an account with that email exists, a password reset link has been sent.'
       });
     } catch (dbError) {
-      console.error('Database error in forgot password:', dbError);
+      console.error('❌ Database error in forgot password:', dbError);
       // Return success message even if database fails to prevent user enumeration
       return res.json({
         message: 'If an account with that email exists, a password reset link has been sent.'
       });
     }
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('❌ Forgot password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -449,6 +470,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     const { token, new_password } = req.body;
+    console.log(`🔐 Password reset attempt with token: ${token.substring(0, 10)}...`);
 
     try {
       // Validate token
@@ -458,50 +480,60 @@ export const resetPassword = async (req: Request, res: Response) => {
       );
 
       if (tokenResult.rows.length === 0) {
+        console.log(`❌ Invalid or expired reset token: ${token.substring(0, 10)}...`);
         return res.status(400).json({ error: 'Invalid or expired reset token' });
       }
 
       const userId = tokenResult.rows[0].user_id;
+      console.log(`✅ Valid reset token for user: ${userId}`);
 
       // Check if new password is same as current password
-      const userResult = await query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+      const userResult = await query('SELECT email, password_hash FROM users WHERE id = $1', [userId]);
       
       if (userResult.rows.length === 0) {
+        console.log(`❌ User not found for password reset: ${userId}`);
         return res.status(400).json({ error: 'User not found' });
       }
 
-      const { password_hash } = userResult.rows[0];
+      const { email, password_hash } = userResult.rows[0];
+      console.log(`✅ User found for password reset: ${email}`);
+
       const isSamePassword = await bcrypt.compare(new_password, password_hash);
       
       if (isSamePassword) {
+        console.log(`❌ New password same as current for user: ${email}`);
         return res.status(400).json({ error: 'New password must be different from current password' });
       }
 
       // Hash new password
       const newHash = await bcrypt.hash(new_password, 12);
+      console.log(`✅ New password hashed for user: ${email}`);
 
       // Update password
       await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, userId]);
+      console.log(`✅ Password updated in database for user: ${email}`);
 
       // Mark token as used
       await query('UPDATE password_reset_tokens SET used = true WHERE token = $1', [token]);
-
-      // Get user email for notification
-      const emailResult = await query('SELECT email FROM users WHERE id = $1', [userId]);
-      const userEmail = emailResult.rows[0]?.email;
+      console.log(`✅ Reset token marked as used: ${token.substring(0, 10)}...`);
 
       // Send success notification email
-      if (userEmail) {
-        await emailService.sendPasswordResetSuccessEmail(userEmail);
+      const emailSent = await emailService.sendPasswordResetSuccessEmail(email);
+      
+      if (emailSent) {
+        console.log(`✅ Password reset success email sent to: ${email}`);
+      } else {
+        console.log(`⚠️ Failed to send password reset success email to: ${email}`);
       }
 
+      console.log(`✅ Password reset completed successfully for user: ${email}`);
       res.json({ message: 'Password reset successfully' });
     } catch (dbError) {
-      console.error('Database error in resetPassword:', dbError);
+      console.error('❌ Database error in resetPassword:', dbError);
       return res.status(500).json({ error: 'Database connection error' });
     }
   } catch (error) {
-    console.error('Reset password error:', error);
+    console.error('❌ Reset password error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
