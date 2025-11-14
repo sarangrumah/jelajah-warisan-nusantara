@@ -284,6 +284,19 @@ export class OptimizedTranslationService {
   }
 
   /**
+   * Single text translation (compatibility method for existing code)
+   */
+  async translateText({ text, source, target }: { text: string; source: string; target: string }): Promise<string> {
+    const result = await this.translateBatch({
+      texts: [text],
+      source,
+      target
+    });
+    
+    return result.translations[0] || text;
+  }
+
+  /**
    * Pre-warm cache with common translations
    */
   async preWarmCache(commonTexts: string[]): Promise<void> {
