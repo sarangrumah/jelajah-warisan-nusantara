@@ -26,7 +26,8 @@ export const resources = {
         sop: "Standard Operating Procedures",
         pemanfaatanAset: "Asset Utilization",
         // peraturan: "Arrangement",
-        admin: "Admin"
+        admin: "Admin",
+        merchandise: "Merchandise"
       },
       // Hero Section
       hero: {
@@ -603,7 +604,8 @@ export const resources = {
         sop: "Prosedur Operasional Standar",
         pemanfaatanAset: "Pemanfaatan Aset",
         // peraturan: "Peraturan",
-        admin: "Admin"
+        admin: "Admin",
+        merchandise: "Merchandise"
       },
       // Pemanfaatan Aset Section
       pemanfaatanAset: {

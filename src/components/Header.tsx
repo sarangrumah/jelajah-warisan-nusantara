@@ -49,8 +49,8 @@ const Header = () => {
     },
     // { name: t('nav.koleksi'), href: '/collection' },
     { name: t('nav.agenda'), href: '/agenda' },
-    { 
-      name: t('nav.tentangKami'), 
+    {
+      name: t('nav.tentangKami'),
       href: '/tentang-kami',
       subItems: [
         // { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
@@ -59,6 +59,7 @@ const Header = () => {
         { name: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
         { name: t('nav.mediaPublikasi'), href: '/media-publikasi' },
         { name: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
+        { name: t('nav.merchandise'), href: '/merchandise' },
         // { name: t('nav.peraturan'), href: '/peraturan' },
         { name: t('nav.hubungiKami'), href: '/hubungi-kami' },
         { name: t('nav.career'), href: '/karir' },
