@@ -348,7 +348,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
 
 // Password reset validation
 export const forgotPasswordValidation = [
-  body('email').isEmail()
+  body('email').isEmail().normalizeEmail()
 ];
 
 export const resetPasswordValidation = [
@@ -366,7 +366,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
 
     const { email } = req.body;
-    console.log(`🔐 Password reset requested for: ${email}`);
+    console.log(`🔐 Password reset requested for: ${email} (normalized)`);
 
     try {
       // Check if user exists
