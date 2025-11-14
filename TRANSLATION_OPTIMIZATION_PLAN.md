@@ -1,147 +1,242 @@
 # Translation Performance Optimization Plan
 
-## Current Performance Issues
+## Current Issues Identified
 
-**Problem**: Slow API responses for dynamic content translation using LibreTranslate
-
-**Root Causes Identified**:
-1. **Individual API Calls**: Each text translation makes a separate HTTP request to LibreTranslate
-2. **No Batch Processing**: Multiple texts are translated sequentially instead of in batches
-3. **Limited Caching**: Only basic in-memory caching with no persistent storage
-4. **No Translation Memory**: Same texts are re-translated repeatedly
-5. **Blocking Operations**: Translations block API responses
-6. **No Pre-translation**: Common content is not pre-translated
+1. **Individual API Calls**: Each text translation makes a separate LibreTranslate API call
+2. **No Batch Processing**: Multiple translations trigger multiple sequential requests
+3. **Limited Caching**: Only in-memory cache in middleware, no persistent caching
+4. **No Translation Memory**: Previous translations aren't reused effectively
+5. **Blocking Operations**: Translation happens synchronously during API responses
 
 ## Optimization Strategy
 
-### 1. Batch Translation API Endpoint
-- Implement batch translation endpoint that accepts multiple texts in one request
-- Reduce HTTP overhead from multiple individual requests
-- Leverage LibreTranslate's batch processing capability
+### Phase 1: Immediate Performance Improvements
 
-### 2. Enhanced Content Translation Service
-- Add intelligent batching of translation requests
-- Implement request deduplication for identical texts
-- Add concurrent processing for multiple translations
-- Implement smart retry logic with exponential backoff
+#### 1. Batch Translation API Endpoint
+Create a batch translation endpoint that accepts multiple texts in one request:
 
-### 3. Multi-Layer Caching Strategy
-```mermaid
-graph TD
-    A[Translation Request] --> B{Memory Cache}
-    B -->|Hit| C[Return Translation]
-    B -->|Miss| D{Database Cache}
-    D -->|Hit| E[Return & Warm Memory]
-    D -->|Miss| F{LibreTranslate}
-    F --> G[Store in Both Caches]
-    G --> C
-```
-
-### 4. Redis Caching Layer
-- Add Redis for fast in-memory caching
-- Implement TTL (Time To Live) for cache entries
-- Cache frequently translated content
-- Implement cache warming for common texts
-
-### 5. Translation Queue System
-- Implement non-blocking translation queue
-- Use Redis/BullMQ for job processing
-- Return immediate response with translation status
-- Process translations in background
-
-### 6. Pre-translation System
-- Identify common content patterns
-- Pre-translate frequently accessed content
-- Warm cache during application startup
-- Schedule periodic cache warming
-
-### 7. Translation Memory
-- Store previously translated texts
-- Reuse translations for identical content
-- Implement fuzzy matching for similar texts
-- Reduce API calls for repeated content
-
-### 8. Database Optimization
-- Add composite indexes for translation lookups
-- Implement materialized views for common queries
-- Optimize translation table structure
-- Add database connection pooling
-
-### 9. Smart Retry Logic
-- Implement exponential backoff for failed translations
-- Add circuit breaker pattern
-- Monitor translation service health
-- Fallback to original text on repeated failures
-
-### 10. Performance Monitoring
-- Add translation response time metrics
-- Track cache hit/miss ratios
-- Monitor LibreTranslate API health
-- Set up alerts for performance degradation
-
-## Implementation Priority
-
-### Phase 1: Immediate Wins (High Impact, Low Effort)
-1. **Batch Translation API** - Reduce HTTP overhead
-2. **Enhanced Caching** - Improve cache hit rates
-3. **Translation Memory** - Reuse existing translations
-
-### Phase 2: Medium Term Improvements
-4. **Redis Integration** - Add fast in-memory cache
-5. **Database Optimization** - Improve query performance
-6. **Smart Retry Logic** - Handle failures gracefully
-
-### Phase 3: Advanced Optimizations
-7. **Translation Queue** - Non-blocking operations
-8. **Pre-translation System** - Proactive caching
-9. **Performance Monitoring** - Continuous optimization
-
-## Expected Performance Improvements
-
-| Optimization | Expected Speedup | Impact |
-|-------------|-----------------|---------|
-| Batch Translation | 5-10x | High |
-| Enhanced Caching | 3-5x | High |
-| Translation Memory | 2-3x | Medium |
-| Redis Integration | 2-3x | Medium |
-| Database Optimization | 1.5-2x | Low |
-| Queue System | 1.5x | Medium |
-
-## Technical Implementation Details
-
-### Batch Translation Endpoint
 ```typescript
 POST /api/translate/batch
 {
   "texts": ["text1", "text2", "text3"],
-  "targetLang": "en",
-  "sourceLang": "id"
+  "source": "id",
+  "target": "en"
 }
 ```
 
-### Enhanced Caching Strategy
-- **Memory Cache**: Short-term (5 minutes)
-- **Redis Cache**: Medium-term (1 hour)
-- **Database Cache**: Long-term (24 hours)
-- **Translation Memory**: Permanent
+#### 2. Enhanced Caching Layer
+- **Redis Cache**: Store frequently translated content
+- **Database Cache**: Persistent storage for translations
+- **Memory Cache**: Fast in-memory cache for hot translations
 
-### Monitoring Metrics
-- Translation response times
-- Cache hit rates
-- API success rates
-- Queue processing times
+#### 3. Translation Memory System
+- Store previously translated texts in database
+- Reuse translations for identical texts
+- Track translation quality and usage frequency
+
+### Phase 2: Advanced Optimizations
+
+#### 4. Pre-translation System
+- Pre-translate common content during build/deployment
+- Generate static translation files for UI text
+- Cache database content translations
+
+#### 5. Smart Retry Logic
+- Exponential backoff for failed translations
+- Fallback to cached translations
+- Graceful degradation when LibreTranslate is slow
+
+#### 6. Performance Monitoring
+- Track translation response times
+- Monitor cache hit rates
+- Alert on slow translations
+
+## Implementation Plan
+
+### 1. Enhanced Translation Service
+
+```typescript
+// src/lib/optimized-translation-service.ts
+interface BatchTranslationRequest {
+  texts: string[];
+  source: string;
+  target: string;
+}
+
+interface BatchTranslationResponse {
+  translations: string[];
+  cacheHits: number;
+  apiCalls: number;
+}
+
+class OptimizedTranslationService {
+  private cache: Map<string, string>;
+  private redisClient: Redis;
+  private batchQueue: Map<string, Promise<string[]>>;
+  
+  async translateBatch(request: BatchTranslationRequest): Promise<BatchTranslationResponse> {
+    // Check cache first
+    // Batch process uncached texts
+    // Store results in cache
+  }
+}
+```
+
+### 2. Backend Batch Translation Endpoint
+
+```typescript
+// backend/src/routes/translateOptimized.ts
+router.post('/batch', async (req, res) => {
+  const { texts, source, target } = req.body;
+  
+  try {
+    const result = await translationService.translateBatch(texts, source, target);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Translation failed' });
+  }
+});
+```
+
+### 3. Enhanced Frontend Hook
+
+```typescript
+// src/hooks/useOptimizedTranslate.tsx
+export const useOptimizedTranslate = (texts: string[]) => {
+  const { language } = useLanguage();
+  const [translations, setTranslations] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const translateBatch = async () => {
+      setLoading(true);
+      try {
+        const result = await optimizedTranslationService.translateBatch({
+          texts,
+          source: 'id',
+          target: language
+        });
+        setTranslations(result.translations);
+      } catch (error) {
+        // Fallback to individual translations
+        const fallbackTranslations = await Promise.all(
+          texts.map(text => translateText({ text, source: 'id', target: language }))
+        );
+        setTranslations(fallbackTranslations);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (texts.length > 0 && language !== 'id') {
+      translateBatch();
+    } else {
+      setTranslations(texts);
+    }
+  }, [texts, language]);
+
+  return { translations, loading };
+};
+```
+
+### 4. Database Schema for Translation Memory
+
+```sql
+CREATE TABLE translation_memory (
+  id SERIAL PRIMARY KEY,
+  source_text TEXT NOT NULL,
+  source_language VARCHAR(10) NOT NULL DEFAULT 'id',
+  target_language VARCHAR(10) NOT NULL,
+  translated_text TEXT NOT NULL,
+  usage_count INTEGER DEFAULT 0,
+  last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(source_text, source_language, target_language)
+);
+
+CREATE INDEX idx_translation_memory_lookup 
+ON translation_memory(source_text, source_language, target_language);
+
+CREATE INDEX idx_translation_memory_usage 
+ON translation_memory(usage_count DESC, last_used DESC);
+```
+
+### 5. Redis Caching Strategy
+
+```typescript
+// Cache key format: translation:{source}:{target}:{hash}
+const CACHE_PREFIX = 'translation';
+const CACHE_TTL = 24 * 60 * 60; // 24 hours
+
+class TranslationCache {
+  async getCachedTranslation(text: string, source: string, target: string): Promise<string | null> {
+    const key = `${CACHE_PREFIX}:${source}:${target}:${this.hashText(text)}`;
+    return await this.redisClient.get(key);
+  }
+
+  async setCachedTranslation(text: string, source: string, target: string, translation: string): Promise<void> {
+    const key = `${CACHE_PREFIX}:${source}:${target}:${this.hashText(text)}`;
+    await this.redisClient.setex(key, CACHE_TTL, translation);
+  }
+
+  private hashText(text: string): string {
+    return crypto.createHash('md5').update(text).digest('hex');
+  }
+}
+```
+
+## Performance Targets
+
+- **Batch Translation**: Reduce API calls by 80% for page loads
+- **Cache Hit Rate**: Achieve 90%+ cache hit rate for common content
+- **Response Time**: Reduce translation time from 500ms+ to <100ms average
+- **Memory Usage**: Efficient caching with LRU eviction
+
+## Implementation Priority
+
+1. **High Priority** (Week 1):
+   - Batch translation endpoint
+   - Enhanced frontend translation hook
+   - Database translation memory
+
+2. **Medium Priority** (Week 2):
+   - Redis caching layer
+   - Pre-translation scripts
+   - Performance monitoring
+
+3. **Low Priority** (Week 3):
+   - Advanced retry logic
+   - Translation quality tracking
+   - Admin dashboard for translation management
+
+## Testing Strategy
+
+1. **Performance Testing**:
+   - Measure translation times before/after
+   - Test with large datasets
+   - Monitor cache effectiveness
+
+2. **Integration Testing**:
+   - Test all existing pages
+   - Verify translation accuracy
+   - Check memory usage
+
+3. **Load Testing**:
+   - Simulate multiple concurrent users
+   - Test under high load conditions
+   - Monitor API rate limiting
+
+## Expected Results
+
+- **80-90% reduction** in translation API calls
+- **Sub-100ms** translation response times
+- **Minimal impact** on page load performance
+- **Better user experience** with faster language switching
 
 ## Next Steps
 
-1. Switch to Code mode to implement batch translation endpoint
-2. Enhance content translation service with batching
-3. Add Redis caching layer
-4. Implement translation memory
-5. Add performance monitoring
-6. Test and benchmark improvements
-
-## Success Metrics
-- Translation API response time < 500ms (currently 2-5 seconds)
-- Cache hit rate > 80%
-- Reduced LibreTranslate API calls by 70%
-- Improved user experience with faster page loads
+1. Implement batch translation endpoint
+2. Create optimized translation service
+3. Update frontend components to use batch translation
+4. Add Redis caching
+5. Deploy and monitor performance

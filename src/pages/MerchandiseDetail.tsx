@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ShoppingCart, Package, Tag, Info } from 'lucide-react';
+import { useTranslate } from '@/hooks/useTranslate';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,6 +38,12 @@ const MerchandiseDetail = () => {
   const [product, setProduct] = useState<MerchandiseProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  
+  // Use useTranslate for dynamic content
+  const { translatedText: productName } = useTranslate(product?.name || '');
+  const { translatedText: productDescription } = useTranslate(product?.description || '');
+  const { translatedText: productShortDescription } = useTranslate(product?.short_description || '');
+  const { translatedText: categoryName } = useTranslate(product?.category?.name || '');
 
   useEffect(() => {
     fetchProduct();
@@ -172,18 +179,18 @@ const MerchandiseDetail = () => {
           {/* Product Details */}
           <div className="space-y-6">
             <div>
-              {product.category && (
+              {product?.category && (
                 <Badge className="mb-2" variant="secondary">
-                  {product.category.name}
+                  {categoryName || product.category.name}
                 </Badge>
               )}
-              <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+              <h1 className="text-4xl font-bold mb-2">{productName || product?.name}</h1>
               <div className="text-3xl font-bold text-primary mb-4">
                 {formatPrice(product.price)}
               </div>
-              {product.short_description && (
+              {productShortDescription && (
                 <p className="text-lg text-muted-foreground mb-6">
-                  {product.short_description}
+                  {productShortDescription}
                 </p>
               )}
             </div>
@@ -220,11 +227,11 @@ const MerchandiseDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {product.description && (
+                {productDescription && (
                   <div>
-                    <h4 className="font-semibold mb-2">Deskripsi</h4>
+                    <h4 className="font-semibold mb-2">{t('merchandise.description')}</h4>
                     <p className="text-muted-foreground leading-relaxed">
-                      {product.description}
+                      {productDescription}
                     </p>
                   </div>
                 )}
@@ -235,7 +242,7 @@ const MerchandiseDetail = () => {
                     <div>
                       <p className="font-semibold">{t('merchandise.category')}</p>
                       <p className="text-sm text-muted-foreground">
-                        {product.category?.name || t('merchandise.noCategory')}
+                        {categoryName || product?.category?.name || t('merchandise.noCategory')}
                       </p>
                     </div>
                   </div>
@@ -268,7 +275,12 @@ const MerchandiseDetail = () => {
                 <CardTitle>{t('merchandise.purchaseInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                {t('merchandise.purchaseInfoItems', { returnObjects: true }).map((item: string, index: number) => (
+                {[
+                  t('merchandise.purchaseInfoItem1'),
+                  t('merchandise.purchaseInfoItem2'),
+                  t('merchandise.purchaseInfoItem3'),
+                  t('merchandise.purchaseInfoItem4')
+                ].map((item: string, index: number) => (
                   <p key={index}>• {item}</p>
                 ))}
               </CardContent>

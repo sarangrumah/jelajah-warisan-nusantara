@@ -1,405 +1,347 @@
-# Testing and Deployment Plan for Translation Optimizations
+# Testing & Deployment Plan for Optimized Translation System
 
 ## Testing Strategy
 
-### 1. Performance Benchmarking
+### 1. Unit Testing
 
-#### 1.1 Baseline Performance Measurement
+#### Backend Service Tests
 ```typescript
-// Test script to measure current performance
-const baselineTests = [
-  {
-    name: "Single Text Translation",
-    test: async () => {
-      const start = Date.now();
-      await contentTranslationService.translateField("Sample text for translation", "en", "id");
-      return Date.now() - start;
-    }
-  },
-  {
-    name: "Multiple Texts Sequential",
-    test: async () => {
-      const texts = Array(10).fill("Sample text for translation");
-      const start = Date.now();
-      for (const text of texts) {
-        await contentTranslationService.translateField(text, "en", "id");
-      }
-      return Date.now() - start;
-    }
-  },
-  {
-    name: "Content Array Translation",
-    test: async () => {
-      const items = Array(5).fill({
-        title: "Sample title",
-        description: "Sample description for translation",
-        content: "Longer sample content that needs translation"
-      });
-      const start = Date.now();
-      await contentTranslationService.translateContentArray(
-        items, 
-        ['title', 'description', 'content'], 
-        'en', 
-        'id'
-      );
-      return Date.now() - start;
-    }
-  }
-];
-```
-
-#### 1.2 Optimized Performance Measurement
-```typescript
-// Test script to measure optimized performance
-const optimizedTests = [
-  {
-    name: "Single Text Translation (Optimized)",
-    test: async () => {
-      const start = Date.now();
-      await optimizedContentTranslationService.translateFieldWithMemory(
-        "Sample text for translation", "en", "id"
-      );
-      return Date.now() - start;
-    }
-  },
-  {
-    name: "Multiple Texts Batch",
-    test: async () => {
-      const texts = Array(10).fill("Sample text for translation");
-      const start = Date.now();
-      await optimizedContentTranslationService.translateBatchWithMemory(texts, "en", "id");
-      return Date.now() - start;
-    }
-  },
-  {
-    name: "Content Array Translation (Optimized)",
-    test: async () => {
-      const items = Array(5).fill({
-        title: "Sample title",
-        description: "Sample description for translation",
-        content: "Longer sample content that needs translation"
-      });
-      const start = Date.now();
-      await optimizedContentTranslationService.translateContentArrayOptimized(
-        items, 
-        ['title', 'description', 'content'], 
-        'en', 
-        'id'
-      );
-      return Date.now() - start;
-    }
-  }
-];
-```
-
-### 2. Functional Testing
-
-#### 2.1 Cache Hit/Miss Testing
-```typescript
-describe('Translation Cache', () => {
-  it('should cache translations in memory', async () => {
-    const text = "Test translation text";
-    
-    // First call should hit API
-    const result1 = await service.translateFieldWithMemory(text, "en", "id");
-    
-    // Second call should hit memory cache
-    const result2 = await service.translateFieldWithMemory(text, "en", "id");
-    
-    expect(result1).toEqual(result2);
-    // Verify API was only called once
+// backend/src/services/__tests__/optimizedContentTranslationService.test.ts
+describe('OptimizedContentTranslationService', () => {
+  it('should batch translate multiple texts', async () => {
+    const texts = ['Hello', 'World'];
+    const result = await service.translateBatch({ texts, source: 'en', target: 'id' });
+    expect(result.translations).toHaveLength(2);
+    expect(result.cacheHits).toBe(0);
+    expect(result.apiCalls).toBeGreaterThan(0);
   });
 
-  it('should cache translations in database', async () => {
-    const text = "Another test text";
-    
-    // Call and clear memory cache
-    await service.translateFieldWithMemory(text, "en", "id");
-    service.clearRequestMemory();
-    
-    // Should hit database cache
-    const result = await service.translateFieldWithMemory(text, "en", "id");
-    expect(result).toBeDefined();
+  it('should use cache for repeated translations', async () => {
+    const texts = ['Hello', 'World'];
+    const result1 = await service.translateBatch({ texts, source: 'en', target: 'id' });
+    const result2 = await service.translateBatch({ texts, source: 'en', target: 'id' });
+    expect(result2.cacheHits).toBe(2);
+    expect(result2.apiCalls).toBe(0);
   });
 });
 ```
 
-#### 2.2 Batch Translation Testing
+#### Frontend Hook Tests
 ```typescript
-describe('Batch Translation', () => {
-  it('should translate multiple texts in batch', async () => {
-    const texts = ["Text 1", "Text 2", "Text 3", "Text 1"]; // Duplicate text
-    
-    const results = await service.translateBatchWithMemory(texts, "en", "id");
-    
-    expect(results).toHaveLength(4);
-    expect(results[0].translatedText).toBeDefined();
-    expect(results[3].translatedText).toEqual(results[0].translatedText); // Duplicate check
-  });
-
-  it('should handle empty texts gracefully', async () => {
-    const texts = ["", "Valid text", null, undefined];
-    
-    const results = await service.translateBatchWithMemory(texts, "en", "id");
-    
-    expect(results[0].translatedText).toBe("");
-    expect(results[1].translatedText).toBeDefined();
-    expect(results[2].translatedText).toBe("");
-    expect(results[3].translatedText).toBe("");
+// src/hooks/__tests__/useOptimizedTranslate.test.tsx
+describe('useOptimizedTranslate', () => {
+  it('should batch translate texts', async () => {
+    const texts = ['Hello', 'World'];
+    const { result } = renderHook(() => useOptimizedTranslate(texts));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.translations).toHaveLength(2);
   });
 });
 ```
 
-### 3. Integration Testing
+### 2. Integration Testing
 
-#### 3.1 API Endpoint Testing
-```typescript
-describe('Translation API Endpoints', () => {
-  it('POST /api/translate/batch-optimized should return batch results', async () => {
-    const response = await request(app)
-      .post('/api/translate/batch-optimized')
-      .send({
-        texts: ["Hello world", "Good morning", "Thank you"],
-        targetLang: "en",
-        sourceLang: "id"
-      })
-      .expect(200);
+#### API Endpoint Tests
+```bash
+# Test batch translation endpoint
+curl -X POST http://localhost:3000/api/translate-optimized/batch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts": ["Hello", "World"],
+    "source": "en",
+    "target": "id"
+  }'
 
-    expect(response.body.success).toBe(true);
-    expect(response.body.results).toHaveLength(3);
-    expect(response.body.results[0].success).toBe(true);
-  });
-
-  it('should handle translation service errors gracefully', async () => {
-    // Mock LibreTranslate to be down
-    mockLibreTranslate.mockRejectedValue(new Error('Service unavailable'));
-    
-    const response = await request(app)
-      .post('/api/translate/batch-optimized')
-      .send({
-        texts: ["Test text"],
-        targetLang: "en",
-        sourceLang: "id"
-      })
-      .expect(200); // Should still return 200 with success: false
-
-    expect(response.body.success).toBe(false);
-    expect(response.body.results[0].success).toBe(false);
-  });
-});
+# Expected response:
+{
+  "translations": ["Halo", "Dunia"],
+  "cacheHits": 0,
+  "apiCalls": 2,
+  "totalTime": 500,
+  "success": true
+}
 ```
 
-## Deployment Strategy
+#### Cache Statistics Test
+```bash
+curl http://localhost:3000/api/translate-optimized/cache-stats
+```
+
+### 3. Performance Testing
+
+#### Load Testing Script
+```typescript
+// backend/src/scripts/load-test-translation.ts
+async function loadTest() {
+  const texts = Array(100).fill('Test text for translation');
+  
+  console.log('🧪 Starting load test with 100 texts...');
+  
+  const startTime = Date.now();
+  const result = await optimizedContentTranslationService.translateBatch({
+    texts,
+    source: 'id',
+    target: 'en'
+  });
+  const totalTime = Date.now() - startTime;
+  
+  console.log(`📊 Load Test Results:`);
+  console.log(`- Total texts: ${texts.length}`);
+  console.log(`- Cache hits: ${result.cacheHits}`);
+  console.log(`- API calls: ${result.apiCalls}`);
+  console.log(`- Total time: ${totalTime}ms`);
+  console.log(`- Average time per text: ${(totalTime / texts.length).toFixed(2)}ms`);
+}
+```
+
+### 4. End-to-End Testing
+
+#### Test Scenarios
+1. **Language Switching**: Switch between Indonesian and English
+2. **Page Navigation**: Navigate between different pages
+3. **Form Submission**: Submit forms with translated content
+4. **Error Handling**: Test network failures and error recovery
+
+## Deployment Steps
 
 ### Phase 1: Development Environment
 
-#### 1.1 Setup Development Branch
-```bash
-# Create feature branch
-git checkout -b feature/translation-optimization
+1. **Update Backend**
+   ```bash
+   cd backend
+   npm run build
+   npm run dev
+   ```
 
-# Install Redis for caching (if not already installed)
-docker run -d -p 6379:6379 redis:alpine
-```
+2. **Test Backend Endpoints**
+   ```bash
+   # Test batch translation
+   curl -X POST http://localhost:3000/api/translate-optimized/batch \
+     -H "Content-Type: application/json" \
+     -d '{"texts": ["Test"], "source": "id", "target": "en"}'
+   
+   # Test cache stats
+   curl http://localhost:3000/api/translate-optimized/cache-stats
+   ```
 
-#### 1.2 Environment Configuration
-```env
-# .env.development
-REDIS_URL=redis://localhost:6379
-ENABLE_TRANSLATION_OPTIMIZATIONS=true
-TRANSLATION_CACHE_TTL=3600 # 1 hour
-BATCH_TRANSLATION_ENABLED=true
-```
+3. **Update Frontend**
+   ```bash
+   npm run dev
+   ```
 
-#### 1.3 Development Testing
-```bash
-# Run performance tests
-npm run test:translation-performance
-
-# Run functional tests
-npm run test:translation-functional
-
-# Run integration tests
-npm run test:translation-integration
-```
+4. **Test Frontend Integration**
+   - Navigate to merchandise pages
+   - Switch languages
+   - Monitor network requests
 
 ### Phase 2: Staging Environment
 
-#### 2.1 Staging Deployment
-```bash
-# Merge to staging branch
-git checkout staging
-git merge feature/translation-optimization
+1. **Build and Deploy Backend**
+   ```bash
+   cd backend
+   npm run build
+   npm run start:production
+   ```
 
-# Deploy to staging
-npm run deploy:staging
-```
+2. **Update Environment Variables**
+   ```env
+   # Add to .env.production
+   VITE_API_URL=https://your-api-domain.com
+   VITE_LIBRETRANSLATE_URL=https://your-libretranslate-domain.com
+   ```
 
-#### 2.2 Staging Testing
-- Load test with realistic data volumes
-- Monitor performance metrics
-- Test cache invalidation
-- Verify circuit breaker behavior
-
-#### 2.3 Performance Monitoring Setup
-```typescript
-// Add monitoring endpoints
-app.get('/api/translation/metrics', (req, res) => {
-  res.json({
-    cacheHitRate: metricsCollector.getCacheHitRate(),
-    averageResponseTime: metricsCollector.getAverageResponseTime(),
-    errorRate: metricsCollector.getErrorRate(),
-    circuitBreakerState: translationService.getCircuitBreakerState()
-  });
-});
-```
+3. **Test Production Build**
+   ```bash
+   npm run build
+   npm run preview
+   ```
 
 ### Phase 3: Production Deployment
 
-#### 3.1 Production Deployment Plan
+1. **Database Migration**
+   ```sql
+   -- Ensure translation cache table exists
+   CREATE TABLE IF NOT EXISTS content_translation_cache (
+     source_hash VARCHAR(64) NOT NULL,
+     lang VARCHAR(10) NOT NULL,
+     translation TEXT NOT NULL,
+     usage_count INTEGER DEFAULT 0,
+     last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (source_hash, lang)
+   );
+   
+   CREATE INDEX IF NOT EXISTS idx_translation_cache_lookup 
+   ON content_translation_cache(source_hash, lang);
+   
+   CREATE INDEX IF NOT EXISTS idx_translation_cache_usage 
+   ON content_translation_cache(usage_count DESC, last_used DESC);
+   ```
+
+2. **Deploy Backend**
+   ```bash
+   # Build production
+   cd backend && npm run build
+   
+   # Start production server
+   NODE_ENV=production npm start
+   ```
+
+3. **Deploy Frontend**
+   ```bash
+   # Build frontend
+   npm run build
+   
+   # Deploy to your hosting platform
+   ```
+
+4. **Warm Up Cache**
+   ```bash
+   # Pre-translate common content
+   curl -X POST https://your-api-domain.com/api/translate-optimized/pre-translate
+   ```
+
+## Monitoring & Validation
+
+### Performance Metrics to Monitor
+
+1. **Translation Response Times**
+   - Average response time: <100ms (cached), <500ms (uncached)
+   - 95th percentile: <200ms
+
+2. **Cache Performance**
+   - Cache hit rate: >90%
+   - Memory usage: Stable
+   - Database cache size: Growing gradually
+
+3. **API Usage**
+   - LibreTranslate API calls: Reduced by 80-90%
+   - Batch request success rate: >95%
+
+### Health Checks
+
 ```bash
-# Create release branch
-git checkout main
-git merge staging
+# Health check endpoint
+curl https://your-api-domain.com/api/translate-optimized/health
 
-# Deploy with feature flag
-npm run deploy:production -- --feature-flags=translation-optimizations
-```
-
-#### 3.2 Gradual Rollout
-```typescript
-// Feature flag implementation
-const useOptimizedTranslation = process.env.ENABLE_TRANSLATION_OPTIMIZATIONS === 'true';
-
-export const getTranslationService = () => {
-  return useOptimizedTranslation 
-    ? optimizedContentTranslationService 
-    : contentTranslationService;
-};
-```
-
-#### 3.3 Monitoring and Rollback Plan
-```typescript
-// Health check endpoint
-app.get('/api/translation/health', async (req, res) => {
-  const health = {
-    status: 'healthy',
-    libreTranslate: await translationService.checkHealth(),
-    redis: await checkRedisConnection(),
-    database: await checkDatabaseConnection(),
-    cacheHitRate: metricsCollector.getCacheHitRate(),
-    lastError: metricsCollector.getLastError()
-  };
-
-  if (health.cacheHitRate < 0.5 || health.lastError) {
-    health.status = 'degraded';
-  }
-
-  res.json(health);
-});
-```
-
-## Performance Acceptance Criteria
-
-### Success Metrics
-- **Response Time**: < 500ms for batch translations (currently 2-5 seconds)
-- **Cache Hit Rate**: > 80% for repeated translations
-- **API Calls Reduction**: > 70% reduction in LibreTranslate calls
-- **Error Rate**: < 1% for translation failures
-- **Memory Usage**: < 100MB additional memory
-
-### Monitoring Dashboard
-```typescript
-// Example metrics to track
-const translationMetrics = {
-  requests: {
-    total: 0,
-    successful: 0,
-    failed: 0
+# Expected response:
+{
+  "success": true,
+  "status": "healthy",
+  "cache": {
+    "memoryEntries": 150,
+    "databaseEntries": 500,
+    "totalTranslations": 1200
   },
-  cache: {
-    memoryHits: 0,
-    databaseHits: 0,
-    requestHits: 0,
-    misses: 0
-  },
-  performance: {
-    averageResponseTime: 0,
-    p95ResponseTime: 0,
-    p99ResponseTime: 0
-  },
-  circuitBreaker: {
-    state: 'CLOSED',
-    failures: 0,
-    lastTrip: null
-  }
-};
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
 ```
+
+### Error Monitoring
+
+1. **Backend Errors**
+   - LibreTranslate connection failures
+   - Database connection issues
+   - Memory pressure warnings
+
+2. **Frontend Errors**
+   - Translation hook failures
+   - Network request timeouts
+   - Cache miss performance issues
 
 ## Rollback Plan
 
-### Automatic Rollback Triggers
-- Error rate > 5% for more than 5 minutes
-- Response time > 2 seconds for more than 10 minutes
-- Memory usage > 200MB increase
-- Cache hit rate < 50%
+### If Issues Occur
 
-### Manual Rollback Steps
-```bash
-# Revert to previous version
-git revert HEAD
-npm run deploy:production
+1. **Immediate Rollback**
+   ```bash
+   # Revert to previous backend version
+   git checkout previous-commit-hash
+   cd backend && npm run build && npm start
+   
+   # Revert frontend if needed
+   git checkout previous-commit-hash
+   npm run build && npm start
+   ```
 
-# Disable feature flag
-export ENABLE_TRANSLATION_OPTIMIZATIONS=false
-```
+2. **Feature Flag Approach**
+   ```typescript
+   // Use environment variable to toggle optimized translation
+   const useOptimizedTranslation = process.env.USE_OPTIMIZED_TRANSLATION === 'true';
+   
+   export const useTranslation = useOptimizedTranslation 
+     ? useOptimizedTranslate 
+     : useTranslate;
+   ```
 
-## Post-Deployment Validation
-
-### 1. Performance Validation
-```bash
-# Run performance tests against production
-npm run test:production-performance
-
-# Expected results:
-# - Batch translation: < 500ms
-# - Cache hit rate: > 80%
-# - Memory usage: < 50MB increase
-```
-
-### 2. Functional Validation
-```bash
-# Test key user flows
-npm run test:production-flows
-
-# Verify:
-# - Language switching works correctly
-# - Dynamic content translation works
-# - Cache invalidation works
-# - Error handling works
-```
-
-### 3. Monitoring Validation
-- Verify metrics are being collected
-- Check alerting is working
-- Monitor error rates
-- Track performance trends
+3. **Gradual Rollout**
+   - Start with 10% of users
+   - Monitor performance and errors
+   - Gradually increase to 100%
 
 ## Success Criteria
 
-The optimization is considered successful when:
+### Performance Targets
+- [ ] 80% reduction in LibreTranslate API calls
+- [ ] Sub-100ms translation response times for cached content
+- [ ] Cache hit rate >90% after warm-up
+- [ ] No regression in existing functionality
 
-1. ✅ Translation response times are consistently under 500ms
-2. ✅ Cache hit rate is above 80%
-3. ✅ No increase in error rates
-4. ✅ Memory usage remains stable
-5. ✅ User experience is improved (no perceived slowness)
-6. ✅ LibreTranslate API calls reduced by at least 70%
+### Functional Requirements
+- [ ] All existing translations work correctly
+- [ ] Language switching remains seamless
+- [ ] Error handling works gracefully
+- [ ] Memory usage remains stable
 
-## Next Steps After Deployment
+### User Experience
+- [ ] Faster page loads when switching languages
+- [ ] No visible loading states for cached translations
+- [ ] Smooth transition between languages
+- [ ] No broken translations or missing content
 
-1. **Monitor for 48 hours** for any performance regressions
-2. **Gather user feedback** on translation speed
-3. **Optimize further** based on real-world usage patterns
-4. **Plan Phase 2** optimizations (Redis integration, queue system)
-5. **Document performance improvements** for future reference
+## Post-Deployment Checklist
+
+- [ ] Monitor performance metrics for 24 hours
+- [ ] Verify cache hit rates meet targets
+- [ ] Check for any translation errors
+- [ ] Monitor memory usage and database performance
+- [ ] Validate all pages work correctly in both languages
+- [ ] Test error scenarios (network failures, etc.)
+- [ ] Update documentation with new API endpoints
+- [ ] Train team on new translation hooks
+
+## Troubleshooting Guide
+
+### Common Issues & Solutions
+
+1. **Cache Not Working**
+   ```bash
+   # Check database connection
+   psql -d your_database -c "SELECT COUNT(*) FROM content_translation_cache;"
+   
+   # Clear and rebuild cache
+   curl -X POST https://your-api-domain.com/api/translate-optimized/clear-cache
+   curl -X POST https://your-api-domain.com/api/translate-optimized/pre-translate
+   ```
+
+2. **Slow Performance**
+   ```bash
+   # Check LibreTranslate health
+   curl https://your-libretranslate-domain.com/languages
+   
+   # Monitor cache statistics
+   curl https://your-api-domain.com/api/translate-optimized/cache-stats
+   ```
+
+3. **Translation Errors**
+   ```bash
+   # Check backend logs
+   tail -f /var/log/your-app/backend.log
+   
+   # Test individual translation
+   curl -X POST https://your-api-domain.com/api/translate-optimized/batch \
+     -H "Content-Type: application/json" \
+     -d '{"texts": ["Test"], "source": "id", "target": "en"}'
+   ```
+
+This comprehensive testing and deployment plan ensures a smooth rollout of the optimized translation system with minimal disruption to users.

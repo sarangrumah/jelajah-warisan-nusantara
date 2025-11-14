@@ -3,241 +3,159 @@ import optimizedContentTranslationService from '../services/optimizedContentTran
 
 const router = express.Router();
 
+interface BatchTranslationRequest {
+  texts: string[];
+  source: string;
+  target: string;
+}
+
+interface BatchTranslationResponse {
+  translations: string[];
+  cacheHits: number;
+  apiCalls: number;
+  totalTime: number;
+  success: boolean;
+}
+
 /**
- * Batch translation endpoint with optimizations
- * POST /api/translate/batch-optimized
+ * Batch Translation API Endpoint
  * 
- * Request body:
- * {
- *   "texts": ["text1", "text2", "text3"],
- *   "targetLang": "en",
- *   "sourceLang": "id"
- * }
- * 
- * Response:
- * {
- *   "success": true,
- *   "results": [
- *     { "translatedText": "translated1", "success": true },
- *     { "translatedText": "translated2", "success": true },
- *     { "translatedText": "translated3", "success": true }
- *   ],
- *   "metrics": {
- *     "cacheHitRate": 0.75,
- *     "averageResponseTime": 150,
- *     "circuitBreakerState": "CLOSED"
- *   }
- * }
+ * This endpoint provides optimized batch translation with caching
+ * to significantly reduce translation API calls and improve performance
  */
-router.post('/batch-optimized', async (req, res) => {
+router.post('/batch', async (req, res) => {
   try {
-    const { texts, targetLang, sourceLang = 'id' } = req.body;
+    const { texts, source, target }: BatchTranslationRequest = req.body;
 
     // Validate request
     if (!texts || !Array.isArray(texts)) {
       return res.status(400).json({
-        error: 'Texts array is required',
-        success: false
+        success: false,
+        error: 'Invalid request: texts must be an array'
       });
     }
 
-    if (!targetLang) {
+    if (!source || !target) {
       return res.status(400).json({
-        error: 'Target language is required',
-        success: false
+        success: false,
+        error: 'Invalid request: source and target languages are required'
       });
     }
 
-    // Limit batch size to prevent abuse
     if (texts.length > 100) {
       return res.status(400).json({
-        error: 'Batch size too large. Maximum 100 texts per request.',
-        success: false
-      });
-    }
-
-    const startTime = Date.now();
-    
-    // Perform batch translation
-    const results = await optimizedContentTranslationService.translateBatchWithMemory(
-      texts,
-      targetLang,
-      sourceLang
-    );
-
-    const responseTime = Date.now() - startTime;
-    const metrics = optimizedContentTranslationService.getMetrics();
-
-    res.json({
-      success: true,
-      results,
-      metrics: {
-        ...metrics,
-        responseTime,
-        circuitBreakerState: optimizedContentTranslationService.getCircuitBreakerState()
-      }
-    });
-
-    // Clear request memory after response
-    optimizedContentTranslationService.clearRequestMemory();
-
-  } catch (error) {
-    console.error('Optimized batch translation error:', error);
-    res.status(500).json({
-      error: 'Batch translation failed',
-      success: false,
-      results: req.body.texts?.map((text: string) => ({ 
-        translatedText: text, 
         success: false,
-        error: 'Translation service error'
-      })) || []
-    });
-  }
-});
-
-/**
- * Single text translation endpoint with optimizations
- * POST /api/translate/single-optimized
- * 
- * Request body:
- * {
- *   "text": "text to translate",
- *   "targetLang": "en",
- *   "sourceLang": "id"
- * }
- */
-router.post('/single-optimized', async (req, res) => {
-  try {
-    const { text, targetLang, sourceLang = 'id' } = req.body;
-
-    if (!text) {
-      return res.status(400).json({
-        error: 'Text is required',
-        success: false
+        error: 'Too many texts in batch. Maximum 100 texts per request.'
       });
     }
 
-    if (!targetLang) {
-      return res.status(400).json({
-        error: 'Target language is required',
-        success: false
-      });
-    }
+    console.log(`🔄 Batch translation request: ${texts.length} texts from ${source} to ${target}`);
 
     const startTime = Date.now();
-    
-    const translatedText = await optimizedContentTranslationService.translateFieldWithMemory(
-      text,
-      targetLang,
-      sourceLang
-    );
-
-    const responseTime = Date.now() - startTime;
-    const metrics = optimizedContentTranslationService.getMetrics();
-
-    res.json({
-      success: true,
-      translatedText,
-      metrics: {
-        ...metrics,
-        responseTime,
-        circuitBreakerState: optimizedContentTranslationService.getCircuitBreakerState()
-      }
+    const result = await optimizedContentTranslationService.translateBatch({
+      texts,
+      source,
+      target
     });
 
-    // Clear request memory after response
-    optimizedContentTranslationService.clearRequestMemory();
+    const response: BatchTranslationResponse = {
+      ...result,
+      success: true
+    };
 
+    console.log(`✅ Batch translation completed: ${result.cacheHits} cache hits, ${result.apiCalls} API calls, ${result.totalTime}ms`);
+
+    res.json(response);
   } catch (error) {
-    console.error('Optimized single translation error:', error);
+    console.error('❌ Batch translation error:', error);
     res.status(500).json({
-      error: 'Translation failed',
       success: false,
-      translatedText: req.body.text || ''
+      error: 'Translation service temporarily unavailable',
+      translations: req.body.texts || [] // Return original texts on error
     });
   }
 });
 
 /**
- * Translation metrics endpoint
- * GET /api/translate/metrics
+ * Translation Cache Statistics Endpoint
  */
-router.get('/metrics', (req, res) => {
+router.get('/cache-stats', async (req, res) => {
   try {
-    const metrics = optimizedContentTranslationService.getMetrics();
-    const circuitBreakerState = optimizedContentTranslationService.getCircuitBreakerState();
-
+    const stats = await optimizedContentTranslationService.getCacheStats();
     res.json({
       success: true,
-      metrics: {
-        ...metrics,
-        circuitBreakerState
-      }
+      ...stats
     });
   } catch (error) {
-    console.error('Metrics retrieval error:', error);
+    console.error('Error getting cache stats:', error);
     res.status(500).json({
-      error: 'Failed to retrieve metrics',
-      success: false
+      success: false,
+      error: 'Failed to get cache statistics'
     });
   }
 });
 
 /**
- * Reset metrics endpoint (for testing)
- * POST /api/translate/metrics/reset
+ * Clear Translation Cache Endpoint
  */
-router.post('/metrics/reset', (req, res) => {
+router.post('/clear-cache', async (req, res) => {
   try {
-    optimizedContentTranslationService.resetMetrics();
+    await optimizedContentTranslationService.clearCaches();
     res.json({
       success: true,
-      message: 'Metrics reset successfully'
+      message: 'Translation caches cleared successfully'
     });
   } catch (error) {
-    console.error('Metrics reset error:', error);
+    console.error('Error clearing cache:', error);
     res.status(500).json({
-      error: 'Failed to reset metrics',
-      success: false
+      success: false,
+      error: 'Failed to clear cache'
     });
   }
 });
 
 /**
- * Health check endpoint
- * GET /api/translate/health
+ * Pre-translate Common Content Endpoint
+ * (Admin/development endpoint to warm up cache)
+ */
+router.post('/pre-translate', async (req, res) => {
+  try {
+    await optimizedContentTranslationService.preTranslateCommonContent();
+    res.json({
+      success: true,
+      message: 'Common content pre-translation completed'
+    });
+  } catch (error) {
+    console.error('Error pre-translating common content:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to pre-translate common content'
+    });
+  }
+});
+
+/**
+ * Health Check Endpoint
  */
 router.get('/health', async (req, res) => {
   try {
-    // Test a simple translation to verify service health
-    const testResult = await optimizedContentTranslationService.translateFieldWithMemory(
-      'test',
-      'en',
-      'id'
-    );
-
-    const metrics = optimizedContentTranslationService.getMetrics();
-    const circuitBreakerState = optimizedContentTranslationService.getCircuitBreakerState();
-
+    const stats = await optimizedContentTranslationService.getCacheStats();
     res.json({
+      success: true,
       status: 'healthy',
-      testTranslation: testResult,
-      metrics: {
-        ...metrics,
-        circuitBreakerState
+      cache: {
+        memoryEntries: stats.memoryCacheSize,
+        databaseEntries: stats.dbCacheEntries,
+        totalTranslations: stats.totalTranslations
       },
       timestamp: new Date().toISOString()
     });
-
-    // Clear request memory after health check
-    optimizedContentTranslationService.clearRequestMemory();
-
   } catch (error) {
-    console.error('Translation health check error:', error);
-    res.status(503).json({
+    console.error('Health check failed:', error);
+    res.status(500).json({
+      success: false,
       status: 'unhealthy',
-      error: 'Translation service is not responding properly',
-      timestamp: new Date().toISOString()
+      error: 'Translation service health check failed'
     });
   }
 });

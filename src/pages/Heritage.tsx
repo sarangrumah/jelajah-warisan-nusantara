@@ -87,7 +87,7 @@ const Heritage = () => {
         return name?.toLowerCase() === 'cagar budaya';
       });
 
-      if (cagarBudayaType?.id) {
+      if (cagarBudayaType && cagarBudayaType.id) {
         // Fetch categories for "cagar budaya" type
         const categoriesResponse = await TypesAndCategoriesSites.getAllCategories(cagarBudayaType.id);
         if (categoriesResponse.error) {
