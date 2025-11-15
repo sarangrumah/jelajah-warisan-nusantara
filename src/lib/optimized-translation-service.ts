@@ -33,9 +33,13 @@ class OptimizedTranslationService {
   private static instance: OptimizedTranslationService;
   private cache: Map<string, TranslationCache> = new Map();
   private cacheTTL = 24 * 60 * 60 * 1000; // 24 hours
+  private maxCacheSize = 1000; // Maximum cache entries
   private batchSize = 10;
   private maxRetries = 3;
   private retryDelay = 1000; // 1 second
+  private maxConcurrentRequests = 5; // Limit concurrent API calls
+  private activeRequests = 0; // Track active requests
+  private requestQueue: Array<() => Promise<any>> = []; // Queue for requests
 
   // Common translations that don't need API calls
   private commonTranslations: Record<string, Record<string, string>> = {
@@ -126,6 +130,15 @@ class OptimizedTranslationService {
 
   private setCache(text: string, translatedText: string, source: string, target: string): void {
     const cacheKey = this.getCacheKey(text, source, target);
+    
+    // Remove oldest entries if cache exceeds maximum size
+    if (this.cache.size >= this.maxCacheSize) {
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+      }
+    }
+    
     this.cache.set(cacheKey, {
       text,
       translatedText,
@@ -151,55 +164,105 @@ class OptimizedTranslationService {
     return null;
   }
 
-  private async callLibreTranslateAPI(texts: string[], source: string, target: string): Promise<string[]> {
-    const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
-    
-    const results: string[] = [];
-    
-    for (const text of texts) {
-      let retries = 0;
-      let lastError: Error | null = null;
-      
-      while (retries <= this.maxRetries) {
+  /**
+   * Execute API calls with concurrency control
+   */
+  private async executeWithConcurrency<T>(apiCall: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const execute = async () => {
+        this.activeRequests++;
         try {
-          const response = await fetch(LIBRETRANSLATE_API, {
+          const result = await apiCall();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          this.activeRequests--;
+          this.processQueue();
+        }
+      };
+
+      if (this.activeRequests < this.maxConcurrentRequests) {
+        execute();
+      } else {
+        this.requestQueue.push(execute);
+      }
+    });
+  }
+
+  private processQueue(): void {
+    while (this.requestQueue.length > 0 && this.activeRequests < this.maxConcurrentRequests) {
+      const nextRequest = this.requestQueue.shift();
+      if (nextRequest) {
+        nextRequest();
+      }
+    }
+  }
+
+  private async callLibreTranslateAPI(texts: string[], source: string, target: string): Promise<string[]> {
+    const LIBRETRANSLATE_API = 'http://localhost:5000/translate';
+    
+    // Filter out empty texts
+    const nonEmptyTexts = texts.filter(text => text?.trim());
+    if (nonEmptyTexts.length === 0) {
+      return texts; // Return original array structure
+    }
+
+    let retries = 0;
+    let lastError: Error | null = null;
+    
+    while (retries <= this.maxRetries) {
+      try {
+        // Use batch translation endpoint - send all texts in one request
+        const response = await this.executeWithConcurrency(() =>
+          fetch(LIBRETRANSLATE_API, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              q: text,
+              q: nonEmptyTexts,
               source: source,
               target: target,
               format: 'text',
             }),
-          });
+          })
+        );
 
-          if (!response.ok) {
-            throw new Error(`Translation API failed with status: ${response.status}`);
-          }
+        if (!response.ok) {
+          throw new Error(`Translation API failed with status: ${response.status}`);
+        }
 
-          const data = await response.json();
-          results.push(data.translatedText || text);
-          break; // Success, break retry loop
-        } catch (error) {
-          lastError = error as Error;
-          retries++;
-          
-          if (retries <= this.maxRetries) {
-            console.warn(`Translation API call failed, retrying in ${this.retryDelay * retries}ms:`, error);
-            await new Promise(resolve => setTimeout(resolve, this.retryDelay * retries));
+        const data = await response.json();
+        
+        // Reconstruct results maintaining original array structure
+        const results: string[] = [];
+        let translatedIndex = 0;
+        
+        for (const text of texts) {
+          if (!text?.trim()) {
+            results.push(text); // Keep empty texts as-is
+          } else {
+            results.push(data.translatedText?.[translatedIndex] || text);
+            translatedIndex++;
           }
         }
-      }
-      
-      if (retries > this.maxRetries && lastError) {
-        console.error(`Translation API call failed after ${this.maxRetries} retries:`, lastError);
-        results.push(text); // Return original text on failure
+        
+        return results;
+      } catch (error) {
+        lastError = error as Error;
+        retries++;
+        
+        if (retries <= this.maxRetries) {
+          console.warn(`Translation API call failed, retrying in ${this.retryDelay * retries}ms:`, error);
+          await new Promise(resolve => setTimeout(resolve, this.retryDelay * retries));
+        }
       }
     }
     
-    return results;
+    // All retries failed, return original texts
+    console.error(`Translation API call failed after ${this.maxRetries} retries:`, lastError);
+    return texts;
   }
 
   /**
