@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingButtons from '@/components/FloatingButtons';
 import { useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import heritageSites from '@/assets/heritage-sites.jpg';
 import museumInterior from '@/assets/museum-interior.jpg';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -18,7 +18,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const CompanyProfile = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { pathname } = useLocation();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { DynamicComponent } from '../dynamic-components';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -10,7 +10,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const Services = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   
   const services = [
     {

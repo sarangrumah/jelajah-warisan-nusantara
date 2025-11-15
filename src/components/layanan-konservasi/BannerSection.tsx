@@ -1,11 +1,11 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { assetUrl } from '@/lib/asset-url';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 // Remove old getImageUrl
 
 const BannerSection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
   const [slides, setSlides] = React.useState([]);
   const [translatedSlides, setTranslatedSlides] = useState([]);

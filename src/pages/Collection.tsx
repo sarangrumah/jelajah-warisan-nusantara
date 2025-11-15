@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Search, Filter } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -18,7 +18,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const Collection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategories, setFilterCategories] = useState('all');

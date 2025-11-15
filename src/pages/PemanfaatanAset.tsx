@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Filter, MapPin, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Link, useLocation } from 'react-router-dom';
 import { Select as Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +84,7 @@ function extractImagePaths(imageData: any): string[] {
   return [PLACEHOLDER_IMAGE];
 }
 const PemanfaatanAset = () => {
-	const { t } = useTranslation();
+	const { t } = useHybridTranslation();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [filterType, setFilterType] = useState('');
     const [categories, setCategories] = useState([]);

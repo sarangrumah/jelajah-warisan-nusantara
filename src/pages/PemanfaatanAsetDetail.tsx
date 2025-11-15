@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
 // import { defaultAssets } from '@/../database/default-data';
 import Footer from '@/components/Footer';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -82,7 +82,7 @@ function extractImagePaths(imageData: any): string[] {
 
 const PemanfaatanAsetDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { pathname } = useLocation();
   const [assets, setAssets] = useState([]);
   const [categories, setCategories] = useState([]);

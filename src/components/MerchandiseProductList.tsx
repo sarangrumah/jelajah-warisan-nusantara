@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Link } from 'react-router-dom';
 import { Search, Filter, ShoppingCart, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,7 +39,7 @@ interface MerchandiseCategory {
 }
 
 const MerchandiseProductList = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [products, setProducts] = useState<MerchandiseProduct[]>([]);
   const [categories, setCategories] = useState<MerchandiseCategory[]>([]);
   const [loading, setLoading] = useState(true);

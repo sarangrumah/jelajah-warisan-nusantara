@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -47,7 +47,7 @@ function getMuseumsImageUrl(filename: string) {
   return '/placeholder.svg';
 }
 const Heritage = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [heritages, setHeritages] = useState([]);

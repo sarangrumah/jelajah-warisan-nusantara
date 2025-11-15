@@ -7,10 +7,10 @@ function fixBrokenHtmlTags(html: string): string {
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 
 const PPIDSection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const informationTypes = [
     {
       title: 'Informasi Berkala',

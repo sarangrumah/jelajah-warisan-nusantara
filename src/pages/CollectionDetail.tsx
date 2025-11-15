@@ -1,5 +1,5 @@
 import { useLocation, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Calendar, Building, Ruler, Palette, MapPin, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -20,7 +20,7 @@ import logo from '@/assets/MCB-Logo.png';
 
 const CollectionDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { pathname } = useLocation();
   const [collections, setCollections] = useState([]);
       

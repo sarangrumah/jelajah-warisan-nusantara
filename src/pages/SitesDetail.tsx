@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Calendar, Building, Ruler, Palette, MapPin, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -12,7 +12,7 @@ import museumInterior from '@/assets/museum-interior.jpg';
 
 const SitesDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
 
   // Mock data - in real app, fetch from API based on id
   const collectionData = {

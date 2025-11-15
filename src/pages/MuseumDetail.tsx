@@ -1,5 +1,5 @@
 import { useLocation, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { MapPin, Clock, Phone, Globe, Calendar} from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -55,7 +55,7 @@ function getMuseumImageUrl(filename: string | undefined | null) {
 
 const MuseumDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { pathname } = useLocation();
   
   const [museums, setMuseums] = useState([]);

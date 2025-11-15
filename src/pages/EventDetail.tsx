@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Calendar, MapPin, Phone, Mail, Share2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -20,7 +20,7 @@ const EventDetail = () => {
     return { __html: sanitizeHtml(htmlContent) };
   };
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [companyWhatsApp, setCompanyWhatsApp] = useState<string>('');

@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -19,7 +19,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const ContactSection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { toast } = useToast();
   const { pathname } = useLocation();
   const [faqs, setFaqs] = useState([]);

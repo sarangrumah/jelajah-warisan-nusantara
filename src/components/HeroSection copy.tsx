@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { bannerService } from '@/lib/api-services';
 import { heroVideoService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
@@ -12,7 +12,7 @@ const HeroSection = () => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [slides, setSlides] = useState([]);
   const [videoList, setVideoList] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);

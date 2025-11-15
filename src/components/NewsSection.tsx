@@ -3,7 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -68,7 +68,7 @@ function getNewsFileUrl(filename: string) {
 }
 
 const NewsSection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);

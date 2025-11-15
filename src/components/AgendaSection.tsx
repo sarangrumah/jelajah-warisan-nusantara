@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
 import { sanitizeHtml } from '@/lib/sanitize-html';
@@ -43,7 +43,7 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaCard = ({ event }) => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
 
   const getStatusColor = (status: string) => {
     switch (status) {

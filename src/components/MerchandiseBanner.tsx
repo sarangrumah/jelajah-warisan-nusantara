@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ interface MerchandiseBannerProps {
 }
 
 const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasSnappedRef = useRef(false);
 

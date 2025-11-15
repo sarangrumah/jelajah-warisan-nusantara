@@ -1,7 +1,7 @@
 import { FileText, Scale, CheckCircle, Download} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { useEffect, useState } from 'react';
 import { sopService } from '@/lib/api-services';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const RulesAndSOP = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [proceduresAndRegulations, setProceduresAndRegulations] = useState([]);
 
   useEffect(() => {

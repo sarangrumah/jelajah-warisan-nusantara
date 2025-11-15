@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { ArrowLeft, ShoppingCart, Package, Tag, Info } from 'lucide-react';
 import { useTranslate } from '@/hooks/useTranslate';
 import Header from '@/components/Header';
@@ -33,7 +33,7 @@ interface MerchandiseProduct {
 }
 
 const MerchandiseDetail = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<MerchandiseProduct | null>(null);
   const [loading, setLoading] = useState(true);

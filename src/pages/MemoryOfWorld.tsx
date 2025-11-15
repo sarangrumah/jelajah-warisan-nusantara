@@ -4,7 +4,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Link, useLocation } from 'react-router-dom';
 import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
@@ -56,7 +56,7 @@ function getImageUrl(imagePath: string) {
   return imagePath;
 }
 const MemoryOfWorld = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [memories, setMemories] = useState<MemoryItem[]>([]);
   const { pathname } = useLocation();

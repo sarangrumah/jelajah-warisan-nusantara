@@ -1,5 +1,5 @@
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { ArrowLeft, MapPin, Clock, Camera } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -36,7 +36,7 @@ function getImageUrl(filename: string | undefined | null) {
 
 const HeritageDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [heritages, setHeritages] = useState([]);
   const { pathname } = useLocation();
       
