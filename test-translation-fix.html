@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Fix Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .test { margin: 10px 0; padding: 10px; border-left: 3px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Translation Fix Test</h1>
+    
+    <div class="test">
+        <h3>API Response Test</h3>
+        <div id="api-test">Testing API response...</div>
+    </div>
+    
+    <div class="test">
+        <h3>Translation Keys Available</h3>
+        <div id="keys-test">Checking available keys...</div>
+    </div>
+    
+    <div class="test">
+        <h3>Expected Header Translations</h3>
+        <ul>
+            <li>common.nav.beranda: <span id="nav-beranda">Loading...</span></li>
+            <li>common.nav.destinasi: <span id="nav-destinasi">Loading...</span></li>
+            <li>common.nav.collection: <span id="nav-collection">Loading...</span></li>
+            <li>common.nav.agenda: <span id="nav-agenda">Loading...</span></li>
+            <li>common.nav.tentangKami: <span id="nav-tentangKami">Loading...</span></li>
+            <li>common.nav.ppid: <span id="nav-ppid">Loading...</span></li>
+        </ul>
+    </div>
+    
+    <div class="test">
+        <h3>Expected Footer Translations</h3>
+        <ul>
+            <li>common.footer.orgName: <span id="footer-orgName">Loading...</span></li>
+            <li>common.footer.contactUs: <span id="footer-contactUs">Loading...</span></li>
+            <li>common.footer.quickLinks: <span id="footer-quickLinks">Loading...</span></li>
+            <li>common.footer.socialMedia: <span id="footer-socialMedia">Loading...</span></li>
+            <li>common.footer.copyright: <span id="footer-copyright">Loading...</span></li>
+        </ul>
+    </div>
+
+    <script>
+        async function testTranslations() {
+            try {
+                // Test API response
+                const response = await fetch('http://localhost:3000/api/translations/by-language/en');
+                const data = await response.json();
+                
+                document.getElementById('api-test').innerHTML = 
+                    `<span class="success">✓ API Response Success</span> - ${Object.keys(data.translation || {}).length} translations loaded`;
+                
+                // Test specific keys
+                const translations = data.translation;
+                
+                // Header translations
+                document.getElementById('nav-beranda').textContent = translations['common.nav.beranda'] || 'MISSING';
+                document.getElementById('nav-destinasi').textContent = translations['common.nav.destinasi'] || 'MISSING';
+                document.getElementById('nav-collection').textContent = translations['common.nav.collection'] || 'MISSING';
+                document.getElementById('nav-agenda').textContent = translations['common.nav.agenda'] || 'MISSING';
+                document.getElementById('nav-tentangKami').textContent = translations['common.nav.tentangKami'] || 'MISSING';
+                document.getElementById('nav-ppid').textContent = translations['common.nav.ppid'] || 'MISSING';
+                
+                // Footer translations
+                document.getElementById('footer-orgName').textContent = translations['common.footer.orgName'] || 'MISSING';
+                document.getElementById('footer-contactUs').textContent = translations['common.footer.contactUs'] || 'MISSING';
+                document.getElementById('footer-quickLinks').textContent = translations['common.footer.quickLinks'] || 'MISSING';
+                document.getElementById('footer-socialMedia').textContent = translations['common.footer.socialMedia'] || 'MISSING';
+                document.getElementById('footer-copyright').textContent = translations['common.footer.copyright'] || 'MISSING';
+                
+                // Check if all required keys are present
+                const requiredKeys = [
+                    'common.nav.beranda', 'common.nav.destinasi', 'common.nav.collection',
+                    'common.nav.agenda', 'common.nav.tentangKami', 'common.nav.ppid',
+                    'common.footer.orgName', 'common.footer.contactUs', 'common.footer.quickLinks',
+                    'common.footer.socialMedia', 'common.footer.copyright'
+                ];
+                
+                const missingKeys = requiredKeys.filter(key => !translations[key]);
+                
+                document.getElementById('keys-test').innerHTML = 
+                    missingKeys.length === 0 
+                        ? `<span class="success">✓ All required translation keys are available</span>`
+                        : `<span class="error">✗ Missing keys: ${missingKeys.join(', ')}</span>`;
+                        
+            } catch (error) {
+                document.getElementById('api-test').innerHTML = 
+                    `<span class="error">✗ API Error: ${error.message}</span>`;
+            }
+        }
+        
+        testTranslations();
+    </script>
+</body>
+</html>

@@ -47,16 +47,14 @@ class TranslationBackend implements BackendModule<BackendOptions> {
         
         let translations = data[namespace] || data.translation || data;
 
-        // If translations is an object with keys like "module.page.key"
-        // Transform it to nested structure by removing module prefix
+        // If translations is an object with keys like "translation.nav.beranda"
+        // Transform it to nested structure by removing the "translation." prefix
         if (typeof translations === 'object' && translations !== null) {
           const transformed: any = {};
 
           Object.entries(translations).forEach(([key, value]) => {
-            // If a key starts with "translation.", remove that prefix.
-            // This handles keys like "translation.nav.beranda" -> "nav.beranda"
-            // It correctly leaves keys like "management.museum.title" as-is.
-            const cleanKey = key.startsWith(`${namespace}.`) ? key.substring(namespace.length + 1) : key;
+            // Remove "translation." prefix from all keys
+            const cleanKey = key.startsWith('translation.') ? key.substring('translation.'.length) : key;
             const relevantParts = cleanKey.split('.');
             
             // Build nested structure from the parts

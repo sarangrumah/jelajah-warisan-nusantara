@@ -10,17 +10,17 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { label: t('nav.beranda'), href: '/beranda' },
-    { label: t('nav.agenda'), href: '/agenda' },
-    { label: t('nav.tentangKami'), href: '/tentang-kami' },
-    { label: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
-    { label: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
-    { label: t('nav.mediaPublikasi'), href: '/media-publikasi' },
-    { label: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
-    { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
-    { label: t('nav.career'), href: '/karir' },
-    { label: t('nav.ppid'), href: '/ppid' },
-    { label: t('nav.sop'), href: '/prosedur-operasional-standar' },
+    { label: t('common.nav.beranda'), href: '/beranda' },
+    { label: t('common.nav.agenda'), href: '/agenda' },
+    { label: t('common.nav.tentangKami'), href: '/tentang-kami' },
+    { label: t('common.nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+    { label: t('common.nav.layananKonservasi'), href: '/laboratorium-konservasi' },
+    { label: t('common.nav.mediaPublikasi'), href: '/media-publikasi' },
+    { label: t('common.nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
+    { label: t('common.nav.hubungiKami'), href: '/hubungi-kami' },
+    { label: t('common.nav.career'), href: '/karir' },
+    { label: t('common.nav.ppid'), href: '/ppid' },
+    { label: t('common.nav.sop'), href: '/prosedur-operasional-standar' },
   ];
 
   return (
@@ -37,10 +37,10 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-heritage-gradient">
-                  {t('footer.orgName')}
+                  {t('common.footer.orgName')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {t('footer.ministry')}
+                  {t('common.footer.ministry')}
                 </p>
               </div>
             </div>
@@ -51,20 +51,20 @@ const Footer = () => {
 
           {/* Contact Information */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">{t('footer.contactUs')}</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('common.footer.contactUs')}</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">{t('footer.phone')}</span>
+                <span className="text-sm text-muted-foreground">{t('common.footer.phone')}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">{t('footer.email')}</span>
+                <span className="text-sm text-muted-foreground">{t('common.footer.email')}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={16} className="text-primary mt-0.5" />
                 <span className="text-sm text-muted-foreground">
-                  {t('footer.address')}
+                  {t('common.footer.address')}
                 </span>
               </div>
             </div>
@@ -72,7 +72,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">{t('footer.quickLinks')}</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('common.footer.quickLinks')}</h4>
             <div className='flex gap-x-5 w-full'>
               <div className="space-y-2">
                 {quickLinks.slice(0, 5).map((link) => (
@@ -101,7 +101,7 @@ const Footer = () => {
 
           {/* Social Media */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-foreground">{t('footer.socialMedia')}</h4>
+            <h4 className="text-lg font-semibold text-foreground">{t('common.footer.socialMedia')}</h4>
             <div className="flex space-x-3">
               {socialLinks.map((social) => (
                 <a
@@ -121,17 +121,17 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            {t('footer.copyright')}
+            {t('common.footer.copyright')}
           </p>
           <div className="flex space-x-6 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              {t('footer.privacy')}
+              {t('common.footer.privacy')}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              {t('footer.terms')}
+              {t('common.footer.terms')}
             </a>
             <a href="#" className="text-muted-foreground hover:text-primary transition-heritage">
-              {t('footer.sitemap')}
+              {t('common.footer.sitemap')}
             </a>
           </div>
         </div>
