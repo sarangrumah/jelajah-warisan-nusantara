@@ -70,21 +70,14 @@ export const useHybridTranslation = (): UseHybridTranslationResult => {
 
     // If no hardcoded translation found and we're not in Indonesian, queue API translation
     if (language !== 'id') {
-      // Queue async translation for next render
-      setTimeout(async () => {
-        setTranslating(componentId, true);
-        try {
-          await hybridTranslationService.translateText({
-            text: key, // Use key as text for API translation
-            source: 'id',
-            target: language
-          });
-        } catch (error) {
-          console.warn('Translation failed for key:', key, error);
-        } finally {
-          setTranslating(componentId, false);
-        }
-      }, 0);
+      // Use batch translation service instead of individual API calls
+      // This prevents resource exhaustion from multiple setTimeout calls
+      hybridTranslationService.queueTranslation({
+        text: key,
+        source: 'id',
+        target: language,
+        componentId
+      });
     }
 
     // Return key as fallback (will be updated on next render if API translation succeeds)

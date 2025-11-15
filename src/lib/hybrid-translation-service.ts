@@ -226,6 +226,48 @@ class HybridTranslationService {
   }
 
   /**
+   * Queue translation for batch processing (non-blocking)
+   * This prevents resource exhaustion from multiple setTimeout calls
+   */
+  async queueTranslation(params: { text: string; source: string; target: string; componentId: string }): Promise<void> {
+    const { text, source, target, componentId } = params;
+    
+    // Skip if source and target are the same
+    if (source === target) {
+      return;
+    }
+
+    // Skip if text is empty
+    if (!text?.trim()) {
+      return;
+    }
+
+    // Check cache first
+    const cachedTranslation = this.getFromCache(text, target);
+    if (cachedTranslation) {
+      return;
+    }
+
+    // Check hardcoded translations
+    const hardcodedTranslation = this.getHardcodedTranslation(text, target);
+    if (hardcodedTranslation) {
+      this.saveToCache(text, source, target, hardcodedTranslation);
+      return;
+    }
+
+    // Use optimized translation service for API calls
+    try {
+      await optimizedTranslationService.translateText({
+        text,
+        source,
+        target
+      });
+    } catch (error) {
+      console.warn('Translation failed for text:', text, error);
+    }
+  }
+
+  /**
    * Clear cache
    */
   clearCache(): void {
