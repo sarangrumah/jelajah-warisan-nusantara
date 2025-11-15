@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { useOptimizedTranslate } from '@/hooks/useOptimizedTranslate';
 
 interface OptimizedTranslationWrapperProps {
@@ -31,7 +31,7 @@ export const OptimizedText: React.FC<{ text: string }> = ({ text }) => {
  * Hook to get optimized translations for navigation items
  */
 export const useOptimizedNavigation = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   
   // Get all navigation translations at once for better performance
   const navigationKeys = [

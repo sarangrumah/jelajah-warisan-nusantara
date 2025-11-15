@@ -125,7 +125,7 @@ const AgendaCard = ({ event }) => {
 };
 
 const AgendaSection = () => {
-  const { t } = useTranslation();
+  const { t } = useHybridTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
   const [categories, setCategories] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);

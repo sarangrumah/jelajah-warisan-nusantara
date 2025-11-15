@@ -1,12 +1,12 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 /**
  * Component to test header translations and performance
  */
 export const HeaderTranslationTest: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useHybridTranslation();
   
   const navigationKeys = [
     'nav.beranda',

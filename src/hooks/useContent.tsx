@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { useTranslationManager } from '../contexts/TranslationContext';
 import { v4 as uuidv4 } from 'uuid';
 
 export const useContent = (service: any, params: any = {}) => {
-  const { i18n } = useTranslation();
+  const { i18n } = useHybridTranslation();
   const { register, unregister, setTranslating } = useTranslationManager();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

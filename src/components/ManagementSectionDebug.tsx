@@ -1,12 +1,12 @@
 import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
 import { Link } from 'react-router-dom';
 import { useMemo, useEffect, useState } from 'react';
 import { museumStat } from '@/../database/get-data';
 
 const ManagementSectionDebug = () => {
-  const { t, i18n, ready } = useTranslation();
+  const { t, i18n, ready } = useHybridTranslation();
   const [debugInfo, setDebugInfo] = useState<any>({});
   
   useEffect(() => {
