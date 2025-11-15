@@ -1,5 +1,6 @@
 import 'react';
-import { useTranslate } from '@/hooks/useTranslate';
+import { useMemo } from 'react';
+import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -12,16 +13,37 @@ function fixBrokenHtmlTags(html: string): string {
 
 // A simple component to render translated HTML
 const TranslatedHtml = ({ text }: { text: string }) => {
-  const { translatedText } = useTranslate(text);
-  return <div dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(translatedText) }} />;
+  return <div dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(text) }} />;
 };
 
 const ProfileSection = () => {
   const profileStats = useProfileStats();
   
+  // Collect all texts that need translation
+  const profileTexts = useMemo(() => ({
+    title: 'Tentang Kami',
+    description: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.',
+    visionTitle: 'Visi',
+    missionTitle: 'Misi',
+    aboutUsTitle: 'Tentang Kami',
+    contactTitle: 'Hubungi Kami',
+    addressLabel: 'Alamat',
+    phoneLabel: 'Telepon',
+    whatsappLabel: 'WhatsApp',
+    emailLabel: 'Email',
+    websiteLabel: 'Situs Web',
+    museumTerdaftar: 'Museum Terdaftar',
+    cagarBudaya: 'Cagar Budaya',
+    provinsi: 'Provinsi',
+    tahunPengalaman: 'Tahun Pengalaman'
+  }), []);
+
+  // Batch translate all profile texts at once
+  const { translations } = useBatchTranslateOptimized(profileTexts, { debounceMs: 50 });
+
   // This is where you would fetch your dynamic data, for now we will use static data
   const profile = {
-      vision: `“Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya.”`,
+      vision: `"Menjadi ruang jelajah warisan budaya dan sejarah yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan karakter yang berbudaya."`,
       mission: `Mewujudkan pengelolaan koleksi, cagar budaya, dan bangunan bersejarah yang berkelanjutan.<br>Melaksanakan upaya pelayanan dan pelibatan masyarakat secara terpadu.<br>Mengedepankan transformasi pengembangan wawasan melalui praktik edukasi yang inovatif dan pembangunan komunitas.<br>Menjalin kepercayaan kuat antara para pemangku kepentingan yang berbasis kemitraan.<br>Mewujudkan ruang ekspresi dan interaksi budaya yang inklusif dan mudah diakses.<br>Mewujudkan tata kelola kelembagaan dan pengelolaan sumber daya manusia yang tangkas dan berorientasi kepada dampak yang berkelanjutan.`,
       aboutus: `Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.`,
       address: `Jalan Medan Merdeka Barat No. 12 Jakarta Pusat 10110`,
@@ -31,23 +53,11 @@ const ProfileSection = () => {
       website: `https://museumcagarbudaya.kemenbud.go.id/`
   }
 
-  const { translatedText: title } = useTranslate('Tentang Kami');
-  const { translatedText: description } = useTranslate('Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.');
-  const { translatedText: visionTitle } = useTranslate('Visi');
-  const { translatedText: missionTitle } = useTranslate('Misi');
-  const { translatedText: aboutUsTitle } = useTranslate('Tentang Kami');
-  const { translatedText: contactTitle } = useTranslate('Hubungi Kami');
-  const { translatedText: addressLabel } = useTranslate('Alamat');
-  const { translatedText: phoneLabel } = useTranslate('Telepon');
-  const { translatedText: whatsappLabel } = useTranslate('WhatsApp');
-  const { translatedText: emailLabel } = useTranslate('Email');
-  const { translatedText: websiteLabel } = useTranslate('Situs Web');
-
   const statItems = [
-    { value: profileStats.museums, label: useTranslate('Museum Terdaftar').translatedText },
-    { value: profileStats.heritages, label: useTranslate('Cagar Budaya').translatedText },
-    { value: profileStats.provinces, label: useTranslate('Provinsi').translatedText },
-    { value: profileStats.experiences, label: useTranslate('Tahun Pengalaman').translatedText }
+    { value: profileStats.museums, label: translations.museumTerdaftar || 'Museum Terdaftar' },
+    { value: profileStats.heritages, label: translations.cagarBudaya || 'Cagar Budaya' },
+    { value: profileStats.provinces, label: translations.provinsi || 'Provinsi' },
+    { value: profileStats.experiences, label: translations.tahunPengalaman || 'Tahun Pengalaman' }
   ];
 
   return (
@@ -56,10 +66,10 @@ const ProfileSection = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
-              {title}
+              {translations.title || 'Tentang Kami'}
             </h2>
             <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
-              {description}
+              {translations.description || 'Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.'}
             </p>
           </div>
 
@@ -67,13 +77,13 @@ const ProfileSection = () => {
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{visionTitle}</h4>
+                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.visionTitle || 'Visi'}</h4>
                   <div className="prose text-muted-foreground">
                     <TranslatedHtml text={profile.vision} />
                   </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{missionTitle}</h4>
+                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.missionTitle || 'Misi'}</h4>
                   <div className="prose space-y-2 text-muted-foreground">
                     <TranslatedHtml text={profile.mission} />
                   </div>
@@ -81,28 +91,28 @@ const ProfileSection = () => {
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{aboutUsTitle}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.aboutUsTitle || 'Tentang Kami'}</h4>
                   <div className="prose text-muted-foreground">
                     <TranslatedHtml text={profile.aboutus} />
                   </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{contactTitle}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.contactTitle || 'Hubungi Kami'}</h4>
                   <ul className="text-muted-foreground space-y-1">
                     <li>
-                      <b>{addressLabel}:</b> <TranslatedHtml text={profile.address} />
+                      <b>{translations.addressLabel || 'Alamat'}:</b> <TranslatedHtml text={profile.address} />
                     </li>
                     <li>
-                      <b>{phoneLabel}:</b> <TranslatedHtml text={profile.phone} />
+                      <b>{translations.phoneLabel || 'Telepon'}:</b> <TranslatedHtml text={profile.phone} />
                     </li>
                     <li>
-                      <b>{whatsappLabel}:</b> <TranslatedHtml text={profile.whatsapp} />
+                      <b>{translations.whatsappLabel || 'WhatsApp'}:</b> <TranslatedHtml text={profile.whatsapp} />
                     </li>
                     <li>
-                      <b>{emailLabel}:</b> <TranslatedHtml text={profile.email} />
+                      <b>{translations.emailLabel || 'Email'}:</b> <TranslatedHtml text={profile.email} />
                     </li>
                     <li>
-                      <b>{websiteLabel}:</b> <TranslatedHtml text={profile.website} />
+                      <b>{translations.websiteLabel || 'Situs Web'}:</b> <TranslatedHtml text={profile.website} />
                     </li>
                   </ul>
                 </div>
