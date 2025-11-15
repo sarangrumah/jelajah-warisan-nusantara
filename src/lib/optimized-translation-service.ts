@@ -98,7 +98,14 @@ class OptimizedTranslationService {
   }
 
   private getCacheKey(text: string, source: string, target: string): string {
-    return `${source}-${target}-${Buffer.from(text).toString('base64')}`;
+    // Use a simple hash function that works in browser environment
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return `${source}-${target}-${hash.toString(36)}`;
   }
 
   private getFromCache(text: string, source: string, target: string): string | null {

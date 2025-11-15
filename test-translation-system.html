@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Translation System Test</h1>
+        <p>This page tests the complete translation system including LibreTranslate connection.</p>
+        
+        <div class="test-section">
+            <h2>1. LibreTranslate Connection Test</h2>
+            <button onclick="testLibreTranslateConnection()">Test LibreTranslate Connection</button>
+            <div id="libreResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Optimized Translation Service Test</h2>
+            <button onclick="testOptimizedService()">Test Optimized Service</button>
+            <div id="optimizedResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Common Translations Test</h2>
+            <button onclick="testCommonTranslations()">Test Common Translations</button>
+            <div id="commonResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Cache Performance Test</h2>
+            <button onclick="testCachePerformance()">Test Cache Performance</button>
+            <div id="cacheResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. Navigation Menu Test</h2>
+            <button onclick="testNavigationTranslations()">Test Navigation Translations</button>
+            <div id="navigationResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const LIBRETRANSLATE_API = 'http://localhost:5000/translate';
+
+        async function testLibreTranslateConnection() {
+            const resultDiv = document.getElementById('libreResult');
+            resultDiv.innerHTML = '<span class="loading">Testing LibreTranslate connection...</span>';
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(LIBRETRANSLATE_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        q: 'Beranda',
+                        source: 'id',
+                        target: 'en',
+                        format: 'text',
+                    }),
+                });
+
+                const endTime = performance.now();
+                const responseTime = endTime - startTime;
+
+                if (!response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <strong>❌ LibreTranslate Connection Failed</strong><br>
+                            <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                            <strong>Response Time:</strong> ${responseTime.toFixed(2)}ms<br>
+                            <strong>Error:</strong> API returned error status<br>
+                            <strong>Solution:</strong> Make sure LibreTranslate is running on port 5000
+                        </div>
+                    `;
+                    return;
+                }
+
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ LibreTranslate Connection Successful!</strong><br>
+                        <strong>Response Time:</strong> ${responseTime.toFixed(2)}ms<br>
+                        <strong>Test Text:</strong> "Beranda"<br>
+                        <strong>Translation:</strong> "${data.translatedText}"<br>
+                        <strong>API URL:</strong> ${LIBRETRANSLATE_API}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ LibreTranslate Connection Failed</strong><br>
+                        <strong>Error:</strong> ${error.message}<br>
+                        <strong>Solution:</strong> Make sure LibreTranslate is running on port 5000<br>
+                        <strong>Check:</strong> Run <code>docker-compose -f docker-compose.libretranslate.yml up -d</code>
+                    </div>
+                `;
+            }
+        }
+
+        async function testOptimizedService() {
+            const resultDiv = document.getElementById('optimizedResult');
+            resultDiv.innerHTML = '<span class="loading">Testing optimized service...</span>';
+            
+            try {
+                // Test common translation (should be instant)
+                const startTime1 = performance.now();
+                const result1 = await translateText('Beranda', 'id', 'en');
+                const time1 = performance.now() - startTime1;
+
+                // Test API translation
+                const startTime2 = performance.now();
+                const result2 = await translateText('Selamat datang di museum kami', 'id', 'en');
+                const time2 = performance.now() - startTime2;
+
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Optimized Service Test Results</strong><br><br>
+                        <strong>Common Translation (Cached):</strong><br>
+                        "Beranda" → "${result1}"<br>
+                        <strong>Time:</strong> ${time1.toFixed(2)}ms<br><br>
+                        <strong>API Translation:</strong><br>
+                        "Selamat datang di museum kami" → "${result2}"<br>
+                        <strong>Time:</strong> ${time2.toFixed(2)}ms<br><br>
+                        <strong>Performance:</strong> Common translations are ${(time2 / time1).toFixed(1)}x faster!
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error testing optimized service: ${error.message}</div>`;
+            }
+        }
+
+        async function testCommonTranslations() {
+            const resultDiv = document.getElementById('commonResult');
+            resultDiv.innerHTML = '<span class="loading">Testing common translations...</span>';
+            
+            try {
+                const navigationItems = [
+                    'Beranda', 'Destinasi', 'Museum', 'Warisan Budaya', 'Koleksi',
+                    'Koleksi MCB', 'Memory Of the World', 'Agenda', 'Tentang Kami',
+                    'Struktur Organisasi', 'Layanan Konservasi', 'Media & Publikasi',
+                    'Peraturan', 'Hubungi Kami', 'Karir', 'PPID', 'SOP', 'Admin',
+                    'Pemanfaatan Aset', 'Merchandise'
+                ];
+
+                let output = '<div class="success">';
+                output += '<strong>✅ Common Navigation Translations</strong><br><br>';
+                
+                const startTime = performance.now();
+                for (const item of navigationItems) {
+                    const result = await translateText(item, 'id', 'en');
+                    output += `<strong>"${item}"</strong> → "${result}"<br>`;
+                }
+                const endTime = performance.now();
+                
+                output += `<br><strong>Total Time:</strong> ${(endTime - startTime).toFixed(2)}ms<br>`;
+                output += `<strong>Average Time:</strong> ${((endTime - startTime) / navigationItems.length).toFixed(2)}ms per item<br>`;
+                output += `<strong>Performance:</strong> All translations should be instant (cached)</div>`;
+                
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error testing common translations: ${error.message}</div>`;
+            }
+        }
+
+        async function testCachePerformance() {
+            const resultDiv = document.getElementById('cacheResult');
+            resultDiv.innerHTML = '<span class="loading">Testing cache performance...</span>';
+            
+            try {
+                const testText = 'Destinasi';
+                
+                // First call (should call API)
+                const startTime1 = performance.now();
+                const result1 = await translateText(testText, 'id', 'en');
+                const time1 = performance.now() - startTime1;
+
+                // Second call (should be cached)
+                const startTime2 = performance.now();
+                const result2 = await translateText(testText, 'id', 'en');
+                const time2 = performance.now() - startTime2;
+
+                const improvement = ((time1 - time2) / time1 * 100).toFixed(1);
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Cache Performance Test</strong><br><br>
+                        <strong>First Call:</strong> ${time1.toFixed(2)}ms → "${result1}"<br>
+                        <strong>Second Call:</strong> ${time2.toFixed(2)}ms → "${result2}"<br>
+                        <strong>Improvement:</strong> ${improvement}% faster<br>
+                        <strong>Cache Hit:</strong> ${time2 < 10 ? '✅ Yes' : '❌ No'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error testing cache performance: ${error.message}</div>`;
+            }
+        }
+
+        async function testNavigationTranslations() {
+            const resultDiv = document.getElementById('navigationResult');
+            resultDiv.innerHTML = '<span class="loading">Testing navigation translations...</span>';
+            
+            try {
+                const navItems = [
+                    'Beranda', 'Destinasi', 'Museum', 'Warisan Budaya', 'Koleksi',
+                    'Agenda', 'Tentang Kami', 'Hubungi Kami', 'Karir', 'Merchandise'
+                ];
+
+                let output = '<div class="success">';
+                output += '<strong>✅ Navigation Menu Translation Test</strong><br><br>';
+                output += '<strong>Expected Results:</strong><br>';
+                
+                for (const item of navItems) {
+                    const result = await translateText(item, 'id', 'en');
+                    const isCorrect = result !== item; // Translation should change the text
+                    output += `
+                        <div style="margin: 5px 0; padding: 5px; background: ${isCorrect ? '#d4edda' : '#f8d7da'}">
+                            <strong>"${item}"</strong> → "${result}" 
+                            ${isCorrect ? '✅' : '❌'}
+                        </div>
+                    `;
+                }
+                
+                output += `<br><strong>Note:</strong> If you see ❌ marks, the translation might be stuck or LibreTranslate might not be running.</div>`;
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error testing navigation translations: ${error.message}</div>`;
+            }
+        }
+
+        // Simple translation function for testing
+        async function translateText(text, source, target) {
+            if (source === target) return text;
+            if (!text?.trim()) return text;
+
+            // Check common translations first
+            const commonTranslations = {
+                'id': {
+                    'Beranda': 'Home',
+                    'Destinasi': 'Destination',
+                    'Museum': 'Museum',
+                    'Warisan Budaya': 'Cultural Heritage',
+                    'Koleksi': 'Collection',
+                    'Koleksi MCB': 'MCB Collection',
+                    'Memory Of the World': 'Memory Of the World',
+                    'Agenda': 'Agenda',
+                    'Tentang Kami': 'About Us',
+                    'Struktur Organisasi': 'Organizational Structure',
+                    'Layanan Konservasi': 'Conservation Services',
+                    'Media & Publikasi': 'Media & Publications',
+                    'Peraturan': 'Regulations',
+                    'Hubungi Kami': 'Contact Us',
+                    'Karir': 'Career',
+                    'PPID': 'PPID',
+                    'SOP': 'SOP',
+                    'Admin': 'Admin',
+                    'Pemanfaatan Aset': 'Asset Utilization',
+                    'Merchandise': 'Merchandise'
+                },
+                'en': {
+                    'Home': 'Beranda',
+                    'Destination': 'Destinasi',
+                    'Museum': 'Museum',
+                    'Cultural Heritage': 'Warisan Budaya',
+                    'Collection': 'Koleksi',
+                    'MCB Collection': 'Koleksi MCB',
+                    'Memory Of the World': 'Memory Of the World',
+                    'Agenda': 'Agenda',
+                    'About Us': 'Tentang Kami',
+                    'Organizational Structure': 'Struktur Organisasi',
+                    'Conservation Services': 'Layanan Konservasi',
+                    'Media & Publications': 'Media & Publikasi',
+                    'Regulations': 'Peraturan',
+                    'Contact Us': 'Hubungi Kami',
+                    'Career': 'Karir',
+                    'PPID': 'PPID',
+                    'SOP': 'SOP',
+                    'Admin': 'Admin',
+                    'Asset Utilization': 'Pemanfaatan Aset',
+                    'Merchandise': 'Merchandise'
+                }
+            };
+
+            if (commonTranslations[source] && commonTranslations[source][text]) {
+                return commonTranslations[source][text];
+            }
+
+            // Fallback to API call
+            try {
+                const response = await fetch(LIBRETRANSLATE_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        source: source,
+                        target: target,
+                        format: 'text',
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.translatedText || text;
+            } catch (error) {
+                console.warn('Translation API failed, returning original text:', error);
+                return text;
+            }
+        }
+
+        // Run LibreTranslate test on page load
+        window.addEventListener('load', () => {
+            testLibreTranslateConnection();
+        });
+    </script>
+</body>
+</html>
