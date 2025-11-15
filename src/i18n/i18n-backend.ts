@@ -55,19 +55,21 @@ class TranslationBackend implements BackendModule<BackendOptions> {
           Object.entries(translations).forEach(([key, value]) => {
             // Remove "translation." prefix from all keys
             const cleanKey = key.startsWith('translation.') ? key.substring('translation.'.length) : key;
-            const relevantParts = cleanKey.split('.');
+            
+            // For all keys, build nested structure from the parts
+            const parts = cleanKey.split('.');
             
             // Build nested structure from the parts
             let current = transformed;
-            for (let i = 0; i < relevantParts.length - 1; i++) {
-              if (!current[relevantParts[i]]) {
-                current[relevantParts[i]] = {};
+            for (let i = 0; i < parts.length - 1; i++) {
+              if (!current[parts[i]]) {
+                current[parts[i]] = {};
               }
-              current = current[relevantParts[i]];
+              current = current[parts[i]];
             }
 
             // Set the final value
-            current[relevantParts[relevantParts.length - 1]] = value;
+            current[parts[parts.length - 1]] = value;
           });
 
           translations = transformed;
@@ -80,6 +82,14 @@ class TranslationBackend implements BackendModule<BackendOptions> {
         // Also log to console for server-side debugging
         // eslint-disable-next-line no-console
         console.log('[i18n-backend] Final nested translations:', translations);
+        console.log('[i18n-backend] Sample keys:', {
+          'common.nav.beranda': translations.nav?.beranda,
+          'common.nav.destinasi': translations.nav?.destinasi,
+          'common.nav.collection': translations.nav?.collection,
+          'common.nav.agenda': translations.nav?.agenda,
+          'common.nav.tentangKami': translations.nav?.tentangKami,
+          'common.nav.ppid': translations.nav?.ppid
+        });
 
         callback(null, translations);
       })

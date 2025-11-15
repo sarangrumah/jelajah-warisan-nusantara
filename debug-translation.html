@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Debug</title>
+</head>
+<body>
+    <h1>Translation Debug</h1>
+    
+    <div id="output"></div>
+    
+    <script>
+        async function debugTranslations() {
+            const output = document.getElementById('output');
+            
+            try {
+                // Test API response
+                const response = await fetch('http://localhost:3000/api/translations/by-language/en');
+                const data = await response.json();
+                
+                output.innerHTML += `<h3>API Response:</h3>`;
+                output.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                // Check if transformation is working
+                output.innerHTML += `<h3>Checking specific keys:</h3>`;
+                
+                const testKeys = [
+                    'common.nav.beranda',
+                    'common.nav.destinasi',
+                    'common.nav.collection',
+                    'common.nav.agenda',
+                    'common.nav.tentangKami',
+                    'common.nav.ppid'
+                ];
+                
+                testKeys.forEach(key => {
+                    const value = data.translation[key];
+                    output.innerHTML += `<p><strong>${key}:</strong> ${value || 'NOT FOUND'}</p>`;
+                });
+                
+                // Check localStorage for i18n debug
+                const debugData = localStorage.getItem('i18n-debug-translations');
+                if (debugData) {
+                    output.innerHTML += `<h3>i18n Debug Data (from localStorage):</h3>`;
+                    output.innerHTML += `<pre>${debugData}</pre>`;
+                } else {
+                    output.innerHTML += `<h3>No i18n debug data found in localStorage</h3>`;
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        debugTranslations();
+    </script>
+</body>
+</html>

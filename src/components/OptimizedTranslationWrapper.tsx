@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useOptimizedTranslateSingle } from '@/hooks/useOptimizedTranslate';
+import { useOptimizedTranslate } from '@/hooks/useOptimizedTranslate';
 
 interface OptimizedTranslationWrapperProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export const OptimizedTranslationWrapper: React.FC<OptimizedTranslationWrapperPr
  * Component for translating dynamic text that isn't in the i18n system
  */
 export const OptimizedText: React.FC<{ text: string }> = ({ text }) => {
-  const { translatedText, loading } = useOptimizedTranslateSingle(text);
+  const { translatedText, loading } = useOptimizedTranslate(text);
   
   if (loading) {
     return <span className="animate-pulse bg-muted rounded">{text}</span>;

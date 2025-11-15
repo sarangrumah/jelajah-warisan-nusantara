@@ -3,57 +3,44 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslationManager } from '@/contexts/TranslationContext';
 import { optimizedTranslationService } from '@/lib/optimized-translation-service';
 
-interface UseOptimizedTranslateResult {
-  translations: string[];
-  loading: boolean;
-  error: string | null;
+interface UseOptimizedTranslateOptions {
+  enableBatch?: boolean;
+  debounceMs?: number;
 }
 
 /**
- * Optimized Translation Hook with Batch Processing
- * 
- * This hook provides significant performance improvements by:
- * 1. Batching multiple translation requests into a single API call
- * 2. Using multi-level caching (memory + database)
- * 3. Smart retry logic with exponential backoff
- * 4. Graceful degradation when batch API fails
- * 
- * @param texts - Array of texts to translate
- * @returns Object containing translations array, loading state, and error state
+ * Optimized hook for translating single text with caching and performance monitoring
  */
-export const useOptimizedTranslate = (texts: string[]): UseOptimizedTranslateResult => {
+export const useOptimizedTranslate = (
+  sourceText: string, 
+  options: UseOptimizedTranslateOptions = {}
+) => {
   const { language: targetLanguage } = useLanguage();
   const { register, unregister, setTranslating } = useTranslationManager();
-  const [translations, setTranslations] = useState<string[]>(texts);
+  const [translatedText, setTranslatedText] = useState(sourceText);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // A unique ID for this hook instance to register with the global translation manager.
   const componentId = useId();
+  const { enableBatch = false, debounceMs = 0 } = options;
 
   useEffect(() => {
-    // Register this component with the translation manager.
     register(componentId);
     return () => unregister(componentId);
   }, [componentId, register, unregister]);
 
   useEffect(() => {
     let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
 
-    const translateBatch = async () => {
-      // If source and target are the same, no need to translate.
-      if (targetLanguage === 'id') {
-        setTranslations(texts);
-        setLoading(false);
-        setTranslating(componentId, false);
+    const translate = async () => {
+      if (!sourceText?.trim()) {
+        setTranslatedText(sourceText);
         return;
       }
 
-      // If no texts to translate, return early
-      if (!texts || texts.length === 0) {
-        setTranslations([]);
-        setLoading(false);
-        setTranslating(componentId, false);
+      if (targetLanguage === 'id') {
+        setTranslatedText(sourceText);
         return;
       }
 
@@ -62,105 +49,280 @@ export const useOptimizedTranslate = (texts: string[]): UseOptimizedTranslateRes
       setTranslating(componentId, true);
 
       try {
-        const result = await optimizedTranslationService.translateBatch({
-          texts,
+        const result = await optimizedTranslationService.translateText({
+          text: sourceText,
           source: 'id',
-          target: targetLanguage
+          target: targetLanguage,
         });
 
         if (isMounted) {
-          setTranslations(result.translations);
+          setTranslatedText(result);
           setLoading(false);
           setTranslating(componentId, false);
-          
-          // Log performance metrics in development
-          if (import.meta.env.DEV) {
-            console.log(`🔄 Batch translation completed: ${result.cacheHits}/${texts.length} cache hits, ${result.apiCalls} API calls, ${result.totalTime}ms`);
-          }
         }
       } catch (err) {
         if (isMounted) {
-          console.error('Batch translation failed:', err);
-          setError('Translation failed');
-          setTranslations(texts); // Fallback to original texts
+          setError(err instanceof Error ? err.message : 'Translation failed');
+          setTranslatedText(sourceText);
           setLoading(false);
           setTranslating(componentId, false);
         }
       }
     };
 
-    // Only translate if we have texts and target language is not Indonesian
-    if (texts.length > 0 && targetLanguage !== 'id') {
-      translateBatch();
+    if (debounceMs > 0) {
+      timeoutId = setTimeout(translate, debounceMs);
     } else {
-      setTranslations(texts);
-      setLoading(false);
-      setTranslating(componentId, false);
+      translate();
     }
 
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [texts, targetLanguage, componentId, setTranslating]);
+  }, [sourceText, targetLanguage, componentId, setTranslating, debounceMs]);
 
-  return { translations, loading, error };
+  return { translatedText, loading, error };
 };
 
 /**
- * Hook for translating a single text with optimized performance
- * 
- * @param text - Single text to translate
- * @returns Object containing translated text, loading state, and error state
+ * Hook for batch translating multiple texts
  */
-export const useOptimizedTranslateSingle = (text: string) => {
-  const { translations, loading, error } = useOptimizedTranslate([text]);
-  return {
-    translatedText: translations[0] || text,
-    loading,
-    error
-  };
-};
-
-/**
- * Hook for translating multiple texts with individual state tracking
- * 
- * @param texts - Array of texts to translate
- * @returns Array of objects containing translated text, loading state, and error state for each text
- */
-export const useOptimizedTranslateMultiple = (texts: string[]) => {
-  const { translations, loading, error } = useOptimizedTranslate(texts);
-  
-  return texts.map((text, index) => ({
-    translatedText: translations[index] || text,
-    loading,
-    error: error ? error : null
-  }));
-};
-
-/**
- * Hook for translating object properties with optimized performance
- *
- * @param obj - Object containing text properties to translate
- * @param keys - Array of keys to translate
- * @returns Object with translated properties and loading state
- */
-export const useOptimizedTranslateObject = <T extends Record<string, any>>(
-  obj: T,
-  keys: (keyof T)[]
+export const useBatchTranslate = (
+  texts: string[],
+  options: UseOptimizedTranslateOptions = {}
 ) => {
-  const texts = keys.map(key => String(obj[key] || ''));
-  const { translations, loading, error } = useOptimizedTranslate(texts);
-  
-  const translatedObj = { ...obj };
-  keys.forEach((key, index) => {
-    translatedObj[key] = translations[index] || obj[key];
+  const { language: targetLanguage } = useLanguage();
+  const { register, unregister, setTranslating } = useTranslationManager();
+  const [translations, setTranslations] = useState<string[]>(texts);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<{ cacheHits: number; apiCalls: number; totalTime: number }>({
+    cacheHits: 0,
+    apiCalls: 0,
+    totalTime: 0
   });
+  
+  const componentId = useId();
+  const { enableBatch = true, debounceMs = 100 } = options;
 
-  return {
-    translatedObject: translatedObj,
-    loading,
-    error
-  };
+  useEffect(() => {
+    register(componentId);
+    return () => unregister(componentId);
+  }, [componentId, register, unregister]);
+
+  useEffect(() => {
+    let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
+
+    const translateBatch = async () => {
+      if (!texts.length || texts.every(text => !text?.trim())) {
+        setTranslations(texts);
+        return;
+      }
+
+      if (targetLanguage === 'id') {
+        setTranslations(texts);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      setTranslating(componentId, true);
+
+      const startTime = performance.now();
+
+      try {
+        const result = await optimizedTranslationService.translateBatch({
+          texts: texts.filter(text => text?.trim()),
+          source: 'id',
+          target: targetLanguage,
+        });
+
+        if (isMounted) {
+          // Reconstruct the translations array maintaining original order
+          const translatedArray = [...texts];
+          let translatedIndex = 0;
+          
+          for (let i = 0; i < texts.length; i++) {
+            if (texts[i]?.trim()) {
+              translatedArray[i] = result.translations[translatedIndex];
+              translatedIndex++;
+            }
+          }
+
+          setTranslations(translatedArray);
+          setStats({
+            cacheHits: result.cacheHits,
+            apiCalls: result.apiCalls,
+            totalTime: performance.now() - startTime
+          });
+          setLoading(false);
+          setTranslating(componentId, false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Batch translation failed');
+          setTranslations(texts);
+          setLoading(false);
+          setTranslating(componentId, false);
+        }
+      }
+    };
+
+    if (debounceMs > 0) {
+      timeoutId = setTimeout(translateBatch, debounceMs);
+    } else {
+      translateBatch();
+    }
+
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [texts, targetLanguage, componentId, setTranslating, debounceMs]);
+
+  return { translations, loading, error, stats };
 };
 
-export default useOptimizedTranslate;
+/**
+ * Hook for translating multiple fields in an object
+ */
+export const useObjectTranslate = <T extends Record<string, string>>(
+  sourceObject: T,
+  options: UseOptimizedTranslateOptions = {}
+) => {
+  const texts = Object.values(sourceObject);
+  const keys = Object.keys(sourceObject);
+  
+  const { translations, loading, error, stats } = useBatchTranslate(texts, options);
+
+  const translatedObject = keys.reduce((acc, key, index) => {
+    acc[key as keyof T] = translations[index] as T[keyof T];
+    return acc;
+  }, {} as T);
+
+  return { translatedObject, loading, error, stats };
+};
+
+/**
+ * Hook for translating arrays of objects with specific fields
+ */
+export const useArrayTranslate = <T extends Record<string, any>>(
+  sourceArray: T[],
+  fieldsToTranslate: (keyof T)[],
+  options: UseOptimizedTranslateOptions = {}
+) => {
+  const { language: targetLanguage } = useLanguage();
+  const { register, unregister, setTranslating } = useTranslationManager();
+  const [translatedArray, setTranslatedArray] = useState<T[]>(sourceArray);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<{ cacheHits: number; apiCalls: number; totalTime: number }>({
+    cacheHits: 0,
+    apiCalls: 0,
+    totalTime: 0
+  });
+  
+  const componentId = useId();
+  const { enableBatch = true, debounceMs = 100 } = options;
+
+  useEffect(() => {
+    register(componentId);
+    return () => unregister(componentId);
+  }, [componentId, register, unregister]);
+
+  useEffect(() => {
+    let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
+
+    const translateArray = async () => {
+      if (!sourceArray.length || targetLanguage === 'id') {
+        setTranslatedArray(sourceArray);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      setTranslating(componentId, true);
+
+      const startTime = performance.now();
+
+      try {
+        // Extract all texts that need translation
+        const allTexts: string[] = [];
+        const textPositions: { arrayIndex: number; field: keyof T; textIndex: number }[] = [];
+
+        sourceArray.forEach((item, arrayIndex) => {
+          fieldsToTranslate.forEach(field => {
+            const text = item[field];
+            if (typeof text === 'string' && text.trim()) {
+              textPositions.push({
+                arrayIndex,
+                field,
+                textIndex: allTexts.length
+              });
+              allTexts.push(text);
+            }
+          });
+        });
+
+        if (allTexts.length === 0) {
+          setTranslatedArray(sourceArray);
+          setLoading(false);
+          setTranslating(componentId, false);
+          return;
+        }
+
+        const result = await optimizedTranslationService.translateBatch({
+          texts: allTexts,
+          source: 'id',
+          target: targetLanguage,
+        });
+
+        if (isMounted) {
+          // Reconstruct the translated array
+          const translated = [...sourceArray];
+          
+          textPositions.forEach(({ arrayIndex, field, textIndex }) => {
+            if (!translated[arrayIndex]) return;
+            
+            translated[arrayIndex] = {
+              ...translated[arrayIndex],
+              [field]: result.translations[textIndex]
+            };
+          });
+
+          setTranslatedArray(translated);
+          setStats({
+            cacheHits: result.cacheHits,
+            apiCalls: result.apiCalls,
+            totalTime: performance.now() - startTime
+          });
+          setLoading(false);
+          setTranslating(componentId, false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Array translation failed');
+          setTranslatedArray(sourceArray);
+          setLoading(false);
+          setTranslating(componentId, false);
+        }
+      }
+    };
+
+    if (debounceMs > 0) {
+      timeoutId = setTimeout(translateArray, debounceMs);
+    } else {
+      translateArray();
+    }
+
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [sourceArray, targetLanguage, componentId, setTranslating, debounceMs, JSON.stringify(fieldsToTranslate)]);
+
+  return { translatedArray, loading, error, stats };
+};

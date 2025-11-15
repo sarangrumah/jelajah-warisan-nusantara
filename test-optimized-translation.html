@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized Translation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Optimized Translation System Test</h1>
+        <p>This page tests the optimized translation system with batch processing and caching.</p>
+        
+        <div class="test-section">
+            <h2>1. Single Translation Test</h2>
+            <button onclick="testSingleTranslation()">Test Single Translation</button>
+            <div id="singleResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Batch Translation Test</h2>
+            <button onclick="testBatchTranslation()">Test Batch Translation</button>
+            <div id="batchResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Cache Performance Test</h2>
+            <button onclick="testCachePerformance()">Test Cache Performance</button>
+            <div id="cacheResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Common Translations Test</h2>
+            <button onclick="testCommonTranslations()">Test Common Translations</button>
+            <div id="commonResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. Performance Statistics</h2>
+            <button onclick="showStats()">Show Performance Stats</button>
+            <div id="statsResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>6. Clear Cache</h2>
+            <button onclick="clearCache()">Clear Translation Cache</button>
+            <div id="clearResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mock optimized translation service for testing
+        class MockOptimizedTranslationService {
+            constructor() {
+                this.cache = new Map();
+                this.cacheTTL = 24 * 60 * 60 * 1000;
+                this.commonTranslations = {
+                    'id': {
+                        'Beranda': 'Home',
+                        'Destinasi': 'Destination',
+                        'Museum': 'Museum',
+                        'Warisan Budaya': 'Cultural Heritage',
+                        'Koleksi': 'Collection',
+                        'Koleksi MCB': 'MCB Collection',
+                        'Memory Of the World': 'Memory Of the World',
+                        'Agenda': 'Agenda',
+                        'Tentang Kami': 'About Us',
+                        'Struktur Organisasi': 'Organizational Structure',
+                        'Layanan Konservasi': 'Conservation Services',
+                        'Media & Publikasi': 'Media & Publications',
+                        'Peraturan': 'Regulations',
+                        'Hubungi Kami': 'Contact Us',
+                        'Karir': 'Career',
+                        'PPID': 'PPID',
+                        'SOP': 'SOP',
+                        'Admin': 'Admin',
+                        'Pemanfaatan Aset': 'Asset Utilization',
+                        'Merchandise': 'Merchandise'
+                    },
+                    'en': {
+                        'Home': 'Beranda',
+                        'Destination': 'Destinasi',
+                        'Museum': 'Museum',
+                        'Cultural Heritage': 'Warisan Budaya',
+                        'Collection': 'Koleksi',
+                        'MCB Collection': 'Koleksi MCB',
+                        'Memory Of the World': 'Memory Of the World',
+                        'Agenda': 'Agenda',
+                        'About Us': 'Tentang Kami',
+                        'Organizational Structure': 'Struktur Organisasi',
+                        'Conservation Services': 'Layanan Konservasi',
+                        'Media & Publications': 'Media & Publikasi',
+                        'Regulations': 'Peraturan',
+                        'Contact Us': 'Hubungi Kami',
+                        'Career': 'Karir',
+                        'PPID': 'PPID',
+                        'SOP': 'SOP',
+                        'Admin': 'Admin',
+                        'Asset Utilization': 'Pemanfaatan Aset',
+                        'Merchandise': 'Merchandise'
+                    }
+                };
+                this.stats = {
+                    cacheHits: 0,
+                    apiCalls: 0,
+                    totalTranslations: 0
+                };
+            }
+
+            getCacheKey(text, source, target) {
+                return `${source}-${target}-${btoa(text)}`;
+            }
+
+            getFromCache(text, source, target) {
+                const cacheKey = this.getCacheKey(text, source, target);
+                const cached = this.cache.get(cacheKey);
+                if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+                    this.stats.cacheHits++;
+                    return cached.translatedText;
+                }
+                if (cached) {
+                    this.cache.delete(cacheKey);
+                }
+                return null;
+            }
+
+            setCache(text, translatedText, source, target) {
+                const cacheKey = this.getCacheKey(text, source, target);
+                this.cache.set(cacheKey, {
+                    text,
+                    translatedText,
+                    timestamp: Date.now(),
+                    sourceLang: source,
+                    targetLang: target
+                });
+                this.stats.totalTranslations++;
+            }
+
+            getCommonTranslation(text, source, target) {
+                if (this.commonTranslations[source] && this.commonTranslations[source][text]) {
+                    return this.commonTranslations[source][text];
+                }
+                return null;
+            }
+
+            async translateText({ text, source, target }) {
+                if (source === target) return text;
+                if (!text?.trim()) return text;
+
+                // Check cache
+                const cached = this.getFromCache(text, source, target);
+                if (cached) return cached;
+
+                // Check common translations
+                const commonTranslation = this.getCommonTranslation(text, source, target);
+                if (commonTranslation) {
+                    this.setCache(text, commonTranslation, source, target);
+                    return commonTranslation;
+                }
+
+                // Simulate API call
+                this.stats.apiCalls++;
+                await new Promise(resolve => setTimeout(resolve, 100)); // Simulate network delay
+                
+                // Mock translation (in real implementation, this would call LibreTranslate)
+                const translatedText = text + ' [Translated]';
+                this.setCache(text, translatedText, source, target);
+                return translatedText;
+            }
+
+            async translateBatch({ texts, source, target }) {
+                if (source === target) {
+                    return {
+                        translations: texts,
+                        cacheHits: texts.length,
+                        apiCalls: 0
+                    };
+                }
+
+                const results = [];
+                let cacheHits = 0;
+                let apiCalls = 0;
+
+                for (const text of texts) {
+                    if (!text?.trim()) {
+                        results.push(text);
+                        continue;
+                    }
+
+                    // Check cache
+                    const cached = this.getFromCache(text, source, target);
+                    if (cached) {
+                        results.push(cached);
+                        cacheHits++;
+                        continue;
+                    }
+
+                    // Check common translations
+                    const commonTranslation = this.getCommonTranslation(text, source, target);
+                    if (commonTranslation) {
+                        results.push(commonTranslation);
+                        this.setCache(text, commonTranslation, source, target);
+                        cacheHits++;
+                        continue;
+                    }
+
+                    // Simulate API call
+                    this.stats.apiCalls++;
+                    apiCalls++;
+                    await new Promise(resolve => setTimeout(resolve, 50)); // Simulate network delay
+                    
+                    const translatedText = text + ' [Translated]';
+                    this.setCache(text, translatedText, source, target);
+                    results.push(translatedText);
+                }
+
+                return {
+                    translations: results,
+                    cacheHits,
+                    apiCalls
+                };
+            }
+
+            getCacheStats() {
+                return {
+                    size: this.cache.size,
+                    hitRate: this.stats.totalTranslations > 0 ? 
+                        this.stats.cacheHits / this.stats.totalTranslations : 0
+                };
+            }
+
+            clearCache() {
+                this.cache.clear();
+                this.stats.cacheHits = 0;
+                this.stats.apiCalls = 0;
+                this.stats.totalTranslations = 0;
+            }
+
+            prewarmCache() {
+                for (const [sourceLang, translations] of Object.entries(this.commonTranslations)) {
+                    for (const [text, translatedText] of Object.entries(translations)) {
+                        const targetLang = sourceLang === 'id' ? 'en' : 'id';
+                        this.setCache(text, translatedText, sourceLang, targetLang);
+                    }
+                }
+            }
+        }
+
+        // Global instance
+        const translationService = new MockOptimizedTranslationService();
+
+        async function testSingleTranslation() {
+            const resultDiv = document.getElementById('singleResult');
+            resultDiv.innerHTML = '<span class="loading">Translating...</span>';
+            
+            try {
+                const startTime = performance.now();
+                const result = await translationService.translateText({
+                    text: 'Beranda',
+                    source: 'id',
+                    target: 'en'
+                });
+                const endTime = performance.now();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>Input:</strong> "Beranda"<br>
+                        <strong>Output:</strong> "${result}"<br>
+                        <strong>Time:</strong> ${(endTime - startTime).toFixed(2)}ms<br>
+                        <strong>Cache Hit:</strong> ${result === 'Home' ? 'Yes (Common Translation)' : 'No'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testBatchTranslation() {
+            const resultDiv = document.getElementById('batchResult');
+            resultDiv.innerHTML = '<span class="loading">Translating batch...</span>';
+            
+            try {
+                const texts = ['Destinasi', 'Museum', 'Warisan Budaya', 'Koleksi', 'Merchandise'];
+                const startTime = performance.now();
+                const result = await translationService.translateBatch({
+                    texts,
+                    source: 'id',
+                    target: 'en'
+                });
+                const endTime = performance.now();
+                
+                let output = '<div class="success">';
+                output += `<strong>Input:</strong> ${texts.map(t => `"${t}"`).join(', ')}<br>`;
+                output += `<strong>Output:</strong> ${result.translations.map(t => `"${t}"`).join(', ')}<br>`;
+                output += `<strong>Time:</strong> ${(endTime - startTime).toFixed(2)}ms<br>`;
+                output += `<strong>Cache Hits:</strong> ${result.cacheHits}<br>`;
+                output += `<strong>API Calls:</strong> ${result.apiCalls}<br>`;
+                output += `<strong>Performance:</strong> ${result.cacheHits === texts.length ? 'All from cache!' : 'Some API calls made'}`;
+                output += '</div>';
+                
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testCachePerformance() {
+            const resultDiv = document.getElementById('cacheResult');
+            resultDiv.innerHTML = '<span class="loading">Testing cache performance...</span>';
+            
+            try {
+                const texts = ['Destinasi', 'Museum', 'Koleksi'];
+                
+                // First call (should make API calls)
+                const startTime1 = performance.now();
+                const result1 = await translationService.translateBatch({
+                    texts,
+                    source: 'id',
+                    target: 'en'
+                });
+                const time1 = performance.now() - startTime1;
+                
+                // Second call (should be cached)
+                const startTime2 = performance.now();
+                const result2 = await translationService.translateBatch({
+                    texts,
+                    source: 'id',
+                    target: 'en'
+                });
+                const time2 = performance.now() - startTime2;
+                
+                const improvement = ((time1 - time2) / time1 * 100).toFixed(1);
+                
+                let output = '<div class="success">';
+                output += `<strong>First Call:</strong> ${time1.toFixed(2)}ms (${result1.apiCalls} API calls)<br>`;
+                output += `<strong>Second Call:</strong> ${time2.toFixed(2)}ms (${result2.apiCalls} API calls)<br>`;
+                output += `<strong>Improvement:</strong> ${improvement}% faster<br>`;
+                output += `<strong>Cache Efficiency:</strong> ${result2.cacheHits}/${texts.length} cache hits`;
+                output += '</div>';
+                
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testCommonTranslations() {
+            const resultDiv = document.getElementById('commonResult');
+            resultDiv.innerHTML = '<span class="loading">Testing common translations...</span>';
+            
+            try {
+                const texts = ['Beranda', 'Destinasi', 'Museum', 'Koleksi'];
+                const startTime = performance.now();
+                const result = await translationService.translateBatch({
+                    texts,
+                    source: 'id',
+                    target: 'en'
+                });
+                const endTime = performance.now();
+                
+                let output = '<div class="success">';
+                output += `<strong>Common Translations Test:</strong><br>`;
+                texts.forEach((text, index) => {
+                    output += `"${text}" → "${result.translations[index]}"<br>`;
+                });
+                output += `<strong>Time:</strong> ${(endTime - startTime).toFixed(2)}ms<br>`;
+                output += `<strong>API Calls:</strong> ${result.apiCalls} (should be 0 for common translations)<br>`;
+                output += `<strong>Cache Hits:</strong> ${result.cacheHits}`;
+                output += '</div>';
+                
+                resultDiv.innerHTML = output;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function showStats() {
+            const resultDiv = document.getElementById('statsResult');
+            const stats = translationService.getCacheStats();
+            
+            let output = '<div class="stats">';
+            output += `<div class="stat-item"><strong>Cache Size:</strong><br>${stats.size} entries</div>`;
+            output += `<div class="stat-item"><strong>Cache Hit Rate:</strong><br>${(stats.hitRate * 100).toFixed(1)}%</div>`;
+            output += `<div class="stat-item"><strong>Total API Calls:</strong><br>${translationService.stats.apiCalls}</div>`;
+            output += `<div class="stat-item"><strong>Total Translations:</strong><br>${translationService.stats.totalTranslations}</div>`;
+            output += '</div>';
+            
+            resultDiv.innerHTML = output;
+        }
+
+        function clearCache() {
+            const resultDiv = document.getElementById('clearResult');
+            translationService.clearCache();
+            resultDiv.innerHTML = '<div class="success">✅ Translation cache cleared successfully!</div>';
+        }
+
+        // Pre-warm cache on page load
+        window.addEventListener('load', () => {
+            translationService.prewarmCache();
+            console.log('🚀 Translation cache pre-warmed with common translations');
+        });
+    </script>
+</body>
+</html>
