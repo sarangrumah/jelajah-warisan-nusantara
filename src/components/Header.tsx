@@ -9,16 +9,61 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useOptimizedTranslate } from '@/hooks/useOptimizedTranslate';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { t } = useTranslation();
+  const { language } = useLanguage();
 
-  // const iconSrc = require(`@/assets/images/logo/MCB Logo_Putih_notext.png`);
+  // Navigation items with original Indonesian text
+  const navigationItems = [
+    { name: 'Beranda', href: '/beranda' },
+    {
+      name: 'Destinasi',
+      href: '/museum',
+      subItems: [
+        { name: 'Museum', href: '/museums' },
+        { name: 'Warisan Budaya', href: '/heritage' },
+      ],
+    },
+    {
+      name: 'Koleksi',
+      href: '/collection',
+      subItems: [
+        { name: 'Koleksi', href: '/collection' },
+        { name: 'Memory Of the World', href: '/mow' },
+      ],
+    },
+    { name: 'Agenda', href: '/agenda' },
+    {
+      name: 'Tentang Kami',
+      href: '/tentang-kami',
+      subItems: [
+        { name: 'Tentang Kami', href: '/tentang-kami' },
+        { name: 'Layanan Konservasi', href: '/laboratorium-konservasi' },
+        { name: 'Media & Publikasi', href: '/media-publikasi' },
+        { name: 'Pemanfaatan Aset', href: '/pemanfaatan-aset' },
+        { name: 'Merchandise', href: '/merchandise' },
+        { name: 'Hubungi Kami', href: '/hubungi-kami' },
+        { name: 'Karir', href: '/karir' },
+      ]
+    },
+    { name: 'PPID', href: '/ppid' },
+  ];
+
+  // Translate navigation items using optimized service
+  const translatedNavigationItems = navigationItems.map(item => ({
+    ...item,
+    name: useOptimizedTranslate(item.name).translatedText,
+    subItems: item.subItems ? item.subItems.map(subItem => ({
+      ...subItem,
+      name: useOptimizedTranslate(subItem.name).translatedText
+    })) : undefined
+  }));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,46 +73,6 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navigationItems = [
-    { name: t('common.nav.beranda'), href: '/beranda' },
-    {
-      name: t('common.nav.destinasi'),
-      href: '/museum',
-      subItems: [
-        { name: t('common.nav.museum'), href: '/museums' },
-        { name: t('common.nav.heritage'), href: '/heritage' },
-      ],
-    },
-    {
-      name: t('common.nav.collection'),
-      href: '/collection',
-      subItems: [
-        { name: t('common.nav.koleksi'), href: '/collection' },
-        { name: t('common.nav.mow'), href: '/mow' },
-      ],
-    },
-    // { name: t('common.nav.koleksi'), href: '/collection' },
-    { name: t('common.nav.agenda'), href: '/agenda' },
-    {
-      name: t('common.nav.tentangKami'),
-      href: '/tentang-kami',
-      subItems: [
-        // { name: 'Profil Perusahaan', href: '/tentang-kami/profil-perusahaan' },
-        { name: t('common.nav.tentangKami'), href: '/tentang-kami' },
-        // { name: t('common.nav.strukturOrganisasi'), href: '/struktur-organisasi' },
-        { name: t('common.nav.layananKonservasi'), href: '/laboratorium-konservasi' },
-        { name: t('common.nav.mediaPublikasi'), href: '/media-publikasi' },
-        { name: t('common.nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
-        { name: t('common.nav.merchandise'), href: '/merchandise' },
-        // { name: t('common.nav.peraturan'), href: '/peraturan' },
-        { name: t('common.nav.hubungiKami'), href: '/hubungi-kami' },
-        { name: t('common.nav.career'), href: '/karir' },
-      ]
-    },
-    { name: t('common.nav.ppid'), href: '/ppid' },
-    // { name: t('common.nav.admin'), href: '/admin' },
-  ];
 
   return (
     <>
@@ -79,24 +84,22 @@ const Header = () => {
         }`}
       >
         <div className="container mx-auto px-4">
-
           {/* Main navigation */}
           <nav className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <div className="w-12x w-[1.5rem] h-12x bg-gradient-to-brx from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 <img src={logo} alt="Logo" className='w-[3rem]'/>
-                {/* <img src={new URL('@/assets/images/logo/MCB Logo_Putih_notext.png', import.meta.url).href} alt="Logo" className='w-[3rem]'/> */}
               </div>
               <div>
                 <h1 className="text-xl font-bold text-heritage-gradient">
-                  {t('common.footer.orgName')}
+                  {language === 'id' ? 'Museum dan Cagar Budaya' : 'Museum and Cultural Heritage'}
                 </h1>
               </div>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8 text-[1rem]">
-              {navigationItems.map((item) => (
+              {translatedNavigationItems.map((item) => (
                 item.subItems ? (
                   <DropdownMenu key={item.name}>
                     <DropdownMenuTrigger asChild>
@@ -160,7 +163,7 @@ const Header = () => {
           <div className="fixed inset-0 bg-background/95 backdrop-blur-md" />
           <div className="fixed right-0 top-0 h-full w-64 bg-card border-l border-border p-6 mt-20">
             <nav className="space-y-4">
-              {navigationItems.map((item) => (
+              {translatedNavigationItems.map((item) => (
                 <div key={item.name}>
                   <Link
                     to={item.href}
