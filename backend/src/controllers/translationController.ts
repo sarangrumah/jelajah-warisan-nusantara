@@ -382,3 +382,59 @@ export const checkTranslationHealth = async (req: Request, res: Response) => {
     });
   }
 };
+
+// Translation proxy endpoint for frontend
+export const translateText = async (req: Request, res: Response) => {
+  const { text, source, target } = req.body;
+
+  if (!text || !source || !target) {
+    return res.status(400).json({
+      error: 'Missing required fields: text, source, target'
+    });
+  }
+
+  try {
+    const result = await translationService.translate(text, target, source);
+    
+    if (result.success) {
+      res.json({
+        translatedText: result.translatedText
+      });
+    } else {
+      res.status(500).json({
+        error: result.error || 'Translation failed'
+      });
+    }
+  } catch (error) {
+    console.error('Translation proxy error:', error);
+    res.status(500).json({
+      error: 'Translation service unavailable',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
+// Batch translation proxy endpoint for frontend
+export const translateBatch = async (req: Request, res: Response) => {
+  const { texts, source, target } = req.body;
+
+  if (!texts || !Array.isArray(texts) || !source || !target) {
+    return res.status(400).json({
+      error: 'Missing required fields: texts (array), source, target'
+    });
+  }
+
+  try {
+    const results = await translationService.translateBatch(texts, target, source);
+    
+    res.json({
+      translatedText: results.map(r => r.translatedText)
+    });
+  } catch (error) {
+    console.error('Batch translation proxy error:', error);
+    res.status(500).json({
+      error: 'Batch translation service unavailable',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};

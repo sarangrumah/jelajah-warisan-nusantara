@@ -5,98 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Translation Fix Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .success { color: green; font-weight: bold; }
-        .error { color: red; font-weight: bold; }
-        .test { margin: 10px 0; padding: 10px; border-left: 3px solid #ccc; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
-    <h1>Translation Fix Test</h1>
-    
-    <div class="test">
-        <h3>API Response Test</h3>
-        <div id="api-test">Testing API response...</div>
-    </div>
-    
-    <div class="test">
-        <h3>Translation Keys Available</h3>
-        <div id="keys-test">Checking available keys...</div>
-    </div>
-    
-    <div class="test">
-        <h3>Expected Header Translations</h3>
-        <ul>
-            <li>common.nav.beranda: <span id="nav-beranda">Loading...</span></li>
-            <li>common.nav.destinasi: <span id="nav-destinasi">Loading...</span></li>
-            <li>common.nav.collection: <span id="nav-collection">Loading...</span></li>
-            <li>common.nav.agenda: <span id="nav-agenda">Loading...</span></li>
-            <li>common.nav.tentangKami: <span id="nav-tentangKami">Loading...</span></li>
-            <li>common.nav.ppid: <span id="nav-ppid">Loading...</span></li>
-        </ul>
-    </div>
-    
-    <div class="test">
-        <h3>Expected Footer Translations</h3>
-        <ul>
-            <li>common.footer.orgName: <span id="footer-orgName">Loading...</span></li>
-            <li>common.footer.contactUs: <span id="footer-contactUs">Loading...</span></li>
-            <li>common.footer.quickLinks: <span id="footer-quickLinks">Loading...</span></li>
-            <li>common.footer.socialMedia: <span id="footer-socialMedia">Loading...</span></li>
-            <li>common.footer.copyright: <span id="footer-copyright">Loading...</span></li>
-        </ul>
+    <div class="container">
+        <h1>Translation System Test</h1>
+        <p>Testing the fixed translation system with backend proxy</p>
+        
+        <div class="test-section">
+            <h3>Test 1: Backend Health Check</h3>
+            <button onclick="testHealth()">Test Health</button>
+            <div id="health-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Single Translation</h3>
+            <input type="text" id="single-text" value="Halo dunia" placeholder="Enter text to translate">
+            <button onclick="testSingleTranslation()">Test Single Translation</button>
+            <div id="single-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Batch Translation</h3>
+            <textarea id="batch-texts" rows="3" placeholder="Enter texts to translate (one per line)">Halo dunia
+Selamat pagi
+Terima kasih</textarea>
+            <button onclick="testBatchTranslation()">Test Batch Translation</button>
+            <div id="batch-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Frontend Integration</h3>
+            <button onclick="testFrontendIntegration()">Test Frontend Integration</button>
+            <div id="frontend-result" class="result"></div>
+        </div>
     </div>
 
     <script>
-        async function testTranslations() {
+        const API_BASE = 'http://localhost:3000/api';
+
+        async function testHealth() {
+            const resultEl = document.getElementById('health-result');
+            resultEl.innerHTML = 'Testing...';
+            
             try {
-                // Test API response
-                const response = await fetch('http://localhost:3000/api/translations/by-language/en');
+                const response = await fetch(`${API_BASE}/translate/health`);
                 const data = await response.json();
                 
-                document.getElementById('api-test').innerHTML = 
-                    `<span class="success">✓ API Response Success</span> - ${Object.keys(data.translation || {}).length} translations loaded`;
-                
-                // Test specific keys
-                const translations = data.translation;
-                
-                // Header translations
-                document.getElementById('nav-beranda').textContent = translations['common.nav.beranda'] || 'MISSING';
-                document.getElementById('nav-destinasi').textContent = translations['common.nav.destinasi'] || 'MISSING';
-                document.getElementById('nav-collection').textContent = translations['common.nav.collection'] || 'MISSING';
-                document.getElementById('nav-agenda').textContent = translations['common.nav.agenda'] || 'MISSING';
-                document.getElementById('nav-tentangKami').textContent = translations['common.nav.tentangKami'] || 'MISSING';
-                document.getElementById('nav-ppid').textContent = translations['common.nav.ppid'] || 'MISSING';
-                
-                // Footer translations
-                document.getElementById('footer-orgName').textContent = translations['common.footer.orgName'] || 'MISSING';
-                document.getElementById('footer-contactUs').textContent = translations['common.footer.contactUs'] || 'MISSING';
-                document.getElementById('footer-quickLinks').textContent = translations['common.footer.quickLinks'] || 'MISSING';
-                document.getElementById('footer-socialMedia').textContent = translations['common.footer.socialMedia'] || 'MISSING';
-                document.getElementById('footer-copyright').textContent = translations['common.footer.copyright'] || 'MISSING';
-                
-                // Check if all required keys are present
-                const requiredKeys = [
-                    'common.nav.beranda', 'common.nav.destinasi', 'common.nav.collection',
-                    'common.nav.agenda', 'common.nav.tentangKami', 'common.nav.ppid',
-                    'common.footer.orgName', 'common.footer.contactUs', 'common.footer.quickLinks',
-                    'common.footer.socialMedia', 'common.footer.copyright'
-                ];
-                
-                const missingKeys = requiredKeys.filter(key => !translations[key]);
-                
-                document.getElementById('keys-test').innerHTML = 
-                    missingKeys.length === 0 
-                        ? `<span class="success">✓ All required translation keys are available</span>`
-                        : `<span class="error">✗ Missing keys: ${missingKeys.join(', ')}</span>`;
-                        
+                if (data.healthy) {
+                    resultEl.innerHTML = `<span class="success">✅ Health check passed:</span> ${data.message}`;
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Health check failed:</span> ${data.error || 'Unknown error'}`;
+                }
             } catch (error) {
-                document.getElementById('api-test').innerHTML = 
-                    `<span class="error">✗ API Error: ${error.message}</span>`;
+                resultEl.innerHTML = `<span class="error">❌ Health check error:</span> ${error.message}`;
             }
         }
-        
-        testTranslations();
+
+        async function testSingleTranslation() {
+            const text = document.getElementById('single-text').value;
+            const resultEl = document.getElementById('single-result');
+            resultEl.innerHTML = 'Translating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        sourceLang: 'id',
+                        targetLang: 'en'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultEl.innerHTML = `<span class="success">✅ Translation successful:</span> "${text}" → "${data.translatedText}"`;
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Translation failed:</span> ${data.error}`;
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Translation error:</span> ${error.message}`;
+            }
+        }
+
+        async function testBatchTranslation() {
+            const texts = document.getElementById('batch-texts').value.split('\n').filter(t => t.trim());
+            const resultEl = document.getElementById('batch-result');
+            resultEl.innerHTML = 'Translating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        texts: texts,
+                        sourceLang: 'id',
+                        targetLang: 'en'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<span class="success">✅ Batch translation successful:</span><br>`;
+                    data.results.forEach((result, index) => {
+                        html += `"${texts[index]}" → "${result.translatedText}"<br>`;
+                    });
+                    resultEl.innerHTML = html;
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Batch translation failed:</span> ${data.error}`;
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Batch translation error:</span> ${error.message}`;
+            }
+        }
+
+        async function testFrontendIntegration() {
+            const resultEl = document.getElementById('frontend-result');
+            resultEl.innerHTML = 'Testing frontend integration...';
+            
+            try {
+                // Test the frontend translation service directly
+                const response = await fetch('/src/lib/optimized-translation-service.ts');
+                if (response.ok) {
+                    resultEl.innerHTML = `<span class="success">✅ Frontend translation service found</span><br>`;
+                    
+                    // Test if the frontend can call the backend API
+                    const testResponse = await fetch(`${API_BASE}/translate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: 'Test dari frontend',
+                            sourceLang: 'id',
+                            targetLang: 'en'
+                        })
+                    });
+                    
+                    if (testResponse.ok) {
+                        const testData = await testResponse.json();
+                        resultEl.innerHTML += `<span class="success">✅ Frontend can connect to backend API</span><br>`;
+                        resultEl.innerHTML += `<span class="success">✅ Translation working: "Test dari frontend" → "${testData.translatedText}"</span>`;
+                    } else {
+                        resultEl.innerHTML += `<span class="error">❌ Frontend cannot connect to backend API</span>`;
+                    }
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Frontend translation service not found</span>`;
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Frontend integration error:</span> ${error.message}`;
+            }
+        }
+
+        // Auto-run health check on page load
+        window.onload = testHealth;
     </script>
 </body>
 </html>

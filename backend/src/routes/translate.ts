@@ -67,4 +67,28 @@ router.post('/batch', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/translate/health
+ * Check if translation service is healthy
+ */
+router.get('/health', async (req: Request, res: Response) => {
+  try {
+    const isHealthy = await translationService.checkHealth();
+    const supportedLanguages = await translationService.getSupportedLanguages();
+    
+    res.json({
+      healthy: isHealthy,
+      service: 'LibreTranslate',
+      supportedLanguages: supportedLanguages.length,
+      message: isHealthy ? 'Translation service is operational' : 'Translation service is unavailable'
+    });
+  } catch (error) {
+    console.error('Translation health check error:', error);
+    res.status(500).json({
+      healthy: false,
+      error: 'Failed to check translation service health'
+    });
+  }
+});
+
 export default router;

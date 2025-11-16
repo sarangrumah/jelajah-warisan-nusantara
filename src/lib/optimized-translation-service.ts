@@ -200,7 +200,7 @@ class OptimizedTranslationService {
   }
 
   private async callLibreTranslateAPI(texts: string[], source: string, target: string): Promise<string[]> {
-    const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
+    const BACKEND_TRANSLATE_API = `${import.meta.env.VITE_API_URL}/api/translate`;
     
     // Filter out empty texts
     const nonEmptyTexts = texts.filter(text => text?.trim());
@@ -213,18 +213,17 @@ class OptimizedTranslationService {
     
     while (retries <= this.maxRetries) {
       try {
-        // Use batch translation endpoint - send all texts in one request
+        // Use backend translation endpoint - send all texts in one request
         const response = await this.executeWithConcurrency(() =>
-          fetch(LIBRETRANSLATE_API, {
+          fetch(`${BACKEND_TRANSLATE_API}/batch`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              q: nonEmptyTexts,
-              source: source,
-              target: target,
-              format: 'text',
+              texts: nonEmptyTexts,
+              sourceLang: source,
+              targetLang: target,
             }),
           })
         );
@@ -235,6 +234,10 @@ class OptimizedTranslationService {
 
         const data = await response.json();
         
+        if (!data.success) {
+          throw new Error(data.error || 'Translation service returned error');
+        }
+
         // Reconstruct results maintaining original array structure
         const results: string[] = [];
         let translatedIndex = 0;
@@ -243,7 +246,7 @@ class OptimizedTranslationService {
           if (!text?.trim()) {
             results.push(text); // Keep empty texts as-is
           } else {
-            results.push(data.translatedText?.[translatedIndex] || text);
+            results.push(data.results?.[translatedIndex]?.translatedText || text);
             translatedIndex++;
           }
         }
@@ -262,19 +265,18 @@ class OptimizedTranslationService {
     
     // All retries failed, return original texts
     console.error(`Translation API call failed after ${this.maxRetries} retries:`, lastError);
-    console.warn('⚠️ LibreTranslate service unavailable, using original texts as fallback');
+    console.warn('⚠️ Translation service unavailable, using original texts as fallback');
     return texts;
   }
 
   /**
-   * Check if LibreTranslate service is available
+   * Check if translation service is available
    */
   async checkHealth(): Promise<boolean> {
-    const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
-    const healthUrl = LIBRETRANSLATE_API.replace('/translate', '/languages');
+    const BACKEND_TRANSLATE_API = `${import.meta.env.VITE_API_URL}/api/translate`;
     
     try {
-      const response = await fetch(healthUrl, {
+      const response = await fetch(`${BACKEND_TRANSLATE_API}/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -282,7 +284,7 @@ class OptimizedTranslationService {
       });
       return response.ok;
     } catch (error) {
-      console.warn('LibreTranslate health check failed:', error);
+      console.warn('Translation service health check failed:', error);
       return false;
     }
   }

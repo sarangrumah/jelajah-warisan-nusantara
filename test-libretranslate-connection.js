@@ -1,11 +1,11 @@
 /**
  * Test LibreTranslate Connection
- * 
+ *
  * This script tests the connection to the LibreTranslate server
  * running on your production server.
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function testLibreTranslateConnection() {
   const baseUrl = 'https://museumcagarbudaya.kemenbud.go.id:5000';
