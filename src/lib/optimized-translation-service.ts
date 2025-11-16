@@ -200,7 +200,7 @@ class OptimizedTranslationService {
   }
 
   private async callLibreTranslateAPI(texts: string[], source: string, target: string): Promise<string[]> {
-    const LIBRETRANSLATE_API = 'http://localhost:5000/translate';
+    const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
     
     // Filter out empty texts
     const nonEmptyTexts = texts.filter(text => text?.trim());
@@ -262,7 +262,29 @@ class OptimizedTranslationService {
     
     // All retries failed, return original texts
     console.error(`Translation API call failed after ${this.maxRetries} retries:`, lastError);
+    console.warn('⚠️ LibreTranslate service unavailable, using original texts as fallback');
     return texts;
+  }
+
+  /**
+   * Check if LibreTranslate service is available
+   */
+  async checkHealth(): Promise<boolean> {
+    const LIBRETRANSLATE_API = import.meta.env.VITE_LIBRETRANSLATE_URL || 'http://localhost:5000/translate';
+    const healthUrl = LIBRETRANSLATE_API.replace('/translate', '/languages');
+    
+    try {
+      const response = await fetch(healthUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.ok;
+    } catch (error) {
+      console.warn('LibreTranslate health check failed:', error);
+      return false;
+    }
   }
 
   /**
