@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useEffect, useMemo } from 'react';
+import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +8,8 @@ import MerchandiseProductList from '@/components/MerchandiseProductList';
 import SectionWrapper from '@/components/SectionWrapper';
 
 const Merchandise = () => {
-  const { t } = useHybridTranslation();
+  const merchandiseTexts = useMemo(() => ({}), []);
+  const { ref } = useOnDemandTranslate(merchandiseTexts);
   const { pathname } = useLocation();
   
   useEffect(() => {
@@ -23,7 +24,7 @@ const Merchandise = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background overflow-x-hidden">
       <Header />
       
       {/* Banner Section */}

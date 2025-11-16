@@ -1,6 +1,7 @@
 import 'react';
+import 'react';
 import { useMemo } from 'react';
-import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
+import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -38,8 +39,8 @@ const ProfileSection = () => {
     tahunPengalaman: 'Tahun Pengalaman'
   }), []);
 
-  // Batch translate all profile texts at once
-  const { translations } = useBatchTranslateOptimized(profileTexts, { debounceMs: 50 });
+  // Translate texts only when the component is visible
+  const { ref, translations } = useOnDemandTranslate(profileTexts);
 
   // This is where you would fetch your dynamic data, for now we will use static data
   const profile = {
@@ -62,7 +63,7 @@ const ProfileSection = () => {
 
   return (
     <>
-      <section className="py-20 bg-gradient-to-b from-background to-card">
+      <section ref={ref} className="py-20 bg-gradient-to-b from-background to-card">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">

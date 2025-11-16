@@ -3,8 +3,8 @@ import Header from '@/components/Header'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Filter, MapPin, Search, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useEffect, useState, useMemo } from 'react';
+import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 import { Link, useLocation } from 'react-router-dom';
 import { Select as Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +84,15 @@ function extractImagePaths(imageData: any): string[] {
   return [PLACEHOLDER_IMAGE];
 }
 const PemanfaatanAset = () => {
-	const { t } = useHybridTranslation();
+	const pemanfaatanAsetTexts = useMemo(() => ({
+    title: 'pemanfaatanAset.title',
+    subtitle: 'pemanfaatanAset.subtitle',
+    searchPlaceholder: 'filter.pemanfaatanAset.search',
+    noData: 'pemanfaatanAset.noData',
+    semua: 'Semua'
+  }), []);
+
+  const { ref, translations } = useOnDemandTranslate(pemanfaatanAsetTexts);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [filterType, setFilterType] = useState('');
     const [categories, setCategories] = useState([]);
@@ -203,16 +211,16 @@ const PemanfaatanAset = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
             <Header />
             {/* Hero Banner */}
             <section className="relative py-20 h-80 from-primary to-primary-glow flex items-center justify-center">
                 <div className="text-center text-white">
                 <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                    {t('pemanfaatanAset.title')}
+                    {translations.title || 'Pemanfaatan Aset'}
                 </h1>
                 <p className="text-xl">
-                    {t('pemanfaatanAset.subtitle')}
+                    {translations.subtitle || 'Manfaatkan aset kami untuk acara Anda'}
                 </p>
                 </div>
             </section>
@@ -222,7 +230,7 @@ const PemanfaatanAset = () => {
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
-                        placeholder={t('filter.pemanfaatanAset.search')}
+                        placeholder={translations.searchPlaceholder || 'Cari aset...'}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10"
@@ -234,7 +242,7 @@ const PemanfaatanAset = () => {
                     >
                         <SelectTrigger className="w-full md:w-48">
                             <Filter size={20} className="mr-2" />
-                            <SelectValue placeholder={'Semua'} />
+                            <SelectValue placeholder={translations.semua || 'Semua'} />
                         </SelectTrigger>
                         <SelectContent>
                             {categories.map((option) => (
@@ -376,7 +384,7 @@ const PemanfaatanAset = () => {
                 {(assets.length === 0 || filteredAssets.length === 0) && (
                     <div className="text-center py-12">
                         <p className="text-muted-foreground text-lg">
-                        {t('pemanfaatanAset.noData')}
+                        {translations.noData || 'Tidak ada data aset yang tersedia.'}
                         </p>
                     </div>
                 )}

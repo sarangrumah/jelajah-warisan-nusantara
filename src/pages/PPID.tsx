@@ -1,11 +1,14 @@
 import Header from '@/components/Header';
 import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 
 import { useLocation } from 'react-router-dom';
 
 const PPID = () => {
+  const ppidTexts = useMemo(() => ({}), []);
+  const { ref } = useOnDemandTranslate(ppidTexts);
   const { pathname } = useLocation();
     
   useEffect(() => {
@@ -33,7 +36,7 @@ const PPID = () => {
   }, []);
   
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
       <Header />
       <PPIDSection />
       <Footer />

@@ -20,12 +20,17 @@ export const TranslationCoordinatorProvider: React.FC<{ children: React.ReactNod
   const queueRef = useRef<TranslationRequest[]>([]);
   const isProcessingRef = useRef(false);
   const isTranslatingRef = useRef(false);
+  const pendingTextsRef = useRef(new Set<string>());
 
   const processQueue = useCallback(async () => {
-    if (isProcessingRef.current || queueRef.current.length === 0) return;
+    if (isProcessingRef.current || queueRef.current.length === 0) {
+      if (isProcessingRef.current) console.log('🔄 Queue processing already in progress');
+      return;
+    }
     
     isProcessingRef.current = true;
     isTranslatingRef.current = true;
+    console.log('🔥 Starting queue processing...');
 
     try {
       // Group requests by source/target language
@@ -49,15 +54,22 @@ export const TranslationCoordinatorProvider: React.FC<{ children: React.ReactNod
         
         requests.forEach((request, requestIndex) => {
           request.texts.forEach((text, textIndex) => {
-            allTexts.push(text);
-            requestIndices.push({ requestIndex, textIndex });
+            if (!pendingTextsRef.current.has(text)) {
+              allTexts.push(text);
+              pendingTextsRef.current.add(text);
+              requestIndices.push({ requestIndex, textIndex });
+            }
           });
         });
 
-        if (allTexts.length === 0) continue;
+        if (allTexts.length === 0) {
+          console.log(`✅ No new texts to translate for ${source}→${target}`);
+          continue;
+        }
 
         try {
           console.log(`🚀 Coordinated translation: ${allTexts.length} texts for ${source}→${target} (${requests.length} requests)`);
+          console.log('📝 Texts to translate:', allTexts);
           
           const result = await optimizedTranslationService.translateBatch({
             texts: allTexts,
@@ -69,11 +81,15 @@ export const TranslationCoordinatorProvider: React.FC<{ children: React.ReactNod
           let resultIndex = 0;
           const resultsByRequest = new Map<number, string[]>();
           
+          console.log('✅ Coordinated translation successful, distributing results...');
+          
           requestIndices.forEach(({ requestIndex, textIndex }) => {
             if (!resultsByRequest.has(requestIndex)) {
               resultsByRequest.set(requestIndex, []);
             }
-            resultsByRequest.get(requestIndex)![textIndex] = result.translations[resultIndex];
+            const translation = result.translations[resultIndex];
+            resultsByRequest.get(requestIndex)![textIndex] = translation;
+            console.log(`  - Result for request ${requestIndex}: "${allTexts[resultIndex]}" → "${translation}"`);
             resultIndex++;
           });
 
@@ -93,8 +109,10 @@ export const TranslationCoordinatorProvider: React.FC<{ children: React.ReactNod
       }
 
     } finally {
-      // Clear the queue
+      // Clear the queue and pending texts
+      console.log('🧹 Clearing translation queue and pending texts');
       queueRef.current = [];
+      pendingTextsRef.current.clear();
       isProcessingRef.current = false;
       isTranslatingRef.current = false;
     }
@@ -109,10 +127,12 @@ export const TranslationCoordinatorProvider: React.FC<{ children: React.ReactNod
       }
 
       // Add to queue
+      console.log(`📥 Queuing ${texts.length} texts for translation`);
       queueRef.current.push({ texts, source, target, resolve, reject });
       
       // Process queue if not already processing
       if (!isProcessingRef.current) {
+        console.log('🔄 Not currently processing, starting new batch processing in 10ms');
         setTimeout(() => processQueue(), 10); // Small delay to batch requests
       }
     });

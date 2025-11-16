@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useEffect, useState, useMemo } from 'react';
+import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -47,7 +47,17 @@ function getMuseumsImageUrl(filename: string) {
   return '/placeholder.svg';
 }
 const Heritage = () => {
-  const { t } = useHybridTranslation();
+  const heritageTexts = useMemo(() => ({
+    title: 'heritage.title',
+    subtitle: 'heritage.subtitle',
+    searchPlaceholder: 'filter.heritage.search',
+    filterPlaceholder: 'Filter by type',
+    noResults: 'No heritage sites found. Try adjusting your search or filter.',
+    all: 'Semua'
+  }), []);
+
+  const { ref, translations } = useOnDemandTranslate(heritageTexts);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [heritages, setHeritages] = useState([]);
@@ -87,9 +97,9 @@ const Heritage = () => {
         return name?.toLowerCase() === 'cagar budaya';
       });
 
-      if (cagarBudayaType && cagarBudayaType.id) {
+      if (cagarBudayaType && (cagarBudayaType as any).id) {
         // Fetch categories for "cagar budaya" type
-        const categoriesResponse = await TypesAndCategoriesSites.getAllCategories(cagarBudayaType.id);
+        const categoriesResponse = await TypesAndCategoriesSites.getAllCategories((cagarBudayaType as any).id);
         if (categoriesResponse.error) {
           console.error('Error fetching categories:', categoriesResponse.error);
           return;
@@ -151,17 +161,17 @@ const Heritage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Banner */}
       <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white scroll-reveal">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {t('heritage.title')}
+            {translations.title || 'Cagar Budaya'}
           </h1>
           <p className="text-xl">
-            {t('heritage.subtitle')}
+            {translations.subtitle || 'Jelajahi cagar budaya di seluruh Indonesia'}
           </p>
         </div>
       </section>
@@ -172,7 +182,7 @@ const Heritage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={t('filter.heritage.search')}
+              placeholder={translations.searchPlaceholder || 'Cari cagar budaya...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -181,10 +191,10 @@ const Heritage = () => {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={t('Filter by type')} />
+              <SelectValue placeholder={translations.filterPlaceholder || 'Filter berdasarkan tipe'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{'Semua'}</SelectItem>
+              <SelectItem value="all">{translations.all || 'Semua'}</SelectItem>
               {categories.length > 0 && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -247,7 +257,7 @@ const Heritage = () => {
         {filteredHeritages.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {t('No heritage sites found. Try adjusting your search or filter.')}
+              {translations.noResults || 'Situs cagar budaya tidak ditemukan. Coba sesuaikan pencarian atau filter Anda.'}
             </p>
           </div>
         )}
