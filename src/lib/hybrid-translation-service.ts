@@ -20,6 +20,10 @@ class HybridTranslationService {
   private static instance: HybridTranslationService;
   private cache: TranslationCache = {};
   private hardcodedTranslations = resources;
+  private translationQueue: Array<{ text: string; source: string; target: string; componentId: string }> = [];
+  private isProcessingQueue = false;
+  private readonly BATCH_SIZE = 10;
+  private readonly QUEUE_PROCESSING_DELAY = 100; // 100ms delay
 
   private constructor() {}
 
@@ -255,15 +259,58 @@ class HybridTranslationService {
       return;
     }
 
-    // Use optimized translation service for API calls
+    // Add to batch queue
+    this.translationQueue.push({ text, source, target, componentId });
+    
+    // Process queue if not already processing
+    if (!this.isProcessingQueue) {
+      this.processTranslationQueue();
+    }
+  }
+
+  /**
+   * Process translation queue in batches to prevent resource exhaustion
+   */
+  private async processTranslationQueue(): Promise<void> {
+    if (this.isProcessingQueue || this.translationQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessingQueue = true;
+
     try {
-      await optimizedTranslationService.translateText({
-        text,
-        source,
-        target
-      });
-    } catch (error) {
-      console.warn('Translation failed for text:', text, error);
+      // Process in batches to prevent overwhelming the API
+      while (this.translationQueue.length > 0) {
+        const batch = this.translationQueue.splice(0, this.BATCH_SIZE);
+        const textsToTranslate = batch.map(item => item.text);
+        
+        if (textsToTranslate.length > 0) {
+          try {
+            const results = await optimizedTranslationService.translateBatch({
+              texts: textsToTranslate,
+              source: batch[0].source,
+              target: batch[0].target
+            });
+
+            // Save results to cache
+            batch.forEach((item, index) => {
+              if (results.translations[index]) {
+                this.saveToCache(item.text, item.source, item.target, results.translations[index]);
+              }
+            });
+          } catch (error) {
+            console.warn('Batch translation failed:', error);
+            // Don't re-add failed items to prevent infinite loops
+          }
+        }
+
+        // Add delay between batches to prevent resource exhaustion
+        if (this.translationQueue.length > 0) {
+          await new Promise(resolve => setTimeout(resolve, this.QUEUE_PROCESSING_DELAY));
+        }
+      }
+    } finally {
+      this.isProcessingQueue = false;
     }
   }
 
