@@ -13,11 +13,12 @@ interface UseOptimizedTranslateOptions {
  * Optimized hook for translating single text with caching and performance monitoring
  */
 export const useOptimizedTranslate = (
-  sourceText: string, 
+  sourceText: string,
   options: UseOptimizedTranslateOptions = {}
 ) => {
   const { language: targetLanguage } = useLanguage();
   const { register, unregister, setTranslating } = useTranslationManager();
+  const { requestTranslation } = useTranslationCoordinator();
   const [translatedText, setTranslatedText] = useState(sourceText);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +51,6 @@ export const useOptimizedTranslate = (
       setTranslating(componentId, true);
 
       try {
-        const { requestTranslation } = useTranslationCoordinator();
         const [translatedResult] = await requestTranslation([sourceText], 'id', targetLanguage);
 
         if (isMounted) {
@@ -92,6 +92,7 @@ export const useBatchTranslate = (
 ) => {
   const { language: targetLanguage } = useLanguage();
   const { register, unregister, setTranslating } = useTranslationManager();
+  const { requestTranslation } = useTranslationCoordinator();
   const [translations, setTranslations] = useState<string[]>(texts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +132,6 @@ export const useBatchTranslate = (
       const startTime = performance.now();
 
       try {
-        const { requestTranslation } = useTranslationCoordinator();
         const translatedTexts = await requestTranslation(texts, 'id', targetLanguage);
 
         if (isMounted) {
@@ -206,6 +206,7 @@ export const useArrayTranslate = <T extends Record<string, any>>(
 ) => {
   const { language: targetLanguage } = useLanguage();
   const { register, unregister, setTranslating } = useTranslationManager();
+  const { requestTranslation } = useTranslationCoordinator();
   const [translatedArray, setTranslatedArray] = useState<T[]>(sourceArray);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -265,7 +266,6 @@ export const useArrayTranslate = <T extends Record<string, any>>(
           return;
         }
 
-        const { requestTranslation } = useTranslationCoordinator();
         const translatedTexts = await requestTranslation(allTexts, 'id', targetLanguage);
 
         if (isMounted) {

@@ -29,6 +29,8 @@ export const useBatchTranslateOptimized = (
     return () => unregister(componentId);
   }, [componentId, register, unregister]);
 
+  const { requestTranslation } = useTranslationCoordinator();
+
   useEffect(() => {
     let isMounted = true;
     let timeoutId: NodeJS.Timeout;
@@ -48,7 +50,6 @@ export const useBatchTranslateOptimized = (
         const textValues = Object.values(texts);
         const textKeys = Object.keys(texts);
         
-        const { requestTranslation } = useTranslationCoordinator();
         const translatedTexts = await requestTranslation(textValues, 'id', targetLanguage);
 
         if (isMounted) {
