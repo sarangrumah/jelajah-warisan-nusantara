@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import Beranda from "./pages/Beranda";
 import Agenda from "./pages/Agenda";
@@ -47,12 +48,26 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { HybridTranslationProvider } from "./components/HybridTranslationProvider";
 import { TranslationCoordinatorProvider } from "./contexts/TranslationCoordinator";
+import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { loading } = useLoading();
   useScrollReveal(); // Initialize the global scroll-reveal observer
+
+  useEffect(() => {
+    // Initialize translation performance monitoring in development
+    if (import.meta.env.DEV) {
+      import('./lib/monitor-translation-performance.js')
+        .then(() => {
+          console.log('🎯 Translation Performance Monitor initialized');
+        })
+        .catch(err => {
+          console.warn('Could not load translation monitor:', err);
+        });
+    }
+  }, []);
 
   return (
     <LanguageProvider>
@@ -101,6 +116,7 @@ const App = () => {
                   <Route path="/auth/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
+                  <Route path="/test-on-demand" element={<OnDemandTranslationTest />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

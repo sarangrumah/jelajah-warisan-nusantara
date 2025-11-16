@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useBatchTranslateOptimized } from './useBatchTranslateOptimized';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UseOnDemandTranslateOptions {
   rootMargin?: string;
@@ -18,6 +19,7 @@ export const useOnDemandTranslate = (
   texts: Record<string, string>,
   options: UseOnDemandTranslateOptions = {}
 ) => {
+  const { language } = useLanguage();
   const [isIntersecting, setIsIntersecting] = useState(false);
   const elementRef = useRef<HTMLElement | null>(null);
 
@@ -33,30 +35,37 @@ export const useOnDemandTranslate = (
     error,
   } = useBatchTranslateOptimized(isIntersecting ? texts : {}, { debounceMs: 50 });
 
+  const observerRef = useRef<IntersectionObserver>();
+
   const observerCallback = useCallback((entries: IntersectionObserverEntry[]) => {
     const [entry] = entries;
     if (entry.isIntersecting) {
       console.log('👁️ Component is intersecting, triggering translation');
       setTimeout(() => setIsIntersecting(true), 50); // Small delay to batch intersecting components
-      if (elementRef.current) {
+      if (elementRef.current && observerRef.current) {
         // Disconnect after the element is visible to avoid re-triggering.
-        observer.unobserve(elementRef.current);
+        observerRef.current.unobserve(elementRef.current);
       }
     }
   }, []);
 
-  const observer = useMemo(() => new IntersectionObserver(observerCallback, observerOptions), [observerCallback]);
-
   useEffect(() => {
+    observerRef.current = new IntersectionObserver(observerCallback, observerOptions);
+
     if (elementRef.current) {
-      observer.observe(elementRef.current);
+      observerRef.current.observe(elementRef.current);
     }
     return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
+      if (elementRef.current && observerRef.current) {
+        observerRef.current.unobserve(elementRef.current);
       }
     };
-  }, [elementRef.current]);
+  }, [elementRef.current, observerCallback, observerOptions]);
+
+  useEffect(() => {
+    // Reset intersecting state when language changes to re-trigger observer
+    setIsIntersecting(false);
+  }, [language]);
 
   return { ref: elementRef, translations, loading, error };
 };
