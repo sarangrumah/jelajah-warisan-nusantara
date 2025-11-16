@@ -27,6 +27,9 @@ class TranslationService {
   private retryAttempts: number;
   private retryDelay: number;
   private agent: https.Agent | undefined;
+  private maxConcurrentRequests = 3; // Limit concurrent LibreTranslate API calls
+  private activeRequests = 0;
+  private requestQueue: Array<() => Promise<any>> = [];
 
   constructor() {
     // Use local LibreTranslate instance (Docker) or fallback to public
@@ -51,6 +54,41 @@ class TranslationService {
       console.log(`✅ Using LOCAL LibreTranslate instance (no API key needed)`);
     } else {
       console.log(`⚠️  Using PUBLIC LibreTranslate instance (may require API key)`);
+    }
+  }
+
+  /**
+   * Execute API calls with concurrency control
+   */
+  private async executeWithConcurrency<T>(apiCall: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const execute = async () => {
+        this.activeRequests++;
+        try {
+          const result = await apiCall();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          this.activeRequests--;
+          this.processQueue();
+        }
+      };
+
+      if (this.activeRequests < this.maxConcurrentRequests) {
+        execute();
+      } else {
+        this.requestQueue.push(execute);
+      }
+    });
+  }
+
+  private processQueue(): void {
+    while (this.requestQueue.length > 0 && this.activeRequests < this.maxConcurrentRequests) {
+      const nextRequest = this.requestQueue.shift();
+      if (nextRequest) {
+        nextRequest();
+      }
     }
   }
 
@@ -86,20 +124,22 @@ class TranslationService {
     // Retry logic for better reliability
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
-        const response = await fetch(`${this.baseUrl}/translate`, {
-          method: 'POST',
-          body: JSON.stringify({
-            q: text,
-            source: sourceLang,
-            target: targetLang,
-            format: 'text',
-            api_key: this.apiKey
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          agent: this.agent
-        });
+        const response = await this.executeWithConcurrency(() =>
+          fetch(`${this.baseUrl}/translate`, {
+            method: 'POST',
+            body: JSON.stringify({
+              q: text,
+              source: sourceLang,
+              target: targetLang,
+              format: 'text',
+              api_key: this.apiKey
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            agent: this.agent
+          })
+        );
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -155,20 +195,22 @@ class TranslationService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/translate`, {
-        method: 'POST',
-        body: JSON.stringify({
-          q: nonEmptyTexts,
-          source: sourceLang,
-          target: targetLang,
-          format: 'text',
-          api_key: this.apiKey
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        agent: this.agent
-      });
+      const response = await this.executeWithConcurrency(() =>
+        fetch(`${this.baseUrl}/translate`, {
+          method: 'POST',
+          body: JSON.stringify({
+            q: nonEmptyTexts,
+            source: sourceLang,
+            target: targetLang,
+            format: 'text',
+            api_key: this.apiKey
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          agent: this.agent
+        })
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -204,13 +246,15 @@ class TranslationService {
    */
   async getSupportedLanguages(): Promise<Array<{ code: string; name: string }>> {
     try {
-      const response = await fetch(`${this.baseUrl}/languages`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        agent: this.agent
-      });
+      const response = await this.executeWithConcurrency(() =>
+        fetch(`${this.baseUrl}/languages`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          agent: this.agent
+        })
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch languages: ${response.status}`);
@@ -233,10 +277,12 @@ class TranslationService {
    */
   async checkHealth(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/languages`, {
-        method: 'GET',
-        agent: this.agent
-      });
+      const response = await this.executeWithConcurrency(() =>
+        fetch(`${this.baseUrl}/languages`, {
+          method: 'GET',
+          agent: this.agent
+        })
+      );
       return response.ok;
     } catch (error) {
       console.error('LibreTranslate health check failed:', error);

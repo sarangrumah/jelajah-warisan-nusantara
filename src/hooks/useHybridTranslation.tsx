@@ -7,6 +7,22 @@ import { resources } from '@/i18n/index';
 // Global cache for translations to prevent duplicate API calls
 const globalTranslationCache = new Map<string, string>();
 const pendingTranslations = new Set<string>();
+const MAX_QUEUE_SIZE = 100; // Prevent memory leaks
+const CLEANUP_INTERVAL = 30000; // Clean up every 30 seconds
+const MAX_CACHE_SIZE = 1000; // Prevent cache from growing indefinitely
+
+// Clean up old pending translations periodically
+setInterval(() => {
+  pendingTranslations.clear();
+  
+  // Clean up cache if it gets too large
+  if (globalTranslationCache.size > MAX_CACHE_SIZE) {
+    const keys = Array.from(globalTranslationCache.keys());
+    const keysToDelete = keys.slice(0, Math.floor(MAX_CACHE_SIZE / 2)); // Remove oldest 50%
+    keysToDelete.forEach(key => globalTranslationCache.delete(key));
+    console.log(`🧹 Cleaned ${keysToDelete.length} entries from translation cache`);
+  }
+}, CLEANUP_INTERVAL);
 
 /**
  * Hybrid Translation Hook
@@ -93,11 +109,17 @@ export const useHybridTranslation = (): UseHybridTranslationResult => {
         if (result.translations[index] && result.translations[index] !== item.text) {
           globalTranslationCache.set(`${language}:${item.text}`, result.translations[index]);
         }
+        // Remove from pending translations
+        pendingTranslations.delete(item.key);
       });
 
       console.log(`📦 Processed batch of ${batch.length} translations (${result.cacheHits} cache hits)`);
     } catch (error) {
       console.error('Batch translation failed:', error);
+      // Remove failed translations from pending set
+      batch.forEach(item => {
+        pendingTranslations.delete(item.key);
+      });
     } finally {
       setTranslating(componentId, false);
     }
@@ -115,6 +137,12 @@ export const useHybridTranslation = (): UseHybridTranslationResult => {
 
     // Skip if already queued
     if (translationQueue.current.some(item => item.text === text)) {
+      return;
+    }
+
+    // Prevent queue from growing too large
+    if (translationQueue.current.length >= MAX_QUEUE_SIZE) {
+      console.warn('Translation queue full, skipping translation request');
       return;
     }
 
