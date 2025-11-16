@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useOptimizedTranslate } from '@/hooks/useOptimizedTranslate';
+import { useBatchTranslate } from '@/hooks/useOptimizedTranslate';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const HeaderTranslationFix = () => {
@@ -55,15 +55,38 @@ const HeaderTranslationFix = () => {
     { name: 'PPID', href: '/ppid' },
   ];
 
-  // Translate navigation items using optimized service
-  const translatedNavigationItems = navigationItems.map(item => ({
-    ...item,
-    name: useOptimizedTranslate(item.name).translatedText,
-    subItems: item.subItems ? item.subItems.map(subItem => ({
-      ...subItem,
-      name: useOptimizedTranslate(subItem.name).translatedText
-    })) : undefined
-  }));
+  // Extract all texts that need translation
+  const allTexts = useMemo(() => {
+    const texts: string[] = [];
+    navigationItems.forEach(item => {
+      texts.push(item.name);
+      if (item.subItems) {
+        item.subItems.forEach(subItem => texts.push(subItem.name));
+      }
+    });
+    return texts;
+  }, [navigationItems]);
+
+  // Batch translate all texts at once
+  const { translations } = useBatchTranslate(allTexts, { debounceMs: 50 });
+
+  // Reconstruct translated navigation items
+  const translatedNavigationItems = useMemo(() => {
+    let translationIndex = 0;
+    return navigationItems.map(item => {
+      const translatedName = translations[translationIndex++] || item.name;
+      const translatedSubItems = item.subItems ? item.subItems.map(subItem => ({
+        ...subItem,
+        name: translations[translationIndex++] || subItem.name
+      })) : undefined;
+      
+      return {
+        ...item,
+        name: translatedName,
+        subItems: translatedSubItems
+      };
+    });
+  }, [translations]);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -69,7 +69,7 @@ const Header = () => {
     });
     
     return texts;
-  }, []);
+  }, [navigationItems]);
 
   // Batch translate all navigation texts at once
   const { translations } = useBatchTranslateOptimized(allTexts, { debounceMs: 50 });
