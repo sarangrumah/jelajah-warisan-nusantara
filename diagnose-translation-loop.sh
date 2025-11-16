@@ -20,15 +20,18 @@ fi
 # Check backend API
 echo ""
 echo "2. Checking backend translation API..."
-BACKEND_RESPONSE=$(curl -s -w "%{http_code}" http://localhost:3001/api/translations/by-language/en)
+BACKEND_RESPONSE=$(curl -s -w "%{http_code}" http://localhost:3000/api/translations/by-language/en || echo "CONNECTION_FAILED")
 HTTP_CODE=${BACKEND_RESPONSE: -3}
-RESPONSE_BODY=${BACKEND_RESPONSE:0:${#BACKEND_RESPONSE}-3}
 
-if [ "$HTTP_CODE" -eq 200 ]; then
+if [ "$HTTP_CODE" = "000" ] || [ "$BACKEND_RESPONSE" = "CONNECTION_FAILED" ]; then
+    echo "❌ Backend API is NOT running on localhost:3000"
+    echo "   Please start backend server: cd backend && npm run dev"
+    echo "   Or check if backend is running on different port"
+elif [ "$HTTP_CODE" -eq 200 ]; then
     echo "✅ Backend API is responding (475 translations loaded)"
 else
     echo "❌ Backend API returned HTTP $HTTP_CODE"
-    echo "   Response: $RESPONSE_BODY"
+    echo "   Please check backend server logs"
 fi
 
 # Monitor translation API calls
@@ -43,12 +46,12 @@ echo "Translation API Monitor - Started $(date)" > $LOG_FILE
 
 # Monitor for 30 seconds
 for i in {1..30}; do
-    # Check current LibreTranslate connections
-    CONNECTIONS=$(netstat -an | grep :5000 | wc -l)
+    # Check current LibreTranslate connections (alternative method)
+    CONNECTIONS=$(ss -tuln 2>/dev/null | grep :5000 | wc -l || lsof -i :5000 2>/dev/null | wc -l || echo "0")
     
     # Check backend API response time
     START_TIME=$(date +%s%N)
-    curl -s http://localhost:3001/api/translations/by-language/en > /dev/null
+    curl -s http://localhost:3000/api/translations/by-language/en > /dev/null
     END_TIME=$(date +%s%N)
     RESPONSE_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
     
@@ -67,7 +70,7 @@ echo "4. Analyzing logs for patterns..."
 echo "=================================================="
 
 # Check for rapid API calls
-RAPID_CALLS=$(grep -c "Connections: [2-9]" $LOG_FILE)
+RAPID_CALLS=$(grep -c "Connections: [2-9]" $LOG_FILE 2>/dev/null || echo "0")
 if [ "$RAPID_CALLS" -gt 5 ]; then
     echo "❌ HIGH: Detected $RAPID_CALLS instances of multiple concurrent connections"
     echo "   This indicates translation API call flooding"
@@ -76,7 +79,7 @@ else
 fi
 
 # Check response times
-SLOW_RESPONSES=$(awk -F'Response: |ms' '$2 > 1000 {count++} END {print count}' $LOG_FILE)
+SLOW_RESPONSES=$(awk -F'Response: |ms' '$2 > 1000 {count++} END {print count+0}' $LOG_FILE 2>/dev/null)
 if [ "$SLOW_RESPONSES" -gt 10 ]; then
     echo "❌ HIGH: $SLOW_RESPONSES slow responses (>1000ms) detected"
 else
@@ -84,11 +87,11 @@ else
 fi
 
 # Check memory growth
-INITIAL_MEMORY=$(head -1 $LOG_FILE | awk -F'Memory: | MB' '{print $2}')
-FINAL_MEMORY=$(tail -1 $LOG_FILE | awk -F'Memory: | MB' '{print $2}')
-MEMORY_DIFF=$(echo "$FINAL_MEMORY - $INITIAL_MEMORY" | bc)
+INITIAL_MEMORY=$(head -1 $LOG_FILE 2>/dev/null | awk -F'Memory: | MB' '{print $2+0}' || echo "0")
+FINAL_MEMORY=$(tail -1 $LOG_FILE 2>/dev/null | awk -F'Memory: | MB' '{print $2+0}' || echo "0")
+MEMORY_DIFF=$((FINAL_MEMORY - INITIAL_MEMORY))
 
-if (( $(echo "$MEMORY_DIFF > 50" | bc -l) )); then
+if [ "$MEMORY_DIFF" -gt 50 ]; then
     echo "❌ HIGH: Memory grew by ${MEMORY_DIFF}MB during monitoring"
     echo "   Possible memory leak in translation system"
 else
