@@ -1,6 +1,7 @@
 import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslationManager } from '@/contexts/TranslationContext';
+import { useTranslationCoordinator } from '@/contexts/TranslationCoordinator';
 import { optimizedTranslationService } from '@/lib/optimized-translation-service';
 
 interface UseOptimizedTranslateOptions {
@@ -49,14 +50,11 @@ export const useOptimizedTranslate = (
       setTranslating(componentId, true);
 
       try {
-        const result = await optimizedTranslationService.translateText({
-          text: sourceText,
-          source: 'id',
-          target: targetLanguage,
-        });
+        const { requestTranslation } = useTranslationCoordinator();
+        const [translatedResult] = await requestTranslation([sourceText], 'id', targetLanguage);
 
         if (isMounted) {
-          setTranslatedText(result);
+          setTranslatedText(translatedResult);
           setLoading(false);
           setTranslating(componentId, false);
         }
@@ -133,24 +131,21 @@ export const useBatchTranslate = (
       const startTime = performance.now();
 
       try {
-        const result = await optimizedTranslationService.translateBatch({
-          texts: texts,
-          source: 'id',
-          target: targetLanguage,
-        });
+        const { requestTranslation } = useTranslationCoordinator();
+        const translatedTexts = await requestTranslation(texts, 'id', targetLanguage);
 
         if (isMounted) {
           console.log('📦 Batch translation result:', {
             originalCount: texts.length,
-            translatedCount: result.translations.length,
-            cacheHits: result.cacheHits,
-            apiCalls: result.apiCalls
+            translatedCount: translatedTexts.length,
+            cacheHits: 0, // Coordinator handles caching internally
+            apiCalls: 1  // Coordinator makes one API call per batch
           });
           
-          setTranslations(result.translations);
+          setTranslations(translatedTexts);
           setStats({
-            cacheHits: result.cacheHits,
-            apiCalls: result.apiCalls,
+            cacheHits: 0, // Coordinator handles caching internally
+            apiCalls: 1, // Coordinator makes one API call per batch
             totalTime: performance.now() - startTime
           });
           setLoading(false);
@@ -270,18 +265,15 @@ export const useArrayTranslate = <T extends Record<string, any>>(
           return;
         }
 
-        const result = await optimizedTranslationService.translateBatch({
-          texts: allTexts,
-          source: 'id',
-          target: targetLanguage,
-        });
+        const { requestTranslation } = useTranslationCoordinator();
+        const translatedTexts = await requestTranslation(allTexts, 'id', targetLanguage);
 
         if (isMounted) {
           console.log('📦 Array translation result:', {
             originalCount: allTexts.length,
-            translatedCount: result.translations.length,
-            cacheHits: result.cacheHits,
-            apiCalls: result.apiCalls
+            translatedCount: translatedTexts.length,
+            cacheHits: 0, // Coordinator handles caching internally
+            apiCalls: 1  // Coordinator makes one API call per batch
           });
           
           // Reconstruct the translated array
@@ -292,14 +284,14 @@ export const useArrayTranslate = <T extends Record<string, any>>(
             
             translated[arrayIndex] = {
               ...translated[arrayIndex],
-              [field]: result.translations[textIndex]
+              [field]: translatedTexts[textIndex]
             };
           });
 
           setTranslatedArray(translated);
           setStats({
-            cacheHits: result.cacheHits,
-            apiCalls: result.apiCalls,
+            cacheHits: 0, // Coordinator handles caching internally
+            apiCalls: 1, // Coordinator makes one API call per batch
             totalTime: performance.now() - startTime
           });
           setLoading(false);

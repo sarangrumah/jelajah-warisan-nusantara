@@ -46,6 +46,7 @@ import { useScrollReveal } from "./hooks/useScrollReveal";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { HybridTranslationProvider } from "./components/HybridTranslationProvider";
+import { TranslationCoordinatorProvider } from "./contexts/TranslationCoordinator";
 
 const queryClient = new QueryClient();
 
@@ -57,55 +58,57 @@ const App = () => {
     <LanguageProvider>
       <TranslationProvider>
         <HybridTranslationProvider>
-          {loading && <LoadingSpinner />}
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/beranda" element={<Beranda />} />
-                <Route path="/agenda" element={<Agenda />} />
-                <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
-                <Route path="/tentang-kami" element={<TentangKami />} />
-                <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
-                <Route path="/laboratorium-konservasi" element={<LayananKonservasi />} />
-                <Route path="/media-publikasi" element={<MediaPublikasi />} />
-                <Route path="/hubungi-kami" element={<HubungiKami />} />
-                <Route path="/karir" element={<Career />} />
-                <Route path="/ppid" element={<PPID />} />
-                <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
-                <Route path="/pemanfaatan-aset/:id" element={<PemanfaatanAsetDetail />} />
-                <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
-                <Route path="/prosedur/:id" element={<ProcedureDetail />} />
-                <Route path="/peraturan" element={<Peraturan />} />
-                <Route path="/museums" element={<Museum />} />
-                <Route path="/museum/:id" element={<MuseumDetail />} />
-                <Route path="/heritage" element={<Heritage />} />
-                <Route path="/heritage/:id" element={<HeritageDetail />} />
-                <Route path="/collection" element={<Collection />} />
-                <Route path="/collection/:id" element={<CollectionDetail />} />
-                <Route path="/mow" element={<MemoryOfWorld />} />
-                <Route path="/mow/:id" element={<MemoryOfWorldDetail />} />
-                <Route path="/merchandise" element={<Merchandise />} />
-                <Route path="/merchandise/:id" element={<MerchandiseDetail />} />
-                <Route path="/sites" element={<NotFound />} />
-                <Route path="/sites/:id" element={<NotFound />} />
-                <Route path="/event/:id" element={<EventDetail />} />
-                <Route path="/news/:id" element={<NewsDetail />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/auth/reset-password/:token" element={<ResetPasswordPage />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-          <FloatingButtons />
+          <TranslationCoordinatorProvider>
+            {loading && <LoadingSpinner />}
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/beranda" element={<Beranda />} />
+                  <Route path="/agenda" element={<Agenda />} />
+                  <Route path="/tentang-kami/profil-perusahaan" element={<CompanyProfile />} />
+                  <Route path="/tentang-kami" element={<TentangKami />} />
+                  <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
+                  <Route path="/laboratorium-konservasi" element={<LayananKonservasi />} />
+                  <Route path="/media-publikasi" element={<MediaPublikasi />} />
+                  <Route path="/hubungi-kami" element={<HubungiKami />} />
+                  <Route path="/karir" element={<Career />} />
+                  <Route path="/ppid" element={<PPID />} />
+                  <Route path="/pemanfaatan-aset" element={<PemanfaatanAset />} />
+                  <Route path="/pemanfaatan-aset/:id" element={<PemanfaatanAsetDetail />} />
+                  <Route path="/prosedur-operasional-standar" element={<StandarOperasionalProsedur />} />
+                  <Route path="/prosedur/:id" element={<ProcedureDetail />} />
+                  <Route path="/peraturan" element={<Peraturan />} />
+                  <Route path="/museums" element={<Museum />} />
+                  <Route path="/museum/:id" element={<MuseumDetail />} />
+                  <Route path="/heritage" element={<Heritage />} />
+                  <Route path="/heritage/:id" element={<HeritageDetail />} />
+                  <Route path="/collection" element={<Collection />} />
+                  <Route path="/collection/:id" element={<CollectionDetail />} />
+                  <Route path="/mow" element={<MemoryOfWorld />} />
+                  <Route path="/mow/:id" element={<MemoryOfWorldDetail />} />
+                  <Route path="/merchandise" element={<Merchandise />} />
+                  <Route path="/merchandise/:id" element={<MerchandiseDetail />} />
+                  <Route path="/sites" element={<NotFound />} />
+                  <Route path="/sites/:id" element={<NotFound />} />
+                  <Route path="/event/:id" element={<EventDetail />} />
+                  <Route path="/news/:id" element={<NewsDetail />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/auth/reset-password/:token" element={<ResetPasswordPage />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </QueryClientProvider>
+            <FloatingButtons />
+          </TranslationCoordinatorProvider>
         </HybridTranslationProvider>
       </TranslationProvider>
     </LanguageProvider>

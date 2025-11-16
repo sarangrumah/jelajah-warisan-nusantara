@@ -1,7 +1,7 @@
 import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslationManager } from '@/contexts/TranslationContext';
-import { optimizedTranslationService } from '@/lib/optimized-translation-service';
+import { useTranslationCoordinator } from '@/contexts/TranslationCoordinator';
 
 interface UseBatchTranslateOptimizedOptions {
   debounceMs?: number;
@@ -48,17 +48,14 @@ export const useBatchTranslateOptimized = (
         const textValues = Object.values(texts);
         const textKeys = Object.keys(texts);
         
-        const result = await optimizedTranslationService.translateBatch({
-          texts: textValues,
-          source: 'id',
-          target: targetLanguage,
-        });
+        const { requestTranslation } = useTranslationCoordinator();
+        const translatedTexts = await requestTranslation(textValues, 'id', targetLanguage);
 
         if (isMounted) {
           // Reconstruct translations object
           const translatedObject: Record<string, string> = {};
           textKeys.forEach((key, index) => {
-            translatedObject[key] = result.translations[index];
+            translatedObject[key] = translatedTexts[index];
           });
           
           setTranslations(translatedObject);
