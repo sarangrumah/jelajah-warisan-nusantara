@@ -15,7 +15,7 @@ export const useBatchTranslateOptimized = (
   texts: Record<string, string>,
   options: UseBatchTranslateOptimizedOptions = {}
 ) => {
-  const { language: targetLanguage } = useLanguage();
+  const { language: targetLanguage, isTranslationEnabled } = useLanguage();
   const { register, unregister, setTranslating } = useTranslationManager();
   const [translations, setTranslations] = useState<Record<string, string>>(texts);
   const [loading, setLoading] = useState(false);
@@ -36,6 +36,18 @@ export const useBatchTranslateOptimized = (
     let timeoutId: NodeJS.Timeout;
 
     const translateBatch = async () => {
+      // If translation is disabled (English), show "Coming Soon" for all texts
+      if (!isTranslationEnabled) {
+        const comingSoonTranslations: Record<string, string> = {};
+        Object.keys(texts).forEach(key => {
+          comingSoonTranslations[key] = 'Coming Soon';
+        });
+        setTranslations(comingSoonTranslations);
+        setLoading(false);
+        setTranslating(componentId, false);
+        return;
+      }
+
       if (targetLanguage === 'id') {
         setTranslations(texts);
         return;
@@ -83,7 +95,7 @@ export const useBatchTranslateOptimized = (
       isMounted = false;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [texts, targetLanguage, componentId, setTranslating, debounceMs]);
+  }, [texts, targetLanguage, componentId, setTranslating, debounceMs, isTranslationEnabled]);
 
   return { translations, loading, error };
 };

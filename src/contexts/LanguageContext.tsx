@@ -4,6 +4,7 @@ type LanguageContextType = {
   language: string;
   setLanguage: (language: string) => void;
   availableLanguages: { code: string; name: string; flag: string }[];
+  isTranslationEnabled: boolean;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -13,14 +14,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   const availableLanguages = useMemo(() => [
     { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'en', name: 'English (Coming Soon)', flag: '🇺🇸' },
     // Add other languages here if needed
   ], []);
+
+  const isTranslationEnabled = language === 'id'; // Only enable translation for Indonesian
 
   const value = useMemo(() => ({
     language,
     setLanguage,
-    availableLanguages
+    availableLanguages,
+    isTranslationEnabled
   }), [language, availableLanguages]);
 
   return (

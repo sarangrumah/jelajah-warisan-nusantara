@@ -19,7 +19,7 @@ export const useOnDemandTranslate = (
   texts: Record<string, string>,
   options: UseOnDemandTranslateOptions = {}
 ) => {
-  const { language } = useLanguage();
+  const { language, isTranslationEnabled } = useLanguage();
   const [isIntersecting, setIsIntersecting] = useState(false);
   const elementRef = useRef<HTMLElement | null>(null);
 
@@ -67,5 +67,17 @@ export const useOnDemandTranslate = (
     setIsIntersecting(false);
   }, [language]);
 
-  return { ref: elementRef, translations, loading, error };
+  // If translation is disabled, show "Coming Soon" for all texts
+  const finalTranslations = useMemo(() => {
+    if (!isTranslationEnabled) {
+      const comingSoonTranslations: Record<string, string> = {};
+      Object.keys(texts).forEach(key => {
+        comingSoonTranslations[key] = 'Coming Soon';
+      });
+      return comingSoonTranslations;
+    }
+    return translations;
+  }, [translations, texts, isTranslationEnabled]);
+
+  return { ref: elementRef, translations: finalTranslations, loading, error };
 };
