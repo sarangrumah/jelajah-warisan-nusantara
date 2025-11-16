@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Fix Test - Frontend Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Translation System Test - Frontend Integration</h1>
+        <p>Testing the fixed translation system with frontend hooks</p>
+        
+        <div class="test-section">
+            <h3>Test 1: Backend Health Check</h3>
+            <button onclick="testHealth()">Test Health</button>
+            <div id="health-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Single Translation</h3>
+            <input type="text" id="single-text" value="Halo dunia" placeholder="Enter text to translate">
+            <button onclick="testSingleTranslation()">Test Single Translation</button>
+            <div id="single-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Batch Translation</h3>
+            <textarea id="batch-texts" rows="3" placeholder="Enter texts to translate (one per line)">Halo dunia
+Selamat pagi
+Terima kasih</textarea>
+            <button onclick="testBatchTranslation()">Test Batch Translation</button>
+            <div id="batch-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Frontend Hook Test</h3>
+            <button onclick="testFrontendHook()">Test Frontend Hook</button>
+            <div id="frontend-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Console Log</h3>
+            <div id="console-log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let consoleLog = [];
+
+        function log(message) {
+            consoleLog.push(message);
+            const logEl = document.getElementById('console-log');
+            logEl.innerHTML = consoleLog.join('\n');
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        async function testHealth() {
+            const resultEl = document.getElementById('health-result');
+            resultEl.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate/health`);
+                const data = await response.json();
+                
+                if (data.healthy) {
+                    resultEl.innerHTML = `<span class="success">✅ Health check passed:</span> ${data.message}`;
+                    log(`✅ Health: ${data.message} (${data.supportedLanguages} languages)`);
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Health check failed:</span> ${data.error || 'Unknown error'}`;
+                    log(`❌ Health failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Health check error:</span> ${error.message}`;
+                log(`❌ Health error: ${error.message}`);
+            }
+        }
+
+        async function testSingleTranslation() {
+            const text = document.getElementById('single-text').value;
+            const resultEl = document.getElementById('single-result');
+            resultEl.innerHTML = 'Translating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        sourceLang: 'id',
+                        targetLang: 'en'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultEl.innerHTML = `<span class="success">✅ Translation successful:</span> "${text}" → "${data.translatedText}"`;
+                    log(`✅ Single: "${text}" → "${data.translatedText}"`);
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Translation failed:</span> ${data.error}`;
+                    log(`❌ Single failed: ${data.error}`);
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Translation error:</span> ${error.message}`;
+                log(`❌ Single error: ${error.message}`);
+            }
+        }
+
+        async function testBatchTranslation() {
+            const texts = document.getElementById('batch-texts').value.split('\n').filter(t => t.trim());
+            const resultEl = document.getElementById('batch-result');
+            resultEl.innerHTML = 'Translating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        texts: texts,
+                        sourceLang: 'id',
+                        targetLang: 'en'
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<span class="success">✅ Batch translation successful:</span><br>`;
+                    data.results.forEach((result, index) => {
+                        html += `"${texts[index]}" → "${result.translatedText}"<br>`;
+                    });
+                    resultEl.innerHTML = html;
+                    log(`✅ Batch: ${texts.length} texts translated successfully`);
+                    data.results.forEach((result, index) => {
+                        log(`  "${texts[index]}" → "${result.translatedText}"`);
+                    });
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Batch translation failed:</span> ${data.error}`;
+                    log(`❌ Batch failed: ${data.error}`);
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Batch translation error:</span> ${error.message}`;
+                log(`❌ Batch error: ${error.message}`);
+            }
+        }
+
+        async function testFrontendHook() {
+            const resultEl = document.getElementById('frontend-result');
+            resultEl.innerHTML = 'Testing frontend hook integration...';
+            
+            try {
+                // Test the frontend translation service directly
+                const testTexts = ['Halo dunia', 'Selamat pagi', 'Terima kasih'];
+                
+                const response = await fetch(`${API_BASE}/translate/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        texts: testTexts,
+                        sourceLang: 'id',
+                        targetLang: 'en'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && data.results.length === testTexts.length) {
+                        resultEl.innerHTML = `<span class="success">✅ Frontend hook integration working</span><br>`;
+                        testTexts.forEach((text, index) => {
+                            resultEl.innerHTML += `"${text}" → "${data.results[index].translatedText}"<br>`;
+                        });
+                        log(`✅ Frontend hook: All ${testTexts.length} texts translated correctly`);
+                    } else {
+                        resultEl.innerHTML = `<span class="error">❌ Frontend hook: Response format incorrect</span>`;
+                        log(`❌ Frontend hook: Expected ${testTexts.length} results, got ${data.results?.length || 0}`);
+                    }
+                } else {
+                    resultEl.innerHTML = `<span class="error">❌ Frontend hook: API call failed</span>`;
+                    log(`❌ Frontend hook: API call failed with status ${response.status}`);
+                }
+            } catch (error) {
+                resultEl.innerHTML = `<span class="error">❌ Frontend hook error:</span> ${error.message}`;
+                log(`❌ Frontend hook error: ${error.message}`);
+            }
+        }
+
+        // Auto-run health check on page load
+        window.onload = testHealth;
+    </script>
+</body>
+</html>

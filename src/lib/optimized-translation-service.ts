@@ -238,6 +238,8 @@ class OptimizedTranslationService {
           throw new Error(data.error || 'Translation service returned error');
         }
 
+        console.log('📦 Batch translation response:', data);
+        
         // Reconstruct results maintaining original array structure
         const results: string[] = [];
         let translatedIndex = 0;
@@ -246,7 +248,10 @@ class OptimizedTranslationService {
           if (!text?.trim()) {
             results.push(text); // Keep empty texts as-is
           } else {
-            results.push(data.results?.[translatedIndex]?.translatedText || text);
+            const translatedResult = data.results?.[translatedIndex];
+            const translatedText = translatedResult?.translatedText || text;
+            console.log(`📝 Translation ${translatedIndex}: "${text}" → "${translatedText}"`);
+            results.push(translatedText);
             translatedIndex++;
           }
         }
@@ -335,7 +340,10 @@ class OptimizedTranslationService {
    * Translate multiple texts in batches for better performance
    */
   async translateBatch({ texts, source, target }: BatchTranslationRequest): Promise<BatchTranslationResponse> {
+    console.log(`📦 Starting batch translation: ${texts.length} texts from ${source} to ${target}`);
+    
     if (source === target) {
+      console.log('🔄 Source and target languages are the same, skipping translation');
       return {
         translations: texts,
         cacheHits: texts.length,
@@ -350,6 +358,8 @@ class OptimizedTranslationService {
     // Process texts in batches
     for (let i = 0; i < texts.length; i += this.batchSize) {
       const batch = texts.slice(i, i + this.batchSize);
+      console.log(`📦 Processing batch ${Math.floor(i/this.batchSize) + 1}: ${batch.length} texts`);
+      
       const batchResults: string[] = [];
       const textsToTranslate: string[] = [];
       const indicesToTranslate: number[] = [];
@@ -368,6 +378,7 @@ class OptimizedTranslationService {
         if (cached) {
           batchResults[j] = cached;
           cacheHits++;
+          console.log(`💾 Cache hit: "${text}" → "${cached}"`);
           continue;
         }
 
@@ -377,6 +388,7 @@ class OptimizedTranslationService {
           batchResults[j] = commonTranslation;
           this.setCache(text, commonTranslation, source, target);
           cacheHits++;
+          console.log(`📚 Common translation: "${text}" → "${commonTranslation}"`);
           continue;
         }
 
@@ -387,6 +399,7 @@ class OptimizedTranslationService {
 
       // Translate remaining texts via API
       if (textsToTranslate.length > 0) {
+        console.log(`🚀 Translating ${textsToTranslate.length} texts via API`);
         const translatedTexts = await this.callLibreTranslateAPI(textsToTranslate, source, target);
         apiCalls++;
         
@@ -400,12 +413,16 @@ class OptimizedTranslationService {
           }
           
           batchResults[index] = translatedText || originalText;
+          console.log(`📝 API translation ${k}: "${originalText}" → "${translatedText}"`);
         }
+      } else {
+        console.log('✅ All texts handled by cache/common translations');
       }
 
       results.push(...batchResults);
     }
 
+    console.log(`📊 Batch translation complete: ${cacheHits} cache hits, ${apiCalls} API calls`);
     return {
       translations: results,
       cacheHits,

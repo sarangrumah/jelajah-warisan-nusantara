@@ -134,24 +134,20 @@ export const useBatchTranslate = (
 
       try {
         const result = await optimizedTranslationService.translateBatch({
-          texts: texts.filter(text => text?.trim()),
+          texts: texts,
           source: 'id',
           target: targetLanguage,
         });
 
         if (isMounted) {
-          // Reconstruct the translations array maintaining original order
-          const translatedArray = [...texts];
-          let translatedIndex = 0;
+          console.log('📦 Batch translation result:', {
+            originalCount: texts.length,
+            translatedCount: result.translations.length,
+            cacheHits: result.cacheHits,
+            apiCalls: result.apiCalls
+          });
           
-          for (let i = 0; i < texts.length; i++) {
-            if (texts[i]?.trim()) {
-              translatedArray[i] = result.translations[translatedIndex];
-              translatedIndex++;
-            }
-          }
-
-          setTranslations(translatedArray);
+          setTranslations(result.translations);
           setStats({
             cacheHits: result.cacheHits,
             apiCalls: result.apiCalls,
@@ -281,6 +277,13 @@ export const useArrayTranslate = <T extends Record<string, any>>(
         });
 
         if (isMounted) {
+          console.log('📦 Array translation result:', {
+            originalCount: allTexts.length,
+            translatedCount: result.translations.length,
+            cacheHits: result.cacheHits,
+            apiCalls: result.apiCalls
+          });
+          
           // Reconstruct the translated array
           const translated = [...sourceArray];
           
