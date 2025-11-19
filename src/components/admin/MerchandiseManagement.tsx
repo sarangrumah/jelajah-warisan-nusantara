@@ -470,7 +470,7 @@ const MerchandiseManagement = ({ userRole }: { userRole: string }) => {
                 ) : null}
               </DialogTrigger>
               
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingProduct?.id ? 'Edit Produk' : 'Tambah Produk Baru'}
@@ -781,7 +781,7 @@ const MerchandiseManagement = ({ userRole }: { userRole: string }) => {
                 ) : null}
               </DialogTrigger>
               
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingCategory?.id ? 'Edit Kategori' : 'Tambah Kategori Baru'}

@@ -29,7 +29,7 @@ export function RejectReasonDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => {!nextOpen && onClose();}}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
