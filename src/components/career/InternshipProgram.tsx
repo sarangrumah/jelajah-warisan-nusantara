@@ -19,15 +19,15 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                     <Badge variant="secondary" className="capitalize">
                       {program.type || 'Internship'}
                     </Badge>
-                    {program.department && (
-                      <Badge variant="outline">{program.department}</Badge>
+                    {program.subtitle && (
+                      <Badge variant="outline">{program.subtitle}</Badge>
                     )}
                   </div>
                 </div>
-                {program.slots && (
+                {program.position_needed && (
                   <div className="text-right">
                     <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {program.slots} posisi
+                      {program.position_needed} posisi
                     </div>
                   </div>
                 )}
@@ -42,7 +42,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Clock size={16} className="text-primary" />
-                  <span>{program.duration}</span>
+                  <span>{program.period}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin size={16} className="text-primary" />
@@ -58,12 +58,12 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                 )}
               </div>
 
-              {program.requirements && (
+              {program.requirement && (
                 <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
                   <div
                     className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.requirements) }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.requirement) }}
                   />
                 </div>
               )}
@@ -78,24 +78,13 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                 </div>
               )}
 
-              {program.responsibilities && (
+              {program.responsibility && (
                 <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
-                  {Array.isArray(program.responsibilities) ? (
-                    <ul className="space-y-1">
-                      {program.responsibilities.map((resp: string, respIndex: number) => (
-                        <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                          {resp}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div
-                      className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.responsibilities) }}
-                    />
-                  )}
+                  <div
+                    className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.responsibility) }}
+                  />
                 </div>
               )}
 
