@@ -168,6 +168,9 @@ const Museum = () => {
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
             {t('management.museum.title')}
           </h1>
+          <p className="text-xl">
+            {t('management.museum.description')}
+          </p>
         </div>
       </section>
 
