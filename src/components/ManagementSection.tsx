@@ -1,12 +1,12 @@
 import { Building2, Landmark, Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useMuseumStats } from '@/hooks/useMuseumStats';
 
 const ManagementSection = () => {
-  const { t } = useHybridTranslation();
+  const { t } = useTranslation();
   const museumStats = useMuseumStats();
   
   // Define cards inside useMemo to make them reactive to language changes

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useTranslation } from 'react-i18next';
 import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
 import { sanitizeHtml } from '@/lib/sanitize-html';
@@ -43,18 +43,7 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaCard = ({ event }) => {
-  const agendaCardTexts = useMemo(
-    () => ({
-      upcoming: 'agenda.status.upcoming',
-      ongoing: 'agenda.status.ongoing',
-      registration: 'agenda.status.registration',
-      finished: 'agenda.status.finished',
-      detailButton: 'agenda.button.detail',
-    }),
-    []
-  );
-
-  const { ref, translations } = useOnDemandTranslate(agendaCardTexts);
+  const { t } = useTranslation();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -67,15 +56,15 @@ const AgendaCard = ({ event }) => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'upcoming': return translations.upcoming || 'Upcoming';
-      case 'ongoing': return translations.ongoing || 'Ongoing';
-      case 'registration': return translations.registration || 'Registration';
-      default: return translations.finished || 'Finished';
+      case 'upcoming': return t('agenda.status.upcoming') || 'Upcoming';
+      case 'ongoing': return t('agenda.status.ongoing') || 'Ongoing';
+      case 'registration': return t('agenda.status.registration') || 'Registration';
+      default: return t('agenda.status.finished') || 'Finished';
     }
   };
 
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>} className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
+    <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
       <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
         <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
@@ -126,7 +115,7 @@ const AgendaCard = ({ event }) => {
       <div className='p-6 absolute left-0 bottom-0 right-0'>
         <Link to={`/event/${event.id}`}>
           <Button className="w-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce">
-            {translations.detailButton || 'Detail Event'}
+            {t('agenda.button.detail') || 'Detail Event'}
             <ChevronRight size={16} className="ml-2" />
           </Button>
         </Link>
@@ -136,17 +125,7 @@ const AgendaCard = ({ event }) => {
 };
 
 const AgendaSection = () => {
-  const agendaSectionTexts = useMemo(
-    () => ({
-      title: 'agenda.title',
-      subtitle: 'agenda.subtitle',
-      allEvents: 'agenda.categories.all',
-      loading: 'agenda.loading',
-    }),
-    []
-  );
-
-  const { ref, translations } = useOnDemandTranslate(agendaSectionTexts);
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
   const [categories, setCategories] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);
@@ -180,20 +159,20 @@ const AgendaSection = () => {
     : sortedEvents.filter((event: any) => event.category === activeCategory);
 
   return (
-    <section ref={ref} id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
+    <section id="agenda" className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold pb-3 text-heritage-gradient">
-            {translations.title || 'Agenda'}
+            {t('agenda.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {translations.subtitle || 'Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia'}
+            {t('agenda.subtitle')}
           </p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
           {[
-            { id: 'semua', name: translations.allEvents || 'All Events' },
+            { id: 'semua', name: t('agenda.categories.all') || 'All Events' },
             ...categories
           ].map((category) => (
             <button
@@ -214,7 +193,7 @@ const AgendaSection = () => {
           {isTranslating ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
-                {translations.loading || 'Loading events...'}
+                {t('agenda.loading') || 'Loading events...'}
               </span>
             </div>
           ) : (

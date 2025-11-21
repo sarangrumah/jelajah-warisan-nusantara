@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
+import { useTranslation } from 'react-i18next';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Header = () => {
@@ -57,34 +57,43 @@ const Header = () => {
 
   // Collect all texts that need translation
   const allTexts = useMemo(() => {
-    const texts: Record<string, string> = {};
-    
-    navigationItems.forEach(item => {
-      texts[`nav_${item.name}`] = item.name;
-      if (item.subItems) {
-        item.subItems.forEach(subItem => {
-          texts[`nav_${subItem.name}`] = subItem.name;
-        });
-      }
-    });
-    
+    const texts: Record<string, string> = {
+      'Beranda': 'nav.beranda',
+      'Destinasi': 'nav.destinasi',
+      'Museum': 'nav.museum',
+      'Warisan Budaya': 'nav.heritage',
+      'Koleksi': 'nav.collection',
+      'Memory Of the World': 'nav.mow',
+      'Agenda': 'nav.agenda',
+      'Tentang Kami': 'nav.tentangKami',
+      'Struktur Organisasi': 'nav.strukturOrganisasi',
+      'Layanan Konservasi': 'nav.layananKonservasi',
+      'Media & Publikasi': 'nav.mediaPublikasi',
+      'Pemanfaatan Aset': 'nav.pemanfaatanAset',
+      'Merchandise': 'nav.merchandise',
+      'Hubungi Kami': 'nav.hubungiKami',
+      'Karir': 'nav.career',
+      'PPID': 'nav.ppid',
+      'Prosedur Operasional Standar': 'nav.sop',
+      'Admin': 'nav.admin'
+    };
     return texts;
-  }, [navigationItems]);
+  }, []);
 
-  // Batch translate all navigation texts at once
-  const { translations } = useBatchTranslateOptimized(allTexts, { debounceMs: 50 });
+  // Use standard translation hook
+  const { t } = useTranslation();
 
   // Create translated navigation items
   const translatedNavigationItems = useMemo(() => {
     return navigationItems.map(item => ({
       ...item,
-      name: translations[`nav_${item.name}`] || item.name,
+      name: t(allTexts[item.name] || `nav.${item.name.toLowerCase().replace(/\s+/g, '')}`) || item.name,
       subItems: item.subItems ? item.subItems.map(subItem => ({
         ...subItem,
-        name: translations[`nav_${subItem.name}`] || subItem.name
+        name: t(allTexts[subItem.name] || `nav.${subItem.name.toLowerCase().replace(/\s+/g, '')}`) || subItem.name
       })) : undefined
     }));
-  }, [translations]);
+  }, [navigationItems, t, allTexts]);
 
   useEffect(() => {
     const handleScroll = () => {

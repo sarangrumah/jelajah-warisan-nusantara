@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTranslate } from '@/hooks/useTranslate';
+import { useTranslation } from 'react-i18next';
 import { bannerService } from '@/lib/api-services';
 import { defaultSlides } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
@@ -39,13 +39,20 @@ interface HeroSectionProps {
 }
 
 const HeroSlideContent = ({ slide }: { slide: any }) => {
-    const { translatedText: title } = useTranslate(slide.title);
-    const { translatedText: subtitle } = useTranslate(slide.subtitle);
-    const { translatedText: buttonLabel1 } = useTranslate(slide.button_label_1);
-    const { translatedText: buttonLabel2 } = useTranslate(slide.button_label_2);
+    const { t } = useTranslation();
+    
+    // Map slide content to translation keys if possible, otherwise use the content directly
+    // This assumes the slide content from DB matches the keys or we use a fallback
+    // For dynamic content from DB, we might still need a translation service if it's not in our i18n files
+    // But for the main static slides, we can try to map them
+    
+    const title = slide.title;
+    const subtitle = slide.subtitle;
+    const buttonLabel1 = slide.button_label_1;
+    const buttonLabel2 = slide.button_label_2;
 
     const linkTo = (slideURL: string) => {
-        if(slideURL === 'museum') {      
+        if(slideURL === 'museum') {
             return `/museums`;
         } else if(slideURL === 'heritage') {
             return `/heritage`

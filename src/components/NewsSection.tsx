@@ -3,7 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useTranslation } from 'react-i18next';
 import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -68,18 +68,7 @@ function getNewsFileUrl(filename: string) {
 }
 
 const NewsSection = () => {
-  const newsSectionTexts = React.useMemo(
-    () => ({
-      title: 'news.title',
-      subtitle: 'news.subtitle',
-      loading: 'news.loading',
-      readMore: 'news.button.readMore',
-      viewAll: 'news.button.viewAll',
-    }),
-    []
-  );
-
-  const { ref, translations } = useOnDemandTranslate(newsSectionTexts);
+  const { t } = useTranslation();
 
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -121,14 +110,14 @@ const NewsSection = () => {
   const handleBlur = () => setIsPaused(false);
 
   return (
-    <section ref={ref as React.RefObject<HTMLElement>} className="py-20 bg-background">
+    <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-2xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-            {translations.title || 'Berita & Media'}
+            {t('news.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {translations.subtitle || 'Ikuti terus berita dan perkembangan terbaru dari kami'}
+            {t('news.subtitle')}
           </p>
         </div>
 
@@ -136,7 +125,7 @@ const NewsSection = () => {
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <span className="text-lg text-muted-foreground">
-                {translations.loading || 'Loading...'}
+                {t('news.loading') || 'Loading...'}
               </span>
             </div>
           ) : (
@@ -222,7 +211,7 @@ const NewsSection = () => {
                             </div>
                           </div>
                           <Link to={`/news/${article.id}`} className="flex items-center gap-2 text-primary hover:text-primary-glow transition-colors mt-auto">
-                            {translations.readMore || 'Baca Selengkapnya'}
+                            {t('news.button.readMore') || 'Baca Selengkapnya'}
                             <ArrowRight size={16} />
                           </Link>
                         </CardContent>
@@ -258,7 +247,7 @@ const NewsSection = () => {
         <div className="text-center scroll-reveal">
           <Link to={'/media-publikasi'}>
             <button className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow">
-              {translations.viewAll || 'Lihat Semua Berita'}
+              {t('news.button.viewAll') || 'Lihat Semua Berita'}
             </button>
           </Link>
         </div>

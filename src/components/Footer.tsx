@@ -1,51 +1,24 @@
 import { Phone, Mail, MapPin, Instagram, Youtube } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
+import { useTranslation } from 'react-i18next';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 
 const Footer = () => {
   const { language } = useLanguage();
-  
-  // Collect all texts that need translation
-  const footerTexts = {
-    contactUs: 'Hubungi Kami',
-    phone: 'Telepon',
-    email: 'Email',
-    address: 'Alamat',
-    quickLinks: 'Tautan Cepat',
-    socialMedia: 'Media Sosial',
-    copyright: 'Hak Cipta © 2024 Museum dan Cagar Budaya. Semua Hak Dilindungi.',
-    privacy: 'Kebijakan Privasi',
-    terms: 'Syarat & Ketentuan',
-    sitemap: 'Peta Situs',
-    beranda: 'Beranda',
-    agenda: 'Agenda',
-    tentangKami: 'Tentang Kami',
-    strukturOrganisasi: 'Struktur Organisasi',
-    layananKonservasi: 'Layanan Konservasi',
-    mediaPublikasi: 'Media & Publikasi',
-    pemanfaatanAset: 'Pemanfaatan Aset',
-    hubungiKami: 'Hubungi Kami',
-    karir: 'Karir',
-    ppid: 'PPID',
-    sop: 'SOP'
-  };
+  const { t } = useTranslation();
 
-  // Batch translate all footer texts at once
-  const { translations } = useBatchTranslateOptimized(footerTexts, { debounceMs: 50 });
-
-  const orgName = language === 'id' ? 'Museum dan Cagar Budaya' : 'Museum and Cultural Heritage';
-  const ministry = language === 'id' ? 'Kementerian Kebudayaan Republik Indonesia' : 'Ministry of Culture Republic of Indonesia';
-  const contactUs = translations.contactUs || 'Hubungi Kami';
-  const phone = translations.phone || 'Telepon';
-  const email = translations.email || 'Email';
-  const address = translations.address || 'Alamat';
-  const quickLinks = translations.quickLinks || 'Tautan Cepat';
-  const socialMedia = translations.socialMedia || 'Media Sosial';
-  const copyright = translations.copyright || 'Hak Cipta © 2024 Museum dan Cagar Budaya. Semua Hak Dilindungi.';
-  const privacy = translations.privacy || 'Kebijakan Privasi';
-  const terms = translations.terms || 'Syarat & Ketentuan';
-  const sitemap = translations.sitemap || 'Peta Situs';
+  const orgName = t('footer.orgName');
+  const ministry = t('footer.ministry');
+  const contactUs = t('footer.contactUs');
+  const phone = t('footer.phone');
+  const email = t('footer.email');
+  const address = t('footer.address');
+  const quickLinks = t('footer.quickLinks');
+  const socialMedia = t('footer.socialMedia');
+  const copyright = t('footer.copyright');
+  const privacy = t('footer.privacy');
+  const terms = t('footer.terms');
+  const sitemap = t('footer.sitemap');
 
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
@@ -54,17 +27,17 @@ const Footer = () => {
 
   // Quick links with translated text
   const translatedQuickLinks = [
-    { label: translations.beranda || 'Beranda', href: '/beranda' },
-    { label: translations.agenda || 'Agenda', href: '/agenda' },
-    { label: translations.tentangKami || 'Tentang Kami', href: '/tentang-kami' },
-    { label: translations.strukturOrganisasi || 'Struktur Organisasi', href: '/struktur-organisasi' },
-    { label: translations.layananKonservasi || 'Layanan Konservasi', href: '/laboratorium-konservasi' },
-    { label: translations.mediaPublikasi || 'Media & Publikasi', href: '/media-publikasi' },
-    { label: translations.pemanfaatanAset || 'Pemanfaatan Aset', href: '/pemanfaatan-aset' },
-    { label: translations.hubungiKami || 'Hubungi Kami', href: '/hubungi-kami' },
-    { label: translations.karir || 'Karir', href: '/karir' },
-    { label: translations.ppid || 'PPID', href: '/ppid' },
-    { label: translations.sop || 'SOP', href: '/prosedur-operasional-standar' },
+    { label: t('nav.beranda'), href: '/beranda' },
+    { label: t('nav.agenda'), href: '/agenda' },
+    { label: t('nav.tentangKami'), href: '/tentang-kami' },
+    { label: t('nav.strukturOrganisasi'), href: '/struktur-organisasi' },
+    { label: t('nav.layananKonservasi'), href: '/laboratorium-konservasi' },
+    { label: t('nav.mediaPublikasi'), href: '/media-publikasi' },
+    { label: t('nav.pemanfaatanAset'), href: '/pemanfaatan-aset' },
+    { label: t('nav.hubungiKami'), href: '/hubungi-kami' },
+    { label: t('nav.career'), href: '/karir' },
+    { label: t('nav.ppid'), href: '/ppid' },
+    { label: t('nav.sop'), href: '/prosedur-operasional-standar' },
   ];
 
   return (

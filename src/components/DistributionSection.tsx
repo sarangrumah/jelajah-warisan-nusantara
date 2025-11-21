@@ -1,14 +1,15 @@
 import { Building, Landmark } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import IndonesiaMap from './IndonesiaMap';
-import { useTranslate } from '@/hooks/useTranslate';
+import { useTranslation } from 'react-i18next';
 import { museumService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
 
 const RegionCard = ({ region }: { region: { key: string; color: string; museums: number; heritage: number } }) => {
-  const { translatedText: regionName } = useTranslate(region.key);
-  const { translatedText: museumLabel } = useTranslate('Museum');
-  const { translatedText: heritageLabel } = useTranslate('Cagar Budaya');
+  const { t } = useTranslation();
+  const regionName = t(`distribution.regions.${region.key}`) || region.key;
+  const museumLabel = t('distribution.labels.museum');
+  const heritageLabel = t('distribution.labels.heritage');
 
   return (
     <Card className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
@@ -42,12 +43,13 @@ const RegionCard = ({ region }: { region: { key: string; color: string; museums:
 
 const DistributionSection = () => {
     const [regions, setRegions] = useState([]);
+    const { t } = useTranslation();
   
-    const { translatedText: title } = useTranslate('Sebaran Museum dan Cagar Budaya');
-    const { translatedText: subtitle } = useTranslate('Distribusi museum dan situs cagar budaya di seluruh Indonesia yang dikelola oleh Direktorat Museum dan Cagar Budaya.');
-    const { translatedText: legendTitle } = useTranslate('Legenda');
-    const { translatedText: legendMuseum } = useTranslate('Museum');
-    const { translatedText: legendHeritage } = useTranslate('Cagar Budaya');
+    const title = t('distribution.title');
+    const subtitle = t('distribution.subtitle');
+    const legendTitle = t('distribution.legend.title');
+    const legendMuseum = t('distribution.legend.museum');
+    const legendHeritage = t('distribution.legend.heritage');
 
   useEffect(() => {
     const fetchRegions = async () => {
