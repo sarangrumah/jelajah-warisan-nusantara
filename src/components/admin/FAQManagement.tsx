@@ -369,11 +369,11 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
         }}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
-                  <DialogTitle>
-                  {'Delete ' + faq.question + ' content'}
+                  <DialogTitle className="flex items-center gap-1 flex-wrap">
+                    Delete <span className="[&_p]:m-0 [&_p]:inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.question) }} /> content
                   </DialogTitle>
-                  <DialogDescription>
-                  {'Are you sure want delete this' + faq.question + ' content'}
+                  <DialogDescription className="flex items-center gap-1 flex-wrap">
+                    Are you sure want delete this <span className="[&_p]:m-0 [&_p]:inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.question) }} /> content
                   </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end space-x-2">
@@ -410,7 +410,7 @@ const FAQManagement =  ({ userRole }: { userRole: string }) => {
                   <div className="flex-1">
                     <CardTitle className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">#{faq.order_index}</span>
-                      {faq.question}
+                      <span className="[&_p]:m-0 [&_p]:inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.question) }} />
                       <Badge variant={faq.is_published ? 'default' : 'secondary'}>
                         {faq.is_published ? 'Published' : 'Draft'}
                       </Badge>
