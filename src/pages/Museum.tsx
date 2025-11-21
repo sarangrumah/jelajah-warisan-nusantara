@@ -166,7 +166,7 @@ const Museum = () => {
       <section className="py-20 relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
-            {t('management.title')}
+            {t('management.museum.title')}
           </h1>
         </div>
       </section>
