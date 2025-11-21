@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
 import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -44,7 +45,7 @@ const ContactSection = () => {
             && faq.is_published === true
             && faq.is_rejected === false
           ));
-          setFaqs(filteredFaqs);
+          setFaqs(filteredFaqs.sort((a: any, b: any) => a.order_index - b.order_index));
         }
       } catch (error) {
         console.error('Error fetching FAQs:', error);
@@ -315,12 +316,12 @@ const ContactSection = () => {
                 {faqs.length > 0 && faqs.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left">
-                      <span dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.question) }} />
+                      <span className="[&_p]:m-0 [&_p]:inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.question) }} />
                     </AccordionTrigger>
                     <AccordionContent>
-                      <p
+                      <div
                         className="text-muted-foreground leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(faq.answer) }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
                       />
                     </AccordionContent>
                   </AccordionItem>
