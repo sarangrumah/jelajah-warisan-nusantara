@@ -60,12 +60,12 @@ const Museum = () => {
   
   // Collect all texts that need translation
   const museumTexts = useMemo(() => ({
-    pageTitle: 'Museum dan Cagar Budaya',
+    pageTitle: 'management.title',
     searchPlaceholder: 'filter.museum.search',
-    filterPlaceholder: 'Filter by type',
-    noResults: 'Museum tidak ditemukan.',
-    buyTicket: 'Beli Tiket',
-    visitMuseum: 'Kunjungi Museum'
+    filterPlaceholder: 'filter.museum.categoryAll',
+    noResults: 'common.notFound',
+    buyTicket: 'buttons.buyTicket',
+    visitMuseum: 'buttons.visitWebsite'
   }), []);
 
   // Batch translate all museum texts at once
@@ -178,7 +178,7 @@ const Museum = () => {
       <section className="py-20 relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
-            {translations.pageTitle || 'Museum dan Cagar Budaya'}
+            {translations.pageTitle}
           </h1>
         </div>
       </section>
@@ -189,7 +189,7 @@ const Museum = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder || 'Cari museum...'}
+              placeholder={translations.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -198,10 +198,10 @@ const Museum = () => {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder || 'Filter by type'} />
+              <SelectValue placeholder={translations.filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{'Semua'}</SelectItem>
+              <SelectItem value="all">{translations.filterPlaceholder}</SelectItem>
               {categories.length > 0 && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -271,7 +271,7 @@ const Museum = () => {
         {filteredMuseums.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults || 'Museum tidak ditemukan.'}
+              {translations.noResults}
             </p>
           </div>
         )}

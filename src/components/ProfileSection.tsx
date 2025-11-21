@@ -1,6 +1,4 @@
-import 'react';
-import 'react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
 import { useProfileStats } from '@/hooks/useProfileStats';
 
@@ -22,21 +20,21 @@ const ProfileSection = () => {
   
   // Collect all texts that need translation
   const profileTexts = useMemo(() => ({
-    title: 'Tentang Kami',
-    description: 'Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.',
-    visionTitle: 'Visi',
-    missionTitle: 'Misi',
-    aboutUsTitle: 'Tentang Kami',
-    contactTitle: 'Hubungi Kami',
-    addressLabel: 'Alamat',
-    phoneLabel: 'Telepon',
-    whatsappLabel: 'WhatsApp',
-    emailLabel: 'Email',
-    websiteLabel: 'Situs Web',
-    museumTerdaftar: 'Museum Terdaftar',
-    cagarBudaya: 'Cagar Budaya',
-    provinsi: 'Provinsi',
-    tahunPengalaman: 'Tahun Pengalaman'
+    title: 'profile.title',
+    description: 'profile.description',
+    visionTitle: 'profile.vision',
+    missionTitle: 'profile.mission',
+    aboutUsTitle: 'profile.title',
+    contactTitle: 'profile.stats.museums',
+    addressLabel: 'profile.stats.museums',
+    phoneLabel: 'profile.stats.heritage',
+    whatsappLabel: 'profile.stats.provinces',
+    emailLabel: 'profile.stats.experience',
+    websiteLabel: 'profile.stats.experience',
+    museumTerdaftar: 'profile.stats.museums',
+    cagarBudaya: 'profile.stats.heritage',
+    provinsi: 'profile.stats.provinces',
+    tahunPengalaman: 'profile.stats.experience'
   }), []);
 
   // Translate texts only when the component is visible
@@ -52,7 +50,7 @@ const ProfileSection = () => {
       whatsapp: `0812-3456-7890`,
       email: `museumcb@kemenbud.go.id`,
       website: `https://museumcagarbudaya.kemenbud.go.id/`
-  }
+  };
 
   const statItems = [
     { value: profileStats.museums, label: translations.museumTerdaftar || 'Museum Terdaftar' },
@@ -67,10 +65,10 @@ const ProfileSection = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
-              {translations.title || 'Tentang Kami'}
+              {translations.title}
             </h2>
-            <p className="text-xl text-muted-foreground max-w-8xl mx-autox p-6 leading-relaxed text-justify">
-              {translations.description || 'Museum dan Cagar Budaya (Indonesian Heritage Agency) merupakan Badan Layanan Umum (BLU) di bawah naungan Kementerian Kebudayaan Republik Indonesia yang saat ini bertanggung jawab atas pengelolaan 19 museum dan galeri serta 34 situs cagar budaya nasional di Indonesia. Terbentuk pada tahun 2022 dan diresmikan menjadi BLU per tanggal 1 September 2023. Museum dan Cagar Budaya memiliki visi untuk menjadi institusi yang bersifat kolaboratif dan mendorong daya cipta, perubahan sosial, serta pembangunan masyarakat yang berbudaya.'}
+            <p className="text-xl text-muted-foreground max-w-8xl mx-auto p-6 leading-relaxed text-justify">
+              {translations.description}
             </p>
           </div>
 
@@ -78,13 +76,13 @@ const ProfileSection = () => {
             <div className="space-y-6 scroll-reveal">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.visionTitle || 'Visi'}</h4>
+                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.visionTitle}</h4>
                   <div className="prose text-muted-foreground">
                     <TranslatedHtml text={profile.vision} />
                   </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.missionTitle || 'Misi'}</h4>
+                  <h4 className="text-xl font-semibold text-primary mb-3">{translations.missionTitle}</h4>
                   <div className="prose space-y-2 text-muted-foreground">
                     <TranslatedHtml text={profile.mission} />
                   </div>
@@ -92,28 +90,28 @@ const ProfileSection = () => {
               </div>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.aboutUsTitle || 'Tentang Kami'}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.aboutUsTitle}</h4>
                   <div className="prose text-muted-foreground">
                     <TranslatedHtml text={profile.aboutus} />
                   </div>
                 </div>
                 <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.contactTitle || 'Hubungi Kami'}</h4>
+                  <h4 className="text-lg font-semibold text-primary mb-2">{translations.contactTitle}</h4>
                   <ul className="text-muted-foreground space-y-1">
                     <li>
-                      <b>{translations.addressLabel || 'Alamat'}:</b> <TranslatedHtml text={profile.address} />
+                      <b>{translations.addressLabel}:</b> <TranslatedHtml text={profile.address} />
                     </li>
                     <li>
-                      <b>{translations.phoneLabel || 'Telepon'}:</b> <TranslatedHtml text={profile.phone} />
+                      <b>{translations.phoneLabel}:</b> <TranslatedHtml text={profile.phone} />
                     </li>
                     <li>
-                      <b>{translations.whatsappLabel || 'WhatsApp'}:</b> <TranslatedHtml text={profile.whatsapp} />
+                      <b>{translations.whatsappLabel}:</b> <TranslatedHtml text={profile.whatsapp} />
                     </li>
                     <li>
-                      <b>{translations.emailLabel || 'Email'}:</b> <TranslatedHtml text={profile.email} />
+                      <b>{translations.emailLabel}:</b> <TranslatedHtml text={profile.email} />
                     </li>
                     <li>
-                      <b>{translations.websiteLabel || 'Situs Web'}:</b> <TranslatedHtml text={profile.website} />
+                      <b>{translations.websiteLabel}:</b> <TranslatedHtml text={profile.website} />
                     </li>
                   </ul>
                 </div>

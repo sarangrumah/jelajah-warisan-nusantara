@@ -51,9 +51,9 @@ const Heritage = () => {
     title: 'heritage.title',
     subtitle: 'heritage.subtitle',
     searchPlaceholder: 'filter.heritage.search',
-    filterPlaceholder: 'Filter by type',
-    noResults: 'No heritage sites found. Try adjusting your search or filter.',
-    all: 'Semua'
+    filterPlaceholder: 'filter.heritage.categoryAll',
+    noResults: 'common.notFound',
+    all: 'filter.heritage.categoryAll'
   }), []);
 
   const { ref, translations } = useOnDemandTranslate(heritageTexts);
@@ -168,10 +168,10 @@ const Heritage = () => {
       <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white scroll-reveal">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {translations.title || 'Cagar Budaya'}
+            {translations.title}
           </h1>
           <p className="text-xl">
-            {translations.subtitle || 'Jelajahi cagar budaya di seluruh Indonesia'}
+            {translations.subtitle}
           </p>
         </div>
       </section>
@@ -182,7 +182,7 @@ const Heritage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder || 'Cari cagar budaya...'}
+              placeholder={translations.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -191,10 +191,10 @@ const Heritage = () => {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder || 'Filter berdasarkan tipe'} />
+              <SelectValue placeholder={translations.filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{translations.all || 'Semua'}</SelectItem>
+              <SelectItem value="all">{translations.all}</SelectItem>
               {categories.length > 0 && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -257,7 +257,7 @@ const Heritage = () => {
         {filteredHeritages.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults || 'Situs cagar budaya tidak ditemukan. Coba sesuaikan pencarian atau filter Anda.'}
+              {translations.noResults}
             </p>
           </div>
         )}

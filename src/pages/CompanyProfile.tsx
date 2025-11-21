@@ -26,10 +26,10 @@ const CompanyProfile = () => {
   }, [pathname]);
 
   const companyStats = [
-    { icon: Building, label: 'Museum Terkelola', value: '19', color: 'text-blue-600' },
-    { icon: Award, label: 'Cagar Budaya', value: '34', color: 'text-green-600' },
+    { icon: Building, label: t('profile.stats.museums'), value: '19', color: 'text-blue-600' },
+    { icon: Award, label: t('profile.stats.heritage'), value: '34', color: 'text-green-600' },
     { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
-    { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
+    { icon: MapPin, label: t('profile.stats.provinces'), value: '34', color: 'text-orange-600' },
   ];
 
   const leadership = [
@@ -57,13 +57,13 @@ const CompanyProfile = () => {
         <div className="relative z-10 container mx-auto px-4 text-center scroll-reveal">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-heritage-gradient mb-6">
-              Profil Institusi
+              {t('about.companyProfile.title')}
             </h1>
             {/* <p className="text-xl md:text-2xl text-muted-foreground mb-8">
               Museum dan Cagar Budaya
             </p> */}
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Museum dan Cagar Budaya merupakan unit eselon II di bawah Direktorat Jenderal Kebudayaan, Kementerian Kebudayaan Republik Indonesia.
+              {t('about.companyProfile.subtitle')}
             </p>
           </div>
         </div>
@@ -92,13 +92,13 @@ const CompanyProfile = () => {
       <section className="py-16">
         <div className="container mx-auto px-4 pt-6 scroll-reveal">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-center pb-12 text-heritage-gradient">Tentang Kami</h2>
+            <h2 className="text-4xl font-bold text-center pb-12 text-heritage-gradient">{t('about.companyProfile.title')}</h2>
             <div className="space-y-8">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Eye className="h-6 w-6 text-primary" />
-                    Visi
+                    {t('profile.vision')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -118,7 +118,7 @@ const CompanyProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-6 w-6 text-primary" />
-                    Misi
+                    {t('profile.mission')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -200,18 +200,18 @@ const CompanyProfile = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-8 text-heritage-gradient">Informasi Kontak</h2>
+            <h2 className="text-3xl font-bold mb-8 text-heritage-gradient">{t('contact.infoTitle')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle>Kantor Pusat</CardTitle>
+                  <CardTitle>{t('contact.office.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-left">
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-primary mt-1" />
                     <div>
-                      <p className="font-medium">Alamat</p>
-                      <p className="text-muted-foreground">Jl. Jenderal Sudirman, Senayan<br />Jakarta Pusat 10270</p>
+                      <p className="font-medium">{t('contact.addressLabel')}</p>
+                      <p className="text-muted-foreground">{t('footer.address')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -219,19 +219,19 @@ const CompanyProfile = () => {
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle>Kontak</CardTitle>
+                  <CardTitle>{t('contact.infoTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-left">
                   <div>
-                    <p className="font-medium">Telepon</p>
+                    <p className="font-medium">{t('contact.phoneLabel')}</p>
                     <p className="text-muted-foreground">+62 21 5725019</p>
                   </div>
                   <div>
-                    <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">info@kebudayaan.kemdikbud.go.id</p>
+                    <p className="font-medium">{t('contact.emailLabel')}</p>
+                    <p className="text-muted-foreground">{t('footer.email')}</p>
                   </div>
                   <div>
-                    <p className="font-medium">Website</p>
+                    <p className="font-medium">{t('contact.websiteLabel')}</p>
                     <p className="text-muted-foreground">www.kebudayaan.kemdikbud.go.id</p>
                   </div>
                 </CardContent>

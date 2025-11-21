@@ -30,12 +30,12 @@ const Collection = () => {
 
   // Collect all texts that need translation
   const collectionTexts = useMemo(() => ({
-    pageTitle: 'Koleksi',
-    pageSubtitle: 'Jelajahi koleksi museum dan cagar budaya kami',
-    searchPlaceholder: 'Cari koleksi...',
-    filterPlaceholder: 'Filter by category',
-    noResults: 'Koleksi tidak ditemukan. Coba sesuaikan pencarian atau filter Anda.',
-    allCategories: 'Semua Kategori'
+    pageTitle: 'collection.title',
+    pageSubtitle: 'collection.subtitle',
+    searchPlaceholder: 'filter.collection.search',
+    filterPlaceholder: 'filter.collection.categoryAll',
+    noResults: 'common.notFound',
+    allCategories: 'filter.collection.categoryAll'
   }), []);
 
   // Batch translate all collection texts at once
@@ -90,10 +90,10 @@ const Collection = () => {
       <section className="relative py-20 from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {translations.pageTitle || 'Koleksi'}
+            {translations.pageTitle}
           </h1>
           <p className="text-xl">
-            {translations.pageSubtitle || 'Jelajahi koleksi museum dan cagar budaya kami'}
+            {translations.pageSubtitle}
           </p>
         </div>
       </section>
@@ -104,7 +104,7 @@ const Collection = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder || 'Cari koleksi...'}
+              placeholder={translations.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -113,10 +113,10 @@ const Collection = () => {
           <Select value={filterCategories} onValueChange={setFilterCategories}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder || 'Filter by category'} />
+              <SelectValue placeholder={translations.filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{translations.allCategories || 'Semua Kategori'}</SelectItem>
+              <SelectItem value="all">{translations.allCategories}</SelectItem>
               {filterCategoriesCollection.length > 0 && filterCategoriesCollection.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -162,7 +162,7 @@ const Collection = () => {
         {filteredCollections.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults || 'Koleksi tidak ditemukan. Coba sesuaikan pencarian atau filter Anda.'}
+              {translations.noResults}
             </p>
           </div>
         )}
