@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, FileText, MapPin, Briefcase } from 'lucide-react';
+import { Clock, FileText, MapPin, Briefcase, Calendar } from 'lucide-react';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { sanitizeHtml } from '@/lib/sanitize-html';
@@ -48,6 +48,14 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                   <MapPin size={16} className="text-primary" />
                   <span>{program.location}</span>
                 </div>
+                {(program.publish_date && program.end_publish_date) && (
+                  <div className="col-span-2 flex items-center gap-2 text-sm">
+                    <Calendar size={16} className="text-primary" />
+                    <span>
+                      Periode: {new Date(program.publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(program.end_publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {program.requirements && (
@@ -70,17 +78,24 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                 </div>
               )}
 
-              {program.responsibilities && Array.isArray(program.responsibilities) && (
+              {program.responsibilities && (
                 <div className="mb-4">
                   <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
-                  <ul className="space-y-1">
-                    {program.responsibilities.map((resp: string, respIndex: number) => (
-                      <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                        {resp}
-                      </li>
-                    ))}
-                  </ul>
+                  {Array.isArray(program.responsibilities) ? (
+                    <ul className="space-y-1">
+                      {program.responsibilities.map((resp: string, respIndex: number) => (
+                        <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                          {resp}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div
+                      className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.responsibilities) }}
+                    />
+                  )}
                 </div>
               )}
 

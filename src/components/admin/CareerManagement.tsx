@@ -309,16 +309,18 @@ const CareerManagement = () => {
               Add Opportunity
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingOpportunity ? 'Edit Career Opportunity' : 'Add New Career Opportunity'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingOpportunity ? 'Update opportunity information' : 'Create a new job posting or internship opportunity'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
+          <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0">
+            <div className="px-6 py-4 border-b">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingOpportunity ? 'Edit Career Opportunity' : 'Add New Career Opportunity'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingOpportunity ? 'Update opportunity information' : 'Create a new job posting or internship opportunity'}
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
               <OpportunityForm
                 opportunity={editingOpportunity}
                 onSave={saveOpportunity}
