@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -47,16 +47,7 @@ function getMuseumsImageUrl(filename: string) {
   return '/placeholder.svg';
 }
 const Heritage = () => {
-  const heritageTexts = useMemo(() => ({
-    title: 'heritage.title',
-    subtitle: 'heritage.subtitle',
-    searchPlaceholder: 'filter.heritage.search',
-    filterPlaceholder: 'filter.heritage.categoryAll',
-    noResults: 'common.notFound',
-    all: 'filter.heritage.categoryAll'
-  }), []);
-
-  const { ref, translations } = useOnDemandTranslate(heritageTexts);
+  const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
@@ -161,17 +152,17 @@ const Heritage = () => {
   });
 
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Banner */}
       <section className="relative h-64 bg-gradient-to-r from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white scroll-reveal">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {translations.title}
+            {t('heritage.title')}
           </h1>
           <p className="text-xl">
-            {translations.subtitle}
+            {t('heritage.subtitle')}
           </p>
         </div>
       </section>
@@ -182,7 +173,7 @@ const Heritage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder}
+              placeholder={t('filter.heritage.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -191,10 +182,10 @@ const Heritage = () => {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder} />
+              <SelectValue placeholder={t('filter.heritage.categoryAll')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{translations.all}</SelectItem>
+              <SelectItem value="all">{t('filter.heritage.categoryAll')}</SelectItem>
               {categories.length > 0 && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -257,7 +248,7 @@ const Heritage = () => {
         {filteredHeritages.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults}
+              {t('common.notFound')}
             </p>
           </div>
         )}

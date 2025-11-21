@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -23,23 +23,12 @@ const Collection = () => {
   const [filterCategories, setFilterCategories] = useState('all');
   const [filterCategoriesCollection, setFilterCategoriesCollection] = useState([]);
   const { pathname } = useLocation();
+  const { t } = useTranslation();
     
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // Collect all texts that need translation
-  const collectionTexts = useMemo(() => ({
-    pageTitle: 'collection.title',
-    pageSubtitle: 'collection.subtitle',
-    searchPlaceholder: 'filter.collection.search',
-    filterPlaceholder: 'filter.collection.categoryAll',
-    noResults: 'common.notFound',
-    allCategories: 'filter.collection.categoryAll'
-  }), []);
-
-  // Batch translate all collection texts at once
-  const { translations } = useBatchTranslateOptimized(collectionTexts, { debounceMs: 50 });
   const fetchCollections = async () => {
     try {
       const response = await masterCollectionService.getAll();
@@ -90,10 +79,10 @@ const Collection = () => {
       <section className="relative py-20 from-secondary to-secondary/80 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {translations.pageTitle}
+            {t('collection.title')}
           </h1>
           <p className="text-xl">
-            {translations.pageSubtitle}
+            {t('collection.subtitle')}
           </p>
         </div>
       </section>
@@ -104,7 +93,7 @@ const Collection = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder}
+              placeholder={t('filter.collection.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -113,10 +102,10 @@ const Collection = () => {
           <Select value={filterCategories} onValueChange={setFilterCategories}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder} />
+              <SelectValue placeholder={t('filter.collection.categoryAll')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{translations.allCategories}</SelectItem>
+              <SelectItem value="all">{t('filter.collection.categoryAll')}</SelectItem>
               {filterCategoriesCollection.length > 0 && filterCategoriesCollection.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -162,7 +151,7 @@ const Collection = () => {
         {filteredCollections.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults}
+              {t('common.notFound')}
             </p>
           </div>
         )}

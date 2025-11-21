@@ -3,8 +3,8 @@ import Header from '@/components/Header';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import React, { useEffect, useState, useMemo } from 'react'
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { memoryWorldService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
@@ -56,14 +56,7 @@ function getImageUrl(imagePath: string) {
   return imagePath;
 }
 const MemoryOfWorld = () => {
-  const mowTexts = useMemo(() => ({
-    title: 'mow.title',
-    subtitle: 'mow.subtitle',
-    searchPlaceholder: 'filter.mow.search',
-    noResults: 'No memories found. Try adjusting your search or filter.',
-  }), []);
-
-  const { ref, translations } = useOnDemandTranslate(mowTexts);
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [memories, setMemories] = useState<MemoryItem[]>([]);
   const { pathname } = useLocation();
@@ -140,17 +133,17 @@ const MemoryOfWorld = () => {
   });
 
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Banner */}
       <section className="relative py-20 h-80 from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            {translations.title || 'Memory of The World'}
+            {t('mow.title')}
           </h1>
           <p className="text-xl">
-            {translations.subtitle || 'Jelajahi arsip dan koleksi digital kami'}
+            {t('mow.subtitle')}
           </p>
         </div>
       </section>
@@ -161,7 +154,7 @@ const MemoryOfWorld = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder || 'Cari arsip...'}
+              placeholder={t('filter.mow.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -205,7 +198,7 @@ const MemoryOfWorld = () => {
         {filteredMemories.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults || 'Arsip tidak ditemukan. Coba sesuaikan pencarian atau filter Anda.'}
+              {t('common.notFound')}
             </p>
           </div>
         )}

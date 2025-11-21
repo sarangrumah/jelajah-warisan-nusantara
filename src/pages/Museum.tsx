@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useBatchTranslateOptimized } from '@/hooks/useBatchTranslateOptimized';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -57,19 +57,7 @@ const Museum = () => {
   const [categories, setCategories] = useState([]);
 
   const { pathname } = useLocation();
-  
-  // Collect all texts that need translation
-  const museumTexts = useMemo(() => ({
-    pageTitle: 'management.title',
-    searchPlaceholder: 'filter.museum.search',
-    filterPlaceholder: 'filter.museum.categoryAll',
-    noResults: 'common.notFound',
-    buyTicket: 'buttons.buyTicket',
-    visitMuseum: 'buttons.visitWebsite'
-  }), []);
-
-  // Batch translate all museum texts at once
-  const { translations } = useBatchTranslateOptimized(museumTexts, { debounceMs: 50 });
+  const { t } = useTranslation();
       
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -178,7 +166,7 @@ const Museum = () => {
       <section className="py-20 relative from-primary to-primary-glow flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="py-4 text-4xl md:text-6xl font-bold mb-4">
-            {translations.pageTitle}
+            {t('management.title')}
           </h1>
         </div>
       </section>
@@ -189,7 +177,7 @@ const Museum = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
-              placeholder={translations.searchPlaceholder}
+              placeholder={t('filter.museum.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -198,10 +186,10 @@ const Museum = () => {
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full md:w-48">
               <Filter size={20} className="mr-2" />
-              <SelectValue placeholder={translations.filterPlaceholder} />
+              <SelectValue placeholder={t('filter.museum.categoryAll')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{translations.filterPlaceholder}</SelectItem>
+              <SelectItem value="all">{t('filter.museum.categoryAll')}</SelectItem>
               {categories.length > 0 && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
               ))}
@@ -252,13 +240,13 @@ const Museum = () => {
                         className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/80 transition w-1/2"
                         type="button"
                       >
-                        {translations.buyTicket || 'Beli Tiket'}
+                        {t('buttons.buyTicket') || 'Beli Tiket'}
                       </button>
                       <Link
                         to={`/museum/${item.id}`}
                         className="bg-secondary text-white rounded px-4 py-2 font-semibold hover:bg-secondary/80 transition w-1/2 text-center"
                       >
-                        {translations.visitMuseum || 'Kunjungi Museum'}
+                        {t('buttons.visitWebsite') || 'Kunjungi Museum'}
                       </Link>
                     </div>
                   </CardContent>
@@ -271,7 +259,7 @@ const Museum = () => {
         {filteredMuseums.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              {translations.noResults}
+              {t('common.notFound')}
             </p>
           </div>
         )}
