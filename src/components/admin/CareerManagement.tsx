@@ -318,14 +318,16 @@ const CareerManagement = () => {
                 {editingOpportunity ? 'Update opportunity information' : 'Create a new job posting or internship opportunity'}
               </DialogDescription>
             </DialogHeader>
-            <OpportunityForm
-              opportunity={editingOpportunity}
-              onSave={saveOpportunity}
-              onCancel={() => {
-                setEditingOpportunity(null);
-                setIsDialogOpen(false);
-              }}
-            />
+            <div className="overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
+              <OpportunityForm
+                opportunity={editingOpportunity}
+                onSave={saveOpportunity}
+                onCancel={() => {
+                  setEditingOpportunity(null);
+                  setIsDialogOpen(false);
+                }}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       </div>

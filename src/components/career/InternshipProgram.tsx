@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, FileText, MapPin } from 'lucide-react';
+import { Clock, FileText, MapPin, Briefcase } from 'lucide-react';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { sanitizeHtml } from '@/lib/sanitize-html';
+import { Badge } from '@/components/ui/badge';
 
-const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}) => {
+const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {internshipPrograms: any[], form: any, onSetIsDialogOpen: (open: boolean) => void}) => {
   return (
     <div>
       <div className="grid lg:grid-cols-2 gap-8 mb-16">
@@ -13,17 +15,30 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}) => {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="text-xl mb-2">{program.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{program.department}</p>
-                </div>
-                <div className="text-right">
-                  <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                    {program.slots} posisi
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="secondary" className="capitalize">
+                      {program.type || 'Internship'}
+                    </Badge>
+                    {program.department && (
+                      <Badge variant="outline">{program.department}</Badge>
+                    )}
                   </div>
                 </div>
+                {program.slots && (
+                  <div className="text-right">
+                    <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                      {program.slots} posisi
+                    </div>
+                  </div>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground mb-4">{program.description}</p>        
+              <div
+                className="text-muted-foreground mb-4 text-sm prose prose-sm max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.description || '') }}
+              />
+              
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Clock size={16} className="text-primary" />
@@ -34,49 +49,57 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}) => {
                   <span>{program.location}</span>
                 </div>
               </div>
-              <div className="mb-4">
-                <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
-                <ul className="space-y-1">
-                {/* {program.requirements.slice(0, 3).map((req, reqIndex) => ( */}
-                {(program.requirements ?? []).map((req, reqIndex) => (
-                  <li key={reqIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    {req}
-                  </li>
-                ))}
-                {(program.requirements ?? []).length > 3 && (
-                  <li className="text-xs text-muted-foreground/70 italic">
-                    +{program.requirements.length - 3} persyaratan lainnya
-                  </li>
-                )}
-                </ul>
-              </div>
-              <div className="mb-4">
-                <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
-                <ul className="space-y-1">
-                {/* {program.responsibilities.slice(0, 2).map((resp, respIndex) => ( */}
-                {(program.responsibilities ?? []).map((resp, respIndex) => (
-                  <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    {resp}
-                  </li>
-                ))}
-                {(program.responsibilities ?? []).length > 2 && (
-                  <li className="text-xs text-muted-foreground/70 italic">
-                    +{program.responsibilities.length - 2} tanggung jawab lainnya
-                  </li>
-                )}
-                </ul>
-              </div>
-              <div className="border-t border-border pt-3 mb-4">
-                <p className="text-xs text-muted-foreground">
-                  <strong>Supervisor:</strong> {program.supervisor}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
+
+              {program.requirements && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
+                  <div
+                    className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.requirements) }}
+                  />
+                </div>
+              )}
+
+              {program.benefits && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Benefit:</h4>
+                  <div
+                    className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.benefits) }}
+                  />
+                </div>
+              )}
+
+              {program.responsibilities && Array.isArray(program.responsibilities) && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
+                  <ul className="space-y-1">
+                    {program.responsibilities.map((resp: string, respIndex: number) => (
+                      <li key={respIndex} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        {resp}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {program.supervisor && (
+                <div className="border-t border-border pt-3 mb-4">
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Supervisor:</strong> {program.supervisor}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                 <div className="text-sm">
                   <span className="text-muted-foreground">Deadline: </span>
-                  <span className="font-semibold text-primary">{program.deadline}</span>
+                  <span className="font-semibold text-primary">
+                    {program.application_deadline
+                      ? new Date(program.application_deadline).toLocaleDateString()
+                      : (program.deadline || 'Open')}
+                  </span>
                 </div>
                 <Dialog onOpenChange={onSetIsDialogOpen}>
                   <DialogTrigger asChild>
