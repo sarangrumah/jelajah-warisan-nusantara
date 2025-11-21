@@ -1,7 +1,15 @@
 import { MessageCircle, Instagram, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLocation } from 'react-router-dom';
 
 const FloatingButtons = () => {
+  const location = useLocation();
+  
+  // Hide on admin pages
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   const socialMedia = [
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram', color: '#E4405F' },
     { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube', color: '#FF0000' },
