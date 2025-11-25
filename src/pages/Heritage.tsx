@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Calendar } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -47,13 +47,17 @@ function getMuseumsImageUrl(filename: string) {
   return '/placeholder.svg';
 }
 const Heritage = () => {
-  const { t } = useTranslation();
+  const { t } = useUnifiedTranslation();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [heritages, setHeritages] = useState([]);
   const [types, setTypes] = useState([]);
   const [categories, setCategories] = useState([]);
+  
+  const { translatedContent: translatedHeritages } = useTranslationSystem(heritages, 'heritages-list');
+  const displayHeritages = translatedHeritages || heritages;
+
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -137,7 +141,7 @@ const Heritage = () => {
     return name.toLowerCase() === 'cagar budaya';
   })?.id;
 
-  const filteredHeritages = heritages.filter(heritage => {
+  const filteredHeritages = displayHeritages.filter(heritage => {
     // Defensive: prefer .name, fallback to .title for legacy data
     const name = typeof heritage.name === 'string' ? heritage.name : (typeof heritage.title === 'string' ? heritage.title : undefined);
     const subtitle = typeof heritage.subtitle === 'string' ? heritage.subtitle : '';

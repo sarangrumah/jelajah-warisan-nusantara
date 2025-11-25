@@ -73,11 +73,14 @@ const NewsSection = () => {
   const [carouselApi, setCarouselApi] = React.useState(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
-  const { data: news, loading, error: _error } = useContent(mediaService, {
+  const { data: news, loading: contentLoading, error: _error } = useContent(mediaService, {
     limit: 6,
     is_active: true,
     is_approved: true,
   });
+  
+  // Only show loading if content is loading, not translation
+  const loading = contentLoading;
 
   // Auto-slide logic
   React.useEffect(() => {

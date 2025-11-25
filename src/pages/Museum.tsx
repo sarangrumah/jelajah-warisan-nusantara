@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Search, Filter } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { mapSlidesWithImageUrl } from '@/components/helper';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -56,8 +56,11 @@ const Museum = () => {
   const [types, setTypes] = useState([]);
   const [categories, setCategories] = useState([]);
 
+  const { translatedContent: translatedMuseums } = useTranslationSystem(museums, 'museums-list');
+  const displayMuseums = translatedMuseums || museums;
+
   const { pathname } = useLocation();
-  const { t } = useTranslation();
+  const { t } = useUnifiedTranslation();
       
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -124,7 +127,7 @@ const Museum = () => {
   }, [types]);
 
   const museumId = types.find((t) => t.name.toLowerCase() === 'museum')?.id;
-  const filteredMuseums = museums.filter(museum => {
+  const filteredMuseums = displayMuseums.filter(museum => {
     const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;

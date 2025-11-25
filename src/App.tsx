@@ -45,12 +45,15 @@ import MerchandiseDetail from "./pages/MerchandiseDetail";
 import ProcedureDetail from "./components/about/ProcedureDetail";
 import { useScrollReveal } from "./hooks/useScrollReveal";
 import { LanguageProvider } from "./contexts/LanguageContext";
-import { TranslationProvider } from "./contexts/TranslationContext";
-import { HybridTranslationProvider } from "./components/HybridTranslationProvider";
-import { TranslationCoordinatorProvider } from "./contexts/TranslationCoordinator";
+import AutoTranslationTest from "./pages/AutoTranslationTest";
+import { enableGlobalTranslationInterceptor } from "./utils/apiInterceptor";
 import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
+import UnifiedTranslationVerification from "./pages/UnifiedTranslationVerification";
 
 const queryClient = new QueryClient();
+
+// Enable global translation interceptor for API feedback
+enableGlobalTranslationInterceptor();
 
 const App = () => {
   const { loading } = useLoading();
@@ -71,11 +74,8 @@ const App = () => {
 
   return (
     <LanguageProvider>
-      <TranslationProvider>
-        <HybridTranslationProvider>
-          <TranslationCoordinatorProvider>
-            {loading && <LoadingSpinner />}
-            <QueryClientProvider client={queryClient}>
+      {loading && <LoadingSpinner />}
+      <QueryClientProvider client={queryClient}>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -117,18 +117,17 @@ const App = () => {
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/publications" element={<PublicationManagement userRole="admin" />} />
                   <Route path="/test-on-demand" element={<OnDemandTranslationTest />} />
+                  <Route path="/test-auto-translation" element={<AutoTranslationTest />} />
+                  <Route path="/verify-translation" element={<UnifiedTranslationVerification />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <FloatingButtons />
               </BrowserRouter>
             </TooltipProvider>
-          </QueryClientProvider>
-          </TranslationCoordinatorProvider>
-        </HybridTranslationProvider>
-      </TranslationProvider>
-    </LanguageProvider>
-  );
+    </QueryClientProvider>
+  </LanguageProvider>
+);
 };
 
 export default App;

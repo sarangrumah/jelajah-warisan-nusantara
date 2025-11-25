@@ -3,8 +3,9 @@ import Header from '@/components/Header'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Filter, MapPin, Search, X } from 'lucide-react';
-import { useEffect, useState, useMemo } from 'react';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useEffect, useState, useRef } from 'react';
+import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { Link, useLocation } from 'react-router-dom';
 import { Select as Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -84,23 +85,19 @@ function extractImagePaths(imageData: any): string[] {
   return [PLACEHOLDER_IMAGE];
 }
 const PemanfaatanAset = () => {
-	const pemanfaatanAsetTexts = useMemo(() => ({
-    title: 'pemanfaatanAset.title',
-    subtitle: 'pemanfaatanAset.subtitle',
-    searchPlaceholder: 'filter.pemanfaatanAset.search',
-    noData: 'pemanfaatanAset.noData',
-    semua: 'Semua'
-  }), []);
-
-  const { ref, translations } = useOnDemandTranslate(pemanfaatanAsetTexts);
-	const [searchTerm, setSearchTerm] = useState('');
+    const { t } = useHybridTranslation();
+	const ref = useRef<HTMLDivElement>(null);
+    const [searchTerm, setSearchTerm] = useState('');
 	const [filterType, setFilterType] = useState('');
     const [categories, setCategories] = useState([]);
     const [filterCategories, setFilterCategories] = useState([]);
 	const { pathname } = useLocation();
 	const [assets, setAssets] = useState([]);
-    
-    useEffect(() => {
+	   
+	   const { translatedContent: translatedAssets } = useContentTranslation(assets);
+	   const displayAssets = translatedAssets || assets;
+
+	   useEffect(() => {
         window.scrollTo(0, 0);
     }, [pathname]);
 
@@ -129,7 +126,7 @@ const PemanfaatanAset = () => {
         fetchAllCategories();
     }, []);
 
-    const filteredAssets = assets.filter(item => {
+    const filteredAssets = displayAssets.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.description.toLowerCase().includes(searchTerm.toLowerCase());
         
@@ -217,10 +214,10 @@ const PemanfaatanAset = () => {
             <section className="relative py-20 h-80 from-primary to-primary-glow flex items-center justify-center">
                 <div className="text-center text-white">
                 <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                    {translations.title || 'Pemanfaatan Aset'}
+                    {t('pemanfaatanAset.title')}
                 </h1>
                 <p className="text-xl">
-                    {translations.subtitle || 'Manfaatkan aset kami untuk acara Anda'}
+                    {t('pemanfaatanAset.subtitle')}
                 </p>
                 </div>
             </section>
@@ -230,19 +227,19 @@ const PemanfaatanAset = () => {
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                         <Input
-                        placeholder={translations.searchPlaceholder || 'Cari aset...'}
+                        placeholder={t('filter.pemanfaatanAset.search')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10"
                         />
                     </div>
                     <Select
-                        value={filterType} 
+                        value={filterType}
                         onValueChange={handleFilterTypeChange}
                     >
                         <SelectTrigger className="w-full md:w-48">
                             <Filter size={20} className="mr-2" />
-                            <SelectValue placeholder={translations.semua || 'Semua'} />
+                            <SelectValue placeholder={t('filter.museum.categoryAll')} />
                         </SelectTrigger>
                         <SelectContent>
                             {categories.map((option) => (
@@ -340,10 +337,26 @@ const PemanfaatanAset = () => {
                                                         
                                                         // Handle JSON string
                                                         if (typeof fasilitasData === 'string') {
+                                                            // Check if it looks like HTML before trying to parse as JSON
+                                                            if (fasilitasData.trim().startsWith('<')) {
+                                                                return (
+                                                                    <div
+                                                                        className="text-[1rem] text-[#86807c] font-normal leading-none"
+                                                                        dangerouslySetInnerHTML={{ __html: fasilitasData }}
+                                                                    />
+                                                                );
+                                                            }
+
                                                             try {
                                                                 fasilitasData = JSON.parse(fasilitasData);
                                                             } catch (error) {
                                                                 console.error('Error parsing fasilitas JSON:', error);
+                                                                // If parsing fails, treat as plain text or HTML if safe
+                                                                return (
+                                                                    <div className="text-[1rem] text-[#86807c] font-normal leading-none">
+                                                                        {fasilitasData}
+                                                                    </div>
+                                                                );
                                                             }
                                                         }
                                                         
@@ -381,10 +394,10 @@ const PemanfaatanAset = () => {
                     </div>
                 </div>
 
-                {(assets.length === 0 || filteredAssets.length === 0) && (
+                {(displayAssets.length === 0 || filteredAssets.length === 0) && (
                     <div className="text-center py-12">
                         <p className="text-muted-foreground text-lg">
-                        {translations.noData || 'Tidak ada data aset yang tersedia.'}
+                        {t('pemanfaatanAset.noData')}
                         </p>
                     </div>
                 )}

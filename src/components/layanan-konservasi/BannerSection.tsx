@@ -1,16 +1,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { assetUrl } from '@/lib/asset-url';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useUnifiedTranslation } from '@/contexts/UnifiedTranslationContext';
 // Remove old getImageUrl
 
 const BannerSection = () => {
-  const { t } = useHybridTranslation();
+  const { t } = useUnifiedTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
-  const [slides, setSlides] = React.useState([]);
-  const [translatedSlides, setTranslatedSlides] = useState([]);
-  const [currentSlide, setCurrentSlide] = React.useState(0);
-
   // TODO: Replace this with API call to fetch banners from backend
   // For now, use a sample with the correct image URL format
   const defaultSlides = [
@@ -20,6 +16,10 @@ const BannerSection = () => {
       image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
     }
   ];
+
+  const [slides, setSlides] = React.useState(defaultSlides);
+  const [translatedSlides, setTranslatedSlides] = useState(defaultSlides);
+  const [currentSlide, setCurrentSlide] = React.useState(0);
 
   useEffect(() => {
     if (slides.length > 0) {
@@ -61,10 +61,6 @@ const BannerSection = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-  // Log all slide image URLs on render for debugging
-  useEffect(() => {
-    setSlides(defaultSlides);
-  }, [slides]);
 
   return (
     <section id="beranda" className="relative h-screen overflow-hidden">

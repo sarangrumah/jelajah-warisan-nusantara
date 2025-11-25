@@ -3,12 +3,12 @@ import App from './App.tsx'
 import './index.css'
 import './i18n/index-dynamic.ts'
 import { LoadingProvider } from './components/LoadingContext';
-import { TranslationProvider } from './contexts/TranslationContext';
+import { UnifiedTranslationProvider } from './contexts/UnifiedTranslationContext';
 
 createRoot(document.getElementById("root")!).render(
-  <TranslationProvider>
+  <UnifiedTranslationProvider>
     <LoadingProvider>
       <App />
     </LoadingProvider>
-  </TranslationProvider>
+  </UnifiedTranslationProvider>
 );

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { merchandiseProductService, merchandiseCategoryService } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import { assetUrl } from '@/lib/asset-url';
 
 interface MerchandiseProduct {
@@ -36,7 +37,76 @@ interface MerchandiseCategory {
   name: string;
   description?: string;
   is_published: boolean;
+  is_approved?: boolean;
 }
+
+const ProductCard = ({ product, handleBuyClick, formatPrice, t }: any) => {
+  // Removed individual useTranslate calls to prevent N+1 API requests
+  // Translations are now handled at the parent level via useContentTranslation
+
+  const imageUrl = product.images && product.images.length > 0
+    ? assetUrl(product.images[0]) || '/placeholder.svg'
+    : '/placeholder.svg';
+
+  return (
+    <Card className="group hover:shadow-lg transition-shadow duration-300">
+      <div className="aspect-square overflow-hidden rounded-t-lg">
+        <img
+          src={imageUrl}
+          alt={product.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder.svg';
+          }}
+        />
+      </div>
+      
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-lg line-clamp-2">{product.name}</CardTitle>
+          {product.category && (
+            <Badge variant="secondary" className="ml-2 flex-shrink-0">
+              {product.category.name}
+            </Badge>
+          )}
+        </div>
+        {product.short_description && (
+          <CardDescription className="line-clamp-2">
+            {product.short_description}
+          </CardDescription>
+        )}
+      </CardHeader>
+      
+      <CardContent className="pb-2">
+        <div className="text-2xl font-bold text-primary">
+          {formatPrice(product.price)}
+        </div>
+      </CardContent>
+      
+      <CardFooter className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          asChild
+        >
+          <Link to={`/merchandise/${product.id}`}>
+            <Eye className="h-4 w-4 mr-2" />
+            {t('merchandise.viewDetails')}
+          </Link>
+        </Button>
+        <Button
+          size="sm"
+          className="flex-1"
+          onClick={() => handleBuyClick(product)}
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          {t('merchandise.buy')}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
 
 const MerchandiseProductList = () => {
   const { t } = useHybridTranslation();
@@ -46,6 +116,22 @@ const MerchandiseProductList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name');
+
+  // Batch translate all products at once
+  const { translatedContent: translatedProducts, isTranslating: isTranslatingProducts } = useContentTranslation(products);
+  const displayProducts = translatedProducts || products;
+
+  useEffect(() => {
+    console.log('[MerchandiseProductList] Translation status:', {
+      isTranslatingProducts,
+      productsCount: products.length,
+      translatedProductsCount: translatedProducts?.length
+    });
+  }, [isTranslatingProducts, products, translatedProducts]);
+
+  // Batch translate all categories at once
+  const { translatedContent: translatedCategories, isTranslating: isTranslatingCategories } = useContentTranslation(categories);
+  const displayCategories = translatedCategories || categories;
 
   useEffect(() => {
     fetchData();
@@ -78,7 +164,7 @@ const MerchandiseProductList = () => {
   };
 
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products.filter(product => 
+    let filtered = displayProducts.filter(product =>
       product.is_published && product.is_approved && !product.is_rejected
     );
 
@@ -112,7 +198,7 @@ const MerchandiseProductList = () => {
     });
 
     return filtered;
-  }, [products, searchQuery, selectedCategory, sortBy]);
+  }, [displayProducts, searchQuery, selectedCategory, sortBy]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -168,7 +254,7 @@ const MerchandiseProductList = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('merchandise.allCategories')}</SelectItem>
-              {categories
+              {displayCategories
                 .filter(category => category.is_published)
                 .map(category => (
                   <SelectItem key={category.id} value={category.id}>
@@ -213,70 +299,15 @@ const MerchandiseProductList = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredAndSortedProducts.map((product) => {
-            const imageUrl = product.images && product.images.length > 0 
-              ? assetUrl(product.images[0]) || '/placeholder.svg'
-              : '/placeholder.svg';
-
-            return (
-              <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300">
-                <div className="aspect-square overflow-hidden rounded-t-lg">
-                  <img
-                    src={imageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/placeholder.svg';
-                    }}
-                  />
-                </div>
-                
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg line-clamp-2">{product.name}</CardTitle>
-                    {product.category && (
-                      <Badge variant="secondary" className="ml-2 flex-shrink-0">
-                        {product.category.name}
-                      </Badge>
-                    )}
-                  </div>
-                  {product.short_description && (
-                    <CardDescription className="line-clamp-2">
-                      {product.short_description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                
-                <CardContent className="pb-2">
-                  <div className="text-2xl font-bold text-primary">
-                    {formatPrice(product.price)}
-                  </div>
-                </CardContent>
-                
-                <CardFooter className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    asChild
-                  >
-                    <Link to={`/merchandise/${product.id}`}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      {t('merchandise.viewDetails')}
-                    </Link>
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => handleBuyClick(product)}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {t('merchandise.buy')}
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
+          {filteredAndSortedProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              handleBuyClick={handleBuyClick}
+              formatPrice={formatPrice}
+              t={t}
+            />
+          ))}
         </div>
       )}
 
@@ -284,7 +315,7 @@ const MerchandiseProductList = () => {
       <div className="text-center text-muted-foreground">
         {t('merchandise.showingResults', {
           count: filteredAndSortedProducts.length,
-          total: products.filter(p => p.is_published && p.is_approved && !p.is_rejected).length
+          total: displayProducts.filter(p => p.is_published && p.is_approved && !p.is_rejected).length
         })}
       </div>
     </div>

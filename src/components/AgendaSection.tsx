@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
-import { sanitizeHtml } from '@/lib/sanitize-html';
+import { stripHtml } from '@/lib/utils';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
@@ -43,7 +43,7 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaCard = ({ event }) => {
-  const { t } = useTranslation();
+  const { t } = useUnifiedTranslation();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -82,19 +82,11 @@ const AgendaCard = ({ event }) => {
       </div>
       <div className="p-6 mb-9 flex-1 flex flex-col">
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
-          <span
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(event.title || '')
-            }}
-          />
+          {stripHtml(event.title || '')}
         </h3>
         
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-          <span
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(event.description || '')
-            }}
-          />
+          {stripHtml(event.description || '')}
         </p>
 
         <div className="space-y-2 mb-6">
@@ -108,7 +100,7 @@ const AgendaCard = ({ event }) => {
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin size={16} className="mr-3 text-primary" />
-            <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.location || 'Location not specified') }} />
+            {stripHtml(event.location || 'Location not specified')}
           </div>
         </div>
       </div>
@@ -125,12 +117,15 @@ const AgendaCard = ({ event }) => {
 };
 
 const AgendaSection = () => {
-  const { t } = useTranslation();
+  const { t } = useUnifiedTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
   const [categories, setCategories] = useState([]);
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { data: events, loading: isTranslating } = useContent(EventsService, { limit: 10, active: true, approved: true });
+  const { data: events, loading: contentLoading } = useContent(EventsService, { limit: 10, active: true, approved: true });
+  
+  // Only show loading if content is loading, not translation
+  const isTranslating = contentLoading;
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {

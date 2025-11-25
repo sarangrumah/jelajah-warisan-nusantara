@@ -9,6 +9,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultCollections } from '@/../database/default-data';
 import { masterCollectionService, categoriesCollection } from '@/lib/api-services';
+import { useContentTranslation } from '@/hooks/useContentTranslation';
 import logo from '@/assets/MCB-Logo.png';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -22,6 +23,10 @@ const Collection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategories, setFilterCategories] = useState('all');
   const [filterCategoriesCollection, setFilterCategoriesCollection] = useState([]);
+  
+  const { translatedContent: translatedCollections } = useContentTranslation(collections);
+  const displayCollections = translatedCollections || collections;
+
   const { pathname } = useLocation();
   const { t } = useTranslation();
     
@@ -64,7 +69,7 @@ const Collection = () => {
     fetchCategoriesCollection();
   }, []);
 
-  const filteredCollections = collections.filter(item => {
+  const filteredCollections = displayCollections.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterCategories === 'all' || item.categories_id === filterCategories;

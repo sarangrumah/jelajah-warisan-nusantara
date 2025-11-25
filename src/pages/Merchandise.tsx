@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from 'react';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,8 +7,7 @@ import MerchandiseProductList from '@/components/MerchandiseProductList';
 import SectionWrapper from '@/components/SectionWrapper';
 
 const Merchandise = () => {
-  const merchandiseTexts = useMemo(() => ({}), []);
-  const { ref } = useOnDemandTranslate(merchandiseTexts);
+  const ref = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
   
   useEffect(() => {

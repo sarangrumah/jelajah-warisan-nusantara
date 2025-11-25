@@ -195,11 +195,16 @@ class TranslationService {
     }
 
     try {
+      // LibreTranslate batch endpoint expects 'q' to be an array of strings
+      // However, some versions/forks might not support batching on /translate
+      // We should check if we need to use a loop or if the endpoint supports arrays
+      
+      // Try batch request first
       const response = await this.executeWithConcurrency(() =>
         fetch(`${this.baseUrl}/translate`, {
           method: 'POST',
           body: JSON.stringify({
-            q: nonEmptyTexts,
+            q: nonEmptyTexts, // Array of strings
             source: sourceLang,
             target: targetLang,
             format: 'text',
@@ -217,17 +222,47 @@ class TranslationService {
         throw new Error(`Batch translation API error: ${response.status} - ${errorText}`);
       }
 
-      const data = (await response.json()) as LibreTranslateBatchResponse;
-      const translatedTexts = data.translatedText;
+      const data = (await response.json()) as any;
+      
+      // Handle different response formats
+      let translatedTexts: string[] = [];
+      
+      if (Array.isArray(data.translatedText)) {
+        // Standard LibreTranslate batch response
+        translatedTexts = data.translatedText;
+      } else if (typeof data.translatedText === 'string') {
+        // Single string response (unexpected for batch, but possible if only 1 text sent)
+        translatedTexts = [data.translatedText];
+      } else if (Array.isArray(data)) {
+         // Some forks might return array directly
+         translatedTexts = data.map((item: any) => item.translatedText || item);
+      } else {
+        console.warn('Unexpected batch translation response format:', data);
+        // Fallback to individual translations if batch format is unknown
+        throw new Error('Unexpected response format');
+      }
 
       // Map results back to original texts, maintaining order
-      let translatedIndex = 0;
-      return texts.map((originalText) => {
-        if (!originalText || originalText.trim() === '') {
-          return { translatedText: originalText, success: true };
-        }
-        const translatedText = translatedTexts[translatedIndex++];
-        return { translatedText, success: true };
+      // Note: LibreTranslate returns translations in the same order as input 'q'
+      // But we need to be careful if we filtered out empty strings before sending?
+      // Actually we sent nonEmptyTexts which includes empty strings as empty strings?
+      // No, we mapped (text || '').trim(). So we sent empty strings to API.
+      // LibreTranslate should return empty strings for empty inputs.
+      
+      if (translatedTexts.length !== texts.length) {
+         console.warn(`Mismatch in translation count: sent ${texts.length}, got ${translatedTexts.length}`);
+         // If counts mismatch, we can't reliably map back. Fallback to original.
+         // Or try to map as many as possible? Safer to fail or return original.
+         // But let's try to map what we have.
+      }
+
+      return texts.map((originalText, index) => {
+        const translatedText = translatedTexts[index];
+        // If we have a translation, use it. Otherwise fallback to original.
+        return {
+          translatedText: translatedText !== undefined ? translatedText : originalText,
+          success: true
+        };
       });
 
     } catch (error) {

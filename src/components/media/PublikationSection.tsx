@@ -1,52 +1,56 @@
 import { FileText, Download, Calendar, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+
+const rawPublications = [
+  {
+    title: 'Laporan Tahunan 2023',
+    description: 'Laporan lengkap kegiatan dan pencapaian Direktorat Museum dan Cagar Budaya tahun 2023',
+    type: 'Laporan Tahunan',
+    year: '2023',
+    size: '12.5 MB',
+    pages: 156,
+    downloadCount: 2543
+  },
+  {
+    title: 'Panduan Konservasi Artefak',
+    description: 'Panduan teknis konservasi dan perawatan koleksi museum',
+    type: 'Panduan Teknis',
+    year: '2023',
+    size: '8.2 MB',
+    pages: 89,
+    downloadCount: 1876
+  },
+  {
+    title: 'Katalog Museum Nasional',
+    description: 'Katalog lengkap koleksi Museum Nasional Indonesia',
+    type: 'Katalog',
+    year: '2023',
+    size: '45.7 MB',
+    pages: 324,
+    downloadCount: 3421
+  },
+  {
+    title: 'Standar Pengelolaan Museum',
+    description: 'Standar operasional pengelolaan museum di Indonesia',
+    type: 'Standar',
+    year: '2022',
+    size: '5.4 MB',
+    pages: 67,
+    downloadCount: 987
+  }
+];
+
+const rawBudgetData = [
+  { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
+  { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
+  { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
+];
 
 const PublikationSection = () => {
-  const publications = [
-    {
-      title: 'Laporan Tahunan 2023',
-      description: 'Laporan lengkap kegiatan dan pencapaian Direktorat Museum dan Cagar Budaya tahun 2023',
-      type: 'Laporan Tahunan',
-      year: '2023',
-      size: '12.5 MB',
-      pages: 156,
-      downloadCount: 2543
-    },
-    {
-      title: 'Panduan Konservasi Artefak',
-      description: 'Panduan teknis konservasi dan perawatan koleksi museum',
-      type: 'Panduan Teknis',
-      year: '2023',
-      size: '8.2 MB',
-      pages: 89,
-      downloadCount: 1876
-    },
-    {
-      title: 'Katalog Museum Nasional',
-      description: 'Katalog lengkap koleksi Museum Nasional Indonesia',
-      type: 'Katalog',
-      year: '2023',
-      size: '45.7 MB',
-      pages: 324,
-      downloadCount: 3421
-    },
-    {
-      title: 'Standar Pengelolaan Museum',
-      description: 'Standar operasional pengelolaan museum di Indonesia',
-      type: 'Standar',
-      year: '2022',
-      size: '5.4 MB',
-      pages: 67,
-      downloadCount: 987
-    }
-  ];
-
-  const budgetData = [
-    { year: '2023', budget: '125.6 Miliar', allocation: 'Konservasi 40%, Operasional 35%, Pengembangan 25%' },
-    { year: '2022', budget: '118.3 Miliar', allocation: 'Konservasi 38%, Operasional 37%, Pengembangan 25%' },
-    { year: '2021', budget: '102.7 Miliar', allocation: 'Konservasi 35%, Operasional 40%, Pengembangan 25%' },
-  ];
+  const { translatedContent: publications } = useTranslationSystem(rawPublications, 'publications-list');
+  const { translatedContent: budgetData } = useTranslationSystem(rawBudgetData, 'budget-data');
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -66,7 +70,7 @@ const PublikationSection = () => {
             Dokumen Publikasi
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
-            {publications.map((pub, index) => (
+            {(publications || rawPublications).map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -113,7 +117,7 @@ const PublikationSection = () => {
             Transparansi Anggaran
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
-            {budgetData.map((budget, index) => (
+            {(budgetData || rawBudgetData).map((budget, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
                   <div className="flex items-center gap-3">

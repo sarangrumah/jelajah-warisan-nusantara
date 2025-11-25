@@ -49,6 +49,13 @@ export const useBatchTranslateOptimized = (
         // Extract all texts that need translation
         const textValues = Object.values(texts);
         const textKeys = Object.keys(texts);
+
+        if (textValues.length === 0) {
+          setTranslations({});
+          setLoading(false);
+          setTranslating(componentId, false);
+          return;
+        }
         
         const translatedTexts = await requestTranslation(textValues, 'id', targetLanguage);
 
@@ -83,7 +90,8 @@ export const useBatchTranslateOptimized = (
       isMounted = false;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [texts, targetLanguage, componentId, setTranslating, debounceMs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(texts), targetLanguage, componentId, setTranslating, debounceMs]);
 
   return { translations, loading, error };
 };

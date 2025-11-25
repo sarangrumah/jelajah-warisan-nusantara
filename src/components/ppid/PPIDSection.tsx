@@ -7,84 +7,89 @@ function fixBrokenHtmlTags(html: string): string {
   return html.replace(/<\s*([a-zA-Z0-9]+)\s*>/g, '<$1>')
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+
+const rawInformationTypes = [
+  {
+    title: 'Informasi Berkala',
+    description: 'Informasi yang wajib disediakan dan diumumkan secara berkala',
+    examples: ['Laporan keuangan tahunan', 'Laporan kinerja', 'Profil institusi', 'Struktur organisasi'],
+    timeline: 'Dipublikasi setiap 6 bulan'
+  },
+  {
+    title: 'Informasi Serta Merta',
+    description: 'Informasi yang dapat mengancam hajat hidup orang banyak dan ketertiban umum',
+    examples: ['Informasi darurat', 'Kebijakan mendadak', 'Pengumuman penting', 'Status layanan'],
+    timeline: 'Dipublikasi segera'
+  },
+  {
+    title: 'Informasi Setiap Saat',
+    description: 'Informasi yang wajib disediakan dan diumumkan setiap saat',
+    examples: ['Daftar informasi publik', 'Hasil keputusan', 'Kebijakan dan regulasi', 'SOP layanan'],
+    timeline: 'Tersedia setiap saat'
+  }
+];
+
+const rawRequestProcedure = [
+  {
+    step: 1,
+    title: 'Pengajuan Permohonan',
+    description: 'Ajukan permohonan informasi melalui formulir atau surat resmi',
+    duration: '1 hari'
+  },
+  {
+    step: 2,
+    title: 'Registrasi & Verifikasi',
+    description: 'Petugas PPID melakukan registrasi dan verifikasi kelengkapan',
+    duration: '2 hari'
+  },
+  {
+    step: 3,
+    title: 'Penelusuran Informasi',
+    description: 'Tim melakukan penelusuran dan klasifikasi informasi yang diminta',
+    duration: '7 hari'
+  },
+  {
+    step: 4,
+    title: 'Keputusan & Penyampaian',
+    description: 'Keputusan disampaikan beserta informasi atau alasan penolakan',
+    duration: '3 hari'
+  }
+];
+
+const rawRequestCriteria = [
+  {
+    step: 1,
+    title: 'Pengajuan atas Perseorangan',
+    description: 'Apabila pemohon mengatasnamakan perseorangan wajib menyertakan fotokopi/scan KTP atau identitas lainnya yang masih berlaku (Paspor/SIM).',
+    duration: '1 hari'
+  },
+  {
+    step: 2,
+    title: 'Pengajuan atas Badan Hukum',
+    description: 'Apabila pemohon mengatasnamakan badan hukum Indonesia (organisasi masyarakat/lembaga swadaya masyarakat, organisasi politik, yayasan, dan perusahaan), wajib menyertakan fotokopi/scan akte pendirian badan hukum, surat kuasa dari badan hukum yang bermaterai, dan fotokopi/scan KTP atas nama pemohon/penerima kuasa.',
+    duration: '2 hari'
+  },
+  {
+    step: 3,
+    title: 'Waktu penyampaian Informasi',
+    description: 'Berdasarkan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik, jangka waktu pemenuhan permintaan informasi publik yaitu selama 10 hari kerja terhitung diterimanya dokumen permintaan informasi publik yang lengkap dan dapat ditambah 7 hari kerja jika diperlukan.',
+    duration: '7 hari'
+  },
+  {
+    step: 4,
+    title: 'Ketentuan Biaya',
+    description: 'Permintaan informasi publik ini tidak dipungut biaya (gratis), namun jika ada dokumen/informasi yang harus difotokopi dan atau digandakan maka biaya dibebankan kepada Pemohon.',
+    duration: '3 hari'
+  }
+];
 
 const PPIDSection = () => {
-  const { t } = useHybridTranslation();
-  const informationTypes = [
-    {
-      title: 'Informasi Berkala',
-      description: 'Informasi yang wajib disediakan dan diumumkan secara berkala',
-      examples: ['Laporan keuangan tahunan', 'Laporan kinerja', 'Profil institusi', 'Struktur organisasi'],
-      timeline: 'Dipublikasi setiap 6 bulan'
-    },
-    {
-      title: 'Informasi Serta Merta',
-      description: 'Informasi yang dapat mengancam hajat hidup orang banyak dan ketertiban umum',
-      examples: ['Informasi darurat', 'Kebijakan mendadak', 'Pengumuman penting', 'Status layanan'],
-      timeline: 'Dipublikasi segera'
-    },
-    {
-      title: 'Informasi Setiap Saat',
-      description: 'Informasi yang wajib disediakan dan diumumkan setiap saat',
-      examples: ['Daftar informasi publik', 'Hasil keputusan', 'Kebijakan dan regulasi', 'SOP layanan'],
-      timeline: 'Tersedia setiap saat'
-    }
-  ];
+  const { t } = useUnifiedTranslation();
 
-  const requestProcedure = [
-    {
-      step: 1,
-      title: 'Pengajuan Permohonan',
-      description: 'Ajukan permohonan informasi melalui formulir atau surat resmi',
-      duration: '1 hari'
-    },
-    {
-      step: 2,
-      title: 'Registrasi & Verifikasi',
-      description: 'Petugas PPID melakukan registrasi dan verifikasi kelengkapan',
-      duration: '2 hari'
-    },
-    {
-      step: 3,
-      title: 'Penelusuran Informasi',
-      description: 'Tim melakukan penelusuran dan klasifikasi informasi yang diminta',
-      duration: '7 hari'
-    },
-    {
-      step: 4,
-      title: 'Keputusan & Penyampaian',
-      description: 'Keputusan disampaikan beserta informasi atau alasan penolakan',
-      duration: '3 hari'
-    }
-  ];
-
-  const requestCriteria = [
-    {
-      step: 1,
-      title: 'Pengajuan atas Perseorangan',
-      description: 'Apabila pemohon mengatasnamakan perseorangan wajib menyertakan fotokopi/scan KTP atau identitas lainnya yang masih berlaku (Paspor/SIM).',
-      duration: '1 hari'
-    },
-    {
-      step: 2,
-      title: 'Pengajuan atas Badan Hukum',
-      description: 'Apabila pemohon mengatasnamakan badan hukum Indonesia (organisasi masyarakat/lembaga swadaya masyarakat, organisasi politik, yayasan, dan perusahaan), wajib menyertakan fotokopi/scan akte pendirian badan hukum, surat kuasa dari badan hukum yang bermaterai, dan fotokopi/scan KTP atas nama pemohon/penerima kuasa.',
-      duration: '2 hari'
-    },
-    {
-      step: 3,
-      title: 'Waktu penyampaian Informasi',
-      description: 'Berdasarkan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik, jangka waktu pemenuhan permintaan informasi publik yaitu selama 10 hari kerja terhitung diterimanya dokumen permintaan informasi publik yang lengkap dan dapat ditambah 7 hari kerja jika diperlukan.',
-      duration: '7 hari'
-    },
-    {
-      step: 4,
-      title: 'Ketentuan Biaya',
-      description: 'Permintaan informasi publik ini tidak dipungut biaya (gratis), namun jika ada dokumen/informasi yang harus difotokopi dan atau digandakan maka biaya dibebankan kepada Pemohon.',
-      duration: '3 hari'
-    }
-  ];
+  const { translatedContent: informationTypes } = useTranslationSystem(rawInformationTypes, 'ppid-info');
+  const { translatedContent: requestProcedure } = useTranslationSystem(rawRequestProcedure, 'ppid-procedure');
+  const { translatedContent: requestCriteria } = useTranslationSystem(rawRequestCriteria, 'ppid-criteria');
 
   const documents = [
     { title: 'Formulir Permohonan Informasi', type: 'PDF', size: '245 KB' },
@@ -98,15 +103,15 @@ const PPIDSection = () => {
       <div className="container mx-auto px-4 py-10">
         <div className="text-center mb-16 scroll-reveal">
           <h2 className="text-4xl md:text-4xl font-bold pb-6 text-heritage-gradient">
-            Pejabat Pengelola Informasi dan Dokumentasi (PPID)
+            {t('ppid.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Keberadaan Pejabat Pengelola Informasi dan Dokumentasi (PPID) Museum dan Cagar Budaya merupakan bagian dari pelaksanaan amanat Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP). Unit ini berfungsi sebagai perpanjangan tangan PPID Kementerian Kebudayaan dalam memberikan layanan informasi publik kepada masyarakat.
+            {t('ppid.description')}
           </p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8 mb-16">
-          {informationTypes.map((type, index) => (
+          {(informationTypes || rawInformationTypes).map((type, index) => (
             <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
               <CardHeader>
                 <Info size={32} className="text-primary mb-2" />
@@ -128,7 +133,7 @@ const PPIDSection = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-sm mb-2">Contoh Informasi:</h4>
+                    <h4 className="font-semibold text-sm mb-2">{t('ppid.exampleInfo')}</h4>
                     <ul className="space-y-1">
                       {type.examples.map((example, exampleIndex) => (
                         <li key={exampleIndex} className="text-sm text-muted-foreground flex items-center gap-2">
@@ -156,14 +161,14 @@ const PPIDSection = () => {
           <div className="scroll-reveal">
             <Card className="heritage-glow">
               <CardHeader>
-                <CardTitle className="text-2xl">Ketentuan Pemohon Informasi Publik</CardTitle>
+                <CardTitle className="text-2xl">{t('ppid.requestCriteria.title')}</CardTitle>
                 {/* <p className="text-muted-foreground">
                   Langkah-langkah untuk mengajukan permohonan informasi publik
                 </p> */}
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {requestCriteria.map((proc, index) => (
+                  {(requestCriteria || rawRequestCriteria).map((proc, index) => (
                     <div key={index} className="flex gap-4">
                       <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                         {proc.step}
@@ -192,25 +197,25 @@ const PPIDSection = () => {
                   ))}
                 </div>
                 
-                <div className="mt-6 p-4 bg-primary/10 rounded-lg">
+                {/* <div className="mt-6 p-4 bg-primary/10 rounded-lg">
                   <p className="text-sm text-primary font-medium">
                     💡 Total waktu layanan maksimal 13 hari kerja sesuai regulasi UU KIP
                   </p>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
           </div>
           <div className="scroll-reveal">
             <Card className="heritage-glow">
               <CardHeader>
-                <CardTitle className="text-2xl">Prosedur Permohonan Informasi</CardTitle>
+                <CardTitle className="text-2xl">{t('ppid.requestProcedure.title')}</CardTitle>
                 <p className="text-muted-foreground">
-                  Langkah-langkah untuk mengajukan permohonan informasi publik
+                  {t('ppid.requestProcedure.subtitle')}
                 </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {requestProcedure.map((proc, index) => (
+                  {(requestProcedure || rawRequestProcedure).map((proc, index) => (
                     <div key={index} className="flex gap-4">
                       <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                         {proc.step}
@@ -232,18 +237,18 @@ const PPIDSection = () => {
                         </p>
                         <div className="flex items-center gap-2 text-xs">
                           <Clock size={12} className="text-primary" />
-                          <span className="text-primary font-medium">Maksimal {proc.duration}</span>
+                          <span className="text-primary font-medium">{proc.duration}</span>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 
-                <div className="mt-6 p-4 bg-primary/10 rounded-lg">
+                {/* <div className="mt-6 p-4 bg-primary/10 rounded-lg">
                   <p className="text-sm text-primary font-medium">
                     💡 Total waktu layanan maksimal 13 hari kerja sesuai regulasi UU KIP
                   </p>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
           </div>
@@ -317,7 +322,7 @@ const PPIDSection = () => {
         <div className="text-center scroll-reveal gap-12 mb-16">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              Kontak PPID
+              {t('ppid.contact.title')}
             </h3>
             {/* <p className="text-muted-foreground mb-6">
               Kami berkomitmen untuk memberikan pelayanan informasi publik yang 
@@ -327,15 +332,15 @@ const PPIDSection = () => {
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 812 9595 3929</div>
-                <div className="text-muted-foreground">Telepon</div>
+                <div className="text-muted-foreground">{t('ppid.contact.phone')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="font-bold text-heritage-gradient text-2xl mb-2">museumcb@kemenbud.go.id</div>
-                <div className="text-muted-foreground">Email</div>
+                <div className="text-muted-foreground">{t('ppid.contact.email')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">Senin - Jumat: 08:00 - 16:00 WIB</div>
-                <div className="text-muted-foreground">Jam Layanan</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{t('ppid.contact.hoursText')}</div>
+                <div className="text-muted-foreground">{t('ppid.contact.hours')}</div>
               </div>
             </div>
           </div>
@@ -344,25 +349,23 @@ const PPIDSection = () => {
         <div className="text-center scroll-reveal">
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              Komitmen Pelayanan
+              {t('ppid.commitment.title')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Kami berkomitmen untuk memberikan pelayanan informasi publik yang 
-              cepat, akurat, dan transparan kepada seluruh masyarakat Indonesia 
-              sesuai dengan prinsip keterbukaan informasi publik.
+              {t('ppid.commitment.description')}
             </p>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">24 Jam</div>
-                <div className="text-muted-foreground">Respon Awal</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{t('ppid.commitment.stats.responseValue')}</div>
+                <div className="text-muted-foreground">{t('ppid.commitment.stats.response')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">13 Hari</div>
-                <div className="text-muted-foreground">Maksimal Layanan</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{t('ppid.commitment.stats.serviceValue')}</div>
+                <div className="text-muted-foreground">{t('ppid.commitment.stats.service')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">100%</div>
-                <div className="text-muted-foreground">Transparan</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{t('ppid.commitment.stats.transparencyValue')}</div>
+                <div className="text-muted-foreground">{t('ppid.commitment.stats.transparency')}</div>
               </div>
             </div>
           </div>

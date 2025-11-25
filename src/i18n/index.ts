@@ -130,7 +130,20 @@ export const resources = {
       // Agenda Section
       agenda: {
         title: "Agenda & Events",
-        subtitle: "Follow exciting activities from museums and cultural heritage sites throughout Indonesia"
+        subtitle: "Follow exciting activities from museums and cultural heritage sites throughout Indonesia",
+        loading: "Loading events...",
+        status: {
+          upcoming: "Upcoming",
+          ongoing: "Ongoing",
+          registration: "Registration",
+          finished: "Finished"
+        },
+        button: {
+          detail: "Event Detail"
+        },
+        categories: {
+          all: "All Events"
+        }
       },
       // Footer translations
       footer: {
@@ -267,6 +280,11 @@ export const resources = {
       ppid: {
         title: "PPID - Information and Documentation Management Officer",
         subtitle: "Transparent and accountable public information services in accordance with Law No. 14 of 2008 on Public Information Disclosure.",
+        description: "The existence of the Information and Documentation Management Officer (PPID) of the Museum and Cultural Heritage is part of the implementation of the mandate of Law Number 14 of 2008 concerning Public Information Disclosure (UU KIP). This unit functions as an extension of the PPID of the Ministry of Culture in providing public information services to the community.",
+        exampleInfo: "Example Information:",
+        requestCriteria: {
+          title: "Public Information Request Criteria"
+        },
         informationTypes: {
           periodic: {
             title: "Periodic Information",
@@ -330,15 +348,18 @@ export const resources = {
           phone: "Phone",
           email: "Email",
           hours: "Service Hours",
-          hoursText: "Monday - Friday: 08:00 - 16:00 WIB"
+          hoursText: "Mon - Fri: 08:00 - 16:00 WIB"
         },
         commitment: {
           title: "Service Commitment",
           description: "We are committed to providing fast, accurate, and transparent public information services to all Indonesian citizens in accordance with the principles of public information disclosure.",
           stats: {
             response: "Initial Response",
+            responseValue: "24 Hours",
             service: "Maximum Service",
-            transparency: "Transparent"
+            serviceValue: "13 Days",
+            transparency: "Transparent",
+            transparencyValue: "100%"
           }
         }
       },
@@ -579,6 +600,144 @@ export const resources = {
       common: {
         notFound: "Data not found.",
         requestNotFound: "Requested data not found."
+      },
+      // Merchandise Section
+      merchandise: {
+        title: "Merchandise Collection",
+        subtitle: "Discover various interesting merchandise from our museum. Every purchase supports cultural heritage preservation.",
+        searchPlaceholder: "Search products...",
+        allCategories: "All Categories",
+        sortBy: "Sort By",
+        sortByName: "Name A-Z",
+        sortByPriceLow: "Price Low to High",
+        sortByPriceHigh: "Price High to Low",
+        noResults: "No products match your filter.",
+        noProducts: "No merchandise products available yet.",
+        resetFilter: "Reset Filter",
+        viewDetails: "View Details",
+        buy: "Buy",
+        buyNow: "Buy Now",
+        backToMerchandise: "Back to Merchandise",
+        productNotFound: "Product Not Found",
+        productNotFoundMessage: "The product you are looking for was not found or is unavailable.",
+        productInfo: "Product Information",
+        description: "Description",
+        category: "Category",
+        status: "Status",
+        available: "Available",
+        awaitingApproval: "Awaiting Approval",
+        contactSeller: "Contact Seller",
+        contactSellerMessage: "For more information or questions about this product, please contact via WhatsApp at {{number}}",
+        purchaseInfo: "Purchase Information",
+        purchaseInfoItem1: "This product can be purchased directly via WhatsApp",
+        purchaseInfoItem2: "Make sure to ask for stock availability before ordering",
+        purchaseInfoItem3: "Shipping and payment information will be discussed directly with the seller",
+        purchaseInfoItem4: "Original and quality products from our museum",
+        showingResults: "Showing {{count}} of {{total}} products",
+        noCategory: "No category"
+      },
+      // Internship Section
+      internship: {
+        title: "Internship Program",
+        description: "Join our internship program and gain valuable experience in the field of Indonesian cultural heritage preservation.",
+        benefitsTitle: "Internship Program Benefits",
+        benefit1: "Official certificate from the Ministry of Education and Culture",
+        benefit2: "Work experience in a government institution",
+        benefit3: "Mentoring from experienced experts",
+        benefit4: "Networking with professionals in the cultural heritage field",
+        benefit5: "Access to museum collections and facilities",
+        benefit6: "Possibility of research publication",
+        processTitle: "Registration Process",
+        processSubtitle: "Follow these steps to register",
+        step1Title: "Document Preparation",
+        step1Desc: "CV, transcripts, cover letter, and proposal (if any)",
+        step2Title: "Online Submission",
+        step2Desc: "Submit application via online form or email",
+        step3Title: "Administrative Selection",
+        step3Desc: "Document review and requirement verification",
+        step4Title: "Interview",
+        step4Desc: "Interview with the team and program mentor",
+        step5Title: "Result Announcement",
+        step5Desc: "Acceptance notification and program orientation",
+        startRegistration: "Start Registration",
+        formTitle: "Internship Registration Form",
+        nameLabel: "Full Name *",
+        namePlaceholder: "Enter full name",
+        emailLabel: "Email *",
+        phoneLabel: "Phone Number *",
+        universityLabel: "School / University *",
+        universityPlaceholder: "School / University Name",
+        majorLabel: "Study Program *",
+        majorPlaceholder: "Major",
+        semesterLabel: "Semester *",
+        gpaLabel: "GPA",
+        programLabel: "Internship Program *",
+        selectProgram: "Select internship program",
+        motivationLabel: "Motivation & Goals *",
+        motivationPlaceholder: "Explain your motivation and goals for joining this internship program...",
+        docsTitle: "Required Documents",
+        cvLabel: "CV/Resume *",
+        cvDesc: "Upload CV in PDF format (max 5MB)",
+        transcriptLabel: "Academic Transcript *",
+        transcriptDesc: "Upload transcript in PDF format (max 5MB)",
+        coverLetterLabel: "Cover Letter (Optional)",
+        coverLetterDesc: "Upload cover letter in PDF format (max 5MB)",
+        cancel: "Cancel",
+        submit: "Submit Application",
+        successTitle: "Registration Successful!",
+        successDesc: "Your internship application has been sent. Our team will contact you within 1-2 weeks.",
+        errorTitle: "Error",
+        errorDesc: "Failed to send application. Please try again.",
+        invalidProgram: "Invalid internship program.",
+        invalidUrl: "Invalid or unsafe document URL.",
+        uploadErrorCV: "Failed to upload CV",
+        uploadErrorTranscript: "Failed to upload transcript",
+        uploadErrorCoverLetter: "Failed to upload cover letter",
+        positions: "positions",
+        period: "Period",
+        requirements: "Requirements",
+        benefits: "Benefits",
+        responsibilities: "Responsibilities",
+        supervisor: "Supervisor",
+        deadline: "Deadline",
+        apply: "Apply",
+        questionsTitle: "Have Questions?",
+        questionsDesc: "Our HR team is ready to help you with more information about the internship program and registration process.",
+        officeLocation: "Office Location",
+        contactHR: "Contact HR",
+        validation: {
+          nameMin: "Full name must be at least 2 characters",
+          nameMax: "Full name must be at most 100 characters",
+          nameInvalid: "Name cannot contain dangerous characters",
+          emailInvalid: "Invalid email",
+          emailMax: "Email must be at most 150 characters",
+          phoneMin: "Phone number must be at least 10 digits",
+          phoneMax: "Phone number must be at most 20 digits",
+          phoneInvalid: "Phone number can only contain numbers, +, -, and spaces",
+          universityMin: "School / University name is required",
+          universityMax: "University name must be at most 200 characters",
+          universityInvalid: "Invalid university name",
+          majorMin: "Study program is required",
+          majorMax: "Study program must be at most 100 characters",
+          majorInvalid: "Invalid study program",
+          semesterMin: "Semester is required",
+          semesterMax: "Semester must be at most 2 digits",
+          semesterInvalid: "Semester must be a number",
+          gpaInvalid: "GPA must be a number or decimal",
+          gpaRange: "GPA must be between 0 and 4.0",
+          programRequired: "Internship program must be selected",
+          programInvalid: "Invalid internship program ID",
+          motivationMin: "Motivation must be at least 50 characters",
+          motivationMax: "Motivation must be at most 2000 characters",
+          motivationInvalid: "Motivation contains dangerous content",
+          cvUrl: "Invalid CV URL",
+          cvRequired: "CV must be uploaded",
+          cvPdf: "CV file must be a valid PDF",
+          transcriptUrl: "Invalid transcript URL",
+          transcriptRequired: "Transcript must be uploaded",
+          transcriptPdf: "Transcript file must be a valid PDF",
+          coverLetterPdf: "Cover letter file must be a valid PDF"
+        }
       }
     }
   },
@@ -716,7 +875,20 @@ export const resources = {
       // Agenda Section
       agenda: {
         title: "Agenda",
-        subtitle: "Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia"
+        subtitle: "Ikuti berbagai kegiatan menarik dari museum dan situs cagar budaya di seluruh Indonesia",
+        loading: "Memuat acara...",
+        status: {
+          upcoming: "Akan Datang",
+          ongoing: "Berlangsung",
+          registration: "Pendaftaran",
+          finished: "Selesai"
+        },
+        button: {
+          detail: "Detail Acara"
+        },
+        categories: {
+          all: "Semua Acara"
+        }
       },
       // Footer translations
       footer: {
@@ -853,6 +1025,11 @@ export const resources = {
       ppid: {
         title: "PPID - Pejabat Pengelola Informasi dan Dokumentasi",
         subtitle: "Pelayanan informasi publik yang transparan dan akuntabel sesuai dengan Undang-Undang No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik.",
+        description: "Keberadaan Pejabat Pengelola Informasi dan Dokumentasi (PPID) Museum dan Cagar Budaya merupakan bagian dari pelaksanaan amanat Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP). Unit ini berfungsi sebagai perpanjangan tangan PPID Kementerian Kebudayaan dalam memberikan layanan informasi publik kepada masyarakat.",
+        exampleInfo: "Contoh Informasi:",
+        requestCriteria: {
+          title: "Ketentuan Pemohon Informasi Publik"
+        },
         informationTypes: {
           periodic: {
             title: "Informasi Berkala",
@@ -923,8 +1100,11 @@ export const resources = {
           description: "Kami berkomitmen untuk memberikan pelayanan informasi publik yang cepat, akurat, dan transparan kepada seluruh masyarakat Indonesia sesuai dengan prinsip keterbukaan informasi publik.",
           stats: {
             response: "Respon Awal",
+            responseValue: "24 Jam",
             service: "Maksimal Layanan",
-            transparency: "Transparan"
+            serviceValue: "13 Hari",
+            transparency: "Transparan",
+            transparencyValue: "100%"
           }
         }
       },
@@ -1176,6 +1356,7 @@ export const resources = {
         productNotFound: "Produk Tidak Ditemukan",
         productNotFoundMessage: "Produk yang Anda cari tidak ditemukan atau tidak tersedia.",
         productInfo: "Informasi Produk",
+        description: "Deskripsi",
         category: "Kategori",
         status: "Status",
         available: "Tersedia",
@@ -1183,14 +1364,115 @@ export const resources = {
         contactSeller: "Hubungi Penjual",
         contactSellerMessage: "Untuk informasi lebih lanjut atau pertanyaan tentang produk ini, silakan hubungi melalui WhatsApp di nomor {{number}}",
         purchaseInfo: "Informasi Pembelian",
-        purchaseInfoItems: [
-          "Produk ini dapat dibeli langsung melalui WhatsApp",
-          "Pastikan untuk menanyakan ketersediaan stok sebelum memesan",
-          "Informasi pengiriman dan pembayaran akan dibahas langsung dengan penjual",
-          "Produk asli dan berkualitas dari museum kami"
-        ],
+        purchaseInfoItem1: "Produk ini dapat dibeli langsung melalui WhatsApp",
+        purchaseInfoItem2: "Pastikan untuk menanyakan ketersediaan stok sebelum memesan",
+        purchaseInfoItem3: "Informasi pengiriman dan pembayaran akan dibahas langsung dengan penjual",
+        purchaseInfoItem4: "Produk asli dan berkualitas dari museum kami",
         showingResults: "Menampilkan {{count}} dari {{total}} produk",
         noCategory: "Tidak ada kategori"
+      },
+      // Internship Section
+      internship: {
+        title: "Program Magang",
+        description: "Bergabunglah dengan program magang kami dan dapatkan pengalaman berharga dalam bidang pelestarian warisan budaya Indonesia.",
+        benefitsTitle: "Manfaat Program Magang",
+        benefit1: "Sertifikat resmi dari Kementerian Pendidikan dan Kebudayaan",
+        benefit2: "Pengalaman kerja di lembaga pemerintah",
+        benefit3: "Mentoring dari ahli berpengalaman",
+        benefit4: "Networking dengan profesional di bidang warisan budaya",
+        benefit5: "Akses ke koleksi dan fasilitas museum",
+        benefit6: "Kemungkinan publikasi hasil penelitian",
+        processTitle: "Proses Pendaftaran",
+        processSubtitle: "Ikuti langkah-langkah berikut untuk mendaftar",
+        step1Title: "Persiapan Dokumen",
+        step1Desc: "CV, transkrip nilai, surat pengantar, dan proposal (jika ada)",
+        step2Title: "Pengajuan Online",
+        step2Desc: "Submit aplikasi melalui form online atau email",
+        step3Title: "Seleksi Administrasi",
+        step3Desc: "Review dokumen dan verifikasi persyaratan",
+        step4Title: "Wawancara",
+        step4Desc: "Interview dengan tim dan mentor program",
+        step5Title: "Pengumuman Hasil",
+        step5Desc: "Notifikasi penerimaan dan orientasi program",
+        startRegistration: "Mulai Pendaftaran",
+        formTitle: "Formulir Pendaftaran Magang",
+        nameLabel: "Nama Lengkap *",
+        namePlaceholder: "Masukkan nama lengkap",
+        emailLabel: "Email *",
+        phoneLabel: "Nomor Telepon *",
+        universityLabel: "Sekolah / Universitas *",
+        universityPlaceholder: "Nama Sekolah / Universitas",
+        majorLabel: "Program Studi *",
+        majorPlaceholder: "Jurusan",
+        semesterLabel: "Semester *",
+        gpaLabel: "IPK",
+        programLabel: "Program Magang *",
+        selectProgram: "Pilih program magang",
+        motivationLabel: "Motivasi & Tujuan *",
+        motivationPlaceholder: "Jelaskan motivasi dan tujuan Anda mengikuti program magang ini...",
+        docsTitle: "Dokumen yang Diperlukan",
+        cvLabel: "CV/Resume *",
+        cvDesc: "Upload CV dalam format PDF (maksimal 5MB)",
+        transcriptLabel: "Transkrip Nilai *",
+        transcriptDesc: "Upload transkrip dalam format PDF (maksimal 5MB)",
+        coverLetterLabel: "Surat Pengantar (Opsional)",
+        coverLetterDesc: "Upload surat pengantar dalam format PDF (maksimal 5MB)",
+        cancel: "Batal",
+        submit: "Kirim Aplikasi",
+        successTitle: "Pendaftaran Berhasil!",
+        successDesc: "Aplikasi magang Anda telah dikirim. Tim kami akan menghubungi Anda dalam 1-2 minggu.",
+        errorTitle: "Error",
+        errorDesc: "Gagal mengirim aplikasi. Silakan coba lagi.",
+        invalidProgram: "Program magang tidak valid.",
+        invalidUrl: "URL dokumen tidak valid atau tidak aman.",
+        uploadErrorCV: "Gagal upload CV",
+        uploadErrorTranscript: "Gagal upload transkrip",
+        uploadErrorCoverLetter: "Gagal upload surat pengantar",
+        positions: "posisi",
+        period: "Periode",
+        requirements: "Persyaratan",
+        benefits: "Benefit",
+        responsibilities: "Tanggung Jawab",
+        supervisor: "Supervisor",
+        deadline: "Deadline",
+        apply: "Daftar",
+        questionsTitle: "Ada Pertanyaan?",
+        questionsDesc: "Tim HR kami siap membantu Anda dengan informasi lebih lanjut tentang program magang dan proses pendaftaran.",
+        officeLocation: "Lokasi Kantor",
+        contactHR: "Hubungi HR",
+        validation: {
+          nameMin: "Nama lengkap minimal 2 karakter",
+          nameMax: "Nama lengkap maksimal 100 karakter",
+          nameInvalid: "Nama tidak boleh mengandung karakter berbahaya",
+          emailInvalid: "Email tidak valid",
+          emailMax: "Email maksimal 150 karakter",
+          phoneMin: "Nomor telepon minimal 10 digit",
+          phoneMax: "Nomor telepon maksimal 20 digit",
+          phoneInvalid: "Nomor telepon hanya boleh berisi angka, +, -, dan spasi",
+          universityMin: "Nama Sekolah / Universitas harus diisi",
+          universityMax: "Nama universitas maksimal 200 karakter",
+          universityInvalid: "Nama universitas tidak valid",
+          majorMin: "Program studi harus diisi",
+          majorMax: "Program studi maksimal 100 karakter",
+          majorInvalid: "Program studi tidak valid",
+          semesterMin: "Semester harus diisi",
+          semesterMax: "Semester maksimal 2 digit",
+          semesterInvalid: "Semester harus berupa angka",
+          gpaInvalid: "IPK harus berupa angka atau desimal",
+          gpaRange: "IPK harus antara 0 dan 4.0",
+          programRequired: "Program magang harus dipilih",
+          programInvalid: "ID program magang tidak valid",
+          motivationMin: "Motivasi minimal 50 karakter",
+          motivationMax: "Motivasi maksimal 2000 karakter",
+          motivationInvalid: "Motivasi mengandung konten berbahaya",
+          cvUrl: "URL CV tidak valid",
+          cvRequired: "CV harus diupload",
+          cvPdf: "File CV harus berupa PDF yang valid",
+          transcriptUrl: "URL transkrip tidak valid",
+          transcriptRequired: "Transkrip harus diupload",
+          transcriptPdf: "File transkrip harus berupa PDF yang valid",
+          coverLetterPdf: "File surat pengantar harus berupa PDF yang valid"
+        }
       }
     }
   },

@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
 import { bannerService } from '@/lib/api-services';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { defaultSlides } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
 
@@ -39,7 +39,7 @@ interface HeroSectionProps {
 }
 
 const HeroSlideContent = ({ slide }: { slide: any }) => {
-    const { t } = useTranslation();
+    const { t } = useUnifiedTranslation();
     
     // Map slide content to translation keys if possible, otherwise use the content directly
     // This assumes the slide content from DB matches the keys or we use a fallback
@@ -143,7 +143,11 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   const [isVideoPlaying, _setIsVideoPlaying] = useState(false);
   const [slides, setSlides] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
+  
+  const { translatedContent: translatedSlides, isTranslating: isSlidesTranslating } = useTranslationSystem(slides, 'hero-slides');
+  const displaySlides = translatedSlides || slides;
+  
+  const currentSlideObj = displaySlides.length > 0 ? displaySlides[currentSlide] : null;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -153,27 +157,27 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   }, []);
 
   useEffect(() => {
-    if (!isVideoPlaying && slides.length > 0) {
+    if (!isVideoPlaying && displaySlides.length > 0) {
       const interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev) => (prev + 1) % displaySlides.length);
       }, 5000);
       return () => clearInterval(interval);
     }
-  }, [slides.length, isVideoPlaying]);
+  }, [displaySlides.length, isVideoPlaying]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
   };
 
   const nextSlide = () => {
-    if (slides.length > 0) {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    if (displaySlides.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % displaySlides.length);
     }
   };
 
   const prevSlide = () => {
-    if (slides.length > 0) {
-      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    if (displaySlides.length > 0) {
+      setCurrentSlide((prev) => (prev - 1 + displaySlides.length) % displaySlides.length);
     }
   };
   
@@ -215,7 +219,7 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
       ref={sectionRef}
     >
       <div className="absolute inset-0">
-        {slides && slides.map((slide, index) => {
+        {displaySlides && displaySlides.map((slide, index) => {
           return (
             <div
               key={index}
@@ -280,9 +284,9 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
         <ChevronRight size={24} className="text-foreground" />
       </button>
 
-      {!isLoading && slides.length > 0 && (
+      {!isLoading && displaySlides.length > 0 && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-          {slides.map((_, index) => (
+          {displaySlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}

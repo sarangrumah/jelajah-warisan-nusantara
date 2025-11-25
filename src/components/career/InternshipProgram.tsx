@@ -5,7 +5,17 @@ import { Button } from '@/components/ui/button';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { Badge } from '@/components/ui/badge';
 
-const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {internshipPrograms: any[], form: any, onSetIsDialogOpen: (open: boolean) => void}) => {
+const InternshipProgram = ({
+  internshipPrograms,
+  form,
+  onSetIsDialogOpen,
+  t
+}: {
+  internshipPrograms: any[],
+  form: any,
+  onSetIsDialogOpen: (open: boolean) => void,
+  t: (key: string) => string
+}) => {
   return (
     <div>
       <div className="grid lg:grid-cols-2 gap-8 mb-16">
@@ -27,7 +37,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                 {program.position_needed && (
                   <div className="text-right">
                     <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {program.position_needed} posisi
+                      {program.position_needed} {t('internship.positions')}
                     </div>
                   </div>
                 )}
@@ -52,7 +62,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                   <div className="col-span-2 flex items-center gap-2 text-sm">
                     <Calendar size={16} className="text-primary" />
                     <span>
-                      Periode: {new Date(program.publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(program.end_publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {t('internship.period')}: {new Date(program.publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} - {new Date(program.end_publish_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </span>
                   </div>
                 )}
@@ -60,7 +70,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
 
               {program.requirement && (
                 <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">Persyaratan:</h4>
+                  <h4 className="font-semibold text-sm mb-2">{t('internship.requirements')}:</h4>
                   <div
                     className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.requirement) }}
@@ -70,7 +80,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
 
               {program.benefits && (
                 <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">Benefit:</h4>
+                  <h4 className="font-semibold text-sm mb-2">{t('internship.benefits')}:</h4>
                   <div
                     className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.benefits) }}
@@ -80,7 +90,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
 
               {program.responsibility && (
                 <div className="mb-4">
-                  <h4 className="font-semibold text-sm mb-2">Tanggung Jawab:</h4>
+                  <h4 className="font-semibold text-sm mb-2">{t('internship.responsibilities')}:</h4>
                   <div
                     className="text-sm text-muted-foreground prose prose-sm max-w-none dark:prose-invert"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(program.responsibility) }}
@@ -91,14 +101,14 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
               {program.supervisor && (
                 <div className="border-t border-border pt-3 mb-4">
                   <p className="text-xs text-muted-foreground">
-                    <strong>Supervisor:</strong> {program.supervisor}
+                    <strong>{t('internship.supervisor')}:</strong> {program.supervisor}
                   </p>
                 </div>
               )}
 
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                 <div className="text-sm">
-                  <span className="text-muted-foreground">Deadline: </span>
+                  <span className="text-muted-foreground">{t('internship.deadline')}: </span>
                   <span className="font-semibold text-primary">
                     {program.application_deadline
                       ? new Date(program.application_deadline).toLocaleDateString()
@@ -109,7 +119,7 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
                   <DialogTrigger asChild>
                     <Button size="sm" onClick={() => form.setValue('internshipProgram', program.id)}>
                       <FileText size={16} className="mr-2" />
-                      Daftar
+                      {t('internship.apply')}
                     </Button>
                   </DialogTrigger>
                 </Dialog>
@@ -120,18 +130,17 @@ const InternshipProgram = ({internshipPrograms, form, onSetIsDialogOpen}: {inter
       </div>
       <div className="mt-16 text-center">
         <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-foreground mb-4">Ada Pertanyaan?</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-4">{t('internship.questionsTitle')}</h3>
           <p className="text-muted-foreground mb-6">
-            Tim HR kami siap membantu Anda dengan informasi lebih lanjut 
-            tentang program magang dan proses pendaftaran.
+            {t('internship.questionsDesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="outline" className='bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow'>
               <MapPin size={16} className="mr-2" />
-              Lokasi Kantor
+              {t('internship.officeLocation')}
             </Button>
             <Button variant="outline" className='bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:scale-105 transition-bounce heritage-glow'>
-              Hubungi HR
+              {t('internship.contactHR')}
             </Button>
           </div>
         </div>

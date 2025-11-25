@@ -26,6 +26,8 @@ interface MemoryItem {
   categories_id: string | null;
   reason_rejected: string;
   excerpt: string | null;
+  galleries?: { upload_file: string }[];
+  gallery?: string[];
 }
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -160,7 +162,14 @@ const MemoryOfWorldDetail = () => {
                             <Card>
                                 <CardContent className='p-5'>
                                     <div className="flex flex-wrap gap-2">
-                                        <MemoryOfWorldGallery mowId={memory.id} />
+                                        <MemoryOfWorldGallery
+                                          mowId={memory.id}
+                                          images={
+                                            memory.gallery ||
+                                            memory.galleries?.map(g => g.upload_file) ||
+                                            []
+                                          }
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>

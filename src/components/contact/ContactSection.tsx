@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
-import { sanitizeHtml } from '@/lib/sanitize-html';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+import { stripHtml } from '@/lib/utils';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -20,11 +20,14 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 const ContactSection = () => {
-  const { t } = useHybridTranslation();
+  const { t } = useUnifiedTranslation();
   const { toast } = useToast();
   const { pathname } = useLocation();
   const [faqs, setFaqs] = useState([]);
   
+  const { translatedContent: translatedFaqs } = useTranslationSystem(faqs, 'faqs-list');
+  const displayFaqs = translatedFaqs || faqs;
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -313,16 +316,15 @@ const ContactSection = () => {
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
-                {faqs.length > 0 && faqs.map((faq, index) => (
+                {displayFaqs.length > 0 && displayFaqs.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`}>
                     <AccordionTrigger className="text-left">
-                      <span className="[&_p]:m-0 [&_p]:inline" dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.question) }} />
+                      <span className="[&_p]:m-0 [&_p]:inline">{stripHtml(faq.question)}</span>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div
-                        className="text-muted-foreground leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(faq.answer) }}
-                      />
+                      <div className="text-muted-foreground leading-relaxed">
+                        {stripHtml(faq.answer)}
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}

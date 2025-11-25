@@ -1,14 +1,12 @@
 import Header from '@/components/Header';
 import PPIDSection from '@/components/ppid/PPIDSection';
 import Footer from '@/components/Footer';
-import { useEffect, useMemo, useRef } from 'react';
-import { useOnDemandTranslate } from '@/hooks/useOnDemandTranslate';
+import { useEffect, useRef } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
 const PPID = () => {
-  const ppidTexts = useMemo(() => ({}), []);
-  const { ref } = useOnDemandTranslate(ppidTexts);
+  const ref = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
     
   useEffect(() => {

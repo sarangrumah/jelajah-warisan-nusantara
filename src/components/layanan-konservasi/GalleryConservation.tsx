@@ -55,7 +55,7 @@ const GalleryConservation = () => {
 
                     return (
                     <img
-                        key={index}
+                        key={`gallery-${index}-${offset}`}
                         src={images[index] || ""}
                         alt={`gallery-${index}`}
                         onClick={() => isCenter && setSelectedImage(images[index])}

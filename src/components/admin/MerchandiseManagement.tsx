@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImageUpload } from '@/components/ui/image-upload';
+import { MultiImageUpload } from '@/components/ui/multi-image-upload';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -569,18 +570,17 @@ const MerchandiseManagement = ({ userRole }: { userRole: string }) => {
 
                     <div className="space-y-2">
                       <Label>Gambar Produk</Label>
-                      <ImageUpload
+                      <MultiImageUpload
                         label="Upload Gambar Produk"
-                        value={editingProduct.images[0] || ''}
-                        onChange={(url) => {
-                          if (url) {
-                            setEditingProduct(prev => ({
-                              ...prev,
-                              images: [url, ...prev.images.slice(1)]
-                            }));
-                          }
+                        value={editingProduct.images || []}
+                        onChange={(urls) => {
+                          setEditingProduct(prev => ({
+                            ...prev,
+                            images: urls
+                          }));
                         }}
                         bucket="merchandise"
+                        maxItems={5}
                       />
                       <p className="text-sm text-muted-foreground">
                         Gambar pertama akan digunakan sebagai gambar utama

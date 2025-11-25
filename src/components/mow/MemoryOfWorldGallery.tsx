@@ -23,12 +23,20 @@ function getMowImageUrl(filename: string | undefined | null) {
   return match ? (match[1] as { default : string }).default : PLACEHOLDER_IMAGE;
 }
 
-const MemoryOfWorldGallery = ({ mowId }) => {
+interface MemoryOfWorldGalleryProps {
+  mowId: string;
+  images?: string[];
+}
+
+const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [mowGalleries, setMowGalleries] = useState([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [mowGalleries, setMowGalleries] = useState<any[]>([]);
 
   useEffect(() => {
+    // Only fetch if images are not provided via props
+    if (propImages && propImages.length > 0) return;
+
     const fetchMemories = async () => {
       try {
         const response = await memoryOfWorldGalleryService.getAll();
@@ -40,7 +48,7 @@ const MemoryOfWorldGallery = ({ mowId }) => {
             is_approved: boolean;
             is_rejected: boolean;
           }) => (
-            gallery.is_active === true && 
+            gallery.is_active === true &&
             gallery.is_approved === true &&
             gallery.is_rejected === false
           ));
@@ -51,10 +59,13 @@ const MemoryOfWorldGallery = ({ mowId }) => {
       }
     };
     fetchMemories();
-  }, []);
+  }, [propImages]);
 
   const galleries = mowGalleries.filter(gallery => gallery.id_memoryoftheworld === mowId);
-  const images = galleries.map((gallery) => gallery.upload_file);
+  const fetchedImages = galleries.map((gallery) => gallery.upload_file);
+  
+  // Use prop images if available, otherwise use fetched images
+  const images = (propImages && propImages.length > 0) ? propImages : fetchedImages;
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {

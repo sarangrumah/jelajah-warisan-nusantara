@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useHybridTranslation } from '@/components/HybridTranslationProvider';
-import { ArrowLeft, ShoppingCart, Package, Tag, Info } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Package, Tag, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslate } from '@/hooks/useTranslate';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -134,21 +134,40 @@ const MerchandiseDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div className="space-y-4">
-            {/* Main Image */}
-            <div className="aspect-square overflow-hidden rounded-lg border">
+            {/* Main Image Carousel */}
+            <div className="relative aspect-square overflow-hidden rounded-lg border group">
               <img
                 src={mainImage}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/placeholder.svg';
                 }}
               />
+              
+              {product.images && product.images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length)}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex((prev) => (prev + 1) % product.images.length)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Thumbnail Images */}
             {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {product.images.map((image, index) => {
                   const thumbnailUrl = assetUrl(image) || '/placeholder.svg';
                   return (
@@ -156,9 +175,9 @@ const MerchandiseDetail = () => {
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
                       className={`aspect-square overflow-hidden rounded-md border-2 transition-all ${
-                        selectedImageIndex === index 
-                          ? 'border-primary' 
-                          : 'border-transparent hover:border-muted-foreground'
+                        selectedImageIndex === index
+                          ? 'border-primary ring-2 ring-primary/20'
+                          : 'border-transparent hover:border-muted-foreground/50'
                       }`}
                     >
                       <img

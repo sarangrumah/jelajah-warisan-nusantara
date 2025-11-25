@@ -132,14 +132,13 @@ app.get('/health', (req, res) => {
 });
 
 // API routes - MUST be registered BEFORE the fallback route
+app.use('/api/translate-optimized', translateOptimizedRoutes); // Register specific route first
 app.use('/api/auth', authRoutes);
-app.use('/api', apiRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/activity-log', activityLogRoutes);
 app.use('/api/translation-cache', translationCacheRoutes);
-app.use('/api/translate-optimized', translateOptimizedRoutes);
-app.use('/api/translate-optimized', translateOptimizedRoutes);
+app.use('/api', apiRoutes);
 
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {

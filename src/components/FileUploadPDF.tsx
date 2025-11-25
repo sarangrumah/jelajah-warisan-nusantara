@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { uploadService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
+import { useTranslate } from '@/hooks/useTranslate';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -48,6 +49,11 @@ const FileUploadPDF = ({
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const { translatedText: uploadingText } = useTranslate('Uploading...');
+  const { translatedText: uploadSuccessText } = useTranslate('Upload Successful');
+  const { translatedText: dropText } = useTranslate('Drop your PDF file here, or click to browse');
+  const { translatedText: removeText } = useTranslate('Remove');
 
   // Enhanced frontend validation
   const validateFile = (file: File): string | null => {
@@ -268,7 +274,7 @@ const FileUploadPDF = ({
               <Upload className="h-8 w-8 text-primary animate-pulse" />
             </div>
             <div>
-              <p className="text-sm font-medium">Uploading...</p>
+              <p className="text-sm font-medium">{uploadingText}</p>
               <Progress value={uploadState.progress} className="mt-2" />
             </div>
           </div>
@@ -279,7 +285,7 @@ const FileUploadPDF = ({
             </div>
             <div>
               <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                Upload Successful
+                {uploadSuccessText}
               </p>
               <p className="text-sm text-muted-foreground">
                 {uploadState.uploadedFile.name}
@@ -294,7 +300,7 @@ const FileUploadPDF = ({
               }}
             >
               <X className="h-4 w-4 mr-2" />
-              Remove
+              {removeText}
             </Button>
           </div>
         ) : (
@@ -304,7 +310,7 @@ const FileUploadPDF = ({
             </div>
             <div>
               <p className="text-sm font-medium">
-                Drop your PDF file here, or click to browse
+                {dropText}
               </p>
               <p className="text-xs text-muted-foreground">
                 {description}

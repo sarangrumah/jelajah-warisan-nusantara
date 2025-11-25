@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/MCB-Logo.png';
+import { stripHtml } from '@/lib/utils';
 import sanitizeHtml from 'sanitize-html';
 
 const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
@@ -34,6 +36,7 @@ function getEventImageUrl(filename: string) {
 }
 
 const AgendaList = () => {
+  const { t } = useUnifiedTranslation();
   const createMarkup = (htmlContent: string) => {
     return { __html: sanitizeHtml(htmlContent) };
   };
@@ -41,6 +44,9 @@ const AgendaList = () => {
   const [activeCategory, setActiveCategory] = useState('semua');
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  const { translatedContent: translatedEvents } = useTranslationSystem(events, 'agenda-list');
+  const displayEvents = translatedEvents || events;
 
   const fetchCategories = async () => {
     try {
@@ -103,7 +109,7 @@ const AgendaList = () => {
     fetchCategories();
   }, []);
 
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = displayEvents.filter(event => {
     if (activeCategory === 'semua') {
       const matchesSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            event.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -127,10 +133,10 @@ const AgendaList = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'upcoming': return 'Akan Datang';
-      case 'ongoing': return 'Berlangsung';
-      case 'registration': return 'Pendaftaran';
-      default: return 'Selesai';
+      case 'upcoming': return t('agenda.status.upcoming') || 'Akan Datang';
+      case 'ongoing': return t('agenda.status.ongoing') || 'Berlangsung';
+      case 'registration': return t('agenda.status.registration') || 'Pendaftaran';
+      default: return t('agenda.status.finished') || 'Selesai';
     }
   };
 
@@ -153,7 +159,7 @@ const AgendaList = () => {
               <Filter size={20} className="text-muted-foreground" />
               <Select value={activeCategory} onValueChange={setActiveCategory}>
                 <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Pilih Kategori" />
+                  <SelectValue placeholder={t('agenda.categories.all') || "Pilih Kategori"} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -185,39 +191,41 @@ const AgendaList = () => {
                     </div>
                   </div>
                 <CardHeader>
-                  <CardTitle className="text-xl line-clamp-2" dangerouslySetInnerHTML={createMarkup(event.name)} />
+                  <CardTitle className="text-xl line-clamp-2">
+                    {stripHtml(event.name)}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3"
-                    dangerouslySetInnerHTML={createMarkup(event.description)}
-                  />
+                  <p className="text-muted-foreground mb-4 line-clamp-3">
+                    {stripHtml(event.description)}
+                  </p>
                   
                   <div className="space-y-2 mb-[4rem]">
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar size={16} className="text-primary" />
                       {/* <span>{formatDate(event.date)}</span> */}
-                      <span dangerouslySetInnerHTML={createMarkup(event.date)} />
+                      <span>{stripHtml(event.date)}</span>
                     </div>
                     
                     {event.time && (
                       <div className="flex items-center gap-2 text-sm">
                         <Clock size={16} className="text-primary" />
                         {/* <span>{formatTime(event.time)} WIB</span> */}
-                        <span dangerouslySetInnerHTML={createMarkup(event.time)} />
+                        <span>{stripHtml(event.time)}</span>
                       </div>
                     )}
                     
                     {event.location && (
                       <div className="flex items-center gap-2 text-sm">
                         <MapPin size={16} className="text-primary" />
-                        <span dangerouslySetInnerHTML={createMarkup(event.location)} />
+                        <span>{stripHtml(event.location)}</span>
                       </div>
                     )}
                   </div>
                   
                   <div className='p-6 absolute left-0 bottom-0 right-0'>
                     <Button className="w-full !a-exclude">
-                      Detail Acara
+                      {t('agenda.button.detail') || 'Detail Acara'}
                     </Button>
                   </div>
                 </CardContent>

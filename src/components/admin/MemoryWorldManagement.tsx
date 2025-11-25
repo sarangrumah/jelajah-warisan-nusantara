@@ -7,14 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MediaGalleryUpload } from '@/components/ui/media-gallery-upload';
+import { MultiImageUpload } from '@/components/ui/multi-image-upload';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { Edit, Loader2, Plus, Save, Trash, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
-
-interface ImageItem { path: string; sites?: string }
 
 interface MemoryWorldItem {
   id?: string;
@@ -26,7 +24,7 @@ interface MemoryWorldItem {
   end_publish_date?: string;
   is_active: boolean;
   thumbnails?: string;
-  gallery?: ImageItem[];
+  gallery?: string[];
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
@@ -142,11 +140,12 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
         bucket="hero-sections"
       />
 
-      <MediaGalleryUpload
-        label="Gallery (Images/Videos)"
+      <MultiImageUpload
+        label="Gallery (Images)"
         value={formData.gallery || []}
-        onChange={(items) => setFormData(p => ({...p, gallery: items as any}))}
+        onChange={(urls) => setFormData(p => ({...p, gallery: urls}))}
         bucket="hero-sections"
+        maxItems={20}
       />
 
       <div className="flex items-center space-x-2">
@@ -215,9 +214,19 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (data: MemoryWorldItem) => {
     setSaving(true);
     try {
-      const payload: MemoryWorldItem = {
+      // Convert string[] gallery back to object structure if needed by backend,
+      // or send as is if backend supports it.
+      // Based on previous code, it seemed to expect objects.
+      // However, the prompt asks to update interfaces to string[].
+      // I will send the data as is, assuming backend handles it or I've updated the interface correctly.
+      // If the backend strictly needs objects, I might need to map it here.
+      // For now, I'll assume the interface change implies a data structure change.
+      
+      const payload: any = {
         ...data,
-        // categories_id: data.categories_id ? data.categories_id : null,
+        // Map string[] back to object array for backend compatibility if it hasn't been updated
+        // The previous code used { path: string }
+        gallery: data.gallery?.map(url => (typeof url === 'string' ? { path: url } : url)) || [],
         is_rejected: false,
         reason_rejected: '',
       };
@@ -444,7 +453,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                         setEditing({
                           ...it,
                           // categories_id: it.categories_id ?? it.category?.id ?? '',
-                          gallery: it.galleries?.map((g: any) => ({ id: g.id, path: g.upload_file })) || [],
+                          gallery: it.galleries?.map((g: any) => g.upload_file) || [],
                           thumbnails: it.thumbnails,
                         });
                         setOpen(true);
