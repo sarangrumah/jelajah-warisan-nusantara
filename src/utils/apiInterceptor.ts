@@ -47,6 +47,11 @@ export const enableGlobalTranslationInterceptor = () => {
       }
 
       // If response is an error, try to translate the error message
+      // Skip translation for 5xx server errors to avoid cascading failures
+      if (response.status >= 500) {
+        return response;
+      }
+
       const currentLang = i18n.language;
       
       // Only translate if not in ID (source language)

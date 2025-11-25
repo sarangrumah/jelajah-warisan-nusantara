@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      port: Number(env.VITE_PREVIEW_PORT) || 443,
+      port: Number(process.env.VITE_PREVIEW_PORT || env.VITE_PREVIEW_PORT) || 4173,
       strictPort: true,
       allowedHosts: [
         'museumcagarbudaya.kemenbud.go.id',
