@@ -37,10 +37,10 @@ class OptimizedTranslationService {
   private cache: Map<string, TranslationCache> = new Map();
   private cacheTTL = 24 * 60 * 60 * 1000; // 24 hours
   private maxCacheSize = 2000; // Increased cache size
-  private batchSize = 20; // Increased batch size
+  private batchSize = 5; // Reduced batch size to prevent 504 timeouts
   private maxRetries = 3;
-  private retryDelay = 1000; // 1 second
-  private maxConcurrentRequests = 3; // Limit concurrent API calls
+  private retryDelay = 2000; // Increased retry delay to 2 seconds
+  private maxConcurrentRequests = 2; // Reduced concurrent requests to prevent server overload
   private activeRequests = 0; // Track active requests
   private requestQueue: Array<() => Promise<any>> = []; // Queue for requests
   private localStorageKey = 'translation_cache_v1';
@@ -280,6 +280,12 @@ class OptimizedTranslationService {
         );
 
         if (!response.ok) {
+          // If we get a 504 Gateway Timeout, it might be due to the batch size being too large
+          // or the server being overloaded. We should treat this as a retryable error.
+          if (response.status === 504) {
+             console.warn(`Translation API returned 504 Gateway Timeout. Retrying...`);
+             throw new Error(`Translation API failed with status: ${response.status}`);
+          }
           throw new Error(`Translation API failed with status: ${response.status}`);
         }
 

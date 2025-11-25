@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useTranslate } from '@/hooks/useTranslate';
+import { useTranslate } from '@/hooks/useTranslate.tsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
@@ -75,7 +75,7 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
         });
 
         const marker = L.marker(coords, { icon: customIcon }).addTo(map);
-
+    
         const popupContent = `
           <div style="padding: 16px; min-width: 280px; max-width: 320px;">
             <div style="margin-bottom: 12px;">
@@ -162,7 +162,7 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
             className: 'custom-popup',
             maxWidth: 320
         });
-
+    
         marker.on('popupopen', () => {
             const popup = marker.getPopup();
             if (!map || !popup) { return; }
@@ -175,9 +175,16 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
                 listBtn.addEventListener('click', () => navigate(`/museums/${location.type}`));
             }
         });
-
+    
         return () => {
-          map.removeLayer(marker);
+          // Check if map and marker still exist before removing
+          if (map && marker) {
+            try {
+              map.removeLayer(marker);
+            } catch (e) {
+              console.warn('Error removing marker:', e);
+            }
+          }
         };
     }, [map, location, types, name, subtitle, address, openingHours, ticketPrice, addressLabel, seeDetailsLabel, seeListLabel, navigate]);
 

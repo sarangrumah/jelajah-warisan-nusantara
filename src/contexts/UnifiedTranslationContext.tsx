@@ -89,9 +89,10 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
     if (!content || language === 'id') return content;
 
     // Helper to extract strings from object/array
-    const extractStrings = (obj: any): string[] => {
+    const extractStrings = (obj: any, depth = 0): string[] => {
+      if (depth > 10) return []; // Prevent infinite recursion
       if (typeof obj === 'string') return [obj];
-      if (Array.isArray(obj)) return obj.flatMap(extractStrings);
+      if (Array.isArray(obj)) return obj.flatMap(item => extractStrings(item, depth + 1));
       if (typeof obj === 'object' && obj !== null) {
         return Object.entries(obj).flatMap(([key, value]) => {
           // Skip fields that shouldn't be translated
@@ -103,16 +104,17 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
           ) {
             return [];
           }
-          return extractStrings(value);
+          return extractStrings(value, depth + 1);
         });
       }
       return [];
     };
 
     // Helper to apply translations back to object/array
-    const applyTranslations = (obj: any, translations: Map<string, string>): any => {
+    const applyTranslations = (obj: any, translations: Map<string, string>, depth = 0): any => {
+      if (depth > 10) return obj; // Prevent infinite recursion
       if (typeof obj === 'string') return translations.get(obj) || obj;
-      if (Array.isArray(obj)) return obj.map(item => applyTranslations(item, translations));
+      if (Array.isArray(obj)) return obj.map(item => applyTranslations(item, translations, depth + 1));
       if (typeof obj === 'object' && obj !== null) {
         const newObj: any = {};
         for (const key in obj) {
@@ -125,7 +127,7 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
           ) {
             newObj[key] = obj[key];
           } else {
-            newObj[key] = applyTranslations(obj[key], translations);
+            newObj[key] = applyTranslations(obj[key], translations, depth + 1);
           }
         }
         return newObj;
