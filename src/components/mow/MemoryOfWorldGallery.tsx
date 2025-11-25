@@ -35,7 +35,8 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
 
   useEffect(() => {
     // Only fetch if images are not provided via props
-    if (propImages && propImages.length > 0) return;
+    // If propImages is an empty array, we consider it as "provided but empty" and do not fetch
+    if (propImages !== undefined) return;
 
     const fetchMemories = async () => {
       try {
