@@ -47,22 +47,26 @@ router.post('/', async (req: Request, res: Response) => {
  * Translate multiple texts in batch
  */
 router.post('/batch', async (req: Request, res: Response) => {
+  const startTime = Date.now();
   const { texts, targetLang, sourceLang = 'id' } = req.body;
 
   if (!texts || !Array.isArray(texts) || !targetLang) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: texts (array), targetLang' 
+    return res.status(400).json({
+      error: 'Missing required fields: texts (array), targetLang'
     });
   }
 
+  console.log(`[API] /translate/batch request received. Texts: ${texts.length}, Target: ${targetLang}`);
+
   try {
     const results = await translationService.translateBatch(texts, targetLang, sourceLang);
+    console.log(`[API] /translate/batch completed successfully in ${Date.now() - startTime}ms`);
     res.json({ results, success: true });
   } catch (error) {
-    console.error('Batch translation endpoint error:', error);
-    res.status(500).json({ 
+    console.error(`[API] /translate/batch failed after ${Date.now() - startTime}ms:`, error);
+    res.status(500).json({
       error: 'Batch translation service error',
-      success: false 
+      success: false
     });
   }
 });

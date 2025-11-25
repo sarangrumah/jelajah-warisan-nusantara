@@ -30,6 +30,7 @@ class TranslationService {
   private maxConcurrentRequests = 3; // Limit concurrent LibreTranslate API calls
   private activeRequests = 0;
   private requestQueue: Array<() => Promise<any>> = [];
+  private readonly BATCH_CHUNK_SIZE = 10; // Process batch in smaller chunks to avoid timeouts
 
   constructor() {
     // Use local LibreTranslate instance (Docker) or fallback to public
@@ -195,70 +196,71 @@ class TranslationService {
     }
 
     try {
-      // LibreTranslate batch endpoint expects 'q' to be an array of strings
-      // However, some versions/forks might not support batching on /translate
-      // We should check if we need to use a loop or if the endpoint supports arrays
-      
-      // Try batch request first
-      const response = await this.executeWithConcurrency(() =>
-        fetch(`${this.baseUrl}/translate`, {
-          method: 'POST',
-          body: JSON.stringify({
-            q: nonEmptyTexts, // Array of strings
-            source: sourceLang,
-            target: targetLang,
-            format: 'text',
-            api_key: this.apiKey
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          agent: this.agent
-        })
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Batch translation API error: ${response.status} - ${errorText}`);
+      // Chunk the texts into smaller batches to avoid timeouts
+      const chunks = [];
+      for (let i = 0; i < nonEmptyTexts.length; i += this.BATCH_CHUNK_SIZE) {
+        chunks.push(nonEmptyTexts.slice(i, i + this.BATCH_CHUNK_SIZE));
       }
 
-      const data = (await response.json()) as any;
-      
-      // Handle different response formats
-      let translatedTexts: string[] = [];
-      
-      if (Array.isArray(data.translatedText)) {
-        // Standard LibreTranslate batch response
-        translatedTexts = data.translatedText;
-      } else if (typeof data.translatedText === 'string') {
-        // Single string response (unexpected for batch, but possible if only 1 text sent)
-        translatedTexts = [data.translatedText];
-      } else if (Array.isArray(data)) {
-         // Some forks might return array directly
-         translatedTexts = data.map((item: any) => item.translatedText || item);
-      } else {
-        console.warn('Unexpected batch translation response format:', data);
-        // Fallback to individual translations if batch format is unknown
-        throw new Error('Unexpected response format');
+      console.log(`[TranslationService] Processing ${nonEmptyTexts.length} texts in ${chunks.length} chunks of size ${this.BATCH_CHUNK_SIZE}`);
+
+      const allTranslatedTexts: string[] = [];
+
+      // Process chunks sequentially to avoid overwhelming the server
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        console.log(`[TranslationService] Processing chunk ${i + 1}/${chunks.length} (${chunk.length} texts)...`);
+        
+        const chunkResponse = await this.executeWithConcurrency(async () => {
+          const apiStartTime = Date.now();
+          
+          const res = await fetch(`${this.baseUrl}/translate`, {
+            method: 'POST',
+            body: JSON.stringify({
+              q: chunk, // Array of strings
+              source: sourceLang,
+              target: targetLang,
+              format: 'text',
+              api_key: this.apiKey
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            agent: this.agent
+          });
+          
+          console.log(`[TranslationService] Chunk ${i + 1} response received in ${Date.now() - apiStartTime}ms`);
+          return res;
+        });
+
+        if (!chunkResponse.ok) {
+          const errorText = await chunkResponse.text();
+          throw new Error(`Batch translation API error (chunk ${i + 1}): ${chunkResponse.status} - ${errorText}`);
+        }
+
+        const data = (await chunkResponse.json()) as any;
+        
+        // Handle different response formats
+        if (Array.isArray(data.translatedText)) {
+          allTranslatedTexts.push(...data.translatedText);
+        } else if (typeof data.translatedText === 'string') {
+          allTranslatedTexts.push(data.translatedText);
+        } else if (Array.isArray(data)) {
+           allTranslatedTexts.push(...data.map((item: any) => item.translatedText || item));
+        } else {
+          console.warn('Unexpected batch translation response format:', data);
+          // Fallback for this chunk: use original texts
+          allTranslatedTexts.push(...chunk);
+        }
       }
 
       // Map results back to original texts, maintaining order
-      // Note: LibreTranslate returns translations in the same order as input 'q'
-      // But we need to be careful if we filtered out empty strings before sending?
-      // Actually we sent nonEmptyTexts which includes empty strings as empty strings?
-      // No, we mapped (text || '').trim(). So we sent empty strings to API.
-      // LibreTranslate should return empty strings for empty inputs.
-      
-      if (translatedTexts.length !== texts.length) {
-         console.warn(`Mismatch in translation count: sent ${texts.length}, got ${translatedTexts.length}`);
-         // If counts mismatch, we can't reliably map back. Fallback to original.
-         // Or try to map as many as possible? Safer to fail or return original.
-         // But let's try to map what we have.
+      if (allTranslatedTexts.length !== texts.length) {
+         console.warn(`Mismatch in translation count: sent ${texts.length}, got ${allTranslatedTexts.length}`);
       }
 
       return texts.map((originalText, index) => {
-        const translatedText = translatedTexts[index];
-        // If we have a translation, use it. Otherwise fallback to original.
+        const translatedText = allTranslatedTexts[index];
         return {
           translatedText: translatedText !== undefined ? translatedText : originalText,
           success: true
