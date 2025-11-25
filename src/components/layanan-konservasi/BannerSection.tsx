@@ -5,7 +5,7 @@ import { useUnifiedTranslation } from '@/contexts/UnifiedTranslationContext';
 // Remove old getImageUrl
 
 const BannerSection = () => {
-  const { t } = useUnifiedTranslation();
+  const { t, language, translateContent } = useUnifiedTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
   // TODO: Replace this with API call to fetch banners from backend
   // For now, use a sample with the correct image URL format
@@ -22,15 +22,31 @@ const BannerSection = () => {
   const [currentSlide, setCurrentSlide] = React.useState(0);
 
   useEffect(() => {
-    if (slides.length > 0) {
-      const translated = slides.map(slide => ({
-        ...slide,
-        title: t(slide.title),
-        subtitle: t(slide.subtitle),
-      }));
-      setTranslatedSlides(translated);
-    }
-  }, [slides, t]);
+    const translateSlides = async () => {
+      if (slides.length > 0) {
+        // If language is ID, use original slides
+        if (language === 'id') {
+          setTranslatedSlides(slides);
+          return;
+        }
+
+        // For other languages, translate using translateContent which handles dynamic content
+        const translated = await Promise.all(slides.map(async (slide) => {
+          const translatedTitle = await translateContent(slide.title);
+          const translatedSubtitle = await translateContent(slide.subtitle);
+          
+          return {
+            ...slide,
+            title: translatedTitle,
+            subtitle: translatedSubtitle,
+          };
+        }));
+        setTranslatedSlides(translated);
+      }
+    };
+
+    translateSlides();
+  }, [slides, language, translateContent]);
 
   useEffect(() => {
     if (slides.length > 0) {

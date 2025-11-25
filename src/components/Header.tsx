@@ -44,6 +44,7 @@ const Header = () => {
       href: '/tentang-kami',
       subItems: [
         { name: 'Tentang Kami', href: '/tentang-kami' },
+        { name: 'Struktur Organisasi', href: '/struktur-organisasi' },
         { name: 'Layanan Konservasi', href: '/laboratorium-konservasi' },
         { name: 'Media & Publikasi', href: '/media-publikasi' },
         { name: 'Pemanfaatan Aset', href: '/pemanfaatan-aset' },
@@ -174,15 +175,17 @@ const Header = () => {
               <LanguageSwitcher />
             </div>
 
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </Button>
+            {/* Mobile Language Switcher & Menu Button */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <LanguageSwitcher />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </Button>
+            </div>
           </nav>
         </div>
       </header>
@@ -191,8 +194,8 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="fixed inset-0 bg-background/95 backdrop-blur-md" />
-          <div className="fixed right-0 top-0 h-full w-64 bg-card border-l border-border p-6 mt-20">
-            <nav className="space-y-4">
+          <div className="fixed right-0 top-20 bottom-0 w-64 bg-card border-l border-border p-6 overflow-y-auto">
+            <nav className="space-y-4 pb-8">
               {translatedNavigationItems.map((item) => (
                 <div key={item.name}>
                   <Link
@@ -226,9 +229,6 @@ const Header = () => {
                   )}
                 </div>
               ))}
-              <div className="pt-4 border-t border-border">
-                <LanguageSwitcher />
-              </div>
             </nav>
           </div>
         </div>

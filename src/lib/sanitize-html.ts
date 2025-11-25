@@ -57,6 +57,16 @@ const stripDangerousStyles = (style: string) => {
     .join('; ');
 };
 
+export const unescapeHtml = (str: string): string => {
+  if (!str) return '';
+  return str
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
+    .replace(/'/g, "'")
+    .replace(/&/g, '&');
+};
+
 export const sanitizeHtml = (dirty: string): string => {
   if (typeof dirty !== 'string') {
     return '';

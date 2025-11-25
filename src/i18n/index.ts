@@ -454,6 +454,17 @@ export const resources = {
         visitWebsite: "Visit Website",
         buyTicket: "Buy Ticket",
       },
+      // Publication Section
+      publication: {
+        title: "Publication Documents",
+        subtitle: "Access official documents, reports, and scientific publications about museum management and cultural heritage preservation.",
+        pages: "Pages",
+        size: "Size",
+        downloadCount: "Downloads",
+        downloadButton: "Download Document",
+        readMore: "Read More",
+        description: "Description"
+      },
       // Collection Section
       collection: {
         title: "Masterpiece Collections",
@@ -595,7 +606,25 @@ export const resources = {
       pemanfaatanAset: {
         title: "Asset Utilization",
         subtitle: "Explore available assets for utilization",
-        noData: "No asset utilization data found."
+        noData: "No asset utilization data found.",
+        location: "Location",
+        category: "Category",
+        area: "Area",
+        facilities: "Facilities",
+        detail: {
+          eventDetail: "Event Detail",
+          generalTerms: "General Terms",
+          noGeneralTerms: "No general terms",
+          rate: "Rate",
+          overtimeCost: "Overtime Cost",
+          facilities: "Facilities",
+          additionalFacilities: "Additional Facilities",
+          detail: "Detail",
+          capacity: "Capacity",
+          size: "Size",
+          price: "Price",
+          booking: "Booking"
+        }
       },
       common: {
         notFound: "Data not found.",
@@ -635,6 +664,35 @@ export const resources = {
         purchaseInfoItem4: "Original and quality products from our museum",
         showingResults: "Showing {{count}} of {{total}} products",
         noCategory: "No category"
+      },
+      // Organizational Structure
+      organizationalStructure: {
+        title: "Organizational Structure",
+        description: "Get to know the team behind the Museum and Cultural Heritage.",
+        viewProfile: "View Profile",
+        employeeDetail: "Employee Detail",
+        born: "Born",
+        education: "Education History",
+        career: "Career History",
+        degree: "Degree",
+        institution: "Institution",
+        year: "Year",
+        role: "Role",
+        company: "Company",
+        duration: "Duration",
+        addEmployee: "Add Employee",
+        editEmployee: "Edit Employee",
+        name: "Name",
+        level: "Level",
+        order: "Order",
+        birthDate: "Date of Birth",
+        photo: "Photo",
+        fetchError: "Failed to fetch employees",
+        createSuccess: "Employee created successfully",
+        updateSuccess: "Employee updated successfully",
+        saveError: "Failed to save employee",
+        deleteSuccess: "Employee deleted successfully",
+        deleteError: "Failed to delete employee"
       },
       // Internship Section
       internship: {
@@ -770,7 +828,25 @@ export const resources = {
       pemanfaatanAset: {
         title: "Pemanfaatan Aset",
         subtitle: "Jelajahi aset yang tersedia untuk dimanfaatkan",
-        noData: "Data pemanfaatan aset untuk disewakan tidak ditemukan."
+        noData: "Data pemanfaatan aset untuk disewakan tidak ditemukan.",
+        location: "Lokasi",
+        category: "Kategori",
+        area: "Area",
+        facilities: "Fasilitas",
+        detail: {
+          eventDetail: "Detail Acara",
+          generalTerms: "Ketentuan Umum",
+          noGeneralTerms: "Tidak ada ketentuan umum",
+          rate: "Tarif",
+          overtimeCost: "Biaya Overtime",
+          facilities: "Fasilitas",
+          additionalFacilities: "Fasilitas Tambahan",
+          detail: "Detail",
+          capacity: "Kapasitas",
+          size: "Ukuran",
+          price: "Harga",
+          booking: "Booking"
+        }
       },
       // Hero Section
       hero: {
@@ -1199,6 +1275,17 @@ export const resources = {
         visitWebsite: "Kunjungi Situs",
         buyTicket: "Beli Tiket",
       },
+      // Publication Section
+      publication: {
+        title: "Dokumen Publikasi",
+        subtitle: "Akses dokumen resmi, laporan, dan publikasi ilmiah tentang pengelolaan museum dan pelestarian cagar budaya.",
+        pages: "Halaman",
+        size: "Ukuran",
+        downloadCount: "Download",
+        downloadButton: "Unduh Dokumen",
+        readMore: "Baca Selengkapnya",
+        description: "Deskripsi"
+      },
       // Collection Section
       collection: {
         title: "Koleksi Mahakarya",
@@ -1370,6 +1457,35 @@ export const resources = {
         purchaseInfoItem4: "Produk asli dan berkualitas dari museum kami",
         showingResults: "Menampilkan {{count}} dari {{total}} produk",
         noCategory: "Tidak ada kategori"
+      },
+      // Organizational Structure
+      organizationalStructure: {
+        title: "Struktur Organisasi",
+        description: "Kenali tim di balik Museum dan Cagar Budaya.",
+        viewProfile: "Lihat Profil",
+        employeeDetail: "Detail Pegawai",
+        born: "Lahir",
+        education: "Riwayat Pendidikan",
+        career: "Riwayat Karir",
+        degree: "Gelar",
+        institution: "Institusi",
+        year: "Tahun",
+        role: "Peran",
+        company: "Perusahaan",
+        duration: "Durasi",
+        addEmployee: "Tambah Pegawai",
+        editEmployee: "Edit Pegawai",
+        name: "Nama",
+        level: "Level",
+        order: "Urutan",
+        birthDate: "Tanggal Lahir",
+        photo: "Foto",
+        fetchError: "Gagal mengambil data pegawai",
+        createSuccess: "Pegawai berhasil dibuat",
+        updateSuccess: "Pegawai berhasil diperbarui",
+        saveError: "Gagal menyimpan pegawai",
+        deleteSuccess: "Pegawai berhasil dihapus",
+        deleteError: "Gagal menghapus pegawai"
       },
       // Internship Section
       internship: {

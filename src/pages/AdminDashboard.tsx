@@ -23,6 +23,7 @@ import SOPManagement from '@/components/admin/SOPManagement';
 import MasterCollectionManagement from '@/components/admin/MasterCollectionManagement';
 import MemoryWorldManagement from '@/components/admin/MemoryWorldManagement';
 import PemanfaatanAssetManagement from '@/components/admin/PemanfaatanAssetManagement';
+import OrganizationalStructureManagement from '@/components/admin/OrganizationalStructureManagement';
 import MerchandiseManagement from '@/components/admin/MerchandiseManagement';
 import PublicationManagement from '@/components/admin/PublicationManagement';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
@@ -163,6 +164,7 @@ const AdminDashboard = () => {
           {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
           {activeTab === 'memoryworld' && <MemoryWorldManagement userRole={userRole} />}
           {activeTab === 'pemanfaatan-asset' && <PemanfaatanAssetManagement userRole={userRole} />}
+          {activeTab === 'organizational-structure' && <OrganizationalStructureManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {activeTab === 'merchandise' && <MerchandiseManagement userRole={userRole} />}

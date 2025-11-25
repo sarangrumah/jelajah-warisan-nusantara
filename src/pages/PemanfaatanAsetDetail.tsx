@@ -12,7 +12,7 @@ import { pemanfaatanAssetService, categoriesLayananAsetArea, categoriesLayananAs
 import { ImageCarousel } from '@/components/ui/image-carousel';
 
 import { assetUrl } from '@/lib/asset-url';
-import { sanitizeHtml } from '@/lib/sanitize-html';
+import { sanitizeHtml, unescapeHtml } from '@/lib/sanitize-html';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function extractImagePaths(imageData: any): string[] {
@@ -194,28 +194,28 @@ const PemanfaatanAsetDetail = () => {
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle className='text-start'>{'Detail Acara'}</CardTitle>
+                  <CardTitle className='text-start'>{t('pemanfaatanAset.detail.eventDetail')}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
                   <div
                     className="text-muted-foreground leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(asset.description || '') }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(unescapeHtml(asset.description || '')) }}
                   />
                 </CardContent>
                 <CardHeader>
-                  <CardTitle className='text-start'>{'Ketentuan Umum'}</CardTitle>
+                  <CardTitle className='text-start'>{t('pemanfaatanAset.detail.generalTerms')}</CardTitle>
                 </CardHeader>
                 <CardContent className='text-start'>
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      getContent(asset.ketentuan_umum, 'Tidak ada ketentuan umum')
+                      unescapeHtml(getContent(asset.ketentuan_umum, t('pemanfaatanAset.detail.noGeneralTerms')))
                     ) }}
                   />
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Tarif : '}
+                    {`${t('pemanfaatanAset.detail.rate')} : `}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-1">
                     {asset.tarif}
@@ -223,7 +223,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Biaya Overtime : '}
+                    {`${t('pemanfaatanAset.detail.overtimeCost')} : `}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-1">
                     {asset.overtime}
@@ -231,23 +231,23 @@ const PemanfaatanAsetDetail = () => {
                 </CardContent>
                 <CardContent className='text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Fasilitas : '}
+                    {`${t('pemanfaatanAset.detail.facilities')} : `}
                   </p>
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      getContent(asset.fasilitas, '')
+                      unescapeHtml(getContent(asset.fasilitas, ''))
                     ) }}
                   />
                 </CardContent>
                 <CardContent className='text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Fasilitas Tambahan : '}
+                    {`${t('pemanfaatanAset.detail.additionalFacilities')} : `}
                   </p>
                   <div
                     className="text-muted-foreground leading-relaxed ps-8"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(
-                      getContent(asset.fasilitas_tambahan, '')
+                      unescapeHtml(getContent(asset.fasilitas_tambahan, ''))
                     ) }}
                   />
                 </CardContent>
@@ -255,7 +255,7 @@ const PemanfaatanAsetDetail = () => {
               <Card className='mt-4 pb-8'>
                 <CardHeader>
                   <CardTitle className='text-start flex text-sm'>
-                    <span className='py-2'>{'Detail'}</span>
+                    <span className='py-2'>{t('pemanfaatanAset.detail.detail')}</span>
                     <Badge className='bg-muted-foreground text-background ms-5'>
                       {getCategoryNameById(asset.area, 'Area')}
                     </Badge>
@@ -263,7 +263,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardHeader>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Kapasitas : '}
+                    {`${t('pemanfaatanAset.detail.capacity')} : `}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-1">
                     {asset.kapasitas}
@@ -271,7 +271,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Ukuran : '}
+                    {`${t('pemanfaatanAset.detail.size')} : `}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-1">
                     {asset.ukuran}
@@ -279,7 +279,7 @@ const PemanfaatanAsetDetail = () => {
                 </CardContent>
                 <CardContent className='flex text-start'>
                   <p className="text-white leading-relaxed">
-                    {'Harga : '}
+                    {`${t('pemanfaatanAset.detail.price')} : `}
                   </p>
                   <p className="text-muted-foreground leading-relaxed ps-1">
                     {asset.tarif}
@@ -290,7 +290,7 @@ const PemanfaatanAsetDetail = () => {
                     onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
                     className="w-[15rem] bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:scale-105 transition-bounce"
                   >
-                    Booking
+                    {t('pemanfaatanAset.detail.booking')}
                   </Button>
                 </CardContent>
               </Card>

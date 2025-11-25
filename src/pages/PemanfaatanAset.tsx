@@ -18,6 +18,7 @@ import { ImageCarousel } from '@/components/ui/image-carousel';
 // import Select from 'react-select';
 
 import { assetUrl } from '@/lib/asset-url';
+import { sanitizeHtml, unescapeHtml } from '@/lib/sanitize-html';
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function extractImagePaths(imageData: any): string[] {
@@ -245,7 +246,11 @@ const PemanfaatanAset = () => {
                             {categories.map((option) => (
                                 <SelectGroup key={option.label}>
                                     <SelectLabel className='bg-background ps-0 py-3'>
-                                        <span className='ms-3'>{option.label}</span>
+                                        <span className='ms-3'>
+                                            {option.label === 'Area' ? t('pemanfaatanAset.area') :
+                                             option.label === 'Fasilitas' ? t('pemanfaatanAset.facilities') :
+                                             option.label}
+                                        </span>
                                     </SelectLabel>
                                     <div className='py-3'>
                                         {option.items.map((item) => (
@@ -326,36 +331,34 @@ const PemanfaatanAset = () => {
                                                 {item.description}
                                             </CardDescription> */}
                                             <div className='text-[#86807c] font-normal mt-2 flex flex-col gap-2'>
-                                                <div>{`Lokasi : ${item.location}`}</div>
-                                                    <div>{`Kategori : ${getCategoryNameById(item.category, 'Fasilitas')}`}</div>
-                                                    <div>{`Area : ${getCategoryNameById(item.area, 'Area')}`}</div>
-                                                <span>Fasilitas</span>
-                                                <div className='px-5 py-2 border rounded-md'>
+                                                <div>{`${t('pemanfaatanAset.location')} : ${item.location}`}</div>
+                                                    <div>{`${t('pemanfaatanAset.category')} : ${getCategoryNameById(item.category, 'Fasilitas')}`}</div>
+                                                    <div>{`${t('pemanfaatanAset.area')} : ${getCategoryNameById(item.area, 'Area')}`}</div>
+                                                {/* <span>{t('pemanfaatanAset.facilities')}</span> */}
+                                                {/* <div className='px-5 py-2 border rounded-md'>
                                                     <ul>
                                                     {(() => {
                                                         let fasilitasData = item.fasilitas;
                                                         
                                                         // Handle JSON string
                                                         if (typeof fasilitasData === 'string') {
-                                                            // Check if it looks like HTML before trying to parse as JSON
-                                                            if (fasilitasData.trim().startsWith('<')) {
+                                                            try {
+                                                                // Try to parse as JSON first
+                                                                const parsed = JSON.parse(fasilitasData);
+                                                                // If it's a complex structure (array or object), use that
+                                                                if (parsed && (Array.isArray(parsed) || typeof parsed === 'object')) {
+                                                                    fasilitasData = parsed;
+                                                                } else {
+                                                                    // If it parses to a primitive, treat original as HTML/Text
+                                                                    throw new Error('Not a complex JSON object');
+                                                                }
+                                                            } catch (error) {
+                                                                // Not JSON or not complex object, treat as HTML string
                                                                 return (
                                                                     <div
-                                                                        className="text-[1rem] text-[#86807c] font-normal leading-none"
-                                                                        dangerouslySetInnerHTML={{ __html: fasilitasData }}
+                                                                        className="text-[1rem] text-[#86807c] font-normal leading-relaxed [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2"
+                                                                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(unescapeHtml(fasilitasData)) }}
                                                                     />
-                                                                );
-                                                            }
-
-                                                            try {
-                                                                fasilitasData = JSON.parse(fasilitasData);
-                                                            } catch (error) {
-                                                                console.error('Error parsing fasilitas JSON:', error);
-                                                                // If parsing fails, treat as plain text or HTML if safe
-                                                                return (
-                                                                    <div className="text-[1rem] text-[#86807c] font-normal leading-none">
-                                                                        {fasilitasData}
-                                                                    </div>
                                                                 );
                                                             }
                                                         }
@@ -363,8 +366,8 @@ const PemanfaatanAset = () => {
                                                         if (fasilitasData && typeof fasilitasData === 'object' && fasilitasData.content) {
                                                             return (
                                                                 <div
-                                                                    className="text-[1rem] text-[#86807c] font-normal leading-none"
-                                                                    dangerouslySetInnerHTML={{ __html: fasilitasData.content }}
+                                                                    className="text-[1rem] text-[#86807c] font-normal leading-relaxed [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5 [&>p]:mb-2"
+                                                                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(unescapeHtml(fasilitasData.content)) }}
                                                                 />
                                                             );
                                                         } else if (Array.isArray(fasilitasData) && fasilitasData.length > 0) {
@@ -378,7 +381,7 @@ const PemanfaatanAset = () => {
                                                         return null;
                                                     })()}
                                                     </ul>
-                                                </div>
+                                                </div> */}
                                                 <div>
                                                     <div className='flex items-center gap-2'>
                                                         <MapPin />

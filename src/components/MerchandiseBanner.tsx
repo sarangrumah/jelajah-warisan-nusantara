@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useHybridTranslation } from '@/components/HybridTranslationProvider';
+import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ interface MerchandiseBannerProps {
 }
 
 const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) => {
-  const { t } = useHybridTranslation();
+  const { t, language } = useUnifiedTranslation();
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasSnappedRef = useRef(false);
 
@@ -75,7 +75,10 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState<MerchandiseBannerSlide[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const currentSlideObj = slides.length > 0 ? slides[currentSlide] : null;
+
+  const { translatedContent: translatedSlides } = useTranslationSystem(slides, 'merchandise-banner');
+  const displaySlides = translatedSlides || slides;
+  const currentSlideObj = displaySlides.length > 0 ? displaySlides[currentSlide] : null;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -147,8 +150,8 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
       ref={sectionRef}
     >
       <div className="absolute inset-0">
-        {slides && slides.map((slide, index) => {
-          const imageUrl = slide.images && slide.images.length > 0 
+        {displaySlides && displaySlides.map((slide, index) => {
+          const imageUrl = slide.images && slide.images.length > 0
             ? assetUrl(slide.images[0]) || '/placeholder.svg'
             : '/placeholder.svg';
             
@@ -241,9 +244,9 @@ const MerchandiseBanner = ({ onScrollToNextSection }: MerchandiseBannerProps) =>
         <ChevronRight size={24} className="text-foreground" />
       </button>
 
-      {!isLoading && slides.length > 0 && (
+      {!isLoading && displaySlides.length > 0 && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-          {slides.map((_, index) => (
+          {displaySlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}

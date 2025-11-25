@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react';
 import { FileText, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { mediaService } from '@/lib/api-services';
+import { stripHtml } from '@/lib/utils';
+import { unescapeHtml } from '@/lib/sanitize-html';
 
 const PublicationSection = () => {
+  const { t } = useTranslation();
   const [publications, setPublications] = useState<any[]>([]);
 
   useEffect(() => {
@@ -52,16 +64,22 @@ const PublicationSection = () => {
         <div className="mb-16">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-4xl md:text-4xl font-bold mb-6 text-heritage-gradient">
-              Dokumen Publikasi
+              {t('publication.title')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Akses dokumen resmi, laporan, dan publikasi ilmiah tentang 
-              pengelolaan museum dan pelestarian cagar budaya.
+              {t('publication.subtitle')}
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6 px-3">
-            {publications.map((pub, index) => (
-              <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
+            {publications.map((pub, index) => {
+              const cleanDescription = stripHtml(unescapeHtml(pub.description || ''));
+              const isLong = cleanDescription.length > 100;
+              const displayDescription = isLong
+                ? cleanDescription.substring(0, 100) + '...'
+                : cleanDescription;
+
+              return (
+                <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce relative">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -78,31 +96,51 @@ const PublicationSection = () => {
                 </CardHeader>
                 <CardContent>
                   <div className='pb-6'>
-                    <p className="text-muted-foreground mb-4">{pub.description}</p>
+                    <div className="text-muted-foreground mb-4 text-sm min-h-[60px]">
+                      {displayDescription}
+                      {isLong && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <span className="text-primary cursor-pointer ml-1 hover:underline font-medium inline-block">
+                              {t('publication.readMore')}
+                            </span>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle className="text-2xl mb-4">{pub.title}</DialogTitle>
+                              <DialogDescription className="text-foreground text-base leading-relaxed text-justify">
+                                {unescapeHtml(pub.description || '')}
+                              </DialogDescription>
+                            </DialogHeader>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                    </div>
                     <div className="grid grid-cols-3 gap-4 text-sm mb-8">
                       <div className="text-center">
                         <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
-                        <div className="text-muted-foreground">Halaman</div>
+                        <div className="text-muted-foreground">{t('publication.pages')}</div>
                       </div>
                       <div className="text-center">
                         <div className="font-semibold text-heritage-gradient">{pub.size}</div>
-                        <div className="text-muted-foreground">Ukuran</div>
+                        <div className="text-muted-foreground">{t('publication.size')}</div>
                       </div>
                       <div className="text-center">
                         <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
-                        <div className="text-muted-foreground">Download</div>
+                        <div className="text-muted-foreground">{t('publication.downloadCount')}</div>
                       </div>
                     </div>
                     <div className='p-6 absolute left-0 bottom-0 right-0'>
                       <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
                         <Download size={16} className="mr-2" />
-                        Unduh Dokumen
+                        {t('publication.downloadButton')}
                       </Button>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>

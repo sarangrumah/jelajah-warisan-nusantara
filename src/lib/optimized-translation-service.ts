@@ -275,6 +275,7 @@ class OptimizedTranslationService {
               texts: nonEmptyTexts,
               sourceLang: source,
               targetLang: target,
+              format: 'html',
             }),
           })
         );

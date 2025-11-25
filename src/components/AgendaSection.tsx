@@ -120,6 +120,7 @@ const AgendaSection = () => {
   const { t } = useUnifiedTranslation();
   const [activeCategory, setActiveCategory] = useState('semua');
   const [categories, setCategories] = useState([]);
+  const { translatedContent: translatedCategories } = useTranslationSystem(categories);
   const [carouselApi, setCarouselApi] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { data: events, loading: contentLoading } = useContent(EventsService, { limit: 10, active: true, approved: true });
@@ -168,7 +169,7 @@ const AgendaSection = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-12 scroll-reveal">
           {[
             { id: 'semua', name: t('agenda.categories.all') || 'All Events' },
-            ...categories
+            ...(translatedCategories || [])
           ].map((category) => (
             <button
               key={category.id}
