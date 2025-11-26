@@ -117,63 +117,67 @@ const MemoryOfWorldDetail = () => {
         <div className="min-h-screen bg-background pt-5">
             <Header />
             {memories.map((memory) => (
-                <section key={memory.id} className="container mx-auto px-4 py-16">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <div className="aspect-square overflow-hidden rounded-lg border">
-                            <img
-                                src={getImageUrl(memory.thumbnails) || logo}
-                                alt={memory.title}
-                                className="w-full h-full object-cover"
-                            />
+                <section key={memory.id} className="container mx-auto px-4 py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+                        <div className="lg:col-span-4 space-y-4">
+                            <div className="aspect-square overflow-hidden rounded-lg border shadow-sm">
+                                <img
+                                    src={getImageUrl(memory.thumbnails) || logo}
+                                    alt={memory.title}
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                         </div>
-                        <div className="space-y-6">
+                        <div className="lg:col-span-8 space-y-6">
                             <div>
-                                <h1 className="text-4xl font-bold mb-2">
-                                  <span
-                                    dangerouslySetInnerHTML={{
-                                      __html: fixBrokenHtmlTags(memory.title)
-                                      }}
-                                  />
+                                <h1 className="text-3xl md:text-4xl font-bold mb-2 text-primary">
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: fixBrokenHtmlTags(memory.title)
+                                        }}
+                                    />
                                 </h1>
                                 {memory.subtitle && (
-                                  <p className="text-xl text-muted-foreground">
-                                    <span
-                                      dangerouslySetInnerHTML={{
-                                          __html: fixBrokenHtmlTags(memory.subtitle)
-                                      }}
-                                    />
-                                  </p>
+                                    <p className="text-lg md:text-xl text-muted-foreground">
+                                        <span
+                                            dangerouslySetInnerHTML={{
+                                                __html: fixBrokenHtmlTags(memory.subtitle)
+                                            }}
+                                        />
+                                    </p>
                                 )}
                             </div>
 
-                            <Card>
-                                <CardContent className="pt-6">
-                                    <p className="text-muted-foreground leading-relaxed">
+                            <Card className="border-none shadow-none bg-transparent">
+                                <CardContent className="p-0">
+                                    <div className="text-muted-foreground leading-relaxed text-justify">
                                         <span
-                                          dangerouslySetInnerHTML={{
-                                            __html: fixBrokenHtmlTags(memory.description)
-                                          }}
-                                        />
-                                    </p>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent className='p-5'>
-                                    <div className="flex flex-wrap gap-2">
-                                        <MemoryOfWorldGallery
-                                          mowId={memory.id}
-                                          images={
-                                            memory.galleries?.map(g => g.upload_file) ||
-                                            memory.gallery ||
-                                            []
-                                          }
+                                            dangerouslySetInnerHTML={{
+                                                __html: fixBrokenHtmlTags(memory.description)
+                                            }}
                                         />
                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
+                    </div>
+
+                    <div className="w-full">
+                        <h2 className="text-2xl font-semibold mb-4">Galeri</h2>
+                        <Card>
+                            <CardContent className='p-5'>
+                                <div className="flex flex-wrap gap-2">
+                                    <MemoryOfWorldGallery
+                                        mowId={memory.id}
+                                        images={
+                                            memory.galleries?.map(g => g.upload_file) ||
+                                            memory.gallery ||
+                                            []
+                                        }
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </section>
             ))}
