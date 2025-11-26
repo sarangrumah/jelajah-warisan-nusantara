@@ -222,11 +222,50 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
       // If the backend strictly needs objects, I might need to map it here.
       // For now, I'll assume the interface change implies a data structure change.
       
+      // Handle gallery updates including deletions
+      // We need to identify which images were removed
+      const originalGallery = editing?.gallery || [];
+      const currentGallery = data.gallery || [];
+      
+      // Find removed images (present in original but not in current)
+      const removedImages = originalGallery.filter(url => !currentGallery.includes(url));
+      
+      // Map current images to objects
+      const galleryPayload = currentGallery.map(url => (typeof url === 'string' ? { upload_file: url } : url));
+      
+      // Add removed images with is_deleted flag
+      // Note: We need the ID for deletion, but if we only have the URL string in the frontend state,
+      // we might need to rely on the backend to handle deletion by URL or fetch full objects.
+      // However, the backend controller expects an ID for deletion:
+      // if (item?.is_deleted && item.id) { DELETE ... }
+      
+      // Since the frontend state 'items' seems to store gallery as string[] (mapped in fetchAll),
+      // we don't have the IDs readily available in the 'editing' state if we only store strings.
+      // Let's check fetchAll:
+      // setItems(data.map((item) => ({ ...item, ... })));
+      // And when editing:
+      // gallery: it.galleries?.map((g: any) => g.upload_file) || [],
+      
+      // Problem: We lose the ID when mapping to string[] for the form.
+      // To support deletion by ID, we need to keep the original gallery objects.
+      
+      // Strategy:
+      // 1. Recover the original gallery objects from the 'items' list using the editing ID.
+      const originalItem = items.find(it => it.id === editing?.id);
+      const originalGalleryObjects = originalItem?.galleries || [];
+      
+      // 2. For each removed URL, find its corresponding object and mark as deleted
+      const galleryWithDeletions = [
+        ...galleryPayload,
+        ...removedImages.map(url => {
+          const originalObj = originalGalleryObjects.find((g: any) => g.upload_file === url);
+          return originalObj ? { ...originalObj, is_deleted: true } : null;
+        }).filter(Boolean)
+      ];
+
       const payload: any = {
         ...data,
-        // Map string[] back to object array for backend compatibility if it hasn't been updated
-        // The previous code used { path: string }
-        gallery: data.gallery?.map(url => (typeof url === 'string' ? { path: url } : url)) || [],
+        gallery: galleryWithDeletions,
         is_rejected: false,
         reason_rejected: '',
       };
