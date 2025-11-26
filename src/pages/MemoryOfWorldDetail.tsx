@@ -114,10 +114,10 @@ const MemoryOfWorldDetail = () => {
     }, [id]);
 
     return (
-        <div className="min-h-screen bg-background pt-5">
+        <div className="min-h-screen bg-background">
             <Header />
             {memories.map((memory) => (
-                <section key={memory.id} className="container mx-auto px-4 py-8">
+                <section key={memory.id} className="container mx-auto px-4 py-8 pt-24">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
                         <div className="lg:col-span-4 space-y-4">
                             <div className="aspect-square overflow-hidden rounded-lg border shadow-sm">
