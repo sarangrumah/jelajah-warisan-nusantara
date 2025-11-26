@@ -183,7 +183,12 @@ const uploadMulter = multer({
     } else {
       // Allow image and video files for general buckets
       if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
-        cb(null, true);
+        // Block TIFF files as they are not supported by browsers
+        if (file.mimetype === 'image/tiff') {
+          cb(new Error('TIFF images are not supported by web browsers. Please use JPG, PNG, or WEBP.') as any, false);
+        } else {
+          cb(null, true);
+        }
       } else {
         cb(null, false);
       }

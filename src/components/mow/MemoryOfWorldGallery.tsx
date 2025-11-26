@@ -14,7 +14,8 @@ function getMowImageUrl(filename: string | undefined | null) {
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
     filename.startsWith('https://') ||
-    filename.startsWith('/assets/'))
+    filename.startsWith('/assets/') ||
+    filename.startsWith('/uploads/'))
   ) {
     return filename;
   }
@@ -114,7 +115,7 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
 
                 return (
                   <img
-                    key={index}
+                    key={`${index}-${offset}`}
                     src={getMowImageUrl(images[index])}
                     alt={`gallery-${index}`}
                     onClick={() => isCenter && setSelectedImage(getMowImageUrl(images[index]))}

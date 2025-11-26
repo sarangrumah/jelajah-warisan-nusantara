@@ -165,8 +165,8 @@ const MemoryOfWorldDetail = () => {
                                         <MemoryOfWorldGallery
                                           mowId={memory.id}
                                           images={
-                                            memory.gallery ||
                                             memory.galleries?.map(g => g.upload_file) ||
+                                            memory.gallery ||
                                             []
                                           }
                                         />

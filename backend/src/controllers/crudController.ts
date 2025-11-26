@@ -488,8 +488,8 @@ const validFields = fields
             const filePath = (item && (item.path || item.upload_file)) || item;
             if (!filePath) { continue; }
             await client.query(
-              `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
-               VALUES ($1, $2, $3, $4, $4, $5)`,
+              `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
+               VALUES ($1, $2, $3, $4, $4, $5, true, true, false)`,
               [uuidv4(), id, filePath, createdBy, new Date()]
             );
           }
@@ -554,6 +554,7 @@ const validFields = fields
         const gallery = Array.isArray(rawGallery) ? rawGallery : [];
         const companyLeadership = Array.isArray(rawCompanyLeadership) ? rawCompanyLeadership : [];
         const companyVisitor = Array.isArray(rawCompanyVisitor) ? rawCompanyVisitor : [];
+        console.log(`[UPDATE] ${tableName} gallery:`, gallery);
 
         // Add metadata
         const data: Record<string, any> = {
@@ -810,11 +811,19 @@ const validFields = fields
                 [filePath, updatedBy, new Date(), item.id, id]
               );
             } else if (filePath) {
-              await client.query(
-                `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at)
-                 VALUES ($1, $2, $3, $4, $4, $5)`,
-                [uuidv4(), id, filePath, updatedBy, new Date()]
+              // Check for duplicates before inserting
+              const existing = await client.query(
+                `SELECT id FROM tb_memoryoftheworld_gallery WHERE id_memoryoftheworld = $1 AND upload_file = $2`,
+                [id, filePath]
               );
+
+              if (existing.rows.length === 0) {
+                await client.query(
+                  `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
+                   VALUES ($1, $2, $3, $4, $4, $5, true, true, false)`,
+                  [uuidv4(), id, filePath, updatedBy, new Date()]
+                );
+              }
             }
           }
         }
