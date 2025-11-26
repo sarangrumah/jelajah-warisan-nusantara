@@ -118,18 +118,18 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (relations) {
           for (const [relKey, relConfig] of Object.entries(relations)) {
             if (relConfig && typeof relConfig === 'object' && 'type' in relConfig && relConfig.type === 'has_many') {
-              const { table: childTable, localKey, fields: relFields } = relConfig as JoinConfig;
+              const { table: childTable, localKey, foreignKey, fields: relFields } = relConfig as JoinConfig;
               const childFields = relFields || tableConfigs[childTable as keyof typeof tableConfigs] || [];
 
               const jsonFields = childFields
-                .filter((f: string) => f !== localKey) // exclude foreignKey
+                .filter((f: string) => f !== foreignKey) // exclude foreignKey
                 .map((f: string) => `'${f}', ${childTable}.${f}`)
                 .join(', ');
 
               selectFields += `,
                 (SELECT json_agg(json_build_object(${jsonFields}))
                 FROM ${childTable}
-                WHERE ${childTable}.${localKey} = ${tableName}.id
+                WHERE ${childTable}.${foreignKey} = ${tableName}.id
                 ) AS ${relKey}`;
             }
           }
@@ -290,7 +290,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
                 const result = await query(
                   `SELECT json_agg(json_build_object(${jsonFields})) AS data
                    FROM ${childTable}
-                   WHERE ${childTable}.${localKey} = $1`,
+                   WHERE ${childTable}.${foreignKey} = $1`,
                   [id]
                 );
 

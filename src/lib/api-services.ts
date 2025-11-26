@@ -196,7 +196,7 @@ export const sopService = {
 
 // Master Collection (tb_master_collection)
 export const masterCollectionService = {
-  getAll: () => apiClient.getAll('tb_master_collection'),
+  getAll: (params?: Record<string, any>) => apiClient.getAll('tb_master_collection', params),
   getById: (id: string) => apiClient.getById('tb_master_collection', id),
   create: (data: any) => apiClient.create('tb_master_collection', data),
   update: (id: string, data: any) => apiClient.update('tb_master_collection', id, data),

@@ -36,16 +36,27 @@ const Collection = () => {
 
   const fetchCollections = async () => {
     try {
-      const response = await masterCollectionService.getAll();
+      // Fetch all collections without pagination limit to ensure we get everything
+      const response = await masterCollectionService.getAll({ limit: 1000 });
 
-      if (response.error || response.data.length === 0) {
+      if (response.error) {
         console.error('Error fetching collections:', response.error);
         setCollections(defaultCollections);
+      } else if (response.data.length === 0) {
+        // If API returns empty array, use default collections
+        setCollections(defaultCollections);
       } else {
-        setCollections(response.data);
+        // Sort collections by title alphabetically
+        const sortedCollections = response.data.sort((a: any, b: any) => {
+          const titleA = a.title || '';
+          const titleB = b.title || '';
+          return titleA.localeCompare(titleB);
+        });
+        setCollections(sortedCollections);
       }
     } catch (error) {
       console.error('Error fetching collections:', error);
+      setCollections(defaultCollections);
     }
   };
 
