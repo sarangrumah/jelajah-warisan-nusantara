@@ -556,6 +556,7 @@ const validFields = fields
         const companyLeadership = Array.isArray(rawCompanyLeadership) ? rawCompanyLeadership : [];
         const companyVisitor = Array.isArray(rawCompanyVisitor) ? rawCompanyVisitor : [];
         console.log(`[UPDATE] ${tableName} gallery:`, JSON.stringify(gallery, null, 2));
+        console.log(`[UPDATE] ${tableName} raw body:`, JSON.stringify(req.body, null, 2));
 
         // Add metadata
         const data: Record<string, any> = {
