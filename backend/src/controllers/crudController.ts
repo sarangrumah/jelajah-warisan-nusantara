@@ -422,10 +422,11 @@ const validFields = fields
     !excludedOnCreate.includes(f)
   );
 // Handle JSON/JSONB fields by stringifying values and casting placeholders
-        const JSON_FIELDS: Record<string, string[]> = {
-          tb_sites: ['opening_hours'],
-          // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
-        };
+const JSON_FIELDS: Record<string, string[]> = {
+  tb_sites: ['opening_hours'],
+  tb_laboratorium_konservasi: ['gallery_images'],
+  // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
+};
         const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
 
         const values = validFields.map((f) => {
@@ -624,6 +625,7 @@ const validFields = fields
         if (hasMainUpdates) {
           const JSON_FIELDS: Record<string, string[]> = {
             tb_sites: ['opening_hours'],
+            tb_laboratorium_konservasi: ['gallery_images'],
             // tb_pemanfaatanasset: ['description', 'fasilitas', 'fasilitas_tambahan', 'ketentuan_umum'],
           };
           const jsonFieldsForTable = JSON_FIELDS[tableName] || [];
