@@ -41,6 +41,7 @@ const menuItems = [
   { id: 'sop', label: 'SOP', icon: FileText },
   { id: 'memoryworld', label: 'Memory World', icon: FileText },
   { id: 'pemanfaatan-asset', label: 'Pemanfaatan Aset', icon: FileText },
+  { id: 'conservation', label: 'Lab. Konservasi', icon: FileText },
   { id: 'organizational-structure', label: 'Org. Structure', icon: Users },
   { id: 'career-mgmt', label: 'Career Mgmt', icon: FileText },
   { id: 'career-submissions', label: 'Submissions', icon: Users },

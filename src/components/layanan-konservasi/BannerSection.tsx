@@ -2,24 +2,38 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { assetUrl } from '@/lib/asset-url';
 import { useUnifiedTranslation } from '@/contexts/UnifiedTranslationContext';
-// Remove old getImageUrl
 
-const BannerSection = () => {
-  const { t, language, translateContent } = useUnifiedTranslation();
+interface BannerSectionProps {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+}
+
+const BannerSection = ({ title, subtitle, image }: BannerSectionProps) => {
+  const { translateContent, language } = useUnifiedTranslation();
   const [isLoading, setIsLoading] = React.useState(true);
-  // TODO: Replace this with API call to fetch banners from backend
-  // For now, use a sample with the correct image URL format
+  
   const defaultSlides = [
     {
-      title: 'Contoh Banner',
-      subtitle: 'Ini adalah contoh banner dengan URL gambar dari upload admin.',
-      image: '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg', // Example from your log
+      title: title || 'Laboratorium Konservasi',
+      subtitle: subtitle || 'Pusat Riset dan Pelestarian Cagar Budaya',
+      image: image || '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg',
     }
   ];
 
   const [slides, setSlides] = React.useState(defaultSlides);
   const [translatedSlides, setTranslatedSlides] = useState(defaultSlides);
   const [currentSlide, setCurrentSlide] = React.useState(0);
+
+  useEffect(() => {
+    setSlides([
+      {
+        title: title || 'Laboratorium Konservasi',
+        subtitle: subtitle || 'Pusat Riset dan Pelestarian Cagar Budaya',
+        image: image || '/uploads/hero-sections/whatsapp-image-2025-09-28-at-15.08.39_40247507.jpg',
+      }
+    ]);
+  }, [title, subtitle, image]);
 
   useEffect(() => {
     const translateSlides = async () => {
@@ -123,35 +137,39 @@ const BannerSection = () => {
         </div>
       </div>
 
-      <button
-        onClick={prevSlide}
-        className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
-      >
-        <ChevronLeft size={24} className="text-foreground" />
-      </button>
-      
-      <button
-        onClick={nextSlide}
-        className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
-      >
-        <ChevronRight size={24} className="text-foreground" />
-      </button>
+      {slides.length > 1 && (
+        <>
+          <button
+            onClick={prevSlide}
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+          >
+            <ChevronLeft size={24} className="text-foreground" />
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-background/20 backdrop-blur-md border border-border/30 rounded-full p-3 hover:bg-background/40 transition-heritage"
+          >
+            <ChevronRight size={24} className="text-foreground" />
+          </button>
 
-      {/* Slide Indicators */}
-      {!isLoading && slides.length > 0 && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-heritage ${
-                index === currentSlide
-                  ? 'bg-primary heritage-glow'
-                  : 'bg-foreground/30 hover:bg-foreground/50'
-              }`}
-            />
-          ))}
-        </div>
+          {/* Slide Indicators */}
+          {!isLoading && slides.length > 0 && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-heritage ${
+                    index === currentSlide
+                      ? 'bg-primary heritage-glow'
+                      : 'bg-foreground/30 hover:bg-foreground/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   )

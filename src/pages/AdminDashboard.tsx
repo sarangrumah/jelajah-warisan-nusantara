@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
 import TranslationManagement from '@/components/admin/TranslationManagement';
+import ConservationManagement from '@/components/admin/ConservationManagement';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -164,6 +165,7 @@ const AdminDashboard = () => {
           {activeTab === 'career-submissions' && <CareerSubmissionManagement userRole={userRole} />}
           {activeTab === 'memoryworld' && <MemoryWorldManagement userRole={userRole} />}
           {activeTab === 'pemanfaatan-asset' && <PemanfaatanAssetManagement userRole={userRole} />}
+          {activeTab === 'conservation' && <ConservationManagement />}
           {activeTab === 'organizational-structure' && <OrganizationalStructureManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}

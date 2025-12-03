@@ -5,11 +5,40 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import logo from '@/assets/MCB-Logo.png';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { assetUrl } from '@/lib/asset-url';
 
-const GalleryConservation = () => {
-    const images = [conservation1, conservation2];
+interface GalleryConservationProps {
+  images?: string[] | string;
+}
+
+const GalleryConservation = ({ images: propImages }: GalleryConservationProps) => {
+    const [images, setImages] = useState<string[]>([conservation1, conservation2]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (propImages) {
+            let parsedImages: string[] = [];
+            if (Array.isArray(propImages)) {
+                parsedImages = propImages;
+            } else if (typeof propImages === 'string') {
+                try {
+                    parsedImages = JSON.parse(propImages);
+                } catch (e) {
+                    // If not JSON, treat as single image if it's a path, or ignore
+                    if (propImages.trim().length > 0) {
+                        parsedImages = [propImages];
+                    }
+                }
+            }
+
+            if (parsedImages.length > 0) {
+                // Map to full URLs
+                const fullUrls = parsedImages.map(img => assetUrl(img));
+                setImages(fullUrls);
+            }
+        }
+    }, [propImages]);
 
     useEffect(() => {
         if (selectedImage === null && images.length > 0) {
@@ -29,7 +58,7 @@ const GalleryConservation = () => {
     const handleNext = () => {
         setCurrentIndex((prev) => (prev + 1) % images.length);
     };
-    const getImageIndex = (offset) => {
+    const getImageIndex = (offset: number) => {
         return (currentIndex + offset + images.length) % images.length;
     };
 

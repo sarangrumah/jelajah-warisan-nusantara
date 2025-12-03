@@ -311,3 +311,12 @@ export const merchandiseProductService = {
   approve: (id: string) => apiClient.approve('merchandise_products', id),
   reject: (id: string, reason: string) => apiClient.reject('merchandise_products', id, reason),
 };
+
+// Laboratorium Konservasi
+export const conservationService = {
+  getAll: () => apiClient.getAll('tb_laboratorium_konservasi'),
+  getById: (id: string) => apiClient.getById('tb_laboratorium_konservasi', id),
+  create: (data: any) => apiClient.create('tb_laboratorium_konservasi', data),
+  update: (id: string, data: any) => apiClient.update('tb_laboratorium_konservasi', id, data),
+  delete: (id: string) => apiClient.delete('tb_laboratorium_konservasi', id),
+};
