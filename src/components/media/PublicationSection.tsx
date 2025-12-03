@@ -130,28 +130,30 @@ const PublicationSection = () => {
                         </Dialog>
                       )}
                     </div>
-                    <div className="grid grid-cols-3 gap-4 text-sm mb-8">
-                      <div className="text-center">
-                        <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
-                        <div className="text-muted-foreground">{t('publication.pages')}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-semibold text-heritage-gradient">{pub.size}</div>
-                        <div className="text-muted-foreground">{t('publication.size')}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
-                        <div className="text-muted-foreground">{t('publication.downloadCount')}</div>
-                      </div>
-                    </div>
-                    <div className='p-6 absolute left-0 bottom-0 right-0'>
-                      {pub.url && (
-                        <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
-                          <Download size={16} className="mr-2" />
-                          {t('publication.downloadButton')}
-                        </Button>
-                      )}
-                    </div>
+                    {pub.url && (
+                      <>
+                        <div className="grid grid-cols-3 gap-4 text-sm mb-8">
+                          <div className="text-center">
+                            <div className="font-semibold text-heritage-gradient">{pub.pages}</div>
+                            <div className="text-muted-foreground">{t('publication.pages')}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-heritage-gradient">{pub.size}</div>
+                            <div className="text-muted-foreground">{t('publication.size')}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
+                            <div className="text-muted-foreground">{t('publication.downloadCount')}</div>
+                          </div>
+                        </div>
+                        <div className='p-6 absolute left-0 bottom-0 right-0'>
+                          <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
+                            <Download size={16} className="mr-2" />
+                            {t('publication.downloadButton')}
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </CardContent>
                 </Card>
