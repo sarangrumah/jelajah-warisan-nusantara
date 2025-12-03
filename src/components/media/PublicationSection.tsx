@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { mediaService } from '@/lib/api-services';
 import { stripHtml } from '@/lib/utils';
-import { unescapeHtml } from '@/lib/sanitize-html';
+import { unescapeHtml, sanitizeHtml } from '@/lib/sanitize-html';
 
 const PublicationSection = () => {
   const { t } = useTranslation();
@@ -37,12 +37,25 @@ const PublicationSection = () => {
   }, []);
 
   const downloadFromUrl = (url: string) => {
-    // Convert src/assets paths to public assets paths
-    const publicUrl = url.replace('/src/assets/Berita/', '/assets/Berita/');
+    if (!url) return;
+
+    let publicUrl = url;
+
+    // Handle /src/assets replacement
+    if (url.includes('/src/assets/')) {
+      publicUrl = url.replace('/src/assets/', '/assets/');
+    }
+    // Handle uploads path if it doesn't start with http
+    else if (url.startsWith('/uploads') || (url.startsWith('uploads/') && !url.startsWith('http'))) {
+       const baseUrl = import.meta.env.VITE_API_URL || '';
+       publicUrl = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
+    }
+
     const link = document.createElement("a");
     link.href = publicUrl;
     link.rel = "noopener noreferrer";
     link.target = "_blank";
+    link.download = url.split('/').pop() || 'download';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -108,9 +121,10 @@ const PublicationSection = () => {
                           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle className="text-2xl mb-4">{pub.title}</DialogTitle>
-                              <DialogDescription className="text-foreground text-base leading-relaxed text-justify">
-                                {unescapeHtml(pub.description || '')}
-                              </DialogDescription>
+                              <DialogDescription
+                                className="text-foreground text-base leading-relaxed text-justify"
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(unescapeHtml(pub.description || '')) }}
+                              />
                             </DialogHeader>
                           </DialogContent>
                         </Dialog>
