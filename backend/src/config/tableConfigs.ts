@@ -135,6 +135,7 @@ export const tableConfigs = {
     'id',
     'id_memoryoftheworld',
     'upload_file',
+    'caption',
     'is_active',
     'is_approved',
     'is_rejected',
@@ -224,7 +225,7 @@ export const tableRelationships = {
       localKey: 'id',
       foreignKey: 'id_memoryoftheworld',
       type: 'has_many',
-      fields: ['id', 'upload_file']
+      fields: ['id', 'upload_file', 'caption']
     }
   },
   tb_master_collection: {

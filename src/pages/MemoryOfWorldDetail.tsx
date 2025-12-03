@@ -170,7 +170,10 @@ const MemoryOfWorldDetail = () => {
                                     <MemoryOfWorldGallery
                                         mowId={memory.id}
                                         images={
-                                            memory.galleries?.map(g => g.upload_file) ||
+                                            memory.galleries?.map(g => ({
+                                                upload_file: g.upload_file,
+                                                caption: (g as any).caption
+                                            })) ||
                                             memory.gallery ||
                                             []
                                         }

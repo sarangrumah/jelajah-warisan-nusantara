@@ -486,11 +486,12 @@ const validFields = fields
           const createdBy = insertData.created_by || 'system';
           for (const item of gallery) {
             const filePath = (item && (item.path || item.upload_file)) || item;
+            const caption = item.caption || '';
             if (!filePath) { continue; }
             await client.query(
-              `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
-               VALUES ($1, $2, $3, $4, $4, $5, true, true, false)`,
-              [uuidv4(), id, filePath, createdBy, new Date()]
+              `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, caption, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
+               VALUES ($1, $2, $3, $4, $5, $5, $6, true, true, false)`,
+              [uuidv4(), id, filePath, caption, createdBy, new Date()]
             );
           }
         }
@@ -513,7 +514,7 @@ const validFields = fields
         if (tableName === 'tb_memoryoftheworld') {
           const result = await query(
             `SELECT m.*,
-              (SELECT json_agg(json_build_object('id', g.id, 'id_memoryoftheworld', g.id_memoryoftheworld, 'upload_file', g.upload_file))
+              (SELECT json_agg(json_build_object('id', g.id, 'id_memoryoftheworld', g.id_memoryoftheworld, 'upload_file', g.upload_file, 'caption', g.caption))
                FROM tb_memoryoftheworld_gallery g WHERE g.id_memoryoftheworld = m.id) AS galleries
              FROM tb_memoryoftheworld m WHERE m.id = $1`,
             [id]
@@ -798,6 +799,7 @@ const validFields = fields
         if (tableName === 'tb_memoryoftheworld') {
           for (const item of gallery as any[]) {
             const filePath = item.path || item.upload_file;
+            const caption = item.caption || '';
             if (item?.is_deleted && item.id) {
               await client.query(
                 `DELETE FROM tb_memoryoftheworld_gallery WHERE id = $1 AND id_memoryoftheworld = $2`,
@@ -806,9 +808,9 @@ const validFields = fields
             } else if (item.id) {
               await client.query(
                 `UPDATE tb_memoryoftheworld_gallery
-                 SET upload_file = $1, updated_by = $2, updated_at = $3
-                 WHERE id = $4 AND id_memoryoftheworld = $5`,
-                [filePath, updatedBy, new Date(), item.id, id]
+                 SET upload_file = $1, caption = $2, updated_by = $3, updated_at = $4
+                 WHERE id = $5 AND id_memoryoftheworld = $6`,
+                [filePath, caption, updatedBy, new Date(), item.id, id]
               );
             } else if (filePath) {
               // Check for duplicates before inserting
@@ -819,9 +821,9 @@ const validFields = fields
 
               if (existing.rows.length === 0) {
                 await client.query(
-                  `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
-                   VALUES ($1, $2, $3, $4, $4, $5, true, true, false)`,
-                  [uuidv4(), id, filePath, updatedBy, new Date()]
+                  `INSERT INTO tb_memoryoftheworld_gallery (id, id_memoryoftheworld, upload_file, caption, created_by, updated_by, created_at, is_active, is_approved, is_rejected)
+                   VALUES ($1, $2, $3, $4, $5, $5, $6, true, true, false)`,
+                  [uuidv4(), id, filePath, caption, updatedBy, new Date()]
                 );
               }
             }

@@ -24,14 +24,19 @@ function getMowImageUrl(filename: string | undefined | null) {
   return match ? (match[1] as { default : string }).default : PLACEHOLDER_IMAGE;
 }
 
+interface GalleryItem {
+  upload_file: string;
+  caption?: string;
+}
+
 interface MemoryOfWorldGalleryProps {
   mowId: string;
-  images?: string[];
+  images?: (string | GalleryItem)[];
 }
 
 const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{ url: string; caption?: string } | null>(null);
   const [mowGalleries, setMowGalleries] = useState<any[]>([]);
 
   useEffect(() => {
@@ -64,10 +69,21 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
   }, [propImages]);
 
   const galleries = mowGalleries.filter(gallery => gallery.id_memoryoftheworld === mowId);
-  const fetchedImages = galleries.map((gallery) => gallery.upload_file);
+  const fetchedImages = galleries.map((gallery) => ({
+    upload_file: gallery.upload_file,
+    caption: gallery.caption
+  }));
   
   // Use prop images if available, otherwise use fetched images
-  const images = (propImages && propImages.length > 0) ? propImages : fetchedImages;
+  const rawImages = (propImages && propImages.length > 0) ? propImages : fetchedImages;
+
+  // Normalize images to objects
+  const images = rawImages.map(img => {
+    if (typeof img === 'string') {
+      return { upload_file: img, caption: '' };
+    }
+    return img;
+  });
 
   useEffect(() => {
     if (selectedImage === null && images.length > 0) {
@@ -99,27 +115,32 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
         {/* Carousel */}
         <div className="relative flex items-center justify-center w-full h-[320px] overflow-hidden pt-5">
           {images.length === 1 ? (
-            <img
-              src={getMowImageUrl(images[0])}
-              alt="gallery"
-              onClick={() => setSelectedImage(getMowImageUrl(images[0]))}
-              className="absolute rounded-2xl object-cover cursor-pointer max-h-[90%] max-w-[90%] opacity-100"
-            />
+            <div className="relative max-h-[90%] max-w-[90%]">
+              <img
+                src={getMowImageUrl(images[0].upload_file)}
+                alt="gallery"
+                onClick={() => setSelectedImage({ url: getMowImageUrl(images[0].upload_file), caption: images[0].caption })}
+                className="rounded-2xl object-cover cursor-pointer w-full h-full opacity-100"
+              />
+              {images[0].caption && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-center rounded-b-2xl text-sm">
+                  {images[0].caption}
+                </div>
+              )}
+            </div>
           ) : (
-            images.length > 1 ? 
+            images.length > 1 ?
               (images.length <= 3 ? [-1, 0, 1] : [-2, -1, 0, 1, 2]).map((offset) => {
                 const index = getImageIndex(offset);
                 const isCenter = offset === 0;
                 const isSide = Math.abs(offset) === 1;
                 const isFar = Math.abs(offset) === 2;
+                const item = images[index];
 
                 return (
-                  <img
+                  <div
                     key={`${index}-${offset}`}
-                    src={getMowImageUrl(images[index])}
-                    alt={`gallery-${index}`}
-                    onClick={() => isCenter && setSelectedImage(getMowImageUrl(images[index]))}
-                    className={`absolute rounded-2xl object-cover cursor-pointer transition-all duration-500 ${
+                    className={`absolute transition-all duration-500 flex flex-col items-center ${
                       isCenter
                         ? "max-w-[80%] max-h-[95%] z-20 opacity-100"
                         : isSide
@@ -135,7 +156,19 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
                         isCenter ? 1 : 0.9
                       })`,
                     }}
-                  />
+                    onClick={() => isCenter && setSelectedImage({ url: getMowImageUrl(item.upload_file), caption: item.caption })}
+                  >
+                    <img
+                      src={getMowImageUrl(item.upload_file)}
+                      alt={`gallery-${index}`}
+                      className="rounded-2xl object-cover cursor-pointer w-full h-full"
+                    />
+                    {isCenter && item.caption && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-center rounded-b-2xl text-sm">
+                        {item.caption}
+                      </div>
+                    )}
+                  </div>
                 );
               }
             ) : (
@@ -185,12 +218,17 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
           open={!!selectedImage}
           onOpenChange={() => setSelectedImage(null)}
         >
-          <DialogContent className="[&>button]:hidden outline-none p-0 bg-transparent border-0 shadow-none flex justify-center items-center">
+          <DialogContent className="[&>button]:hidden outline-none p-0 bg-transparent border-0 shadow-none flex flex-col justify-center items-center max-w-[90vw]">
             <img
-              src={selectedImage || ""}
+              src={selectedImage?.url || ""}
               alt="fullscreen"
-              className="rounded-xl max-h-[90vh] max-w-[90vw]x object-cover"
+              className="rounded-xl max-h-[85vh] max-w-[90vw] object-contain"
             />
+            {selectedImage?.caption && (
+              <div className="mt-4 text-white text-center bg-black/50 p-2 rounded-md">
+                {selectedImage.caption}
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </CardContent>

@@ -24,7 +24,7 @@ interface MemoryWorldItem {
   end_publish_date?: string;
   is_active: boolean;
   thumbnails?: string;
-  gallery?: string[];
+  gallery?: (string | { upload_file: string; caption?: string; id?: string; url?: string })[];
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
@@ -142,10 +142,20 @@ const MemoryWorldForm = ({ value, onSave, onCancel, saving } : {
 
       <MultiImageUpload
         label="Gallery (Images)"
-        value={formData.gallery || []}
-        onChange={(urls) => setFormData(p => ({...p, gallery: urls}))}
+        value={formData.gallery?.map(g => {
+          if (typeof g === 'string') return { url: g, caption: '' };
+          return { url: g.upload_file || g.url || '', caption: g.caption, id: g.id };
+        }) || []}
+        onChange={(items) => setFormData(p => ({
+          ...p,
+          gallery: items.map(item => {
+            if (typeof item === 'string') return item;
+            return { upload_file: item.url, caption: item.caption, id: item.id };
+          })
+        }))}
         bucket="hero-sections"
         maxItems={20}
+        withCaption={true}
       />
 
       <div className="flex items-center space-x-2">
@@ -214,58 +224,40 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   const saveItem = async (data: MemoryWorldItem) => {
     setSaving(true);
     try {
-      // Convert string[] gallery back to object structure if needed by backend,
-      // or send as is if backend supports it.
-      // Based on previous code, it seemed to expect objects.
-      // However, the prompt asks to update interfaces to string[].
-      // I will send the data as is, assuming backend handles it or I've updated the interface correctly.
-      // If the backend strictly needs objects, I might need to map it here.
-      // For now, I'll assume the interface change implies a data structure change.
-      
       // Handle gallery updates including deletions
-      // We need to identify which images were removed
-      const originalGallery = editing?.gallery || [];
-      const currentGallery = data.gallery || [];
-      
-      // Find removed images (present in original but not in current)
-      const removedImages = originalGallery.filter(url => !currentGallery.includes(url));
-      
-      // Map current images to objects
-      const galleryPayload = currentGallery.map(url => (typeof url === 'string' ? { upload_file: url } : url));
-      
-      // Add removed images with is_deleted flag
-      // Note: We need the ID for deletion, but if we only have the URL string in the frontend state,
-      // we might need to rely on the backend to handle deletion by URL or fetch full objects.
-      // However, the backend controller expects an ID for deletion:
-      // if (item?.is_deleted && item.id) { DELETE ... }
-      
-      // Since the frontend state 'items' seems to store gallery as string[] (mapped in fetchAll),
-      // we don't have the IDs readily available in the 'editing' state if we only store strings.
-      // Let's check fetchAll:
-      // setItems(data.map((item) => ({ ...item, ... })));
-      // And when editing:
-      // gallery: it.galleries?.map((g: any) => g.upload_file) || [],
-      
-      // Problem: We lose the ID when mapping to string[] for the form.
-      // To support deletion by ID, we need to keep the original gallery objects.
-      
-      // Strategy:
-      // 1. Recover the original gallery objects from the 'items' list using the editing ID.
       const originalItem = items.find(it => it.id === editing?.id);
       const originalGalleryObjects = originalItem?.galleries || [];
       
-      // 2. For each removed URL, find its corresponding object and mark as deleted
-      const galleryWithDeletions = [
-        ...galleryPayload,
-        ...removedImages.map(url => {
-          const originalObj = originalGalleryObjects.find((g: any) => g.upload_file === url);
-          return originalObj ? { ...originalObj, is_deleted: true } : null;
-        }).filter(Boolean)
+      const currentGallery = data.gallery || [];
+      
+      // Identify removed items
+      // An item is removed if its ID exists in originalGalleryObjects but not in currentGallery
+      const currentIds = currentGallery
+        .map(item => (typeof item === 'string' ? null : item.id))
+        .filter(Boolean);
+        
+      const removedItems = originalGalleryObjects
+        .filter((obj: any) => !currentIds.includes(obj.id))
+        .map((obj: any) => ({ ...obj, is_deleted: true }));
+
+      // Prepare payload
+      const galleryPayload = [
+        ...currentGallery.map(item => {
+          if (typeof item === 'string') {
+            return { upload_file: item, caption: '' };
+          }
+          return {
+            upload_file: item.upload_file || item.url,
+            caption: item.caption,
+            id: item.id
+          };
+        }),
+        ...removedItems
       ];
 
       const payload: any = {
         ...data,
-        gallery: galleryWithDeletions,
+        gallery: galleryPayload,
         is_rejected: false,
         reason_rejected: '',
       };
@@ -492,7 +484,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
                         setEditing({
                           ...it,
                           // categories_id: it.categories_id ?? it.category?.id ?? '',
-                          gallery: it.galleries?.map((g: any) => g.upload_file) || [],
+                          gallery: it.galleries || [],
                           thumbnails: it.thumbnails,
                         });
                         setOpen(true);

@@ -10,13 +10,14 @@ import { assetUrl } from '@/lib/asset-url';
 
 interface MultiImageUploadProps {
   label: string;
-  value: string[];
-  onChange: (urls: string[]) => void;
+  value: (string | { url: string; caption?: string; id?: string })[];
+  onChange: (urls: (string | { url: string; caption?: string; id?: string })[]) => void;
   bucket?: string;
   maxItems?: number;
   maxSizeMB?: number;
   className?: string;
   disabled?: boolean;
+  withCaption?: boolean;
 }
 
 export const MultiImageUpload = ({
@@ -28,6 +29,7 @@ export const MultiImageUpload = ({
   maxSizeMB = 5,
   className = '',
   disabled = false,
+  withCaption = false,
 }: MultiImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -47,7 +49,7 @@ export const MultiImageUpload = ({
     }
 
     setUploading(true);
-    const newUrls: string[] = [];
+    const newItems: (string | { url: string; caption?: string })[] = [];
     
     try {
       for (let i = 0; i < files.length; i++) {
@@ -85,15 +87,19 @@ export const MultiImageUpload = ({
         }
 
         if (response.data?.url) {
-          newUrls.push(response.data.url);
+          if (withCaption) {
+            newItems.push({ url: response.data.url, caption: '' });
+          } else {
+            newItems.push(response.data.url);
+          }
         }
       }
 
-      if (newUrls.length > 0) {
-        onChange([...value, ...newUrls]);
+      if (newItems.length > 0) {
+        onChange([...value, ...newItems]);
         toast({
           title: 'Success',
-          description: `Uploaded ${newUrls.length} image(s)`,
+          description: `Uploaded ${newItems.length} image(s)`,
         });
       }
     } catch (error) {
@@ -137,40 +143,66 @@ export const MultiImageUpload = ({
     onChange(newValue);
   };
 
+  const updateCaption = (index: number, caption: string) => {
+    if (disabled) return;
+    const newValue = [...value];
+    const item = newValue[index];
+    if (typeof item === 'object' && item !== null) {
+      newValue[index] = { ...item, caption };
+      onChange(newValue);
+    }
+  };
+
   return (
     <div className={`space-y-4 ${className}`}>
       <Label>{label}</Label>
 
       {/* Image Grid */}
       {value.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-          {value.map((url, index) => (
-            <div key={`${url}-${index}`} className="relative group aspect-square rounded-lg overflow-hidden border bg-muted">
-              <img
-                src={assetUrl(url)}
-                alt={`Uploaded ${index + 1}`}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
-              {!disabled && (
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => removeImage(index)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+        <div className={`grid gap-4 mb-4 ${withCaption ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
+          {value.map((item, index) => {
+            const url = typeof item === 'string' ? item : item.url;
+            const caption = typeof item === 'string' ? '' : item.caption || '';
+
+            return (
+              <div key={`${url}-${index}`} className="space-y-2">
+                <div className="relative group aspect-square rounded-lg overflow-hidden border bg-muted">
+                  <img
+                    src={assetUrl(url)}
+                    alt={`Uploaded ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  {!disabled && (
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => removeImage(index)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                  {index === 0 && !withCaption && (
+                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md shadow-sm">
+                      Main Image
+                    </div>
+                  )}
                 </div>
-              )}
-              {index === 0 && (
-                <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md shadow-sm">
-                  Main Image
-                </div>
-              )}
-            </div>
-          ))}
+                {withCaption && (
+                  <Input
+                    placeholder="Image caption..."
+                    value={caption}
+                    onChange={(e) => updateCaption(index, e.target.value)}
+                    disabled={disabled}
+                    className="text-sm"
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
