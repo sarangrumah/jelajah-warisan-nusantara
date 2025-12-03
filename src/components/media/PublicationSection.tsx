@@ -145,10 +145,12 @@ const PublicationSection = () => {
                       </div>
                     </div>
                     <div className='p-6 absolute left-0 bottom-0 right-0'>
-                      <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
-                        <Download size={16} className="mr-2" />
-                        {t('publication.downloadButton')}
-                      </Button>
+                      {pub.url && (
+                        <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
+                          <Download size={16} className="mr-2" />
+                          {t('publication.downloadButton')}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
