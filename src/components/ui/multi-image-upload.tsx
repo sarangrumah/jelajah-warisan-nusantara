@@ -153,7 +153,7 @@ export const MultiImageUpload = ({
     } else if (item && typeof item === 'object') {
       newValue[index] = { ...item, caption };
     }
-    
+    console.log('updateCaption:', index, caption, newValue[index]);
     onChange(newValue);
   };
 

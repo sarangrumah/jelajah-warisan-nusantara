@@ -87,6 +87,7 @@ const MemoryOfWorldDetail = () => {
             } else {
                 // Check if the memory should be visible based on publish dates and status
                 const memory = response.data as MemoryItem;
+                console.log('Fetched memory:', memory);
                 const currentDate = new Date();
                 const startPublishDate = memory.start_publish_date ? parseDate(memory.start_publish_date) : null;
                 const endPublishDate = memory.end_publish_date ? parseDate(memory.end_publish_date) : null;

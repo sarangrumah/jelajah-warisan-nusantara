@@ -222,6 +222,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
   };
 
   const saveItem = async (data: MemoryWorldItem) => {
+    console.log('saveItem data:', data);
     setSaving(true);
     try {
       // Handle gallery updates including deletions
@@ -261,6 +262,7 @@ const MemoryWorldManagement = ({ userRole }: { userRole: string }) => {
         is_rejected: false,
         reason_rejected: '',
       };
+      console.log('saveItem payload:', payload);
 
       if (editing?.id) {
         const res = await memoryWorldService.update(editing.id, payload);

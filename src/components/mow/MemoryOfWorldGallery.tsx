@@ -115,15 +115,24 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
         {/* Carousel */}
         <div className="relative flex items-center justify-center w-full h-[320px] overflow-hidden pt-5">
           {images.length === 1 ? (
-            <div className="relative max-h-[90%] max-w-[90%]">
+            <div className="relative h-full w-full flex items-center justify-center">
               <img
                 src={getMowImageUrl(images[0].upload_file)}
                 alt="gallery"
                 onClick={() => setSelectedImage({ url: getMowImageUrl(images[0].upload_file), caption: images[0].caption })}
-                className="rounded-2xl object-cover cursor-pointer w-full h-full opacity-100"
+                className="rounded-2xl object-contain cursor-pointer max-h-full max-w-full opacity-100 z-10"
+              />
+              {/* Blurred background for single image */}
+              <div
+                className="absolute inset-0 blur-xl opacity-30 z-0"
+                style={{
+                  backgroundImage: `url(${getMowImageUrl(images[0].upload_file)})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
               />
               {images[0].caption && (
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-center rounded-b-2xl text-sm">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 text-center rounded-full text-sm z-20 max-w-[90%]">
                   {images[0].caption}
                 </div>
               )}
@@ -140,9 +149,9 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
                 return (
                   <div
                     key={`${index}-${offset}`}
-                    className={`absolute transition-all duration-500 flex flex-col items-center ${
+                    className={`absolute transition-all duration-500 flex flex-col items-center justify-center ${
                       isCenter
-                        ? "max-w-[80%] max-h-[95%] z-20 opacity-100"
+                        ? "w-[80%] h-[95%] z-20 opacity-100"
                         : isSide
                         ? "w-[60%] h-[85%] z-10 opacity-80"
                         : isFar
@@ -158,13 +167,25 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
                     }}
                     onClick={() => isCenter && setSelectedImage({ url: getMowImageUrl(item.upload_file), caption: item.caption })}
                   >
-                    <img
-                      src={getMowImageUrl(item.upload_file)}
-                      alt={`gallery-${index}`}
-                      className="rounded-2xl object-cover cursor-pointer w-full h-full"
-                    />
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black/5">
+                      <img
+                        src={getMowImageUrl(item.upload_file)}
+                        alt={`gallery-${index}`}
+                        className={`w-full h-full cursor-pointer ${isCenter ? 'object-contain' : 'object-cover'}`}
+                      />
+                      {isCenter && (
+                        <div
+                          className="absolute inset-0 blur-xl opacity-20 -z-10"
+                          style={{
+                            backgroundImage: `url(${getMowImageUrl(item.upload_file)})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        />
+                      )}
+                    </div>
                     {isCenter && item.caption && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-center rounded-b-2xl text-sm">
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 text-center rounded-full text-xs max-w-[90%]">
                         {item.caption}
                       </div>
                     )}
