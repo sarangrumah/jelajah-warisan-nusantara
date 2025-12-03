@@ -34,7 +34,14 @@ const GalleryConservation = ({ images: propImages }: GalleryConservationProps) =
 
             if (parsedImages.length > 0) {
                 // Map to full URLs
-                const fullUrls = parsedImages.map(img => assetUrl(img));
+                const fullUrls = parsedImages.map(img => {
+                    // If it's a simple filename (no slashes), assume it's an upload in conservation bucket
+                    // This handles legacy data where only filename was saved
+                    if (img && !img.includes('/') && !img.startsWith('http')) {
+                        return `/uploads/conservation/${img}`;
+                    }
+                    return assetUrl(img);
+                });
                 setImages(fullUrls);
             }
         }

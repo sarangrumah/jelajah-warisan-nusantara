@@ -108,11 +108,11 @@ export const GalleryUpload = ({
         }
 
         if (response.data?.url) {
-          // Extract just the filename from the URL
+          // Use the full URL path (e.g. /uploads/bucket/filename.jpg)
           const url = response.data.url;
-          const filename = url.split('/').pop() || url;
+          // const filename = url.split('/').pop() || url;
           newImages.push({
-            path: filename,
+            path: url,
             sites: '',
           });
         }
