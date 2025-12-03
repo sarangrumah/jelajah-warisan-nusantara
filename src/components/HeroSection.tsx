@@ -52,13 +52,25 @@ const HeroSlideContent = ({ slide }: { slide: any }) => {
     const buttonLabel2 = slide.button_label_2;
 
     const linkTo = (slideURL: string) => {
+        if (!slideURL) return '#';
+
+        // Handle legacy format if needed
+        if (slideURL.includes('.')) {
+             const part = slideURL.split('.')[1];
+             if (part === 'museum') return '/museums';
+             if (part === 'heritage') return '/heritage';
+             if (part === 'collection') return '/collection';
+        }
+
         if(slideURL === 'museum') {
             return `/museums`;
         } else if(slideURL === 'heritage') {
             return `/heritage`
-        } else {
+        } else if (slideURL === 'collection') {
             return `/collection`;
         }
+        
+        return slideURL;
     }
 
     return (
@@ -67,7 +79,7 @@ const HeroSlideContent = ({ slide }: { slide: any }) => {
             <p className="text-xl md:text-2xl mb-8 text-foreground/90 max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: fixBrokenHtmlTags(subtitle) }} />
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {slide?.button_url_1 && buttonLabel1 && (
-                <Link to={linkTo((slide.button_url_1 || '').split('.')[1] || '')}>
+                <Link to={linkTo(slide.button_url_1)}>
                   <Button
                     variant="outline"
                     size="lg"
@@ -78,7 +90,7 @@ const HeroSlideContent = ({ slide }: { slide: any }) => {
                 </Link>
               )}
               {slide?.button_url_2 && buttonLabel2 && (
-                <Link to={linkTo((slide.button_url_2 || '').split('.')[1] || '')}>
+                <Link to={linkTo(slide.button_url_2)}>
                   <Button
                     variant="outline"
                     size="lg"

@@ -114,17 +114,17 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 
      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="button_url_1">Button Label 1</Label>
+          <Label htmlFor="button_label_1">Button Label 1</Label>
           <Input
-            id="button_url_1"
+            id="button_label_1"
             value={formData.button_label_1}
             onChange={(e) => setFormData(prev => ({ ...prev, button_label_1: e.target.value }))}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="button_url_2">Button Url 1</Label>
+          <Label htmlFor="button_url_1">Button Url 1</Label>
           <Input
-            id="button_url_2"
+            id="button_url_1"
             value={formData.button_url_1}
             onChange={(e) => setFormData(prev => ({ ...prev, button_url_1: e.target.value }))}
           />
@@ -133,9 +133,9 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="button_url_1">Button Label 2</Label>
+          <Label htmlFor="button_label_2">Button Label 2</Label>
           <Input
-            id="button_url_1"
+            id="button_label_2"
             value={formData.button_label_2}
             onChange={(e) => setFormData(prev => ({ ...prev, button_label_2: e.target.value }))}
           />
@@ -623,7 +623,7 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                         )}
                       </Dialog>
                     ) : null}
-                    {(userRole === 'super-admin' || userRole === 'approver') && !banner.is_approved && !banner.is_rejected ? (
+                    {userRole === 'super-admin' && !banner.is_approved && !banner.is_rejected ? (
                       <>
                         <Button
                           variant="success"
@@ -707,9 +707,9 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
                     </p>
                   </div>
                   <div>
-                    <span className="font-medium">Button Url 1:</span>
+                    <span className="font-medium">Button Url 2:</span>
                     <p className="text-muted-foreground">
-                      {banner.button_url_1}
+                      {banner.button_url_2}
                     </p>
                   </div>
                 </div>
