@@ -432,8 +432,19 @@ const JSON_FIELDS: Record<string, string[]> = {
 
         const values = validFields.map((f) => {
           const v = insertData[f];
-          if (jsonFieldsForTable.includes(f) && typeof v !== 'string') {
-            return JSON.stringify(v);
+          if (jsonFieldsForTable.includes(f)) {
+            // If it's already a string, check if it's valid JSON or empty
+            if (typeof v === 'string') {
+              // If empty string, return empty array JSON
+              if (v.trim() === '') return '[]';
+              return v;
+            }
+            // If it's an object/array, stringify it
+            if (v !== undefined && v !== null) {
+              return JSON.stringify(v);
+            }
+            // If null, return null (will be cast to jsonb null)
+            return null;
           }
           return v;
         });
@@ -637,11 +648,20 @@ const JSON_FIELDS: Record<string, string[]> = {
 
           const values = [
             id,
-            ...validFields.map((f) =>
-              jsonFieldsForTable.includes(f) && typeof data[f] !== 'string'
-                ? JSON.stringify(data[f])
-                : data[f]
-            ),
+            ...validFields.map((f) => {
+              const v = data[f];
+              if (jsonFieldsForTable.includes(f)) {
+                if (typeof v === 'string') {
+                  if (v.trim() === '') return '[]';
+                  return v;
+                }
+                if (v !== undefined && v !== null) {
+                  return JSON.stringify(v);
+                }
+                return null;
+              }
+              return v;
+            }),
           ];
 
           const result = await client.query(
