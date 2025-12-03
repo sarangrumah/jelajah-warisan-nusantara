@@ -147,10 +147,14 @@ export const MultiImageUpload = ({
     if (disabled) return;
     const newValue = [...value];
     const item = newValue[index];
-    if (typeof item === 'object' && item !== null) {
+    
+    if (typeof item === 'string') {
+      newValue[index] = { url: item, caption };
+    } else if (item && typeof item === 'object') {
       newValue[index] = { ...item, caption };
-      onChange(newValue);
     }
+    
+    onChange(newValue);
   };
 
   return (

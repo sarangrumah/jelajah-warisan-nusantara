@@ -555,7 +555,7 @@ const validFields = fields
         const gallery = Array.isArray(rawGallery) ? rawGallery : [];
         const companyLeadership = Array.isArray(rawCompanyLeadership) ? rawCompanyLeadership : [];
         const companyVisitor = Array.isArray(rawCompanyVisitor) ? rawCompanyVisitor : [];
-        console.log(`[UPDATE] ${tableName} gallery:`, gallery);
+        console.log(`[UPDATE] ${tableName} gallery:`, JSON.stringify(gallery, null, 2));
 
         // Add metadata
         const data: Record<string, any> = {
