@@ -31,6 +31,7 @@ function getTranslatableFields(tableName: string): string[] {
     'tb_memoryoftheworld': ['title', 'subtitle', 'description', 'thumbnails'],
     'tb_company': ['name', 'description', 'vision', 'mission'],
     'tb_pemanfaatanasset': ['title', 'description', 'location'],
+    'tb_laboratorium_konservasi': ['title', 'description', 'banner_title', 'banner_subtitle'],
   };
 
   return translatableFieldsMap[tableName] || [];
