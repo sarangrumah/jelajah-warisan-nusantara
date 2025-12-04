@@ -292,9 +292,9 @@ const OrganizationalStructureManagement: React.FC<OrganizationalStructureManagem
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Executive Board">Executive Board</SelectItem>
-                    <SelectItem value="Management">Management</SelectItem>
-                    <SelectItem value="Staff">Staff</SelectItem>
+                    <SelectItem value="Pimpinan">Pimpinan</SelectItem>
+                    <SelectItem value="Dewan Pengawas">Dewan Pengawas</SelectItem>
+                    <SelectItem value="Staf">Staf</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

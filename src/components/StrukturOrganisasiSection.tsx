@@ -56,7 +56,7 @@ const StrukturOrganisasiSection = () => {
   }, {} as Record<string, Employee[]>);
 
   // Define the order of levels
-  const levelOrder = ['Executive Board', 'Management', 'Staff'];
+  const levelOrder = ['Pimpinan', 'Dewan Pengawas', 'Staf'];
 
   if (loading) {
     return (
