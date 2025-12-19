@@ -206,7 +206,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           FROM ${fromClause}
           ${whereClause}
           ORDER BY ${orderByClause}
-          LIMIT ${paramIndex} OFFSET ${paramIndex + 1}
+          LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
         `;
 
         console.time(`[PERF] Query for ${tableName}`);
