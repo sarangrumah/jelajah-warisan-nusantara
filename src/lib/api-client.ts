@@ -25,7 +25,8 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    // Force localhost:3000 for development to fix API access
+    this.baseUrl = import.meta.env.DEV ? 'http://localhost:3000' : (import.meta.env.VITE_API_URL || 'http://localhost:3000');
     this.token = localStorage.getItem('auth_token');
     if (import.meta.env.DEV) {
       logger.info('API Client initialized with baseUrl:', this.baseUrl);
