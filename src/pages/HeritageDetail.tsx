@@ -242,11 +242,21 @@ const HeritageDetail = () => {
               {/* Actions */}
               <Card>
                 <CardContent className="p-6 space-y-3">
-                  <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
-                    <Camera size={16} className="mr-2" />
-                    {t('Tur Virtual')}
-                  </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      // Open Google Maps with latitude and longitude
+                      if (heritage.latitude && heritage.longitude) {
+                        const googleMapsUrl = `https://www.google.com/maps?q=${heritage.latitude},${heritage.longitude}`;
+                        window.open(googleMapsUrl, '_blank');
+                      } else if (heritage.location) {
+                        // Fallback to search by location name if coordinates not available
+                        const googleMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(heritage.location)}`;
+                        window.open(googleMapsUrl, '_blank');
+                      }
+                    }}
+                  >
                     <MapPin size={16} className="mr-2" />
                     {t('Lokasi')}
                   </Button>
