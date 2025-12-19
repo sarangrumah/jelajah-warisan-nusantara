@@ -141,15 +141,16 @@ const Heritage = () => {
     return name.toLowerCase() === 'cagar budaya';
   })?.id;
 
+  // Defensive: prefer .title for legacy data
   const filteredHeritages = displayHeritages.filter(heritage => {
-    // Defensive: prefer .name, fallback to .title for legacy data
-    const name = typeof heritage.name === 'string' ? heritage.name : (typeof heritage.title === 'string' ? heritage.title : undefined);
+    // Defensive: prefer .title for legacy data
+    const title = typeof heritage.title === 'string' ? heritage.title : (typeof heritage.name === 'string' ? heritage.name : undefined);
     const subtitle = typeof heritage.subtitle === 'string' ? heritage.subtitle : '';
-    if (!name) {
-      console.warn('Heritage item missing name:', heritage);
+    if (!title) {
+      console.warn('Heritage item missing title:', heritage);
       return false;
     }
-    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || (categories.length > 0 && categories.find((c) => c.id === heritage.category)?.id === filterType);
     return heritage.type === heritageId && matchesSearch && matchesFilter;
@@ -205,19 +206,19 @@ const Heritage = () => {
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={(() => {
-                      const imageCandidate = item.img_banner || '';
+                      const imageCandidate = item.image_url || '';
                       const resolved = getMuseumsImageUrl(imageCandidate);
                       // Use logo as placeholder if no image
                       return (resolved && resolved !== '/placeholder.svg')
                         ? resolved
                         : '/src/assets/MCB-Logo.png';
                     })()}
-                    alt={item.name}
+                    alt={item.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.name}</CardTitle>
+                  <CardTitle className="text-lg">{item.title}</CardTitle>
                   <CardDescription>{item.subtitle}</CardDescription>
                 </CardHeader>
                 <CardContent>

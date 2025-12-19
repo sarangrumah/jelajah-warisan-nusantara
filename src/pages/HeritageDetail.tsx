@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useHybridTranslation } from '@/components/HybridTranslationProvider';
-import { ArrowLeft, MapPin, Clock, Camera } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Camera, Calendar } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ const HeritageDetail = () => {
   const { id } = useParams();
   const { t } = useHybridTranslation();
   const [heritages, setHeritages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { pathname } = useLocation();
       
   useEffect(() => {
@@ -46,6 +47,7 @@ const HeritageDetail = () => {
 
   const fetchHeritages = async () => {
     try {
+      setLoading(true);
       const response = await museumService.getAll();
       if(response.error || response.data.length === 0) {
         console.error('Error fetching heritages:', response.error);
@@ -55,21 +57,57 @@ const HeritageDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching heritages:', error);
+      setHeritages(mapSlidesWithImageUrl(defaultHeritages));
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     fetchHeritages();
   }, []);
 
-  const filteredHeritage = heritages.filter((h) => h.id.toString() === id);
+  // Refetch when ID changes
+  useEffect(() => {
+    if (id) {
+      fetchHeritages();
+    }
+  }, [id]);
+
+  const filteredHeritage = heritages.filter((h) => {
+    // Debug logging
+    console.log('Filtering heritage:', { heritageId: h.id, paramId: id, match: h.id.toString() === id });
+    return h.id.toString() === id;
+  });
+
+  // Debug logging
+  console.log('HeritageDetail render:', { id, heritagesCount: heritages.length, filteredCount: filteredHeritage.length });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground mt-4">Loading heritage details...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (filteredHeritage.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-4xl font-bold mb-4">{t('Museum tidak ditemukan')}</h1>
-          <p className="text-muted-foreground">{t('Museum yang diminta tidak dapat ditemukan.')}</p>
+          <h1 className="text-4xl font-bold mb-4">{t('Heritage site not found')}</h1>
+          <p className="text-muted-foreground mb-4">{t('Heritage site with ID')} "{id}" {t('cannot be found.')}</p>
+          <p className="text-muted-foreground mb-6">{t('Available heritage sites count')}: {heritages.length}</p>
+          <Link to="/heritage">
+            <Button variant="outline">
+              {t('Back to Heritage Sites')}
+            </Button>
+          </Link>
         </div>
         <Footer />
       </div>
@@ -93,8 +131,8 @@ const HeritageDetail = () => {
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl(heritage.img_banner?.split('/').pop() || heritage.img_banner)}
-            alt={heritage.name}
+            src={getImageUrl(heritage.image_url?.split('/').pop() || heritage.image_url)}
+            alt={heritage.title}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -102,7 +140,7 @@ const HeritageDetail = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
               <span
                 dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(heritage.name)
+                  __html: fixBrokenHtmlTags(heritage.title)
                 }}
               />
             </h1>
@@ -127,7 +165,7 @@ const HeritageDetail = () => {
                   <div className="space-y-4 text-muted-foreground">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(heritage.description)
+                        __html: fixBrokenHtmlTags(heritage.full_description || heritage.description)
                       }}
                     />
                   </div>
@@ -146,13 +184,13 @@ const HeritageDetail = () => {
                       <MapPin size={20} className="mr-1 text-primary" />
                       <div>
                         <p className="font-semibold">{t('museumDetail.location')}</p>
-                        <p className="text-sm text-muted-foreground">{heritage.address}</p>
+                        <p className="text-sm text-muted-foreground">{heritage.location}</p>
                       </div>
                     </div>
-                    {/* <div className="flex items-center">
+                    <div className="flex items-center">
                       <Calendar size={16} className="mr-3 text-primary" />
                       <span className="text-sm">{heritage.period}</span>
-                    </div> */}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -162,38 +200,40 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">{t('Informasi Kunjungan')}</h3>
                   <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Jam Buka')}</h4>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Clock size={16} className="mr-2" />
-                        {heritage.opening_hours.map((openingHour, index) => (
-                          <p key={index}>{`${Object.keys(openingHour)} : ${Object.values(openingHour)}`}</p>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Harga Tiket')}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {heritage.ticket_price}
-                      </p>
-                    </div>
-                    
-                    {/* <div>
-                      <h4 className="font-semibold text-sm mb-2">{t('Waktu Terbaik untuk Berkunjung')}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {heritage.visit_info.bestTime}
-                      </p>
-                    </div> */}
+                    {heritage.visit_info && (
+                      <>
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">{t('Jam Buka')}</h4>
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Clock size={16} className="mr-2" />
+                            <p>{heritage.visit_info.openHours}</p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">{t('Harga Tiket')}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {heritage.visit_info.ticketPrice}
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">{t('Waktu Terbaik untuk Berkunjung')}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {heritage.visit_info.bestTime}
+                          </p>
+                        </div>
+                      </>
+                    )}
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Fasilitas')}</h4>
-                      <div className="flex flex-wrap gap-2">{heritage.facilities}
-                        {/* {heritage.facilities && heritage.facilities.map((facility, index) => (
+                      <div className="flex flex-wrap gap-2">
+                        {heritage.facilities && heritage.facilities.map((facility, index) => (
                           <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
                             {facility}
                           </span>
-                        ))} */}
+                        ))}
                       </div>
                     </div>
                   </div>
