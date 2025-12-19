@@ -49,6 +49,7 @@ import AutoTranslationTest from "./pages/AutoTranslationTest";
 import { enableGlobalTranslationInterceptor } from "./utils/apiInterceptor";
 import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
 import UnifiedTranslationVerification from "./pages/UnifiedTranslationVerification";
+import SessionTimeoutTest from "./pages/SessionTimeoutTest";
 
 const queryClient = new QueryClient();
 
@@ -120,6 +121,7 @@ const App = () => {
                   <Route path="/test-on-demand" element={<OnDemandTranslationTest />} />
                   <Route path="/test-auto-translation" element={<AutoTranslationTest />} />
                   <Route path="/verify-translation" element={<UnifiedTranslationVerification />} />
+                  <Route path="/test-session-timeout" element={<SessionTimeoutTest />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

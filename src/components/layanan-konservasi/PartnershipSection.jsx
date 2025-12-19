@@ -10,7 +10,7 @@ const PartnershipSection = () => {
             <h2 className='lg:text-4xl font-bold text-center max-md:max-w-full max-md:text-3xl'>Kemitraan</h2>
             <div className='leading-7x w-full max-md:max-w-full px-5'>
               <p className='text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed pt-5'>
-                Museum dan Cagar Budaya (Indonesian Heritage Agency) mendorong perluasan kolaborasi bersama pengunjung
+                Museum dan Cagar Budaya mendorong perluasan kolaborasi bersama pengunjung
                 dan pecinta warisan budaya, pemangku kepentingan dalam negeri, serta institusi mancanegara sebagai
                 komitmen utama.
               </p>

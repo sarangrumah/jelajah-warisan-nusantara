@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { SessionTimeoutIndicator } from '@/components/SessionTimeoutIndicator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -42,6 +44,20 @@ const AdminDashboard = () => {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const { toast } = useToast();
 
+  // Initialize idle timeout for admin session management (5 minutes)
+  useIdleTimeout({
+    timeoutMinutes: 5,
+    warningMinutes: 1,
+    onTimeout: () => {
+      // Additional cleanup or logging can be added here
+      console.log('Admin session timed out due to inactivity');
+    },
+    onWarning: () => {
+      // Additional warning handling can be added here
+      console.log('Admin session warning displayed');
+    }
+  });
+
   useEffect(() => {
     if (user) {
       // User roles are already included in the auth response
@@ -74,6 +90,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Session timeout indicator */}
+      <SessionTimeoutIndicator timeoutMinutes={5} warningMinutes={1} />
+      
       <AdminSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
