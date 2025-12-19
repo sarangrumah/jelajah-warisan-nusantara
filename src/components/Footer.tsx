@@ -1,18 +1,32 @@
 import { Phone, Mail, MapPin, Instagram, Youtube } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
+import { getFooterCompanyData, type FooterCompanyData } from '@/lib/company-profile-service';
 
 const Footer = () => {
   const { language } = useLanguage();
   const { t } = useTranslation();
+  const [companyData, setCompanyData] = useState<FooterCompanyData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const orgName = t('footer.orgName');
-  const ministry = t('footer.ministry');
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const data = await getFooterCompanyData();
+        setCompanyData(data);
+      } catch (error) {
+        console.error('Error loading company data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanyData();
+  }, []);
+
   const contactUs = t('footer.contactUs');
-  const phone = t('footer.phone');
-  const email = t('footer.email');
-  const address = t('footer.address');
   const quickLinks = t('footer.quickLinks');
   const socialMedia = t('footer.socialMedia');
   const copyright = t('footer.copyright');
@@ -20,10 +34,32 @@ const Footer = () => {
   const terms = t('footer.terms');
   const sitemap = t('footer.sitemap');
 
+  // Use company data or fall back to translation keys
+  const orgName = companyData?.orgName || t('footer.orgName');
+  const ministry = companyData?.ministry || t('footer.ministry');
+  const phoneNumber = companyData?.phone || '+62 21 12345678';
+  const emailAddress = companyData?.email || 'info@museumbudaya.go.id';
+  const addressText = companyData?.address || (language === 'id' 
+    ? 'Jl. Medan Merdeka Barat No. 12, Jakarta Pusat 10110' 
+    : 'Jl. Medan Merdeka Barat No. 12, Central Jakarta 10110');
+
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
     { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube' },
   ];
+
+  // Show loading state while fetching company data
+  if (loading) {
+    return (
+      <footer className="bg-card border-t border-border">
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex items-center justify-center">
+            <div className="text-muted-foreground">Loading...</div>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   // Quick links with translated text
   const translatedQuickLinks = [
@@ -67,18 +103,16 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">+62 21 12345678</span>
+                <span className="text-sm text-muted-foreground">{phoneNumber}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail size={16} className="text-primary" />
-                <span className="text-sm text-muted-foreground">info@museumbudaya.go.id</span>
+                <span className="text-sm text-muted-foreground">{emailAddress}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin size={16} className="text-primary mt-0.5" />
                 <span className="text-sm text-muted-foreground">
-                  {language === 'id' 
-                    ? 'Jl. Medan Merdeka Barat No. 12, Jakarta Pusat 10110' 
-                    : 'Jl. Medan Merdeka Barat No. 12, Central Jakarta 10110'}
+                  {addressText}
                 </span>
               </div>
             </div>
