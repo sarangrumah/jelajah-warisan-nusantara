@@ -204,6 +204,9 @@ const IndonesiaMap = () => {
   const { translatedText: museumLabel } = useTranslate('Museum');
   const { translatedText: heritageLabel } = useTranslate('Cagar Budaya');
   const { translatedText: clickMarkerLabel } = useTranslate('Klik penanda untuk detail lebih lanjut');
+  const { translatedText: legendTitle } = useTranslate('Legenda:');
+  const { translatedText: museumLegendText } = useTranslate('Museum');
+  const { translatedText: heritageLegendText } = useTranslate('Cagar Budaya');
 
   const fetchLocations = async () => {
     try {
@@ -317,6 +320,25 @@ const IndonesiaMap = () => {
             <MapMarker key={location.id} location={location} map={mapInstance.current} types={types} />
         ))}
       </div>
+      {/* Legend */}
+      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm border border-border/50 rounded-lg p-3 shadow-lg z-[1000]">
+        <div className="text-xs font-semibold text-foreground mb-2">{legendTitle}</div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+              <span className="text-white text-[8px]">🏛️</span>
+            </div>
+            <span className="text-xs text-foreground">{museumLegendText}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+              <span className="text-white text-[8px]">🏛️</span>
+            </div>
+            <span className="text-xs text-foreground">{heritageLegendText}</span>
+          </div>
+        </div>
+      </div>
+      
       <p className="text-muted-foreground mt-4 text-center text-sm">
         {clickMarkerLabel}
       </p>

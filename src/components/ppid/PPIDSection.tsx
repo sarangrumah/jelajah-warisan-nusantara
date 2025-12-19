@@ -110,6 +110,21 @@ const PPIDSection = () => {
           </p>
         </div>
 
+        {/* PPID Commitment Statement */}
+        <div className="text-center mb-16 scroll-reveal">
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 max-w-4xl mx-auto">
+            <p className="text-muted-foreground leading-relaxed text-left whitespace-pre-line">
+              Museum dan Cagar Budaya dibawah naungan Kementerian Kebudayaan, berkomitmen untuk:
+              <ul>
+                <li>Menyediakan layanan informasi publik yang transparan, cepat, dan akurat.</li>
+                <li> Menyediakan akses bagi masyarakat terhadap informasi terkait pengelolaan museum, pelestarian cagar budaya, serta program/kegiatan yang dilaksanakan.</li>
+                <li>Menjamin keterbukaan informasi sesuai ketentuan peraturan perundang-undangan.</li>
+              </ul>
+              Dasar hukum keberadaan PPID Kementerian Kebudayaan diatur dalam Keputusan Menteri Kebudayaan Republik Indonesia Nomor 161/P/2025 tentang Pejabat Pengelola Informasi dan Dokumentasi Kementerian Kebudayaan, yang juga menjadi acuan bagi PPID Museum dan Cagar Budaya dalam melaksanakan tugas dan fungsinya.
+            </p>
+          </div>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8 mb-16">
           {(informationTypes || rawInformationTypes).map((type, index) => (
             <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">

@@ -1099,12 +1099,12 @@ export const resources = {
       },
       // PPID Section
       ppid: {
-        title: "PPID - Pejabat Pengelola Informasi dan Dokumentasi",
+        title: "PPID Museum dan Cagar Budaya - Pejabat Pengelola Informasi dan Dokumentasi",
         subtitle: "Pelayanan informasi publik yang transparan dan akuntabel sesuai dengan Undang-Undang No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik.",
         description: "Keberadaan Pejabat Pengelola Informasi dan Dokumentasi (PPID) Museum dan Cagar Budaya merupakan bagian dari pelaksanaan amanat Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP). Unit ini berfungsi sebagai perpanjangan tangan PPID Kementerian Kebudayaan dalam memberikan layanan informasi publik kepada masyarakat.",
         exampleInfo: "Contoh Informasi:",
         requestCriteria: {
-          title: "Ketentuan Pemohon Informasi Publik"
+          title: "Ketentuan Permohonan Layanan Informasi Publik"
         },
         informationTypes: {
           periodic: {
