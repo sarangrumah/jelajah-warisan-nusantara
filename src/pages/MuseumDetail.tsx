@@ -46,11 +46,12 @@ function getMuseumImageUrl(filename: string | undefined | null) {
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+      filename.startsWith('/assets/') ||
+      filename.startsWith('/uploads/'))
   ) {
     return filename;
   }
-  // Try to resolve using Vite's import
+  // Try to resolve using Vite's import for local assets
   const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
