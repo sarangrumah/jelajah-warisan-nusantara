@@ -42,15 +42,23 @@ const shareEventHandler = (museumLink: string) => {
 };
 function getMuseumImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
+  
+  // For uploaded images, construct full URL
+  if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
+    const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    return `${baseUrl}${filename}`;
+  }
+  
+  // For external URLs and assets, use as-is
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-      filename.startsWith('/assets/') ||
-      filename.startsWith('/uploads/'))
+      filename.startsWith('/assets/'))
   ) {
     return filename;
   }
+  
   // Try to resolve using Vite's import for local assets
   const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
