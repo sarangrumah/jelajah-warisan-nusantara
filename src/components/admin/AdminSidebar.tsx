@@ -12,6 +12,7 @@ import {
   Shield,
   Home,
   BarChart3,
+  LineChart,
   Menu,
   Key,
   Languages,
@@ -31,6 +32,7 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
+  { id: 'analytics', label: 'Analytics', icon: LineChart },
   { id: 'banner', label: 'Banner', icon: FileText },
   { id: 'company', label: 'Company Profile', icon: Settings },
   { id: 'museum', label: 'Museum', icon: Settings },

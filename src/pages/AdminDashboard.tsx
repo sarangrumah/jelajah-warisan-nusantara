@@ -37,6 +37,7 @@ import TranslationManagement from '@/components/admin/TranslationManagement';
 import ConservationManagement from '@/components/admin/ConservationManagement';
 import DashboardStats from '@/components/admin/DashboardStats';
 import FeatureDashboard from '@/components/admin/FeatureDashboard';
+import Dashboard from '@/components/Dashboard';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -132,6 +133,7 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'analytics' && <Dashboard />}
           {activeTab === 'banner' && <BannerManagement userRole={userRole}/>}
           {activeTab === 'company' && <CompanyProfileManagement userRole={userRole} />}
           {activeTab === 'museum' && <SitesManagement userRole={userRole}/>}

@@ -109,10 +109,9 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-300 rounded w-1/3"></div>
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-gray-300 rounded w-1/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-32 bg-gray-300 rounded"></div>
@@ -124,15 +123,13 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">{t('dashboard.title', 'Dashboard')}</h1>
             <p className="text-muted-foreground mt-2">
@@ -348,65 +345,64 @@ const Dashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Content Creation Trends */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('dashboard.contentTrends', 'Content Creation Trends')}</CardTitle>
-                  <CardDescription>
-                    {t('dashboard.contentTrendsDesc', 'Monthly content creation statistics')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={stats.monthlyData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="sites" fill="#8884d8" />
-                      <Bar dataKey="news" fill="#82ca9d" />
-                      <Bar dataKey="events" fill="#ffc658" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Performance Metrics */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('dashboard.performanceMetrics', 'Performance Metrics')}</CardTitle>
-                  <CardDescription>
-                    {t('dashboard.performanceMetricsDesc', 'Key performance indicators')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{t('dashboard.siteApprovalRate', 'Site Approval Rate')}</span>
-                      <span className="text-sm font-bold">85%</span>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Content Creation Trends */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('dashboard.contentTrends', 'Content Creation Trends')}</CardTitle>
+                    <CardDescription>
+                      {t('dashboard.contentTrendsDesc', 'Monthly content creation statistics')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={stats.monthlyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="sites" fill="#8884d8" />
+                        <Bar dataKey="news" fill="#82ca9d" />
+                        <Bar dataKey="events" fill="#ffc658" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+  
+                {/* Performance Metrics */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('dashboard.performanceMetrics', 'Performance Metrics')}</CardTitle>
+                    <CardDescription>
+                      {t('dashboard.performanceMetricsDesc', 'Key performance indicators')}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{t('dashboard.siteApprovalRate', 'Site Approval Rate')}</span>
+                        <span className="text-sm font-bold">85%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{t('dashboard.contentPublishedRate', 'Content Published Rate')}</span>
+                        <span className="text-sm font-bold">92%</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{t('dashboard.averageResponseTime', 'Average Response Time')}</span>
+                        <span className="text-sm font-bold">2.3 days</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{t('dashboard.activeUsers', 'Active Users')}</span>
+                        <span className="text-sm font-bold">1,247</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{t('dashboard.contentPublishedRate', 'Content Published Rate')}</span>
-                      <span className="text-sm font-bold">92%</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{t('dashboard.averageResponseTime', 'Average Response Time')}</span>
-                      <span className="text-sm font-bold">2.3 days</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{t('dashboard.activeUsers', 'Active Users')}</span>
-                      <span className="text-sm font-bold">1,247</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-};
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+    );
+  };
 
 export default Dashboard;
