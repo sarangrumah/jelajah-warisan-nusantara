@@ -26,7 +26,7 @@ export const MultiImageUpload = ({
   onChange,
   bucket = 'images',
   maxItems = 10,
-  maxSizeMB = 5,
+  maxSizeMB = 10,
   className = '',
   disabled = false,
   withCaption = false,

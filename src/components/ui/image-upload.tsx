@@ -26,7 +26,7 @@ export const ImageUpload = ({
   onChange,
   bucket = 'images',
   accept = 'image/*',
-  maxSize = 5,
+  maxSize = 10,
   className = '',
   preview = true
 }: ImageUploadProps) => {

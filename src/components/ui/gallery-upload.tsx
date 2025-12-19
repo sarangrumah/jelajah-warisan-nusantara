@@ -54,7 +54,7 @@ export const GalleryUpload = ({
   onChange,
   bucket = 'images',
   maxImages = 10,
-  maxSize = 5,
+  maxSize = 10,
   className = '',
 }: GalleryUploadProps) => {
   const [uploading, setUploading] = useState(false);
