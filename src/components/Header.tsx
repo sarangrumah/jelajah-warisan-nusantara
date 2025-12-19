@@ -22,6 +22,7 @@ const Header = () => {
   // Navigation items with original Indonesian text
   const navigationItems = [
     { name: 'Beranda', href: '/beranda' },
+    { name: 'Dashboard', href: '/dashboard' },
     {
       name: 'Destinasi',
       href: '/museum',
@@ -54,6 +55,7 @@ const Header = () => {
       ]
     },
     { name: 'PPID', href: '/ppid' },
+    { name: 'Dashboard', href: '/dashboard' },
   ];
 
   // Collect all texts that need translation
@@ -75,6 +77,7 @@ const Header = () => {
       'Hubungi Kami': 'nav.hubungiKami',
       'Karir': 'nav.career',
       'PPID': 'nav.ppid',
+      'Dashboard': 'nav.dashboard',
       'Prosedur Operasional Standar': 'nav.sop',
       'Admin': 'nav.admin'
     };

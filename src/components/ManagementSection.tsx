@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useMuseumStats } from '@/hooks/useMuseumStats';
+import { useSitesData } from '@/hooks/useSitesData';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
   const museumStats = useMuseumStats();
+  const { sitesData, museumsCount, heritageCount, loading: sitesLoading } = useSitesData();
   
   // Define cards inside useMemo to make them reactive to language changes
   const managementCards = useMemo(() => [
@@ -23,7 +25,7 @@ const ManagementSection = () => {
         t('management.museum.feature4')
       ],
       stats: {
-        museums: museumStats.museums,
+        museums: museumsCount || museumStats.museums,
         visitors: museumStats.visitors,
         programs: museumStats.programs
       },
@@ -42,14 +44,30 @@ const ManagementSection = () => {
         t('management.heritage.feature4')
       ],
       stats: {
-        sites: museumStats.sites,
+        sites: heritageCount || museumStats.sites,
         provinces: museumStats.provinces,
         projects: museumStats.projects
       },
       gradient: 'from-accent to-secondary',
       link: '/heritage'
     }
-  ], [t, museumStats]);
+  ], [t, museumStats, museumsCount, heritageCount]);
+
+  // Show loading state
+  if (sitesLoading) {
+    return (
+      <section className="py-20 from-card to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 scroll-reveal">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-300 rounded w-1/2 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 from-card to-background">

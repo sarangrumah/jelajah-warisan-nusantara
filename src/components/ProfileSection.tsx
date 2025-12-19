@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useProfileStats } from '@/hooks/useProfileStats';
+import { useCompanyData } from '@/hooks/useCompanyData';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -17,19 +18,41 @@ const TranslatedHtml = ({ text }: { text: string }) => {
 
 const ProfileSection = () => {
   const profileStats = useProfileStats();
+  const { companyData, loading: companyLoading, error: companyError } = useCompanyData();
   const { t } = useTranslation();
 
-  // This is where you would fetch your dynamic data, for now we will use static data
+  // Use dynamic data from database with fallback to static data
   const profile = {
-      vision: t('profile.visionText'),
-      mission: (t('profile.missionItems', { returnObjects: true }) as string[]).join('<br>'),
-      aboutus: t('profile.description'),
-      address: t('contact.office.address1') + ', ' + t('contact.office.address2'),
-      phone: `(021) 123-4567`,
-      whatsapp: `0812-3456-7890`,
-      email: t('contact.email'),
-      website: `https://museumcagarbudaya.kemenbud.go.id/`
+      vision: companyData?.vision || t('profile.visionText'),
+      mission: companyData?.mission || (t('profile.missionItems', { returnObjects: true }) as string[]).join('<br>'),
+      aboutus: companyData?.aboutus || t('profile.description'),
+      address: companyData?.address || (t('contact.office.address1') + ', ' + t('contact.office.address2')),
+      phone: companyData?.phone || `(021) 123-4567`,
+      whatsapp: companyData?.whatsapp || `0812-3456-7890`,
+      email: companyData?.email || t('contact.email'),
+      website: companyData?.website || `https://museumcagarbudaya.kemenbud.go.id/`
   };
+
+  // Show loading state
+  if (companyLoading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-background to-card">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-300 rounded w-2/3 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state but still render with fallback data
+  if (companyError) {
+    console.warn('Failed to load company data:', companyError);
+  }
 
   const statItems = [
     { value: profileStats.museums, label: t('profile.stats.museums') },
