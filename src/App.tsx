@@ -51,8 +51,7 @@ import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
 import UnifiedTranslationVerification from "./pages/UnifiedTranslationVerification";
 import SessionTimeoutTest from "./pages/SessionTimeoutTest";
 import DashboardPage from "./pages/Dashboard";
-
-
+import { logger } from "./utils/logger";
 const queryClient = new QueryClient();
 
 // Enable global translation interceptor for API feedback
@@ -67,10 +66,10 @@ const App = () => {
     if (import.meta.env.DEV) {
       import('./lib/monitor-translation-performance.js')
         .then(() => {
-          console.log('🎯 Translation Performance Monitor initialized');
+          logger.info('Translation Performance Monitor initialized');
         })
         .catch(err => {
-          console.warn('Could not load translation monitor:', err);
+          logger.warn('Could not load translation monitor:', err);
         });
     }
   }, []);

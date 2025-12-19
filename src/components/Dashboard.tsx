@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useSitesData } from '@/hooks/useSitesData';
 import { contentService, newsService, agendaService } from '@/lib/api-services';
+import { logError } from '@/utils/logger';
 
 interface DashboardStats {
   totalSites: number;
@@ -98,7 +99,7 @@ const Dashboard: React.FC = () => {
           monthlyData: generateMonthlyData(),
         });
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        logError('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }

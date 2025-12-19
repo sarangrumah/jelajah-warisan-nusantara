@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
 import SEO from '@/components/SEO';
+import { logError } from '@/utils/logger';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -83,13 +84,13 @@ const MuseumDetail = () => {
     try {
       const response = await museumService.getAll();
       if (response.error || response.data.length === 0) {
-        console.error('Error fetching museums:', response.error);
+        logError('Error fetching museums:', response.error);
         setMuseums(mapSlidesWithImageUrl(defaultMuseums));
       } else {
         setMuseums(mapSlidesWithImageUrl(response.data)); // mapSlidesWithImageUrl(response.data);
       }
     } catch (error) {
-      console.error('Error fetching museums:', error);
+      logError('Error fetching museums:', error);
     }
   }
   useEffect(() => {
