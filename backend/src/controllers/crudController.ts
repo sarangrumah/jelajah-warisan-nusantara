@@ -252,6 +252,15 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         console.log(`[getById] Fetching ${tableName} with ID: ${id}`);
 
+        // Validate UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(id)) {
+          return res.status(400).json({
+            error: 'Invalid ID format',
+            details: 'ID must be a valid UUID format'
+          });
+        }
+
         // Base query
         const baseResult = await query(`SELECT * FROM ${tableName} WHERE id = $1`, [id]);
         if (baseResult.rows.length === 0) {
@@ -353,7 +362,30 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         res.json(record);
       } catch (error) {
         console.error(`Get ${tableName} by ID error:`, error);
-        res.status(500).json({ error: 'Internal server error' });
+        
+        // Handle specific PostgreSQL UUID errors
+        if (error instanceof Error) {
+          const errorMessage = error.message;
+          
+          if (errorMessage.includes('invalid input syntax for type uuid')) {
+            return res.status(400).json({
+              error: 'Invalid ID format',
+              details: 'ID must be a valid UUID format'
+            });
+          }
+          
+          if (errorMessage.includes('bind message supplies')) {
+            return res.status(400).json({
+              error: 'Invalid request parameters',
+              details: 'The provided parameters do not match the expected format'
+            });
+          }
+        }
+        
+        res.status(500).json({ 
+          error: 'Internal server error',
+          details: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
       }
     },
     // === CREATE === (unchanged, but works)
