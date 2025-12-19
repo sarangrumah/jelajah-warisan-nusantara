@@ -25,12 +25,22 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    // Force localhost:3000 for development to fix API access
-    this.baseUrl = import.meta.env.DEV ? 'http://localhost:3000' : (import.meta.env.VITE_API_URL || 'http://localhost:3000');
-    this.token = localStorage.getItem('auth_token');
+    // AGGRESSIVE FIX: Force localhost:3000 for development regardless of environment variables
     if (import.meta.env.DEV) {
-      logger.info('API Client initialized with baseUrl:', this.baseUrl);
-      logger.info('Auth token present:', !!this.token);
+      this.baseUrl = 'http://localhost:3000';
+    } else {
+      // Production: Use environment variable with fallback
+      this.baseUrl = import.meta.env.VITE_API_URL || 'https://api.museumcagarbudaya.kemenbud.go.id';
+    }
+    
+    this.token = localStorage.getItem('auth_token');
+    
+    // Enhanced logging for debugging
+    if (import.meta.env.DEV) {
+      logger.info('🚀 API Client initialized - FORCED localhost for development');
+      logger.info('🌐 baseUrl:', this.baseUrl);
+      logger.info('🔑 Auth token present:', !!this.token);
+      logger.info('📱 Environment:', import.meta.env.MODE);
     }
   }
 

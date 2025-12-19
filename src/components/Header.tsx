@@ -12,6 +12,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
+import { logInfo } from '@/utils/logger';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);

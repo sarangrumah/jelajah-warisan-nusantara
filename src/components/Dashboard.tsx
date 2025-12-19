@@ -65,6 +65,7 @@ const Dashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        logInfo('Dashboard: Starting to fetch data');
         
         // Fetch various data
         const [newsResponse, eventsResponse] = await Promise.all([
@@ -97,6 +98,14 @@ const Dashboard: React.FC = () => {
           ],
           sitesByType,
           monthlyData: generateMonthlyData(),
+        });
+        
+        logInfo('Dashboard: Data fetched successfully', {
+          totalSites: sitesData.length,
+          totalNews,
+          totalEvents,
+          museumsCount,
+          heritageCount
         });
       } catch (error) {
         logError('Error fetching dashboard data:', error);

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Browser</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        .info { background-color: #d1ecf1; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Browser API Connectivity Test</h1>
+    <p>This page tests API connectivity directly from the browser to diagnose the issue.</p>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(title, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test ${type}`;
+            div.innerHTML = `<h3>${title}</h3><pre>${content}</pre>`;
+            results.appendChild(div);
+        }
+        
+        // Test 1: Environment check
+        addResult('Environment Check', 
+            `Mode: ${import.meta.env.MODE}
+Dev: ${import.meta.env.DEV}
+VITE_API_URL: ${import.meta.env.VITE_API_URL || 'NOT SET'}
+Location: ${window.location.href}`, 'info');
+        
+        // Test 2: Direct fetch to backend
+        async function testDirectFetch() {
+            addResult('Direct Fetch Test', 'Testing http://localhost:3000/api/tb_company...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/tb_company');
+                const data = await response.json();
+                
+                addResult('✅ Direct Fetch SUCCESS', 
+                    `Status: ${response.status}
+Data Length: ${data.length} records
+Sample Data: ${JSON.stringify(data[0], null, 2)}`, 'success');
+                    
+                return true;
+            } catch (error) {
+                addResult('❌ Direct Fetch FAILED', 
+                    `Error: ${error.message}
+This indicates a network/CORS issue`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 3: Test via Vite proxy
+        async function testViteProxy() {
+            addResult('Vite Proxy Test', 'Testing /api/tb_company (should go through Vite proxy)...', 'info');
+            
+            try {
+                const response = await fetch('/api/tb_company');
+                const data = await response.json();
+                
+                addResult('✅ Vite Proxy SUCCESS', 
+                    `Status: ${response.status}
+Data Length: ${data.length} records
+This means Vite proxy is working correctly`, 'success');
+                    
+                return true;
+            } catch (error) {
+                addResult('❌ Vite Proxy FAILED', 
+                    `Error: ${error.message}
+This means the Vite proxy is not configured correctly`, 'error');
+                return false;
+            }
+        }
+        
+        // Test 4: Test CORS specifically
+        async function testCORS() {
+            addResult('CORS Test', 'Testing CORS headers from backend...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/tb_company', {
+                    method: 'OPTIONS'
+                });
+                
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+                };
+                
+                addResult('CORS Headers', 
+                    `Response Status: ${response.status}
+Headers: ${JSON.stringify(corsHeaders, null, 2)}`, 'info');
+                    
+            } catch (error) {
+                addResult('CORS Test FAILED', `Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Run all tests
+        async function runTests() {
+            addResult('Starting Tests', 'Running all API connectivity tests...', 'info');
+            
+            const test1 = await testDirectFetch();
+            const test2 = await testViteProxy();
+            await testCORS();
+            
+            // Summary
+            let summary = 'Test Results Summary:\n';
+            summary += `Direct Fetch: ${test1 ? '✅ PASS' : '❌ FAIL'}\n`;
+            summary += `Vite Proxy: ${test2 ? '✅ PASS' : '❌ FAIL'}\n\n`;
+            
+            if (test1 && !test2) {
+                summary += 'Diagnosis: Direct fetch works but Vite proxy fails.\n';
+                summary += 'Solution: Check Vite proxy configuration.';
+            } else if (!test1) {
+                summary += 'Diagnosis: Direct fetch fails.\n';
+                summary += 'Solution: Check backend is running on localhost:3000';
+            } else if (test1 && test2) {
+                summary += 'Both tests pass! API should be working.\n';
+                summary += 'If frontend still shows errors, check the API client configuration.';
+            }
+            
+            addResult('📊 Final Summary', summary, test1 && test2 ? 'success' : 'error');
+        }
+        
+        // Start tests when page loads
+        runTests();
+    </script>
+</body>
+</html>

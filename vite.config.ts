@@ -35,6 +35,18 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:3000',
           changeOrigin: true,
           secure: false,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        // Additional proxy for direct backend calls
+        '/tb_company': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/tb_sites': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
         },
       },
     },

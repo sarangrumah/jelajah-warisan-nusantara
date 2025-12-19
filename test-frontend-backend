@@ -1,0 +1,183 @@
+// test-frontend-backend.js - Test frontend to backend connectivity
+const http = require('http');
+
+console.log('🧪 Testing Frontend to Backend API Connectivity');
+console.log('================================================\n');
+
+// Test 1: Backend health check
+async function testBackendHealth() {
+    console.log('1. Testing Backend Health Check...');
+    
+    return new Promise((resolve) => {
+        const req = http.get('http://localhost:3000/api/health', (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    console.log('✅ Backend Health Check: PASSED');
+                    console.log('📄 Response:', data);
+                    resolve(true);
+                } else {
+                    console.log('❌ Backend Health Check: FAILED');
+                    console.log('📄 Status:', res.statusCode);
+                    console.log('📄 Response:', data);
+                    resolve(false);
+                }
+            });
+        });
+        
+        req.on('error', (err) => {
+            console.log('❌ Backend Health Check: FAILED');
+            console.log('❌ Error:', err.message);
+            console.log('💡 Backend may not be running on localhost:3000');
+            resolve(false);
+        });
+        
+        req.setTimeout(5000, () => {
+            console.log('⏰ Backend Health Check: TIMEOUT');
+            resolve(false);
+        });
+    });
+}
+
+// Test 2: Test tb_company endpoint
+async function testTbCompany() {
+    console.log('\n2. Testing tb_company endpoint...');
+    
+    return new Promise((resolve) => {
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/api/tb_company',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        };
+        
+        const req = http.request(options, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        console.log('✅ tb_company Endpoint: PASSED');
+                        console.log('📊 Records returned:', jsonData.length);
+                        console.log('📄 Sample record:', JSON.stringify(jsonData[0], null, 2));
+                        resolve(true);
+                    } catch (err) {
+                        console.log('❌ tb_company Endpoint: INVALID JSON');
+                        console.log('📄 Response:', data.substring(0, 200));
+                        resolve(false);
+                    }
+                } else {
+                    console.log('❌ tb_company Endpoint: FAILED');
+                    console.log('📄 Status:', res.statusCode);
+                    console.log('📄 Response:', data);
+                    resolve(false);
+                }
+            });
+        });
+        
+        req.on('error', (err) => {
+            console.log('❌ tb_company Endpoint: FAILED');
+            console.log('❌ Error:', err.message);
+            resolve(false);
+        });
+        
+        req.setTimeout(5000, () => {
+            console.log('⏰ tb_company Endpoint: TIMEOUT');
+            req.destroy();
+            resolve(false);
+        });
+        
+        req.end();
+    });
+}
+
+// Test 3: Test museums endpoint
+async function testMuseums() {
+    console.log('\n3. Testing museums endpoint...');
+    
+    return new Promise((resolve) => {
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/api/museums',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        };
+        
+        const req = http.request(options, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        console.log('✅ museums Endpoint: PASSED');
+                        console.log('📊 Museums returned:', jsonData.length);
+                        resolve(true);
+                    } catch (err) {
+                        console.log('❌ museums Endpoint: INVALID JSON');
+                        console.log('📄 Response:', data.substring(0, 200));
+                        resolve(false);
+                    }
+                } else {
+                    console.log('❌ museums Endpoint: FAILED');
+                    console.log('📄 Status:', res.statusCode);
+                    console.log('📄 Response:', data);
+                    resolve(false);
+                }
+            });
+        });
+        
+        req.on('error', (err) => {
+            console.log('❌ museums Endpoint: FAILED');
+            console.log('❌ Error:', err.message);
+            resolve(false);
+        });
+        
+        req.setTimeout(5000, () => {
+            console.log('⏰ museums Endpoint: TIMEOUT');
+            req.destroy();
+            resolve(false);
+        });
+        
+        req.end();
+    });
+}
+
+// Run all tests
+async function runTests() {
+    const test1 = await testBackendHealth();
+    const test2 = await testTbCompany();
+    const test3 = await testMuseums();
+    
+    console.log('\n================================================');
+    console.log('📊 Test Results Summary:');
+    console.log(`Backend Health: ${test1 ? '✅ PASS' : '❌ FAIL'}`);
+    console.log(`tb_company API: ${test2 ? '✅ PASS' : '❌ FAIL'}`);
+    console.log(`museums API: ${test3 ? '✅ PASS' : '❌ FAIL'}`);
+    
+    if (test1 && test2 && test3) {
+        console.log('\n🎉 ALL TESTS PASSED!');
+        console.log('✅ Backend is working correctly');
+        console.log('✅ All endpoints are responding');
+        console.log('✅ API should work from frontend');
+    } else {
+        console.log('\n❌ SOME TESTS FAILED');
+        console.log('💡 Check if backend is running on localhost:3000');
+        console.log('💡 Check backend logs for errors');
+    }
+    
+    console.log('\n📖 Next Steps:');
+    console.log('1. If all tests pass, refresh your browser and try again');
+    console.log('2. If tests fail, check Terminal 3 (backend) for errors');
+    console.log('3. Open browser-api-test.html in browser for browser-based testing');
+}
+
+runTests();
