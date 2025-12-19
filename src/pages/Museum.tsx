@@ -11,6 +11,7 @@ import { defaultMuseums } from '@/../database/default-data';
 import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+import SEO from '@/components/SEO';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -163,6 +164,11 @@ const Museum = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Museum"
+        description="Temukan berbagai museum menarik di Indonesia yang menyimpan sejarah dan budaya bangsa."
+        keywords="museum indonesia, daftar museum, wisata sejarah, edukasi budaya"
+      />
       <Header />
       
       {/* Hero Banner */}

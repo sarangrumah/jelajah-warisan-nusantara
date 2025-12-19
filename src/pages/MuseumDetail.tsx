@@ -10,6 +10,8 @@ import { defaultMuseums } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
+import SEO from '@/components/SEO';
+
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -103,6 +105,11 @@ const MuseumDetail = () => {
       {/* Hero Section */}
       {filteredMuseum.map((museum) => (
         <div key={museum.id}>
+        <SEO
+          title={museum.name.replace(/<[^>]*>?/gm, '')}
+          description={museum.subtitle?.replace(/<[^>]*>?/gm, '') || museum.description?.replace(/<[^>]*>?/gm, '').substring(0, 160)}
+          image={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+        />
 
         <section className="relative h-96 overflow-hidden">
           <img

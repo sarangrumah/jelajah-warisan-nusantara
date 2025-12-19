@@ -9,6 +9,7 @@ import NewsSection from '@/components/NewsSection';
 import Footer from '@/components/Footer';
 import SectionWrapper from '@/components/SectionWrapper';
 import { useLocation } from 'react-router-dom';
+import SEO from '@/components/SEO';
 
 const Beranda = () => {
   const { pathname } = useLocation();
@@ -19,6 +20,11 @@ const Beranda = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SEO
+        title="Beranda"
+        description="Jelajahi kekayaan warisan budaya Nusantara melalui museum dan cagar budaya di seluruh Indonesia."
+        keywords="museum indonesia, cagar budaya, warisan nusantara, sejarah indonesia, budaya indonesia"
+      />
       <Header />
       <SectionWrapper id="hero-section" nextId="profile-section">
         <HeroSection />
