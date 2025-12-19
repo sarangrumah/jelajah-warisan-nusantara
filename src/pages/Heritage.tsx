@@ -141,13 +141,13 @@ const Heritage = () => {
     return name.toLowerCase() === 'cagar budaya';
   })?.id;
 
-  // Defensive: prefer .title for legacy data
+  // Defensive: prefer .title for legacy data, but support .name from database
   const filteredHeritages = displayHeritages.filter(heritage => {
-    // Defensive: prefer .title for legacy data
+    // Defensive: prefer .title for legacy data, fallback to .name from database
     const title = typeof heritage.title === 'string' ? heritage.title : (typeof heritage.name === 'string' ? heritage.name : undefined);
     const subtitle = typeof heritage.subtitle === 'string' ? heritage.subtitle : '';
     if (!title) {
-      console.warn('Heritage item missing title:', heritage);
+      console.warn('Heritage item missing title/name:', heritage);
       return false;
     }
     const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -206,20 +206,22 @@ const Heritage = () => {
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={(() => {
-                      const imageCandidate = item.image_url || '';
+                      const imageCandidate = item.image_url || item.img_banner || item.banner_image || '';
                       const resolved = getMuseumsImageUrl(imageCandidate);
                       // Use logo as placeholder if no image
                       return (resolved && resolved !== '/placeholder.svg')
                         ? resolved
                         : '/src/assets/MCB-Logo.png';
                     })()}
-                    alt={item.title}
+                    alt={item.title || item.name || t('Heritage site')}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
-                  <CardDescription>{item.subtitle}</CardDescription>
+                  <CardTitle className="text-lg">
+                    {item.title || item.name || t('Heritage site')}
+                  </CardTitle>
+                  <CardDescription>{item.subtitle || ''}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm text-muted-foreground">
@@ -235,7 +237,7 @@ const Heritage = () => {
                   <p className="text-sm mt-3">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(item.description)
+                        __html: fixBrokenHtmlTags(item.description || item.full_description || '')
                       }}
                     />
                   </p>

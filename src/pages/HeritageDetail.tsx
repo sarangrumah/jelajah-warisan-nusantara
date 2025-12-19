@@ -116,8 +116,8 @@ const HeritageDetail = () => {
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl(heritage.image_url?.split('/').pop() || heritage.image_url)}
-            alt={heritage.title || t('Heritage site')}
+            src={getImageUrl((heritage.image_url || heritage.img_banner || heritage.banner_image)?.split('/').pop() || heritage.image_url || heritage.img_banner || heritage.banner_image)}
+            alt={heritage.title || heritage.name || t('Heritage site')}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -125,7 +125,7 @@ const HeritageDetail = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
               <span
                 dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(heritage.title || t('Heritage site'))
+                  __html: fixBrokenHtmlTags(heritage.title || heritage.name || t('Heritage site'))
                 }}
               />
             </h1>
@@ -150,7 +150,7 @@ const HeritageDetail = () => {
                   <div className="space-y-4 text-muted-foreground">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(heritage.full_description || heritage.description || t('No description available'))
+                        __html: fixBrokenHtmlTags(heritage.full_description || heritage.description || heritage.desc || t('No description available'))
                       }}
                     />
                   </div>
