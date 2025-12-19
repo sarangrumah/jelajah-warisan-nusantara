@@ -191,12 +191,22 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         const fromClause = [tableName, ...joins].join(' ');
 
+        // Determine ordering based on table type
+        let orderByClause;
+        if (tableName === 'news_articles' || tableName === 'tb_publication') {
+          // For news and publications, order by published_at first, then created_at as fallback
+          orderByClause = `${tableName}.published_at DESC NULLS LAST, ${tableName}.created_at DESC`;
+        } else {
+          // For other tables, order by created_at
+          orderByClause = `${tableName}.created_at DESC`;
+        }
+
         const queryText = `
           SELECT ${selectFields}
           FROM ${fromClause}
           ${whereClause}
-          ORDER BY ${tableName}.created_at DESC
-          LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+          ORDER BY ${orderByClause}
+          LIMIT ${paramIndex} OFFSET ${paramIndex + 1}
         `;
 
         console.time(`[PERF] Query for ${tableName}`);
