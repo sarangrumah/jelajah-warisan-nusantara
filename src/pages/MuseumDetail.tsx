@@ -109,12 +109,12 @@ const MuseumDetail = () => {
         <SEO
           title={museum.name.replace(/<[^>]*>?/gm, '')}
           description={museum.subtitle?.replace(/<[^>]*>?/gm, '') || museum.description?.replace(/<[^>]*>?/gm, '').substring(0, 160)}
-          image={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+          image={getMuseumImageUrl(museum.image_url?.split('/').pop() || museum.image_url)}
         />
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+            src={getMuseumImageUrl(museum.image_url?.split('/').pop() || museum.image_url)}
             alt={museum.name}
             className="w-full h-full object-cover"
           />
