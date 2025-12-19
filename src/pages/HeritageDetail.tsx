@@ -211,6 +211,19 @@ const HeritageDetail = () => {
                     <MapPin size={16} className="mr-2" />
                     {t('Lokasi')}
                   </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
+                    onClick={() => {
+                      const ticketUrl = heritage.ticket_url;
+                      if (ticketUrl && ticketUrl.trim() !== '') {
+                        window.open(ticketUrl, '_blank');
+                      } else {
+                        window.open('https://wa.me/6281295953929', '_blank');
+                      }
+                    }}
+                  >Beli Tiket
+                  </Button>
                 </CardContent>
               </Card>
             </div>

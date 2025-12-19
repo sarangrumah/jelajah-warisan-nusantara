@@ -251,7 +251,14 @@ const MuseumDetail = () => {
                     <Button 
                       variant="outline" 
                       className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
-                      onClick={() => shareEventHandler('https://wa.me/6281295953929')}
+                      onClick={() => {
+                        const ticketUrl = museum.ticket_url;
+                        if (ticketUrl && ticketUrl.trim() !== '') {
+                          shareEventHandler(ticketUrl);
+                        } else {
+                          shareEventHandler('https://wa.me/6281295953929');
+                        }
+                      }}
                     >Beli Tiket
                     </Button>
                   </CardContent>
