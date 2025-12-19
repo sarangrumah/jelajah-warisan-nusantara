@@ -1,56 +1,78 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line 
+import {
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line
 } from 'recharts';
 import {
-  newsService, agendaService, museumService, heritageService
+  userService
 } from '@/lib/api-services';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
-
 const FeatureDashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [contentData, setContentData] = useState<any[]>([]);
   const [activityLogs, setActivityLogs] = useState<any[]>([]);
   const [userGrowthData, setUserGrowthData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsRes, agendaRes, museumRes, heritageRes] = await Promise.all([
-          newsService.getAll(),
-          agendaService.getAll(),
-          museumService.getAll(),
-          heritageService.getAll(),
-        ]);
+        const token = localStorage.getItem("auth_token");
+        const usersRes = await userService.getProfiles();
+        const users = usersRes.data || [];
 
-        // Content Distribution Data
-        const contentStats = [
-          { name: 'News', value: newsRes.data?.length || 0 },
-          { name: 'Events', value: agendaRes.data?.length || 0 },
-          { name: 'Museums', value: museumRes.data?.length || 0 },
-          { name: 'Heritage', value: heritageRes.data?.length || 0 },
-        ];
-        setContentData(contentStats);
+        // Group users by month (last 6 months)
+        const last6Months = Array.from({ length: 6 }, (_, i) => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - 5 + i);
+          return d;
+        });
 
-        // Mock User Growth Data (since we don't have historical data endpoint)
-        // In a real app, this would come from an analytics endpoint
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        const mockGrowth = months.map(month => ({
-          name: month,
-          users: Math.floor(Math.random() * 50) + 10,
-          visitors: Math.floor(Math.random() * 500) + 100,
-        }));
-        setUserGrowthData(mockGrowth);
+        // Fetch visitor counts for each month from activity_log
+        const growthDataPromises = last6Months.map(async (date) => {
+          const monthName = date.toLocaleString('default', { month: 'short' });
+          const monthKey = date.toISOString().slice(0, 7); // YYYY-MM
+          
+          // Calculate start and end date for the month
+          const year = date.getFullYear();
+          const month = date.getMonth() + 1;
+          const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+          const lastDay = new Date(year, month, 0).getDate();
+          const endDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay} 23:59:59`;
+
+          // Count users created in this month
+          const usersInMonth = (users as any[]).filter(u =>
+            u.created_at && u.created_at.startsWith(monthKey)
+          ).length;
+
+          // Fetch visitor count (user_type='visitor')
+          let visitorsInMonth = 0;
+          try {
+            const res = await fetch(`/api/activity-log?user_type=visitor&start_date=${startDate}&end_date=${endDate}&pageSize=1`, {
+              headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {})
+              }
+            });
+            const data = await res.json();
+            visitorsInMonth = data.total || 0;
+          } catch (e) {
+            console.error(`Error fetching visitor count for ${monthKey}:`, e);
+          }
+
+          return {
+            name: monthName,
+            users: usersInMonth,
+            visitors: visitorsInMonth
+          };
+        });
+
+        const growthData = await Promise.all(growthDataPromises);
+        setUserGrowthData(growthData);
 
         // Fetch Activity Logs
         // We'll use the same endpoint as ActivityLogManagement
-        const token = localStorage.getItem("auth_token");
         const logsRes = await fetch(`/api/activity-log?page=1&pageSize=5&sort=timestamp&order=desc`, {
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -79,38 +101,7 @@ const FeatureDashboard = () => {
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Content Distribution Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Content Distribution</CardTitle>
-            <CardDescription>Breakdown of content types across the platform</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={contentData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {contentData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6">
         {/* User Growth Chart */}
         <Card>
           <CardHeader>
