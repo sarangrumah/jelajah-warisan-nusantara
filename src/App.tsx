@@ -101,7 +101,6 @@ const App = () => {
                   <Route path="/museums/:type" element={<Museum />} />
                   <Route path="/museum/:id" element={<MuseumDetail />} />
                   <Route path="/heritage" element={<Heritage />} />
-                  <Route path="/heritage/:type" element={<Heritage />} />
                   <Route path="/heritage/:id" element={<HeritageDetail />} />
                   <Route path="/collection" element={<Collection />} />
                   <Route path="/collection/:id" element={<CollectionDetail />} />
