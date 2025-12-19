@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
-import ProfileSection from '@/components/ProfileSection';
+import SimpleProfileSection from '@/components/SimpleProfileSection';
 import ManagementSection from '@/components/ManagementSection';
 import AgendaSection from '@/components/AgendaSection';
 import DistributionSection from '@/components/DistributionSection';
@@ -24,7 +24,7 @@ const Beranda = () => {
         <HeroSection />
       </SectionWrapper>
       <SectionWrapper id="profile-section" prevId="hero-section" nextId="management-section">
-        <ProfileSection />
+        <SimpleProfileSection />
       </SectionWrapper>
       <SectionWrapper id="management-section" prevId="profile-section" nextId="agenda-section">
         <ManagementSection />
