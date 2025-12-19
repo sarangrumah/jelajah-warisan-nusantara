@@ -51,7 +51,7 @@ import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
 import UnifiedTranslationVerification from "./pages/UnifiedTranslationVerification";
 import SessionTimeoutTest from "./pages/SessionTimeoutTest";
 import DashboardPage from "./pages/Dashboard";
-import SimpleApiTest from "./components/SimpleApiTest";
+
 
 const queryClient = new QueryClient();
 
@@ -83,7 +83,6 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                  <SimpleApiTest />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/beranda" element={<Beranda />} />

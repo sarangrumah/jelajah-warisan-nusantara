@@ -35,6 +35,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
 import TranslationManagement from '@/components/admin/TranslationManagement';
 import ConservationManagement from '@/components/admin/ConservationManagement';
+import DashboardStats from '@/components/admin/DashboardStats';
+import FeatureDashboard from '@/components/admin/FeatureDashboard';
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -108,51 +110,9 @@ const AdminDashboard = () => {
         <div className="p-4 lg:p-8 pt-16 lg:pt-8">
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Konten</CardTitle>
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">12</div>
-                    <p className="text-xs text-muted-foreground">+2 dari bulan lalu</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Agenda Aktif</CardTitle>
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">8</div>
-                    <p className="text-xs text-muted-foreground">+4 minggu ini</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Pengguna</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">5</div>
-                    <p className="text-xs text-muted-foreground">+1 bulan ini</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Visitor Bulanan</CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">1,234</div>
-                    <p className="text-xs text-muted-foreground">+12% dari bulan lalu</p>
-                  </CardContent>
-                </Card>
-              </div>
+              <DashboardStats />
+              
+              <FeatureDashboard />
 
               <Card>
                 <CardHeader>
@@ -163,7 +123,7 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Anda login sebagai <Badge variant="secondary">{userRole}</Badge>. 
+                    Anda login sebagai <Badge variant="secondary">{userRole}</Badge>.
                     {canEdit ? ' Anda dapat mengelola konten dan agenda.' : ' Anda memiliki akses view-only.'}
                     {isAdmin && ' Sebagai admin, Anda memiliki akses penuh untuk mengelola pengguna dan pengaturan sistem.'}
                   </p>
