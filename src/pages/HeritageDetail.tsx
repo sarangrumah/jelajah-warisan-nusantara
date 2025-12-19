@@ -8,7 +8,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
-import { mapSlidesWithImageUrl } from '@/components/helper';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -51,13 +50,13 @@ const HeritageDetail = () => {
       const response = await museumService.getAll();
       if(response.error || response.data.length === 0) {
         console.error('Error fetching heritages:', response.error);
-        setHeritages(mapSlidesWithImageUrl(defaultHeritages));
+        setHeritages(defaultHeritages);
       } else {
-        setHeritages(mapSlidesWithImageUrl(response.data));
+        setHeritages(response.data);
       }
     } catch (error) {
       console.error('Error fetching heritages:', error);
-      setHeritages(mapSlidesWithImageUrl(defaultHeritages));
+      setHeritages(defaultHeritages);
     } finally {
       setLoading(false);
     }
@@ -66,21 +65,7 @@ const HeritageDetail = () => {
     fetchHeritages();
   }, []);
 
-  // Refetch when ID changes
-  useEffect(() => {
-    if (id) {
-      fetchHeritages();
-    }
-  }, [id]);
-
-  const filteredHeritage = heritages.filter((h) => {
-    // Debug logging
-    console.log('Filtering heritage:', { heritageId: h.id, paramId: id, match: h.id.toString() === id });
-    return h.id.toString() === id;
-  });
-
-  // Debug logging
-  console.log('HeritageDetail render:', { id, heritagesCount: heritages.length, filteredCount: filteredHeritage.length });
+  const filteredHeritage = heritages.filter((h) => h.id.toString() === id);
 
   if (loading) {
     return (
@@ -255,14 +240,11 @@ const HeritageDetail = () => {
                     variant="outline" 
                     className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-bounce"
                     onClick={() => {
-                      const ticketUrl = heritage.ticket_url;
-                      if (ticketUrl && ticketUrl.trim() !== '') {
-                        window.open(ticketUrl, '_blank');
-                      } else {
-                        window.open('https://wa.me/6281295953929', '_blank');
-                      }
+                      // For heritage sites, use WhatsApp contact
+                      window.open('https://wa.me/6281295953929', '_blank');
                     }}
-                  >Beli Tiket
+                  >
+                    {t('Kontak Informasi')}
                   </Button>
                 </CardContent>
               </Card>
