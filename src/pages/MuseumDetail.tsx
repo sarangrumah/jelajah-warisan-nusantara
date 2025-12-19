@@ -20,7 +20,7 @@ function fixBrokenHtmlTags(html: string): string {
 }
 import GalleryCollection from '@/components/museum/GalleryCollection';
 
-const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
+const museumImages = import.meta.glob(['../assets/museums/*', '../assets/sites/*'], { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 const shareEventHandler = (museumLink: string) => {
   let url = `https://${museumLink}`;
@@ -60,7 +60,11 @@ function getMuseumImageUrl(filename: string | undefined | null) {
   }
   
   // Try to resolve using Vite's import for local assets
-  const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
+  // Extract filename to match against glob paths which are relative
+  const cleanFilename = filename.split('/').pop();
+  if (!cleanFilename) return PLACEHOLDER_IMAGE;
+
+  const match = Object.entries(museumImages).find(([path]) => path.endsWith(cleanFilename));
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
 
@@ -117,12 +121,12 @@ const MuseumDetail = () => {
         <SEO
           title={museum.name.replace(/<[^>]*>?/gm, '')}
           description={museum.subtitle?.replace(/<[^>]*>?/gm, '') || museum.description?.replace(/<[^>]*>?/gm, '').substring(0, 160)}
-          image={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+          image={getMuseumImageUrl(museum.img_banner)}
         />
 
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getMuseumImageUrl(museum.img_banner?.split('/').pop() || museum.img_banner)}
+            src={getMuseumImageUrl(museum.img_banner)}
             alt={museum.name}
             className="w-full h-full object-cover"
           />

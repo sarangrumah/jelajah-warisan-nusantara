@@ -6,11 +6,18 @@ import { defaultCollections } from '@/../database/default-data';
 import { masterCollectionService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
 
-const collectionImages = import.meta.glob('../../assets/museums/*', { eager: true });
+const collectionImages = import.meta.glob(['../../assets/museums/*', '../../assets/sites/*', '../../assets/collections/*'], { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function getCollectionImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
+  
+  // For uploaded images, construct full URL
+  if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
+    const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    return `${baseUrl}${filename}`;
+  }
+
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
@@ -19,8 +26,13 @@ function getCollectionImageUrl(filename: string | undefined | null) {
   ) {
     return filename;
   }
+  
+  // Extract filename
+  const cleanFilename = filename.split('/').pop();
+  if (!cleanFilename) return PLACEHOLDER_IMAGE;
+
   // Try to resolve using Vite's import
-  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(filename));
+  const match = Object.entries(collectionImages).find(([path]) => path.endsWith(cleanFilename));
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
 }
 
