@@ -117,7 +117,7 @@ const HeritageDetail = () => {
         <section className="relative h-96 overflow-hidden">
           <img
             src={getImageUrl(heritage.image_url?.split('/').pop() || heritage.image_url)}
-            alt={heritage.title}
+            alt={heritage.title || t('Heritage site')}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -125,14 +125,14 @@ const HeritageDetail = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
               <span
                 dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(heritage.title)
+                  __html: fixBrokenHtmlTags(heritage.title || t('Heritage site'))
                 }}
               />
             </h1>
             <p className="text-xl">
               <span
                 dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(heritage.subtitle)
+                  __html: fixBrokenHtmlTags(heritage.subtitle || '')
                 }}
               />
             </p>
@@ -150,7 +150,7 @@ const HeritageDetail = () => {
                   <div className="space-y-4 text-muted-foreground">
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(heritage.full_description || heritage.description)
+                        __html: fixBrokenHtmlTags(heritage.full_description || heritage.description || t('No description available'))
                       }}
                     />
                   </div>
@@ -165,17 +165,21 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">{t('Info Singkat')}</h3>
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <MapPin size={20} className="mr-1 text-primary" />
-                      <div>
-                        <p className="font-semibold">{t('museumDetail.location')}</p>
-                        <p className="text-sm text-muted-foreground">{heritage.location}</p>
+                    {heritage.location && (
+                      <div className="flex items-start gap-3">
+                        <MapPin size={20} className="mr-1 text-primary" />
+                        <div>
+                          <p className="font-semibold">{t('museumDetail.location')}</p>
+                          <p className="text-sm text-muted-foreground">{heritage.location}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar size={16} className="mr-3 text-primary" />
-                      <span className="text-sm">{heritage.period}</span>
-                    </div>
+                    )}
+                    {heritage.period && (
+                      <div className="flex items-center">
+                        <Calendar size={16} className="mr-3 text-primary" />
+                        <span className="text-sm">{heritage.period}</span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -185,40 +189,50 @@ const HeritageDetail = () => {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">{t('Informasi Kunjungan')}</h3>
                   <div className="space-y-4">
-                    {heritage.visit_info && (
+                    {heritage.visit_info && typeof heritage.visit_info === 'object' && (
                       <>
-                        <div>
-                          <h4 className="font-semibold text-sm mb-2">{t('Jam Buka')}</h4>
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Clock size={16} className="mr-2" />
-                            <p>{heritage.visit_info.openHours}</p>
+                        {heritage.visit_info.openHours && (
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">{t('Jam Buka')}</h4>
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Clock size={16} className="mr-2" />
+                              <p>{heritage.visit_info.openHours}</p>
+                            </div>
                           </div>
-                        </div>
+                        )}
                         
-                        <div>
-                          <h4 className="font-semibold text-sm mb-2">{t('Harga Tiket')}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {heritage.visit_info.ticketPrice}
-                          </p>
-                        </div>
+                        {heritage.visit_info.ticketPrice && (
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">{t('Harga Tiket')}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {heritage.visit_info.ticketPrice}
+                            </p>
+                          </div>
+                        )}
                         
-                        <div>
-                          <h4 className="font-semibold text-sm mb-2">{t('Waktu Terbaik untuk Berkunjung')}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {heritage.visit_info.bestTime}
-                          </p>
-                        </div>
+                        {heritage.visit_info.bestTime && (
+                          <div>
+                            <h4 className="font-semibold text-sm mb-2">{t('Waktu Terbaik untuk Berkunjung')}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {heritage.visit_info.bestTime}
+                            </p>
+                          </div>
+                        )}
                       </>
                     )}
                     
                     <div>
                       <h4 className="font-semibold text-sm mb-2">{t('Fasilitas')}</h4>
                       <div className="flex flex-wrap gap-2">
-                        {heritage.facilities && heritage.facilities.map((facility, index) => (
-                          <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
-                            {facility}
-                          </span>
-                        ))}
+                        {heritage.facilities && Array.isArray(heritage.facilities) && heritage.facilities.length > 0 ? (
+                          heritage.facilities.map((facility, index) => (
+                            <span key={index} className="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full">
+                              {facility}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground">{t('Informasi fasilitas tidak tersedia')}</p>
+                        )}
                       </div>
                     </div>
                   </div>
