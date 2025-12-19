@@ -21,8 +21,8 @@ interface MuseumItem {
   description: string;
   location: string;
   address: string;
-  image_url: string;
-  gallery_images: string[];
+  img_banner: string;
+  gallery_images: { path: string; sites: string }[];
   latitude: string; // Form handles as string for input
   longitude: string; // Form handles as string for input
   opening_hours: any; // JSON string in form
@@ -44,21 +44,21 @@ interface MuseumItem {
   }) => {
     const [formData, setFormData] = useState<MuseumItem>({
       ...museum,
-      gallery_images: Array.isArray(museum.gallery_images) ? museum.gallery_images : []
+      gallery_images: Array.isArray(museum.gallery_images) ? museum.gallery_images.map(img => typeof img === 'string' ? { path: img, sites: '' } : img) : []
     });
 
     // This ensures proper state updates
     const handleImageUpload = async (url: string) => {
       setFormData(prev => ({
         ...prev,
-        image_url: url
+        img_banner: url
       }));
     };
 
-    const handleGalleryUpload = async (urls: string[]) => {
+    const handleGalleryUpload = async (images: { path: string; sites: string }[]) => {
       setFormData(prev => ({
         ...prev,
-        gallery_images: urls
+        gallery_images: images
       }));
     };
 
@@ -125,8 +125,8 @@ interface MuseumItem {
 
         <ImageUpload
           label="Main Image"
-          value={formData.image_url}
-          onChange={handleImageUpload}
+          value={formData.img_banner}
+          onChange={(url) => setFormData(prev => ({ ...prev, img_banner: url }))}
           bucket="museum"
         />
 
@@ -241,7 +241,7 @@ interface MuseumItem {
   description: '',
   location: '',
   address: '',
-  image_url: '',
+  img_banner: '',
   gallery_images: [],
   latitude: null,
   longitude: null,
