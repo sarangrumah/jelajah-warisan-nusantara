@@ -14,10 +14,12 @@ const Footer = () => {
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
+        console.log('🚀 Footer: Starting to fetch company data...');
         const data = await getFooterCompanyData();
+        console.log('✅ Footer: Company data received:', data);
         setCompanyData(data);
       } catch (error) {
-        console.error('Error loading company data:', error);
+        console.error('❌ Footer: Error loading company data:', error);
       } finally {
         setLoading(false);
       }
@@ -42,6 +44,10 @@ const Footer = () => {
   const addressText = companyData?.address || (language === 'id' 
     ? 'Jl. Medan Merdeka Barat No. 12, Jakarta Pusat 10110' 
     : 'Jl. Medan Merdeka Barat No. 12, Central Jakarta 10110');
+
+  console.log('📱 Footer phone number:', phoneNumber);
+  console.log('📧 Footer email:', emailAddress);
+  console.log('📍 Footer address:', addressText);
 
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
