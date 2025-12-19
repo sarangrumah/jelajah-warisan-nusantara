@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { memoryOfWorldGalleryService } from '@/lib/api-services';
 import logo from '@/assets/MCB-Logo.png';
@@ -239,7 +239,16 @@ const MemoryOfWorldGallery = ({ mowId, images: propImages }: MemoryOfWorldGaller
           open={!!selectedImage}
           onOpenChange={() => setSelectedImage(null)}
         >
-          <DialogContent className="[&>button]:hidden outline-none p-0 bg-transparent border-0 shadow-none flex flex-col justify-center items-center max-w-[90vw]">
+          <DialogContent className="outline-none p-0 bg-transparent border-0 shadow-none flex flex-col justify-center items-center max-w-[90vw]">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
             <img
               src={selectedImage?.url || ""}
               alt="fullscreen"
