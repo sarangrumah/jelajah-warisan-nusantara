@@ -47,19 +47,24 @@ export const useSitesData = (): UseSitesDataReturn => {
       setLoading(true);
       setError(null);
       
+      console.log('🔍 Fetching sites data from API...');
       const response = await museumService.getAll();
+      console.log('📡 Sites API Response:', response);
       
       if (response.error) {
+        console.error('❌ Sites API Error:', response.error);
         throw new Error(response.error);
       }
       
       if (response.data && Array.isArray(response.data)) {
+        console.log('✅ Sites data found:', response.data.length, 'sites');
         setSitesData(response.data as SiteData[]);
       } else {
+        console.log('⚠️ No sites data found');
         setSitesData([]);
       }
     } catch (err) {
-      console.error('Error fetching sites data:', err);
+      console.error('❌ Error fetching sites data:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch sites data');
     } finally {
       setLoading(false);

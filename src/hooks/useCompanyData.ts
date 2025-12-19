@@ -38,20 +38,25 @@ export const useCompanyData = (): UseCompanyDataReturn => {
       setLoading(true);
       setError(null);
       
+      console.log('🔍 Fetching company data from API...');
       const response = await contentService.getAll();
+      console.log('📡 API Response:', response);
       
       if (response.error) {
+        console.error('❌ API Error:', response.error);
         throw new Error(response.error);
       }
       
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         // Get the first (and likely only) company record
+        console.log('✅ Company data found:', response.data[0]);
         setCompanyData(response.data[0] as CompanyData);
       } else {
+        console.log('⚠️ No company data found');
         setCompanyData(null);
       }
     } catch (err) {
-      console.error('Error fetching company data:', err);
+      console.error('❌ Error fetching company data:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch company data');
     } finally {
       setLoading(false);

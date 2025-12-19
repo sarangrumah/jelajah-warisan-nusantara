@@ -26,6 +26,8 @@ class ApiClient {
   constructor() {
     this.baseUrl = import.meta.env.VITE_API_URL;
     this.token = localStorage.getItem('auth_token');
+    console.log('🌐 API Client initialized with baseUrl:', this.baseUrl);
+    console.log('🔑 Auth token present:', !!this.token);
   }
 
   private getHeaders(): HeadersInit {
