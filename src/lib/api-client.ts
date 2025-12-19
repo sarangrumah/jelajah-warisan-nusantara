@@ -1,4 +1,5 @@
 import { setGlobalLoading } from "@/components/LoadingContext";
+import { logger } from "@/utils/logger";
 
 // API Client for backend integration
 export interface ApiResponse<T = any> {
@@ -24,10 +25,12 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL;
+    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     this.token = localStorage.getItem('auth_token');
-    console.log('🌐 API Client initialized with baseUrl:', this.baseUrl);
-    console.log('🔑 Auth token present:', !!this.token);
+    if (import.meta.env.DEV) {
+      logger.info('API Client initialized with baseUrl:', this.baseUrl);
+      logger.info('Auth token present:', !!this.token);
+    }
   }
 
   private getHeaders(): HeadersInit {
@@ -53,7 +56,9 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     setGlobalLoading(true);
     try {
-      console.log('FETCH URL:', `${this.baseUrl}${endpoint}`);
+      if (import.meta.env.DEV) {
+        logger.debug('FETCH URL:', `${this.baseUrl}${endpoint}`);
+      }
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
         headers: {
@@ -70,7 +75,7 @@ class ApiClient {
       } else {
         // Handle non-JSON responses (like HTML error pages)
         const text = await response.text();
-        console.error('Non-JSON response:', text.substring(0, 200));
+        logger.error('Non-JSON response:', text.substring(0, 200));
         return { error: 'Server error occurred' };
       }
   
@@ -80,7 +85,7 @@ class ApiClient {
   
       return { data };
     } catch (error) {
-      console.error('Network error:', error);
+      logger.error('Network error:', error);
       return { error: 'Network error occurred' };
     } finally {
       setGlobalLoading(false);

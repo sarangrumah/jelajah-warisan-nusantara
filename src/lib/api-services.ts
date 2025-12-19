@@ -1,4 +1,5 @@
 import { apiClient } from './api-client';
+import { logWarn } from '@/utils/logger';
 
 export const authService = {
   changePassword: (data: { new_password: string; confirm_password: string }) =>
@@ -259,7 +260,7 @@ export const userService = {
         }
       }
     } catch (error) {
-      console.warn('No existing roles to delete:', error);
+      logWarn('No existing roles to delete:', error);
     }
     // Then create new role
     return apiClient.create('user_roles', { user_id: userId, role });
