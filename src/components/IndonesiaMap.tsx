@@ -168,11 +168,21 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
             if (!map || !popup) { return; }
             const detailBtn = popup.getElement()?.querySelector('.popup-btn-detail');
             if (detailBtn) {
-                detailBtn.addEventListener('click', () => navigate(`/museum/${location.id}`));
+                detailBtn.addEventListener('click', () => {
+                    // Route to appropriate detail page based on type
+                    const typeName = types.find((type) => type.id === location.type)?.name;
+                    const route = typeName === 'museum' ? `/museum/${location.id}` : `/heritage/${location.id}`;
+                    navigate(route);
+                });
             }
             const listBtn = popup.getElement()?.querySelector('.popup-btn-list');
             if (listBtn) {
-                listBtn.addEventListener('click', () => navigate(`/museums/${location.type}`));
+                listBtn.addEventListener('click', () => {
+                    // Route to appropriate category page based on type
+                    const typeName = types.find((type) => type.id === location.type)?.name;
+                    const route = typeName === 'museum' ? '/museum' : '/heritage';
+                    navigate(route);
+                });
             }
         });
     
