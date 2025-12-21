@@ -162,6 +162,8 @@
     opacity: 0;
     transform: translateY(30px);
     transition: var(--transition-smooth);
+    /* Debug: Temporarily make visible to test */
+    /* opacity: 1 !important; */
   }
 
   .scroll-reveal.revealed {

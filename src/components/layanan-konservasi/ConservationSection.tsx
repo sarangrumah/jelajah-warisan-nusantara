@@ -20,7 +20,7 @@ const ConservationSection = ({ title, description }: ConservationSectionProps) =
         <div className="text-center mb-16x">
           <h2 className="text-4xl md:text-4xl font-bold text-heritage-gradient pb-3">{translatedTitle}</h2>
           <div 
-            className="text-xl text-muted-foreground max-w-8xl mx-autox px-6 pt-5 leading-relaxed"
+            className="text-xl text-muted-foreground max-w-4xl mx-auto px-6 pt-5 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(translatedDescription) }}
           />
         </div>

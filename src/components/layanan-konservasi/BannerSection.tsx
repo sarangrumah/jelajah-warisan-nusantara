@@ -130,7 +130,7 @@ const BannerSection = ({ title, subtitle, image }: BannerSectionProps) => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-heritage-gradientx pb-5">
               {translatedSlides.length > 0 && translatedSlides[currentSlide].title}
             </h1>
-            <p className="text-xl text-muted-foreground max-w-8xl mx-autox px-6 pt-5 leading-relaxed">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto px-6 pt-5 leading-relaxed">
               {translatedSlides.length > 0 && translatedSlides[currentSlide].subtitle}
             </p>
           </div>

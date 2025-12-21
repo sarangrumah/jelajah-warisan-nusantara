@@ -83,15 +83,22 @@ const SimpleProfileSection: React.FC = () => {
     );
   }
 
+  console.log('🔍 SimpleProfileSection: Rendering with translations:', {
+    title: t('profile.title'),
+    description: t('profile.description'),
+    loading,
+    companyData
+  });
+
   return (
     <>
       <section className="py-20 bg-gradient-to-b from-background to-card">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16 scroll-reveal">
+          <div className="text-center mb-16">
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
               {t('profile.title')}
             </h2>
-            <p className="text-xl text-muted-foreground max-w-8xl mx-auto p-6 leading-relaxed text-justify">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto p-6 leading-relaxed text-justify">
               {t('profile.description')}
             </p>
             {companyData && (
