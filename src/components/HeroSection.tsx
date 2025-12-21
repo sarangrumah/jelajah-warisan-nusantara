@@ -195,18 +195,28 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
   
   const fetchSlides = async () => {
     try {
+      console.log('[HeroSection] Fetching banners...');
       const response = await bannerService.getAll();
+      console.log('[HeroSection] API Response:', response);
+      
       if (response.error || !response.data || response.data.length === 0) {
-        console.error('Error fetching slides:', response.error);
+        console.error('Error fetching slides:', response.error || 'No data returned');
         setSlides(mapSlidesWithImageUrl(defaultSlides));
       } else {
+        console.log('[HeroSection] Raw banners count:', response.data.length);
         const filteredSlides = response.data
-          .filter((slide: any) => (
-            slide.is_active === true
-            && slide.is_approved === true
-            && new Date(slide.start_publish_date) <= new Date()
-            && new Date(slide.end_publish_date) >= new Date()
-          ))
+          .filter((slide: any) => {
+            const isActive = slide.is_active === true;
+            const isApproved = slide.is_approved === true;
+            const now = new Date();
+            const startDate = new Date(slide.start_publish_date);
+            const endDate = new Date(slide.end_publish_date);
+            const isWithinDate = startDate <= now && endDate >= now;
+            
+            console.log(`[HeroSection] Banner "${slide.title}": active=${isActive}, approved=${isApproved}, withinDate=${isWithinDate} (Start: ${slide.start_publish_date}, End: ${slide.end_publish_date})`);
+            
+            return isActive && isApproved && isWithinDate;
+          })
           .map((slide: any) => ({
             ...slide,
             image: slide.image && !slide.image.startsWith('/uploads/hero-sections/')

@@ -67,10 +67,10 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     setGlobalLoading(true);
     try {
-      if (import.meta.env.DEV) {
-        logger.debug('FETCH URL:', `${this.baseUrl}${endpoint}`);
-      }
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const fullUrl = `${this.baseUrl}${endpoint}`;
+      console.log('[ApiClient] Fetching:', fullUrl);
+      
+      const response = await fetch(fullUrl, {
         ...options,
         headers: {
           ...this.getHeaders(),
