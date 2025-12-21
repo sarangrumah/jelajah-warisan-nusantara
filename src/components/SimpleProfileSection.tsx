@@ -87,7 +87,7 @@ const SimpleProfileSection: React.FC = () => {
     <>
       <section className="py-20 bg-gradient-to-b from-background to-card">
         <div className="container mx-auto px-6">
-          {/* <div className="text-center mb-16 scroll-reveal">
+          <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
               {t('profile.title')}
             </h2>
@@ -99,7 +99,7 @@ const SimpleProfileSection: React.FC = () => {
                 ✅ Using dynamic data from database
               </div>
             )}
-          </div> */}
+          </div>
 
           <div className="grid gap-12 items-center mb-16">
             <div className="space-y-6 scroll-reveal">

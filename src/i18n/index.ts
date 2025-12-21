@@ -924,7 +924,7 @@ export const resources = {
           }
         },
         manage: "Kelola",
-        viewAgenda: "Lihat Agendas"
+        viewAgenda: "Lihat Agenda"
       },
       // Distribution Section
       distribution: {
