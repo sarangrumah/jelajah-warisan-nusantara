@@ -30,7 +30,7 @@ class ApiClient {
       this.baseUrl = 'http://localhost:3000';
     } else {
       // Production: Use environment variable with fallback
-      this.baseUrl = import.meta.env.VITE_API_URL || 'https://api.museumcagarbudaya.kemenbud.go.id';
+      this.baseUrl = import.meta.env.VITE_API_URL || 'https://museumcagarbudaya.kemenbud.go.id';
     }
     
     this.token = localStorage.getItem('auth_token');
@@ -67,10 +67,10 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     setGlobalLoading(true);
     try {
-      const fullUrl = `${this.baseUrl}${endpoint}`;
-      console.log('[ApiClient] Fetching:', fullUrl);
-      
-      const response = await fetch(fullUrl, {
+      if (import.meta.env.DEV) {
+        logger.debug('FETCH URL:', `${this.baseUrl}${endpoint}`);
+      }
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
         headers: {
           ...this.getHeaders(),

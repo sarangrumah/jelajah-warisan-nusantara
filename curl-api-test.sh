@@ -5,7 +5,7 @@
 
 # Configuration
 API_BASE_URL="http://localhost:3000"  # Change to production URL when testing in production
-PRODUCTION_API_BASE_URL="https://api.museumcagarbudaya.kemenbud.go.id"
+PRODUCTION_API_BASE_URL="https://museumcagarbudaya.kemenbud.go.id"
 AUTH_TOKEN=""  # Will be set after successful login
 
 # Colors for output

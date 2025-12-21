@@ -8,7 +8,7 @@ echo ""
 
 # Configuration
 API_BASE="http://localhost:3000"
-PROD_API="https://api.museumcagarbudaya.kemenbud.go.id"
+PROD_API="https://museumcagarbudaya.kemenbud.go.id"
 
 echo "1. Health Check"
 curl -s "$API_BASE/health" | jq . || echo "Install jq for better formatting"

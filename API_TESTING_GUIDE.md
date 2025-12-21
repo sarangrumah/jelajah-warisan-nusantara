@@ -71,7 +71,7 @@ A simplified script for rapid testing of essential endpoints:
 API_BASE="http://localhost:3000"
 
 # Production
-PROD_API="https://api.museumcagarbudaya.kemenbud.go.id"
+PROD_API="https://museumcagarbudaya.kemenbud.go.id"
 ```
 
 ## 🔐 Authentication
