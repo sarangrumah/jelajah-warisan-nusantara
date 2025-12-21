@@ -244,12 +244,19 @@ const IndonesiaMap = () => {
   }, []);
 
   useEffect(() => {
+    // Get museum type ID first, like in Museum.tsx and Heritage.tsx
+    const museumTypeId = types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
+    
     if(filter === 'all') {
       setFilteredLocations(locations);
     } else if(filter === 'museum') {
-      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name === 'museum'));
+      // Filter locations that match museum type ID
+      const museumLocations = locations.filter(loc => loc.type === museumTypeId);
+      setFilteredLocations(museumLocations);
     } else {
-      setFilteredLocations(locations.filter(loc => types.find((type) => type.id === loc.type)?.name !== 'museum'));
+      // Filter locations that don't match museum type ID (heritage sites)
+      const heritageLocations = locations.filter(loc => loc.type !== museumTypeId);
+      setFilteredLocations(heritageLocations);
     }
   }, [filter, locations, types])
 
@@ -296,10 +303,16 @@ const IndonesiaMap = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-500/30">
-              🏛️ {museumLabel}: {locations.filter(l => l.type === '12bc00a9-ba1a-4562-940d-4e33bb26acdc').length}
+              🏛️ {museumLabel}: {(() => {
+                const museumTypeId = types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
+                return locations.filter(l => l.type === museumTypeId).length;
+              })()}
             </Badge>
             <Badge variant="outline" className="bg-green-500/20 text-green-600 border-green-500/30">
-              🏛️ {heritageLabel}: {locations.filter(l => l.type !== '12bc00a9-ba1a-4562-940d-4e33bb26acdc').length}
+              🏛️ {heritageLabel}: {(() => {
+                const museumTypeId = types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
+                return locations.filter(l => l.type !== museumTypeId).length;
+              })()}
             </Badge>
           </div>
           <Select value={filter} onValueChange={(value) => setFilter(value as 'all' | 'museum' | 'heritage')}>
