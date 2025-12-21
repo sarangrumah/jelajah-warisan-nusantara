@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { mediaService } from '@/lib/api-services';
+import { publicationService } from '@/lib/api-services';
 import { stripHtml } from '@/lib/utils';
 import { unescapeHtml, sanitizeHtml } from '@/lib/sanitize-html';
 
@@ -22,10 +22,9 @@ const PublicationSection = () => {
   useEffect(() => {
     const fetchPublications = async () => {
       try {
-        const response = await mediaService.getAll();
+        const response = await publicationService.getAll();
         if (response.data) {
-          console.log('Fetched publications:', response.data);
-          console.log('Fetched publications:', response.data);
+          console.log('Fetched publications from publication service:', response.data);
           setPublications(response.data);
         }
       } catch (error) {

@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react';
 import { FileText, Download, Calendar, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+import { publicationService } from '@/lib/api-services';
 
-const rawPublications = [
+// Default fallback publications in case API fails
+const defaultPublications = [
   {
     title: 'Laporan Tahunan 2023',
     description: 'Laporan lengkap kegiatan dan pencapaian Direktorat Museum dan Cagar Budaya tahun 2023',
@@ -49,8 +52,30 @@ const rawBudgetData = [
 ];
 
 const PublikationSection = () => {
-  const { translatedContent: publications } = useTranslationSystem(rawPublications, 'publications-list');
+  const [publications, setPublications] = useState<any[]>(defaultPublications);
+  const [loading, setLoading] = useState(true);
+  
   const { translatedContent: budgetData } = useTranslationSystem(rawBudgetData, 'budget-data');
+
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        const response = await publicationService.getAll();
+        if (response.data && response.data.length > 0) {
+          setPublications(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching publications:', error);
+        // Keep default publications if API fails
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublications();
+  }, []);
+
+  const translatedContent = useTranslationSystem(publications, 'publications-list');
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -70,7 +95,7 @@ const PublikationSection = () => {
             Dokumen Publikasi
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
-            {(publications || rawPublications).map((pub, index) => (
+            {(translatedContent.translatedContent || publications).map((pub, index) => (
               <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
                 <CardHeader>
                   <div className="flex items-start justify-between">

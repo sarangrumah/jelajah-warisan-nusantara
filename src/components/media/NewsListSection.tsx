@@ -91,11 +91,9 @@ const NewsListSection = () => {
 
     const categories = [
         { id: 'semua', name: useTranslate('Semua').translatedText },
-        // { id: 'berita', name: useTranslate('Berita').translatedText },
+        { id: 'berita', name: useTranslate('Berita').translatedText },
         { id: 'artikel', name: useTranslate('Artikel').translatedText },
         { id: 'informasi', name: useTranslate('Informasi Kegiatan').translatedText },
-        // { id: 'kemitraan', name: useTranslate('Kemitraan').translatedText },
-        { id: 'laporan', name: useTranslate('Laporan').translatedText },
         { id: 'pengumuman', name: useTranslate('Pengumuman').translatedText },
     ];
 
@@ -112,12 +110,21 @@ const NewsListSection = () => {
             is_approved: boolean;
             is_rejected: boolean;
             published_date: Date;
-          }) => (
-            article.is_active === true
-            && article.is_approved === true
-            && article.is_rejected === false
-            && new Date(article.published_date) <= new Date()
-          ));
+            categories: string;
+          }) => {
+            // Only include news articles, exclude publication-like content
+            const isNewsContent = ['artikel', 'berita', 'informasi', 'pengumuman'].includes(
+              article.categories?.toLowerCase()
+            );
+            
+            return (
+              article.is_active === true
+              && article.is_approved === true
+              && article.is_rejected === false
+              && new Date(article.published_date) <= new Date()
+              && isNewsContent
+            );
+          });
           setArticles(filteredArticles);
         }
       } catch (error) {
