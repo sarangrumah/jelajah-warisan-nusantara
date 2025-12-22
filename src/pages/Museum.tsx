@@ -54,17 +54,24 @@ const Museum = () => {
     try {
       const response = await museumService.getPublished(); // Public only sees approved museums
 
+      console.log('🔍 DEBUG: Raw API response:', response);
+      console.log('🔍 DEBUG: API response data:', response.data);
+
       if (response.error || response.data.length === 0) {
         console.error('Error fetching museums:', response.error);
         setMuseums(mapSlidesWithImageUrl(defaultMuseums));
       } else {
-        const filteredMuseums = response.data.filter((museum: any) => (
-          museum.is_active === true 
-          && museum.is_approved === true
-          // && new Date(museum.start_publish_date) <= new Date()
-          // && new Date(museum.end_publish_date) >= new Date()
-        ));
-        setMuseums(mapSlidesWithImageUrl(filteredMuseums)); // mapSlidesWithImageUrl(response.data);
+        const filteredMuseums = response.data.filter((museum: any) => {
+          const isActive = museum.is_active === true;
+          const isApproved = museum.is_approved === true;
+          console.log(`🔍 DEBUG: Museum ${museum.name} - is_active: ${isActive}, is_approved: ${isApproved}`);
+          return isActive && isApproved;
+        });
+        
+        console.log('🔍 DEBUG: Filtered museums (active + approved):', filteredMuseums);
+        console.log('🔍 DEBUG: Filtered museums count:', filteredMuseums.length);
+        
+        setMuseums(mapSlidesWithImageUrl(filteredMuseums));
       }
     } catch (error) {
       console.error('Error fetching museums:', error);
@@ -96,11 +103,15 @@ const Museum = () => {
       const fetchCategory = async () => {
         try {
           const museumId = types.find((t) => t.name.toLowerCase() === 'museum')?.id;
+          console.log('🔍 DEBUG: Found museum type ID:', museumId);
+          console.log('🔍 DEBUG: Available types:', types);
+          
           const response = await TypesAndCategoriesSites.getAllCategories(museumId);
           if (response.error || response.data.length === 0) {
             console.error('Error fetching categories:', response.error);
           } else {
             setCategories(response.data);
+            console.log('🔍 DEBUG: Categories fetched:', response.data);
           }
         } catch (error) {
           console.error('Error fetching museums:', error);
@@ -115,8 +126,22 @@ const Museum = () => {
     const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;
-    return museum.type === museumId && matchesSearch && matchesFilter;
+    
+    // TEMPORARY FIX: Disable type filtering to test if this is the issue
+    // Original: const typeMatches = museum.type_relation?.name?.toLowerCase() === 'museum' || museum.type === museumId;
+    const typeMatches = true; // Show all museums temporarily
+    
+    // Debug the type matching
+    if (displayMuseums.indexOf(museum) === 0) { // Log only for first museum to avoid spam
+      console.log('🔍 DEBUG: Type filtering DISABLED temporarily - showing all museums');
+      console.log('🔍 DEBUG: Museum object keys:', Object.keys(museum));
+    }
+    
+    return typeMatches && matchesSearch && matchesFilter;
   });
+  
+  console.log('🔍 DEBUG: Final filtered museums count:', filteredMuseums.length);
+  console.log('🔍 DEBUG: Museum ID used for filtering:', museumId);
   
   useEffect(() => {
     const selectedType = types.find((t) => t.id === type)?.name;
