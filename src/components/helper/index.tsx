@@ -1,13 +1,25 @@
-/*
-// Disabled due to missing images causing Vite errors
-const heroImages = import.meta.glob('@/assets/images/*', { eager: true });
+import { assetUrl } from '@/lib/asset-url';
 
-export function getImageUrl(filename: string) {
-  return '/placeholder.svg'; // fallback to a placeholder image
-}
-*/
-// Dummy export to prevent import errors in other files
-export const mapSlidesWithImageUrl = (slidesArr: any[]) => slidesArr;
+/**
+ * Map slides with image URLs using the same approach as HeroSection
+ * This function processes an array of slides and transforms their image URLs
+ * to work in both development and production environments
+ */
+export const mapSlidesWithImageUrl = (slidesArr: any[]) =>
+  slidesArr.map(slide => {
+    const originalPath = slide.image_url || slide.image || slide.img_banner;
+    const transformedPath = assetUrl(originalPath) || '/placeholder.svg';
+    
+    return {
+      ...slide,
+      asset: slide.image?.split('/').pop() || slide.image || slide.img_banner?.split('/').pop() || slide.img_banner,
+      image: transformedPath,
+      // Ensure image_url field is also set for compatibility
+      image_url: transformedPath,
+    };
+  });
 
-// Dummy export to prevent import errors in other files
-export const getImageUrl = (_filename: string) => '/placeholder.svg';
+/**
+ * Get image URL with fallback
+ */
+export const getImageUrl = (filename: string) => assetUrl(filename) || '/placeholder.svg';

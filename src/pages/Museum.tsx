@@ -19,34 +19,16 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 
-const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
-const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
+import { assetUrl } from '@/lib/asset-url';
 
+// Updated function to match the approach used in HeroSection
 function getMuseumsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
+  if (!filename) {
+    return '/placeholder.svg';
   }
-  const justFile = filename?.split('/').pop() || filename;
-  // Try museums first
-  let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Try images as fallback
-  match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as { default: string }).default;
-  }
-  // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return '/placeholder.svg';
+  
+  // Use the same assetUrl function as HeroSection for consistency
+  return assetUrl(filename) || '/placeholder.svg';
 }
 
 const Museum = () => {
@@ -215,18 +197,26 @@ const Museum = () => {
             <Card key={item.id} className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:scale-105">
               <Link to={`/museum/${item.id}`}>
                 <div className="aspect-video overflow-hidden rounded-t-lg">
-                  <img
-                    src={(() => {
-                      const imageCandidate = item.img_banner || '';
-                      const resolved = getMuseumsImageUrl(imageCandidate);
-                      // Use logo as placeholder if no image
-                      return (resolved && resolved !== '/placeholder.svg')
-                        ? resolved
-                        : '/src/assets/MCB-Logo.png';
-                    })()}
-                    alt={item.name}
-                    className="w-full h-full object-cover object-bottom"
-                  />
+                  {(() => {
+                    // Try image_url first (from database), then fall back to other fields
+                    const imageCandidate = item.image_url || item.img_banner || item.image || '';
+                    const resolved = getMuseumsImageUrl(imageCandidate);
+                    const finalImageSrc = (resolved && resolved !== '/placeholder.svg')
+                      ? resolved
+                      : '/assets/logo/LOGO V 4 - hitam.png';
+                    
+                    return (
+                      <img
+                        src={finalImageSrc}
+                        alt={item.name}
+                        className="w-full h-full object-cover object-bottom"
+                        onError={(e) => {
+                          console.error('[Museum] Image failed to load:', imageCandidate);
+                          (e.target as HTMLImageElement).src = '/assets/logo/LOGO V 4 - hitam.png';
+                        }}
+                      />
+                    );
+                  })()}
                 </div>
                 <div className="flex-1 flex flex-col">
                   <CardHeader>
