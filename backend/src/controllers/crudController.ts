@@ -195,10 +195,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         let orderByClause;
         if (tableName === 'news_articles' || tableName === 'tb_publication') {
           // For news and publications, order by published_at first, then created_at as fallback
-          orderByClause = `${tableName}.published_at DESC NULLS LAST, ${tableName}.created_at DESC`;
+          orderByClause = `${tableName}.published_at DESC NULLS LAST, ${tableName}.created_at DESC NULLS LAST`;
         } else {
           // For other tables, order by created_at
-          orderByClause = `${tableName}.created_at DESC`;
+          orderByClause = `${tableName}.created_at DESC NULLS LAST`;
         }
 
         const queryText = `
