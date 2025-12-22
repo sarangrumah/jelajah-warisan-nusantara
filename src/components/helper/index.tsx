@@ -8,7 +8,9 @@ import { assetUrl } from '@/lib/asset-url';
 export const mapSlidesWithImageUrl = (slidesArr: any[]) =>
   slidesArr.map(slide => {
     const originalPath = slide.image_url || slide.image || slide.img_banner;
-    const transformedPath = assetUrl(originalPath) || '';
+    const transformedPath = (originalPath && originalPath !== 'null' && originalPath !== 'undefined')
+      ? (assetUrl(originalPath) || '')
+      : '';
     
     return {
       ...slide,
@@ -22,4 +24,4 @@ export const mapSlidesWithImageUrl = (slidesArr: any[]) =>
 /**
  * Get image URL with fallback
  */
-export const getImageUrl = (filename: string) => assetUrl(filename) || '';
+export const getImageUrl = (filename: string) => (filename && filename !== 'null' && filename !== 'undefined') ? (assetUrl(filename) || '') : '';

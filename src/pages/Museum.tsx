@@ -20,10 +20,11 @@ function fixBrokenHtmlTags(html: string): string {
 }
 
 import { assetUrl } from '@/lib/asset-url';
+import mcbLogo from '@/assets/images/logo/MCB Logo_Hitam.png';
 
 // Updated function to match the approach used in HeroSection
 function getMuseumsImageUrl(filename: string) {
-  if (!filename) {
+  if (!filename || filename === 'null' || filename === 'undefined') {
     return ''; // Return empty string, let the component handle the fallback
   }
   
@@ -199,13 +200,14 @@ const Museum = () => {
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   {(() => {
                     // Try image_url first (from database), then fall back to other fields
-                    const imageCandidate = item.image_url || item.img_banner || item.image;
+                    const rawImage = item.image_url || item.img_banner || item.image;
+                    const imageCandidate = typeof rawImage === 'string' ? rawImage.trim() : rawImage;
                     
-                    // If no image candidate, directly use logo
-                    if (!imageCandidate) {
+                    // If no image candidate or invalid string, directly use logo
+                    if (!imageCandidate || imageCandidate === 'null' || imageCandidate === 'undefined') {
                       return (
                         <img
-                          src="/assets/logo/LOGO V 4 - hitam.png"
+                          src={mcbLogo}
                           alt={item.name}
                           className="w-full h-full object-cover object-bottom"
                         />
@@ -215,7 +217,7 @@ const Museum = () => {
                     const resolved = getMuseumsImageUrl(imageCandidate);
                     const finalImageSrc = (resolved && resolved.trim() !== '')
                       ? resolved
-                      : '/assets/logo/LOGO V 4 - hitam.png';
+                      : mcbLogo;
                     
                     return (
                       <img
@@ -224,9 +226,11 @@ const Museum = () => {
                         className="w-full h-full object-cover object-bottom"
                         onError={(e) => {
                           const img = e.target as HTMLImageElement;
-                          if (img.src !== '/assets/logo/LOGO V 4 - hitam.png') {
+                          // Use a data attribute to prevent infinite loop
+                          if (!img.dataset.errorHandled) {
                             console.error('[Museum] Image failed to load:', imageCandidate);
-                            img.src = '/assets/logo/LOGO V 4 - hitam.png';
+                            img.dataset.errorHandled = 'true';
+                            img.src = mcbLogo;
                           }
                         }}
                       />
