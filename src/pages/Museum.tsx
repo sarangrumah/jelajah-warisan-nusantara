@@ -77,17 +77,12 @@ const Museum = () => {
           });
         });
         
-        const filteredMuseums = response.data.filter((museum: any) => {
-          const isActive = museum.is_active === true;
-          const isApproved = museum.is_approved === true;
-          console.log(`🔍 DEBUG: Museum ${museum.name} - is_active: ${isActive}, is_approved: ${isApproved}`);
-          return isActive && isApproved;
-        });
+        // API already filters by is_approved and is_active, so no need to filter again here
+        console.log('🔍 DEBUG: API already filtered by is_active and is_approved');
+        console.log('🔍 DEBUG: Museums count from API:', response.data.length);
+        console.log('🔍 DEBUG: Museum names from API:', response.data.map((m: any) => m.name));
         
-        console.log('🔍 DEBUG: Filtered museums (active + approved):', filteredMuseums.length);
-        console.log('🔍 DEBUG: Filtered museum names:', filteredMuseums.map((m: any) => m.name));
-        
-        setMuseums(mapSlidesWithImageUrl(filteredMuseums));
+        setMuseums(mapSlidesWithImageUrl(response.data));
       }
     } catch (error) {
       console.error('Error fetching museums:', error);
@@ -138,24 +133,61 @@ const Museum = () => {
   }, [types]);
 
   const museumId = types.find((t) => t.name.toLowerCase() === 'museum')?.id;
-  const filteredMuseums = displayMuseums.filter(museum => {
-    const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;
-    
-    // PROPER FIX: Use type_relation.name to filter museums vs heritage sites
-    // This should match "museum" and exclude "cagar budaya" (heritage sites)
-    const typeMatches = museum.type_relation?.name?.toLowerCase() === 'museum';
-    
-    // Debug the type matching
-    if (displayMuseums.indexOf(museum) === 0) { // Log only for first museum to avoid spam
-      console.log('🔍 DEBUG: Type filtering enabled - museum.type_relation?.name:', museum.type_relation?.name);
-      console.log('🔍 DEBUG: Museum object keys:', Object.keys(museum));
-      console.log('🔍 DEBUG: Full museum object:', JSON.stringify(museum, null, 2));
+  
+  // Debug: Log the filtering process step by step
+  console.log('🔍 DEBUG: Starting filtering process...');
+  console.log('🔍 DEBUG: Total museums before filtering:', displayMuseums.length);
+  console.log('🔍 DEBUG: Search term:', searchTerm);
+  console.log('🔍 DEBUG: Filter type:', filterType);
+  console.log('🔍 DEBUG: Museum ID for filtering:', museumId);
+  console.log('🔍 DEBUG: Categories loaded:', categories.length);
+  
+  const filteredMuseums = displayMuseums.filter((museum, index) => {
+    // Step 1: Type matching - more flexible matching
+    const museumTypeName = museum.type_relation?.name?.toLowerCase() || '';
+    const typeMatches = museumTypeName === 'museum' || 
+                       museumTypeName.includes('museum') ||
+                       museumTypeName.includes('gallery') ||
+                       museum.type === '12bc00a9-ba1a-4562-940d-4e33bb26acdc'; // Direct ID match as fallback
+    if (!typeMatches && index < 3) { // Log first few failures
+      console.log(`🔍 DEBUG: Museum "${museum.name}" filtered out - type:`, museum.type_relation?.name, 'museumTypeName:', museumTypeName);
     }
     
-    return typeMatches && matchesSearch && matchesFilter;
+    // Step 2: Search matching
+    const matchesSearch = museum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!matchesSearch && searchTerm && index < 3) {
+      console.log(`🔍 DEBUG: Museum "${museum.name}" filtered out - search term "${searchTerm}" not found`);
+    }
+    
+    // Step 3: Category matching
+    const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;
+    if (!matchesFilter && filterType !== 'all' && index < 3) {
+      console.log(`🔍 DEBUG: Museum "${museum.name}" filtered out - category filter "${filterType}"`, {
+        museumCategory: museum.category,
+        availableCategories: categories.map(c => ({id: c.id, name: c.name}))
+      });
+    }
+    
+    const finalMatch = typeMatches && matchesSearch && matchesFilter;
+    if (!finalMatch && index < 5) { // Log more failures for debugging
+      console.log(`🔍 DEBUG: Museum "${museum.name}" filtered out - final match:`, {
+        typeMatches,
+        matchesSearch,
+        matchesFilter,
+        searchTerm,
+        filterType,
+        typeRelation: museum.type_relation,
+        museumType: museum.type,
+        category: museum.category
+      });
+    }
+    
+    return finalMatch;
   });
+  
+  console.log('🔍 DEBUG: After filtering - museums count:', filteredMuseums.length);
+  console.log('🔍 DEBUG: Filtered out:', displayMuseums.length - filteredMuseums.length, 'museums');
   
   console.log('🔍 DEBUG: Final filtered museums count:', filteredMuseums.length);
   console.log('🔍 DEBUG: Museum ID used for filtering:', museumId);

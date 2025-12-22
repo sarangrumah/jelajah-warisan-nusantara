@@ -1,0 +1,78 @@
+# Museum Count Mismatch - Debug Report
+
+## 🔍 Issue Summary
+- **Database Query Result**: 19 museums returned
+- **Frontend Display**: Only 16 museums shown
+- **Difference**: 3 museums filtered out by frontend logic
+
+## 🎯 Analysis
+
+The issue is NOT with the API or database, but with the **additional frontend filtering** applied after getting the data from the API.
+
+### Frontend Filtering Steps
+1. **API Call**: `museumService.getPublished()` → Returns 19 museums ✅
+2. **Type Filtering**: Filter by `type_relation.name === 'museum'` → May remove some ❓
+3. **Search Filtering**: Filter by search term → May remove some if search is active ❓
+4. **Category Filtering**: Filter by selected category → May remove some ❓
+
+## 🛠️ Quick Fix - Disable Additional Filtering
+
+If you want to show ALL 19 museums immediately, modify the filtering logic:
+
+### Option A: Disable Search and Category Filtering (Recommended for Testing)
+```javascript
+const filteredMuseums = displayMuseums.filter(museum => {
+  // Only apply type filtering, disable search and category filtering
+  const typeMatches = museum.type_relation?.name?.toLowerCase() === 'museum';
+  return typeMatches; // Only type filtering
+});
+```
+
+### Option B: Show All Museums (No Filtering)
+```javascript
+const filteredMuseums = displayMuseums; // No filtering at all
+```
+
+### Option C: Debug Current Filters
+The enhanced debug logging will show exactly which museums are being filtered out and why.
+
+## 🔧 Production Fix - Investigate Root Cause
+
+If you want to keep the filtering but fix the count mismatch:
+
+1. **Check Search Term**: Is there an active search filtering out museums?
+2. **Check Category Filter**: Is a specific category selected that excludes some museums?
+3. **Check Type Relations**: Do all 19 museums have proper `type_relation` populated?
+
+## 📋 Immediate Testing Steps
+
+1. **Clear Search**: Remove any search terms
+2. **Reset Filter**: Set category filter to "all"
+3. **Check Debug Log**: Look for filtering messages in console
+4. **Verify Count**: Should show all 19 museums if filtering is the issue
+
+## 🎯 Most Likely Causes
+
+### Cause 1: Search Term Active
+- User has entered a search term that doesn't match 3 museum names
+- **Solution**: Clear search or improve search logic
+
+### Cause 2: Category Filter Applied
+- A specific category is selected that doesn't include 3 museums
+- **Solution**: Reset filter to "all" or check category data
+
+### Cause 3: Type Relation Missing
+- 3 museums don't have `type_relation` populated correctly
+- **Solution**: Check backend JOIN queries or database relationships
+
+## 📊 Expected Debug Output
+
+After applying the enhanced logging, you should see:
+```
+🔍 DEBUG: Total museums before filtering: 19
+🔍 DEBUG: Search term: [empty or search term]
+🔍 DEBUG: Filter type: [all or category id]
+🔍 DEBUG: Museum "Name" filtered out - reason: [specific reason]
+```
+
+This will tell you exactly which 3 museums are being filtered and why.
