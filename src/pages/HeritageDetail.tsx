@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
-import { museumService } from '@/lib/api-services';
+import { heritageService } from '@/lib/api-services';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -47,7 +47,7 @@ const HeritageDetail = () => {
   const fetchHeritages = async () => {
     try {
       setLoading(true);
-      const response = await museumService.getPublished(); // Public only sees approved museums
+      const response = await heritageService.getPublished(); // Public only sees approved heritage sites
       if(response.error || response.data.length === 0) {
         console.error('Error fetching heritages:', response.error);
         setHeritages(defaultHeritages);

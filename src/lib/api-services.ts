@@ -30,13 +30,22 @@ export const collectionService = {
   update: (id: string, data: any) => apiClient.update('collections', id, data),
   delete: (id: string) => apiClient.delete('collections', id),
 }
-// Heitages
+// Heritage Sites (Cagar Budaya)
 export const heritageService = {
-  getAll: () => apiClient.getAll('heritages'),
-  getById: (id: string) => apiClient.getById('heritages', id),
-  create: (data: any) => apiClient.create('heritages', data),
-  update: (id: string, data: any) => apiClient.update('heritages', id, data),
-  delete: (id: string) => apiClient.delete('heritages', id),
+  approve: (id: string) => apiClient.approve('tb_sites', id),
+  reject: (id: string, reason: string) => apiClient.reject('tb_sites', id, reason),
+  // For admin: get all heritage sites without any filtering
+  getAll: (params?: any) => apiClient.getAll('tb_sites', params),
+  // For public frontend: only get approved heritage sites (filtered by heritage type)
+  getPublished: () => apiClient.getAll('tb_sites', { 
+    is_approved: 'true', 
+    is_active: 'true',
+    type: 'cb368bd8-22cb-40f9-ae73-0990cad6e4d0' // Cagar Budaya type ID
+  }),
+  getById: (id: string) => apiClient.getById('tb_sites', id),
+  create: (data: any) => apiClient.create('tb_sites', data),
+  update: (id: string, data: any) => apiClient.update('tb_sites', id, data),
+  delete: (id: string) => apiClient.delete('tb_sites', id),
 }
 // News Articles
 export const newsService = {

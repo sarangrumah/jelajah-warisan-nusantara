@@ -88,8 +88,10 @@ console.log('🔍 DEBUG: Final filtered museums count:', filteredMuseums.length)
 - **After**: 18 museums → 18 museums displayed
 
 ## Files Modified
-1. `src/lib/api-services.ts` - Added type filter to `museumService.getPublished()`
+1. `src/lib/api-services.ts` - Added type filters to both `museumService.getPublished()` and `heritageService.getPublished()`
 2. `src/pages/Museum.tsx` - Simplified filtering logic and enhanced debug logging
+3. `src/pages/Heritage.tsx` - Updated to use heritageService instead of museumService
+4. `src/pages/HeritageDetail.tsx` - Updated to use heritageService instead of museumService
 
 ## Testing
 To verify the fix:

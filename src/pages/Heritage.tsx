@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultHeritages } from '@/../database/default-data';
-import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { heritageService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -66,7 +66,7 @@ const Heritage = () => {
 
   const fetchHeritages = async () => {
     try {
-      const response = await museumService.getPublished(); // Public only sees approved museums
+      const response = await heritageService.getPublished(); // Public only sees approved heritage sites
       if(response.error) {
         console.error('Error fetching heritages:', response.error);
       }
