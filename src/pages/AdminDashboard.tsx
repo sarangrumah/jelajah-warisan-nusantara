@@ -15,6 +15,7 @@ import AdminSidebar from '@/components/admin/AdminSidebar';
 import BannerManagement from '@/components/admin/BannerManagement';
 import CompanyProfileManagement from '@/components/admin/CompanyProfileManagement';
 import SitesManagement from '@/components/admin/SiteManagement';
+import MuseumManagement from '@/components/admin/MuseumManagement';
 import AgendaManagement from '@/components/admin/EventManagement';
 import MediaManagement from '@/components/admin/MediaManagement';
 import FAQManagement from '@/components/admin/FAQManagement';

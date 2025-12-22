@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Eye, EyeOff, Check, ThumbsDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -258,9 +258,11 @@ interface MuseumItem {
     email: '',
     website: ''
   },
-  is_published: true
+  is_published: true,
+  is_approved: true,
+  is_rejected: false
   };
-const MuseumManagement = () => {
+const MuseumManagement = ({ userRole }: { userRole: string }) => {
   const [museums, setMuseums] = useState<MuseumItem[]>([]);
   const [types, setTypes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -359,6 +361,8 @@ const MuseumManagement = () => {
         website: formData.contact_info.website,
         // Map is_published to is_active
         is_active: formData.is_published,
+        // Automatically approve museums created through this interface
+        is_approved: true,
         // Ensure latitude/longitude are handled correctly (empty string is fine for varchar, but null is safer if empty)
         latitude: formData.latitude === '' ? null : formData.latitude,
         longitude: formData.longitude === '' ? null : formData.longitude,
@@ -440,6 +444,67 @@ const MuseumManagement = () => {
       toast({
         title: 'Error',
         description: 'Failed to update museum status',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const approveMuseum = async (id: string) => {
+    try {
+      const response = await museumService.approve(id);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMuseums(prev => prev.map(museum =>
+        museum.id === id ? {
+          ...museum,
+          is_approved: (response.data as any)?.is_approved ?? true,
+          is_rejected: (response.data as any)?.is_rejected ?? false
+        } : museum
+      ));
+      
+      toast({
+        title: 'Approved',
+        description: 'Museum approved successfully',
+      });
+    } catch (error) {
+      console.error('Error approving museum:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to approve museum',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const rejectMuseum = async (id: string) => {
+    try {
+      const reason = prompt('Please provide a reason for rejection:');
+      if (!reason) return; // User cancelled
+      
+      const response = await museumService.reject(id, reason);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      setMuseums(prev => prev.map(museum =>
+        museum.id === id ? {
+          ...museum,
+          is_approved: (response.data as any)?.is_approved ?? false,
+          is_rejected: (response.data as any)?.is_rejected ?? true
+        } : museum
+      ));
+      
+      toast({
+        title: 'Rejected',
+        description: 'Museum rejected successfully',
+      });
+    } catch (error) {
+      console.error('Error rejecting museum:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject museum',
         variant: 'destructive',
       });
     }
@@ -558,6 +623,25 @@ const MuseumManagement = () => {
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
+                    {/* Approval buttons for admins/approvers */}
+                    {(userRole === 'super-admin' || userRole === 'admin' || userRole === 'approver') && !museum.is_approved && !museum.is_rejected ? (
+                      <>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() => approveMuseum(museum.id!)}
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => rejectMuseum(museum.id!)}
+                        >
+                          <ThumbsDown className="w-4 h-4" />
+                        </Button>
+                      </>
+                    ) : null}
                   </div>
                 </div>
               </CardHeader>
