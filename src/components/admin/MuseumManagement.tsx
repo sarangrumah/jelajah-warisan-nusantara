@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { museumService } from '@/lib/api-services';
+import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -36,11 +36,12 @@ interface MuseumItem {
   updated_at?: string;
 }
 
-  const MuseumForm = ({ museum, onSave, onCancel, saving }: {
+  const MuseumForm = ({ museum, onSave, onCancel, saving, types }: {
     museum: MuseumItem;
     onSave: (data: MuseumItem) => void;
     onCancel: () => void;
     saving: boolean;
+    types: any[];
   }) => {
     const [formData, setFormData] = useState<MuseumItem>({
       ...museum,
@@ -86,8 +87,11 @@ interface MuseumItem {
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="museum">Museum</SelectItem>
-                <SelectItem value="heritage">Heritage Site</SelectItem>
+                {types.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -237,7 +241,7 @@ interface MuseumItem {
 
   const emptyMuseum: MuseumItem = {
   name: '',
-  type: 'museum',
+  type: '',
   description: '',
   location: '',
   address: '',
@@ -255,6 +259,7 @@ interface MuseumItem {
   };
 const MuseumManagement = () => {
   const [museums, setMuseums] = useState<MuseumItem[]>([]);
+  const [types, setTypes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingMuseum, setEditingMuseum] = useState<MuseumItem>(emptyMuseum);
@@ -262,18 +267,20 @@ const MuseumManagement = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchMuseums();
+    fetchData();
   }, []);
 
-  const fetchMuseums = async () => {
+  const fetchData = async () => {
     try {
-      const response = await museumService.getAll();
+      const [museumsResponse, typesResponse] = await Promise.all([
+        museumService.getAll(),
+        TypesAndCategoriesSites.getAllTypes()
+      ]);
       
-      if (response.error) {
-        throw new Error(response.error);
-      }
+      if (museumsResponse.error) throw new Error(museumsResponse.error);
       
-      setMuseums(response.data as MuseumItem[] || []);
+      setMuseums(museumsResponse.data as MuseumItem[] || []);
+      setTypes(typesResponse.data || []);
     } catch (error) {
       console.error('Error fetching museums:', error);
       toast({
@@ -288,46 +295,52 @@ const MuseumManagement = () => {
 
   const saveMuseum = async (formData: MuseumItem) => {
     setSaving(true);
-    let response 
+    let response
     try {
-      const museumData: MuseumItem = {
+      // Transform data for backend
+      const payload = {
         ...formData,
-        gallery_images: formData.gallery_images,
-        latitude: formData.latitude ,
-        longitude: formData.longitude,
-        opening_hours: typeof formData.opening_hours === 'string' 
+        // Rename gallery_images to images for backend
+        images: formData.gallery_images,
+        // Flatten contact info
+        phone: formData.contact_info.phone,
+        website: formData.contact_info.website,
+        // Ensure latitude/longitude are handled correctly (empty string is fine for varchar, but null is safer if empty)
+        latitude: formData.latitude === '' ? null : formData.latitude,
+        longitude: formData.longitude === '' ? null : formData.longitude,
+        // Parse opening hours if string
+        opening_hours: typeof formData.opening_hours === 'string'
           ? JSON.parse(formData.opening_hours)
           : formData.opening_hours,
-        contact_info: {
-          phone: formData.contact_info.phone,
-          email: formData.contact_info.email,
-          website: formData.contact_info.website
-        }
       };
 
+      // Remove nested contact_info and gallery_images from payload to avoid confusion
+      delete (payload as any).contact_info;
+      delete (payload as any).gallery_images;
+
       if (editingMuseum?.id) {
-        const response = await museumService.update(editingMuseum.id, museumData);
+        const response = await museumService.update(editingMuseum.id, payload);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
-        setMuseums(prev => prev.map(m => 
-          m.id === editingMuseum.id ? { ...m, ...museumData } : m
-        ));
+        // Refresh list to get updated data with relations
+        fetchData();
         
         toast({
           title: 'Success',
           description: 'Museum updated successfully',
         });
       } else {
-        response = await museumService.create(museumData);
+        response = await museumService.create(payload);
         
         if (response.error) {
           throw new Error(response.error);
         }
         
-        setMuseums(prev => [response.data, ...prev]);
+        // Refresh list
+        fetchData();
         
         toast({
           title: 'Success',
@@ -408,6 +421,7 @@ const MuseumManagement = () => {
             </DialogHeader>
             <MuseumForm
               museum={editingMuseum}
+              types={types}
               onSave={saveMuseum}
               saving={saving}
               onCancel={() => {
@@ -437,8 +451,8 @@ const MuseumManagement = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {museum.name}
-                      <Badge variant={museum.type === 'museum' ? 'default' : 'outline'}>
-                        {museum.type}
+                      <Badge variant="outline">
+                        {types.find(t => t.id === museum.type)?.name || museum.type}
                       </Badge>
                       <Badge variant={museum.is_published ? 'default' : 'secondary'}>
                         {museum.is_published ? 'Published' : 'Draft'}
