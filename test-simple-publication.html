@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Publication Test</title>
+</head>
+<body>
+    <h1>Simple Publication Creation Test</h1>
+    <button onclick="testPublication()">Test Publication Creation</button>
+    <div id="result"></div>
+
+    <script>
+        async function testPublication() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing publication creation...';
+            
+            // Test data that matches the corrected field names
+            const publicationData = {
+                title: 'Test Publication Fixed',
+                description: '<p>Test description with fixed field names</p>',
+                type: 'publication',
+                category: 'berita',
+                year: '2025',
+                size: '1 MB',
+                pages: 1,
+                download_count: 0,  // Fixed field name
+                published_at: new Date().toISOString(),
+                url: '/uploads/publication/test-fixed.pdf',
+                is_active: false,
+                is_approved: false,
+                is_rejected: false,
+                reason_rejected: ''
+            };
+
+            console.log('Testing with data:', publicationData);
+
+            try {
+                // First try to get any existing auth token from localStorage
+                const token = localStorage.getItem('auth_token');
+                
+                const response = await fetch('http://localhost:3000/api/tb_publication', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token && { 'Authorization': 'Bearer ' + token })
+                    },
+                    body: JSON.stringify(publicationData)
+                });
+
+                const data = await response.json();
+                result.innerHTML = `<pre>Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (response.ok) {
+                    console.log('✅ Publication creation successful!');
+                } else {
+                    console.error('❌ Publication creation failed:', data);
+                }
+            } catch (error) {
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+                console.error('Network error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

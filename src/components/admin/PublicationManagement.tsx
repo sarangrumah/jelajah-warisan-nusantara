@@ -24,7 +24,7 @@ interface Publication {
   year: string;
   size: string;
   pages: number;
-  downloadCount: number;
+  download_count: number;
   published_at: string;
   url: string;
   is_active: boolean;
@@ -176,7 +176,7 @@ const emptyPublication: Publication = {
   year: new Date().getFullYear().toString(),
   size: "0 MB",
   pages: 0,
-  downloadCount: 0,
+  download_count: 0,
   published_at: new Date().toISOString(),
   url: "",
   is_active: false,

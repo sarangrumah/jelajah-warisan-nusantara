@@ -499,10 +499,26 @@ const JSON_FIELDS: Record<string, string[]> = {
         });
 
         const placeholders = validFields
-          .map((f, i) => (jsonFieldsForTable.includes(f) ? `$${i + 1}::jsonb` : `$${i + 1}`))
+          .map((f, i) => (jsonFieldsForTable.includes(f) ? `${i + 1}::jsonb` : `${i + 1}`))
           .join(', ');
 
+        // Store for error logging
+        const debugInfo = {
+          tableName,
+          validFields,
+          placeholders,
+          values,
+          insertDataKeys: Object.keys(insertData)
+        };
+
         await client.query('BEGIN');
+        
+        // Debug logging
+        console.log(`[CREATE] ${tableName} - validFields:`, validFields);
+        console.log(`[CREATE] ${tableName} - placeholders:`, placeholders);
+        console.log(`[CREATE] ${tableName} - values:`, values);
+        console.log(`[CREATE] ${tableName} - insertData keys:`, Object.keys(insertData));
+        
         await client.query(
           `INSERT INTO ${tableName} (${validFields.join(', ')}) VALUES (${placeholders})`,
           values
@@ -587,8 +603,26 @@ const JSON_FIELDS: Record<string, string[]> = {
         res.status(201).json({ id, ...insertData });
       } catch (error) {
         await client.query('ROLLBACK');
+        const err = error as any;
         console.error(`Create ${tableName} error:`, error);
-        res.status(500).json({ error: 'Failed to create record' });
+        console.error(`Error stack:`, err.stack);
+        console.error(`Error details:`, {
+          message: err.message,
+          detail: err.detail,
+          hint: err.hint,
+          code: err.code,
+          tableName: tableName
+        });
+        res.status(500).json({ 
+          error: 'Failed to create record',
+          details: err.message || 'Unknown error',
+          debug: {
+            tableName: tableName,
+            message: err.message,
+            detail: err.detail,
+            code: err.code
+          }
+        });
       } finally {
         client.release();
       }

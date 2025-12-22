@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Publication Creation</title>
+</head>
+<body>
+    <h1>Test Publication Creation</h1>
+    <button onclick="testPublication()">Create Test Publication</button>
+    <div id="result"></div>
+
+    <script>
+        async function testPublication() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Creating publication...';
+            
+            const publicationData = {
+                title: 'Test Publication Debug',
+                description: '<p>Test description for debugging</p>',
+                type: 'publication',
+                category: 'berita',
+                year: '2025',
+                size: '1 MB',
+                pages: 1,
+                downloadCount: 0,
+                published_at: new Date().toISOString(),
+                url: '/uploads/publication/test-debug.pdf',
+                is_active: false,
+                is_approved: false,
+                is_rejected: false,
+                reason_rejected: ''
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/tb_publication', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+                    },
+                    body: JSON.stringify(publicationData)
+                });
+
+                const data = await response.json();
+                result.innerHTML = `<pre>Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (!response.ok) {
+                    console.error('Publication creation failed:', data);
+                }
+            } catch (error) {
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+                console.error('Network error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
