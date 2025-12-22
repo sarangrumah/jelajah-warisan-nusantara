@@ -92,7 +92,12 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     getAll: async (req: AuthRequest, res: Response) => {
       try {
         console.log(`[getAll] Table: ${tableName}, Query:`, req.query);
-        const { limit = 50, offset = 0, lang, ...filters } = req.query;
+        const { limit, offset = 0, lang, ...filters } = req.query;
+        
+        // For admin requests, use a high limit to get all records (or use provided limit)
+        const finalLimit = limit || (req.user ? 10000 : 50); // Admin gets all, others get 50
+        
+        console.log(`[getAll] User:`, req.user?.email, 'Limit:', finalLimit, 'Offset:', offset);
         const targetLang = (lang as string) || 'id';
 
         // Start with base fields
@@ -210,8 +215,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         `;
 
         console.time(`[PERF] Query for ${tableName}`);
-        const result = await query(queryText, [...params, limit, offset]);
+        const result = await query(queryText, [...params, finalLimit, offset]);
         console.timeEnd(`[PERF] Query for ${tableName}`);
+        
+        console.log(`[getAll] ${tableName}: Returned ${result.rows.length} records (limit: ${finalLimit}, offset: ${offset})`);
         
         // Translate content if language is not Indonesian and feature is enabled
         let rows = result.rows;
