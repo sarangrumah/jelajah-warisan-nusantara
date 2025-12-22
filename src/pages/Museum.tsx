@@ -205,7 +205,7 @@ const Museum = () => {
                     if (!imageCandidate) {
                       return (
                         <img
-                          src="/assets/logo/LOGO V 4 - hitam.png"
+                          src="/assets/MCB-Logo.png"
                           alt={item.name}
                           className="w-full h-full object-cover object-bottom"
                         />
@@ -215,7 +215,7 @@ const Museum = () => {
                     const resolved = getMuseumsImageUrl(imageCandidate);
                     const finalImageSrc = (resolved && resolved !== '/placeholder.svg' && resolved.trim() !== '')
                       ? resolved
-                      : '/assets/logo/LOGO V 4 - hitam.png';
+                      : '/assets/MCB-Logo.png';
                     
                     return (
                       <img
@@ -224,9 +224,9 @@ const Museum = () => {
                         className="w-full h-full object-cover object-bottom"
                         onError={(e) => {
                           const img = e.target as HTMLImageElement;
-                          if (img.src !== '/assets/logo/LOGO V 4 - hitam.png') {
+                          if (img.src !== '/assets/MCB-Logo.png') {
                             console.error('[Museum] Image failed to load:', imageCandidate);
-                            img.src = '/assets/logo/LOGO V 4 - hitam.png';
+                            img.src = '/assets/logo/MCB-Logo.png';
                           }
                         }}
                       />
