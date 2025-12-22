@@ -199,9 +199,21 @@ const Museum = () => {
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   {(() => {
                     // Try image_url first (from database), then fall back to other fields
-                    const imageCandidate = item.image_url || item.img_banner || item.image || '';
+                    const imageCandidate = item.image_url || item.img_banner || item.image;
+                    
+                    // If no image candidate, directly use logo
+                    if (!imageCandidate) {
+                      return (
+                        <img
+                          src="/assets/logo/LOGO V 4 - hitam.png"
+                          alt={item.name}
+                          className="w-full h-full object-cover object-bottom"
+                        />
+                      );
+                    }
+                    
                     const resolved = getMuseumsImageUrl(imageCandidate);
-                    const finalImageSrc = (resolved && resolved !== '/placeholder.svg')
+                    const finalImageSrc = (resolved && resolved !== '/placeholder.svg' && resolved.trim() !== '')
                       ? resolved
                       : '/assets/logo/LOGO V 4 - hitam.png';
                     
