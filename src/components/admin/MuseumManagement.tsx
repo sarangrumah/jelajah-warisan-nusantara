@@ -276,35 +276,60 @@ const MuseumManagement = () => {
   const fetchData = async () => {
     try {
       const [museumsResponse, typesResponse] = await Promise.all([
-        museumService.getAll(), // Admin gets all museums without filtering
+        museumService.getAll({ limit: 100 }), // Admin gets all museums without filtering
         TypesAndCategoriesSites.getAllTypes()
       ]);
+      
+      console.log('🔍 FRONTEND DEBUG - Museums Response:', museumsResponse);
+      console.log('🔍 FRONTEND DEBUG - Types Response:', typesResponse);
       
       if (museumsResponse.error) throw new Error(museumsResponse.error);
       
       // Map backend data to frontend model
       const rawMuseums = museumsResponse.data as any[] || [];
+      console.log('🔍 FRONTEND DEBUG - Raw museums count:', rawMuseums.length);
+      console.log('🔍 FRONTEND DEBUG - Raw museum names:', rawMuseums.map(m => m.name || m.title).filter(Boolean));
       
-      const mappedMuseums = rawMuseums.map(m => ({
-        ...m,
-        // Map images relation to gallery_images
-        gallery_images: m.images?.map((img: any) => ({ path: img.path, sites: m.id })) || [],
-        // Map flat fields to contact_info
-        contact_info: {
-          phone: m.phone || '',
-          email: '', // Not supported in DB
-          website: m.website || ''
-        },
-        // Map is_active to is_published
-        is_published: m.is_active,
-        is_approved: m.is_approved,
-        is_rejected: m.is_rejected,
-        reason_rejected: m.reason_rejected,
-        // Ensure type is handled (it's a UUID)
-        type: m.type_relation?.id || m.type,
-        // Map location from subtitle if location is missing in DB
-        location: m.location || m.subtitle || ''
-      }));
+      const mappedMuseums = rawMuseums.map((m, index) => {
+        try {
+          const mapped = {
+            ...m,
+            // Map images relation to gallery_images
+            gallery_images: m.images?.map((img: any) => ({ path: img.path, sites: m.id })) || [],
+            // Map flat fields to contact_info
+            contact_info: {
+              phone: m.phone || '',
+              email: '', // Not supported in DB
+              website: m.website || ''
+            },
+            // Map is_active to is_published
+            is_published: m.is_active,
+            is_approved: m.is_approved,
+            is_rejected: m.is_rejected,
+            reason_rejected: m.reason_rejected,
+            // Ensure type is handled (it's a UUID)
+            type: m.type_relation?.id || m.type,
+            // Map location from subtitle if location is missing in DB
+            location: m.location || m.subtitle || ''
+          };
+          
+          console.log(`🔍 FRONTEND DEBUG - Mapped museum ${index + 1}:`, {
+            id: mapped.id,
+            name: mapped.name,
+            type: mapped.type,
+            is_published: mapped.is_published,
+            location: mapped.location
+          });
+          
+          return mapped;
+        } catch (error) {
+          console.error(`🔍 FRONTEND DEBUG - Error mapping museum ${index + 1}:`, error, m);
+          return null;
+        }
+      }).filter(Boolean); // Remove null entries
+      
+      console.log('🔍 FRONTEND DEBUG - Mapped museums count:', mappedMuseums.length);
+      console.log('🔍 FRONTEND DEBUG - Final museum names:', mappedMuseums.map(m => m.name || m.title).filter(Boolean));
 
       setMuseums(mappedMuseums);
       setTypes(typesResponse.data || []);
@@ -476,6 +501,15 @@ const MuseumManagement = () => {
         </Card>
       ) : (
         <div className="grid gap-4">
+          {/* Debug Information */}
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded mb-4">
+            <h3 className="font-bold text-blue-800">DEBUG INFO:</h3>
+            <div className="text-sm text-blue-700">
+              <p>Total museums loaded: {museums.length}</p>
+              <p>Museum names: {museums.map(m => (m as any).name || (m as any).title || 'NO NAME').join(', ')}</p>
+            </div>
+          </div>
+          
           {museums.map((museum) => (
             <Card key={museum.id}>
               <CardHeader>

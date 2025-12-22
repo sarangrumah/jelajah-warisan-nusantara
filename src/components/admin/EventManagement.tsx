@@ -198,7 +198,7 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
 
   const fetchSites = async () => {
     try {
-      const response = await museumService.getAll(); // Admin sees all museums
+      const response = await museumService.getAll({ limit: 100 }); // Admin sees all museums
       
       if (response.error) {
         throw new Error(response.error);
