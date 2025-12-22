@@ -61,8 +61,10 @@ export const agendaService = {
 export const museumService = {
   approve: (id: string) => apiClient.approve('tb_sites', id),
   reject: (id: string, reason: string) => apiClient.reject('tb_sites', id, reason),
-  // getAll: (params?: any) => apiClient.getAll('tb_sites', params),
-  getAll: () => apiClient.getAll('tb_sites'),
+  // For admin: get all museums without any filtering
+  getAll: (params?: any) => apiClient.getAll('tb_sites', params),
+  // For public frontend: only get approved museums
+  getPublished: () => apiClient.getAll('tb_sites', { is_approved: 'true', is_active: 'true' }),
   getById: (id: string) => apiClient.getById('tb_sites', id),
   create: (data: any) => apiClient.create('tb_sites', data),
   update: (id: string, data: any) => apiClient.update('tb_sites', id, data),

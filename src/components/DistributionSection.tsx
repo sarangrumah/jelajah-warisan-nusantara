@@ -53,7 +53,7 @@ const DistributionSection = () => {
 
   useEffect(() => {
     const fetchRegions = async () => {
-      const response = await museumService.getAll();
+      const response = await museumService.getPublished(); // Public only sees approved museums
       if (response.data) {
         const processedRegions = response.data.map((item: any) => ({
           key: item.region_key,

@@ -47,7 +47,7 @@ const HeritageDetail = () => {
   const fetchHeritages = async () => {
     try {
       setLoading(true);
-      const response = await museumService.getAll();
+      const response = await museumService.getPublished(); // Public only sees approved museums
       if(response.error || response.data.length === 0) {
         console.error('Error fetching heritages:', response.error);
         setHeritages(defaultHeritages);

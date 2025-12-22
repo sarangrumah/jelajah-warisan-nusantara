@@ -82,7 +82,7 @@ const MuseumDetail = () => {
 
   const fetchMuseums = async () => {
     try {
-      const response = await museumService.getAll();
+      const response = await museumService.getPublished(); // Public only sees approved museums
       if (response.error || response.data.length === 0) {
         logError('Error fetching museums:', response.error);
         setMuseums(mapSlidesWithImageUrl(defaultMuseums));

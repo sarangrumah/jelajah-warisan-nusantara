@@ -21,7 +21,7 @@ export const useNewsData = () => {
 // Enhanced museum data with real-time updates
 export const useMuseumData = () => {
   return usePolling(
-    () => museumService.getAll(), 
+    () => museumService.getPublished(), // Public only sees approved museums 
     { interval: 30000, enabled: true }
   );
 };

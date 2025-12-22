@@ -276,75 +276,35 @@ const MuseumManagement = () => {
   const fetchData = async () => {
     try {
       const [museumsResponse, typesResponse] = await Promise.all([
-        museumService.getAll({ limit: 1000 }),
+        museumService.getAll(), // Admin gets all museums without filtering
         TypesAndCategoriesSites.getAllTypes()
       ]);
       
-      console.log('Museums Response:', museumsResponse);
-      console.log('Types Response:', typesResponse);
-
       if (museumsResponse.error) throw new Error(museumsResponse.error);
       
       // Map backend data to frontend model
       const rawMuseums = museumsResponse.data as any[] || [];
-      console.log('Raw museums count:', rawMuseums.length);
       
-      // Debug: Check if Museum Majapahit exists in raw data
-      const majapahitMuseum = rawMuseums.find(m => 
-        m.name?.toLowerCase().includes('majapahit') ||
-        m.title?.toLowerCase().includes('majapahit')
-      );
-      console.log('Museum Majapahit in raw data:', !!majapahitMuseum);
-      if (majapahitMuseum) {
-        console.log('Majapahit museum raw data:', {
-          id: majapahitMuseum.id,
-          name: majapahitMuseum.name,
-          title: majapahitMuseum.title,
-          is_active: majapahitMuseum.is_active,
-          is_approved: majapahitMuseum.is_approved,
-          type: majapahitMuseum.type,
-          type_relation: majapahitMuseum.type_relation
-        });
-      }
-      
-      const mappedMuseums = rawMuseums.map(m => {
-        const mapped = {
-          ...m,
-          // Map images relation to gallery_images
-          gallery_images: m.images?.map((img: any) => ({ path: img.path, sites: m.id })) || [],
-          // Map flat fields to contact_info
-          contact_info: {
-            phone: m.phone || '',
-            email: '', // Not supported in DB
-            website: m.website || ''
-          },
-          // Map is_active to is_published
-          is_published: m.is_active,
-          is_approved: m.is_approved,
-          is_rejected: m.is_rejected,
-          reason_rejected: m.reason_rejected,
-          // Ensure type is handled (it's a UUID)
-          type: m.type_relation?.id || m.type,
-          // Map location from subtitle if location is missing in DB
-          location: m.location || m.subtitle || ''
-        };
-        
-        // Debug: Log each museum during mapping
-        if (mapped.name?.toLowerCase().includes('majapahit')) {
-          console.log('Mapping Majapahit museum:', {
-            id: mapped.id,
-            name: mapped.name,
-            type: mapped.type,
-            is_published: mapped.is_published,
-            location: mapped.location
-          });
-        }
-        
-        return mapped;
-      });
-      
-      console.log('Mapped museums count:', mappedMuseums.length);
-      console.log('Museum names:', mappedMuseums.map(m => m.name || m.title).filter(Boolean));
+      const mappedMuseums = rawMuseums.map(m => ({
+        ...m,
+        // Map images relation to gallery_images
+        gallery_images: m.images?.map((img: any) => ({ path: img.path, sites: m.id })) || [],
+        // Map flat fields to contact_info
+        contact_info: {
+          phone: m.phone || '',
+          email: '', // Not supported in DB
+          website: m.website || ''
+        },
+        // Map is_active to is_published
+        is_published: m.is_active,
+        is_approved: m.is_approved,
+        is_rejected: m.is_rejected,
+        reason_rejected: m.reason_rejected,
+        // Ensure type is handled (it's a UUID)
+        type: m.type_relation?.id || m.type,
+        // Map location from subtitle if location is missing in DB
+        location: m.location || m.subtitle || ''
+      }));
 
       setMuseums(mappedMuseums);
       setTypes(typesResponse.data || []);
@@ -516,18 +476,6 @@ const MuseumManagement = () => {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {/* Debug: Show all museum names */}
-          <div className="p-4 bg-gray-100 rounded mb-4">
-            <h3 className="font-bold">DEBUG: All Museums ({museums.length})</h3>
-            <div className="text-sm">
-              {museums.map((m, idx) => (
-                <div key={m.id || idx}>
-                  {idx + 1}. {(m as any).name || (m as any).title || 'NO NAME'} (ID: {m.id}) - Published: {m.is_published ? 'Yes' : 'No'}
-                </div>
-              ))}
-            </div>
-          </div>
-          
           {museums.map((museum) => (
             <Card key={museum.id}>
               <CardHeader>

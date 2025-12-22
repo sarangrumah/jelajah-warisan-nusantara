@@ -66,7 +66,7 @@ const Heritage = () => {
 
   const fetchHeritages = async () => {
     try {
-      const response = await museumService.getAll();
+      const response = await museumService.getPublished(); // Public only sees approved museums
       if(response.error) {
         console.error('Error fetching heritages:', response.error);
       }

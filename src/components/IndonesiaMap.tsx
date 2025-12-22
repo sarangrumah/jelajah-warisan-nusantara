@@ -220,7 +220,7 @@ const IndonesiaMap = () => {
 
   const fetchLocations = async () => {
     try {
-      const museum = await museumService.getAll();
+      const museum = await museumService.getPublished(); // Public only sees approved museums
       if (museum.error || museum.data.length === 0) {
         throw new Error('Error fetching museums: ' + museum.error);
       } else {
