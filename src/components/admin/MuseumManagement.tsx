@@ -32,6 +32,9 @@ interface MuseumItem {
     website: string;
   };
   is_published: boolean;
+  is_approved?: boolean;
+  is_rejected?: boolean;
+  reason_rejected?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -273,7 +276,7 @@ const MuseumManagement = () => {
   const fetchData = async () => {
     try {
       const [museumsResponse, typesResponse] = await Promise.all([
-        museumService.getAll(),
+        museumService.getAll({ limit: 1000 }),
         TypesAndCategoriesSites.getAllTypes()
       ]);
       
@@ -295,6 +298,9 @@ const MuseumManagement = () => {
         },
         // Map is_active to is_published
         is_published: m.is_active,
+        is_approved: m.is_approved,
+        is_rejected: m.is_rejected,
+        reason_rejected: m.reason_rejected,
         // Ensure type is handled (it's a UUID)
         type: m.type
       }));
@@ -482,6 +488,16 @@ const MuseumManagement = () => {
                       <Badge variant={museum.is_published ? 'default' : 'secondary'}>
                         {museum.is_published ? 'Published' : 'Draft'}
                       </Badge>
+                      {museum.is_approved && (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          Approved
+                        </Badge>
+                      )}
+                      {museum.is_rejected && (
+                        <Badge variant="destructive">
+                          Rejected
+                        </Badge>
+                      )}
                     </CardTitle>
                     <CardDescription>{museum.location}</CardDescription>
                   </div>
