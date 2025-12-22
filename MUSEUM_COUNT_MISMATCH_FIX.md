@@ -92,6 +92,7 @@ console.log('🔍 DEBUG: Final filtered museums count:', filteredMuseums.length)
 2. `src/pages/Museum.tsx` - Simplified filtering logic and enhanced debug logging
 3. `src/pages/Heritage.tsx` - Updated to use heritageService instead of museumService
 4. `src/pages/HeritageDetail.tsx` - Updated to use heritageService instead of museumService
+5. `src/components/IndonesiaMap.tsx` - Updated to fetch both museums and heritage sites using new service methods
 
 ## Testing
 To verify the fix:
@@ -100,6 +101,11 @@ To verify the fix:
 3. Verify that exactly 18 museums are displayed
 4. Confirm the debug log shows "Final filtered museums count: 18"
 5. Verify no heritage sites (like "Candi Singosari") appear in the list
+6. Navigate to the Heritage page
+7. Verify that heritage sites are displayed correctly
+8. Test individual heritage site detail pages
+9. Check the IndonesiaMap component - should show both museums and heritage sites with correct counts
+10. Verify map markers work for both types and route to appropriate detail pages
 
 ## Impact
 This fix resolves the core issue where the API was returning mixed data (museums + heritage sites) and the frontend was doing its best to filter, resulting in incorrect counts and missing museums.

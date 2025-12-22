@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { useTranslate } from '@/hooks/useTranslate.tsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
-import { museumService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { museumService, heritageService, TypesAndCategoriesSites } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from './helper';
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
@@ -220,13 +220,29 @@ const IndonesiaMap = () => {
 
   const fetchLocations = async () => {
     try {
-      const museum = await museumService.getPublished(); // Public only sees approved museums
-      if (museum.error || museum.data.length === 0) {
-        throw new Error('Error fetching museums: ' + museum.error);
-      } else {
-        const filteredMuseums = museum.data.filter((museum: any) => museum.is_active === true && museum.is_approved === true);
-        setLocations(mapSlidesWithImageUrl(filteredMuseums));
+      // Fetch both museums and heritage sites
+      const [museumResponse, heritageResponse] = await Promise.all([
+        museumService.getPublished(), // Public only sees approved museums
+        heritageService.getPublished() // Public only sees approved heritage sites
+      ]);
+      
+      const allLocations = [];
+      
+      // Add museums if available
+      if (!museumResponse.error && museumResponse.data && museumResponse.data.length > 0) {
+        allLocations.push(...mapSlidesWithImageUrl(museumResponse.data));
       }
+      
+      // Add heritage sites if available
+      if (!heritageResponse.error && heritageResponse.data && heritageResponse.data.length > 0) {
+        allLocations.push(...mapSlidesWithImageUrl(heritageResponse.data));
+      }
+      
+      console.log('🔍 DEBUG: IndonesiaMap - Museums:', museumResponse.data?.length || 0);
+      console.log('🔍 DEBUG: IndonesiaMap - Heritage sites:', heritageResponse.data?.length || 0);
+      console.log('🔍 DEBUG: IndonesiaMap - Total locations:', allLocations.length);
+      
+      setLocations(allLocations);
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
