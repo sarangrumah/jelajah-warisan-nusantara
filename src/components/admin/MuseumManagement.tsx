@@ -277,9 +277,29 @@ const MuseumManagement = () => {
         TypesAndCategoriesSites.getAllTypes()
       ]);
       
+      console.log('Museums Response:', museumsResponse);
+      console.log('Types Response:', typesResponse);
+
       if (museumsResponse.error) throw new Error(museumsResponse.error);
       
-      setMuseums(museumsResponse.data as MuseumItem[] || []);
+      // Map backend data to frontend model
+      const mappedMuseums = (museumsResponse.data as any[] || []).map(m => ({
+        ...m,
+        // Map images relation to gallery_images
+        gallery_images: m.images?.map((img: any) => ({ path: img.path, sites: m.id })) || [],
+        // Map flat fields to contact_info
+        contact_info: {
+          phone: m.phone || '',
+          email: '', // Not supported in DB
+          website: m.website || ''
+        },
+        // Map is_active to is_published
+        is_published: m.is_active,
+        // Ensure type is handled (it's a UUID)
+        type: m.type
+      }));
+
+      setMuseums(mappedMuseums);
       setTypes(typesResponse.data || []);
     } catch (error) {
       console.error('Error fetching museums:', error);
@@ -305,6 +325,8 @@ const MuseumManagement = () => {
         // Flatten contact info
         phone: formData.contact_info.phone,
         website: formData.contact_info.website,
+        // Map is_published to is_active
+        is_active: formData.is_published,
         // Ensure latitude/longitude are handled correctly (empty string is fine for varchar, but null is safer if empty)
         latitude: formData.latitude === '' ? null : formData.latitude,
         longitude: formData.longitude === '' ? null : formData.longitude,
@@ -317,6 +339,8 @@ const MuseumManagement = () => {
       // Remove nested contact_info and gallery_images from payload to avoid confusion
       delete (payload as any).contact_info;
       delete (payload as any).gallery_images;
+      // Remove is_published as it's mapped to is_active
+      delete (payload as any).is_published;
 
       if (editingMuseum?.id) {
         const response = await museumService.update(editingMuseum.id, payload);
@@ -364,13 +388,14 @@ const MuseumManagement = () => {
 
   const togglePublished = async (id: string, isPublished: boolean) => {
     try {
-      const response = await museumService.update(id, { is_published: isPublished });
+      // Map is_published to is_active
+      const response = await museumService.update(id, { is_active: isPublished });
       
       if (response.error) {
         throw new Error(response.error);
       }
       
-      setMuseums(prev => prev.map(museum => 
+      setMuseums(prev => prev.map(museum =>
         museum.id === id ? { ...museum, is_published: isPublished } : museum
       ));
       
