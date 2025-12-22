@@ -19,6 +19,7 @@ interface Publication {
   id: string;
   title: string;
   description: string;
+  type: string;
   category: string;
   year: string;
   size: string;
@@ -170,6 +171,7 @@ const emptyPublication: Publication = {
   id: "",
   title: "",
   description: "",
+  type: "publication",
   category: "berita",
   year: new Date().getFullYear().toString(),
   size: "0 MB",
@@ -231,9 +233,8 @@ const PublicationManagement = ({ userRole }: { userRole: string }) => {
   const savePublication = async (item: Partial<Publication>) => {
     setSaving(true);
     try {
-      // Remove type field since it's not in the database schema
-      const { type, ...publicationData } = item;
-      const payload: Partial<Publication> = { ...publicationData };
+      // Don't remove type field - it's required by the database schema
+      const payload: Partial<Publication> = { ...item };
 
       console.log('Saving publication payload:', payload);
 
