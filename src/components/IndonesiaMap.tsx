@@ -180,7 +180,23 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
                 listBtn.addEventListener('click', () => {
                     // Route to appropriate category page based on type
                     const typeName = types.find((type) => type.id === location.type)?.name;
-                    const route = typeName === 'museum' ? '/museum' : '/heritage';
+                    console.log('🔍 DEBUG: List button clicked for location:', location.id);
+                    console.log('🔍 DEBUG: Location type ID:', location.type);
+                    console.log('🔍 DEBUG: Available types:', types);
+                    console.log('🔍 DEBUG: Found type name:', typeName);
+                    
+                    // More robust type matching
+                    let route;
+                    if (typeName) {
+                        const typeNameLower = typeName.toLowerCase();
+                        route = typeNameLower === 'museum' ? '/museum' : '/heritage';
+                    } else {
+                        // Fallback: check if location has museum-specific properties
+                        const isMuseum = location.type === types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
+                        route = isMuseum ? '/museum' : '/heritage';
+                    }
+                    
+                    console.log('🔍 DEBUG: Navigating to route:', route);
                     navigate(route);
                 });
             }
