@@ -52,15 +52,31 @@ const Museum = () => {
 
   const fetchMuseums = async () => {
     try {
+      console.log('🔍 DEBUG: Calling museumService.getPublished()...');
       const response = await museumService.getPublished(); // Public only sees approved museums
 
       console.log('🔍 DEBUG: Raw API response:', response);
       console.log('🔍 DEBUG: API response data:', response.data);
+      console.log('🔍 DEBUG: API response error:', response.error);
 
       if (response.error || response.data.length === 0) {
         console.error('Error fetching museums:', response.error);
+        console.log('🔍 DEBUG: Falling back to default museums');
         setMuseums(mapSlidesWithImageUrl(defaultMuseums));
       } else {
+        console.log('🔍 DEBUG: Processing', response.data.length, 'museums from API');
+        
+        response.data.forEach((museum: any, index: number) => {
+          console.log(`🔍 DEBUG: Museum ${index + 1}:`, {
+            id: museum.id,
+            name: museum.name,
+            type: museum.type,
+            type_relation: museum.type_relation,
+            is_active: museum.is_active,
+            is_approved: museum.is_approved
+          });
+        });
+        
         const filteredMuseums = response.data.filter((museum: any) => {
           const isActive = museum.is_active === true;
           const isApproved = museum.is_approved === true;
@@ -68,8 +84,8 @@ const Museum = () => {
           return isActive && isApproved;
         });
         
-        console.log('🔍 DEBUG: Filtered museums (active + approved):', filteredMuseums);
-        console.log('🔍 DEBUG: Filtered museums count:', filteredMuseums.length);
+        console.log('🔍 DEBUG: Filtered museums (active + approved):', filteredMuseums.length);
+        console.log('🔍 DEBUG: Filtered museum names:', filteredMuseums.map((m: any) => m.name));
         
         setMuseums(mapSlidesWithImageUrl(filteredMuseums));
       }
@@ -127,14 +143,15 @@ const Museum = () => {
                          museum.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || categories.length > 0 && categories.find((c) => c.id === museum.category)?.id === filterType;
     
-    // TEMPORARY FIX: Disable type filtering to test if this is the issue
-    // Original: const typeMatches = museum.type_relation?.name?.toLowerCase() === 'museum' || museum.type === museumId;
-    const typeMatches = true; // Show all museums temporarily
+    // PROPER FIX: Use type_relation.name to filter museums vs heritage sites
+    // This should match "museum" and exclude "cagar budaya" (heritage sites)
+    const typeMatches = museum.type_relation?.name?.toLowerCase() === 'museum';
     
     // Debug the type matching
     if (displayMuseums.indexOf(museum) === 0) { // Log only for first museum to avoid spam
-      console.log('🔍 DEBUG: Type filtering DISABLED temporarily - showing all museums');
+      console.log('🔍 DEBUG: Type filtering enabled - museum.type_relation?.name:', museum.type_relation?.name);
       console.log('🔍 DEBUG: Museum object keys:', Object.keys(museum));
+      console.log('🔍 DEBUG: Full museum object:', JSON.stringify(museum, null, 2));
     }
     
     return typeMatches && matchesSearch && matchesFilter;
