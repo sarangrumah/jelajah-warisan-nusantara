@@ -143,14 +143,11 @@ const Museum = () => {
   console.log('🔍 DEBUG: Categories loaded:', categories.length);
   
   const filteredMuseums = displayMuseums.filter((museum, index) => {
-    // Step 1: Type matching - more flexible matching
-    const museumTypeName = museum.type_relation?.name?.toLowerCase() || '';
-    const typeMatches = museumTypeName === 'museum' || 
-                       museumTypeName.includes('museum') ||
-                       museumTypeName.includes('gallery') ||
-                       museum.type === '12bc00a9-ba1a-4562-940d-4e33bb26acdc'; // Direct ID match as fallback
-    if (!typeMatches && index < 3) { // Log first few failures
-      console.log(`🔍 DEBUG: Museum "${museum.name}" filtered out - type:`, museum.type_relation?.name, 'museumTypeName:', museumTypeName);
+    // Step 1: Type matching - API already filters by type, so no need to filter here
+    // This is just for search and category filtering
+    const typeMatches = true; // API already filtered by type
+    if (index < 3) { // Log first few for debugging
+      console.log(`🔍 DEBUG: Museum "${museum.name}" - type:`, museum.type_relation?.name);
     }
     
     // Step 2: Search matching

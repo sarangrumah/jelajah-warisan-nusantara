@@ -63,8 +63,12 @@ export const museumService = {
   reject: (id: string, reason: string) => apiClient.reject('tb_sites', id, reason),
   // For admin: get all museums without any filtering
   getAll: (params?: any) => apiClient.getAll('tb_sites', params),
-  // For public frontend: only get approved museums
-  getPublished: () => apiClient.getAll('tb_sites', { is_approved: 'true', is_active: 'true' }),
+  // For public frontend: only get approved museums (filtered by museum type)
+  getPublished: () => apiClient.getAll('tb_sites', { 
+    is_approved: 'true', 
+    is_active: 'true',
+    type: '12bc00a9-ba1a-4562-940d-4e33bb26acdc' // Museum type ID
+  }),
   getById: (id: string) => apiClient.getById('tb_sites', id),
   create: (data: any) => apiClient.create('tb_sites', data),
   update: (id: string, data: any) => apiClient.update('tb_sites', id, data),
