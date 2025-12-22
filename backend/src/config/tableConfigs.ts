@@ -310,7 +310,7 @@ export const tableRelationships = {
 
 export const autoJoinRelations = {
   tb_events: ['site', 'category'],
-  tb_sites: ['images','type','categories'],
+  tb_sites: ['images','type_relation','categories_relation'],
   tb_company: ['company_leadership', 'company_visitor']
 } as const;
 

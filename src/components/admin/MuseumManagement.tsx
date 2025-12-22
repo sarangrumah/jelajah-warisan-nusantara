@@ -302,7 +302,9 @@ const MuseumManagement = () => {
         is_rejected: m.is_rejected,
         reason_rejected: m.reason_rejected,
         // Ensure type is handled (it's a UUID)
-        type: m.type
+        type: m.type_relation?.id || m.type,
+        // Map location from subtitle if location is missing in DB
+        location: m.location || m.subtitle || ''
       }));
 
       setMuseums(mappedMuseums);
