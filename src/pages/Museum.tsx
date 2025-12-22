@@ -24,11 +24,11 @@ import { assetUrl } from '@/lib/asset-url';
 // Updated function to match the approach used in HeroSection
 function getMuseumsImageUrl(filename: string) {
   if (!filename) {
-    return '/placeholder.svg';
+    return ''; // Return empty string, let the component handle the fallback
   }
   
   // Use the same assetUrl function as HeroSection for consistency
-  return assetUrl(filename) || '/placeholder.svg';
+  return assetUrl(filename) || '';
 }
 
 const Museum = () => {
@@ -223,8 +223,11 @@ const Museum = () => {
                         alt={item.name}
                         className="w-full h-full object-cover object-bottom"
                         onError={(e) => {
-                          console.error('[Museum] Image failed to load:', imageCandidate);
-                          (e.target as HTMLImageElement).src = '/assets/logo/LOGO V 4 - hitam.png';
+                          const img = e.target as HTMLImageElement;
+                          if (img.src !== '/assets/logo/LOGO V 4 - hitam.png') {
+                            console.error('[Museum] Image failed to load:', imageCandidate);
+                            img.src = '/assets/logo/LOGO V 4 - hitam.png';
+                          }
                         }}
                       />
                     );
