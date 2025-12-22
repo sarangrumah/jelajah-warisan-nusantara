@@ -189,7 +189,7 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
                     let route;
                     if (typeName) {
                         const typeNameLower = typeName.toLowerCase();
-                        route = typeNameLower === 'museum' ? '/museum' : '/heritage';
+                        route = typeNameLower === 'museum' ? '/museums' : '/heritage';
                     } else {
                         // Fallback: check if location has museum-specific properties
                         const isMuseum = location.type === types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
