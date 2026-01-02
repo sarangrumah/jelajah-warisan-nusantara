@@ -19,15 +19,20 @@ const museumImages = import.meta.glob('../assets/museums/*', { eager: true });
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 function getImageUrl(filename: string | undefined | null) {
+  // Handle null/undefined/empty filenames
   if (!filename) { return PLACEHOLDER_IMAGE };
+  
+  // If it's already a full URL, return as-is
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+      filename.startsWith('/assets/') ||
+      filename.startsWith('/src/assets/'))
   ) {
     return filename;
   }
+  
   // Try to resolve using Vite's import
   const match = Object.entries(museumImages).find(([path]) => path.endsWith(filename));
   return match ? (match[1] as { default: string }).default : PLACEHOLDER_IMAGE;
@@ -116,7 +121,7 @@ const HeritageDetail = () => {
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
           <img
-            src={getImageUrl((heritage.image_url || heritage.img_banner || heritage.banner_image)?.split('/').pop() || heritage.image_url || heritage.img_banner || heritage.banner_image)}
+            src={getImageUrl(heritage.image_url || heritage.img_banner || heritage.banner_image)}
             alt={heritage.title || heritage.name || t('Heritage site')}
             className="w-full h-full object-cover"
           />

@@ -21,29 +21,46 @@ const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 const imagesImages = import.meta.glob('../assets/images/*', { eager: true });
 
 function getMuseumsImageUrl(filename: string) {
+  // Handle null/undefined/empty filenames
+  if (!filename) {
+    return '/placeholder.svg';
+  }
+  
+  // If it's already a full URL, return as-is
   if (
     typeof filename === 'string' &&
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
+      filename.startsWith('/assets/') ||
+      filename.startsWith('/src/assets/'))
   ) {
+    // Convert /src/assets/ to /assets/ for proper resolution
+    if (filename.startsWith('/src/assets/')) {
+      return filename.replace('/src/assets/', '/assets/');
+    }
     return filename;
   }
+  
+  // Extract just the filename if it's a path
   const justFile = filename?.split('/').pop() || filename;
+  
   // Try museums first
   let match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as { default: string }).default;
   }
+  
   // Try images as fallback
   match = Object.entries(imagesImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as { default: string }).default;
   }
+  
   // Fallback: try public/assets/museums/ or public/assets/images/ for production
   if (justFile) {
     return `/assets/museums/${justFile}`;
   }
+  
   return '/placeholder.svg';
 }
 const Heritage = () => {
