@@ -44,6 +44,13 @@ const shareEventHandler = (museumLink: string) => {
 function getMuseumImageUrl(filename: string | undefined | null) {
   if (!filename) { return PLACEHOLDER_IMAGE };
   
+  // Check if the filename is just a filename (no path) and might be an uploaded file
+  if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
+    // This is likely just a filename from the database, assume it's in uploads/museum/
+    const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    return `${baseUrl}/uploads/museum/${filename}`;
+  }
+  
   // For uploaded images, construct full URL
   if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
     const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;

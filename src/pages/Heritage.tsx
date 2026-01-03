@@ -32,7 +32,8 @@ function getMuseumsImageUrl(filename: string) {
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
       filename.startsWith('/assets/') ||
-      filename.startsWith('/src/assets/'))
+      filename.startsWith('/src/assets/') ||
+      filename.startsWith('/uploads/'))
   ) {
     // Convert /src/assets/ to /assets/ for proper resolution
     if (filename.startsWith('/src/assets/')) {
@@ -56,11 +57,27 @@ function getMuseumsImageUrl(filename: string) {
     return (match[1] as { default: string }).default;
   }
   
+  // Check if the filename is just a filename (no path) and might be an uploaded file
+  if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
+    // This is likely just a filename from the database, assume it's in uploads/sites/
+    return `/uploads/sites/${filename}`;
+  }
+  
+  // Check if the original filename might be an uploaded file with path
+  if (filename && filename.includes('sites/')) {
+    // If it's a path that includes sites/, it's likely an uploaded heritage image
+    const sitePath = `/uploads/${filename.split('sites/')[1]}`;
+    return sitePath;
+  }
+  
   // Fallback: try public/assets/museums/ or public/assets/images/ for production
-  if (justFile) {
+  // Also try to preserve the original path if it's a valid path
+  if (filename && !filename.startsWith('/')) {
+    // If it's a relative path, try to resolve it as a potential asset
     return `/assets/museums/${justFile}`;
   }
   
+  // Final fallback - return placeholder
   return '/placeholder.svg';
 }
 const Heritage = () => {

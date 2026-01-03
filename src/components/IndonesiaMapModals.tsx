@@ -38,6 +38,19 @@ export const MuseumHeritageDetailModal: React.FC<MuseumHeritageDetailModalProps>
   const { translatedText: closeLabel } = useTranslate('Tutup');
   
   const getMuseumsImageUrl = (filename: string) => {
+    if (!filename) { return undefined };
+    
+    // Check if the filename is just a filename (no path) and might be an uploaded file
+    if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
+      // This is likely just a filename from the database, assume it's in uploads/museum/
+      return `/uploads/museum/${filename}`;
+    }
+    
+    // For uploaded images, use as-is
+    if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
+      return filename;
+    }
+    
     if (
       typeof filename === 'string' &&
       (filename.startsWith('http://') ||
@@ -175,6 +188,19 @@ export const MuseumHeritageListModal: React.FC<MuseumHeritageListModalProps> = (
   }, [open, typeId, typeName]);
 
   const getMuseumsImageUrl = (filename: string) => {
+    if (!filename) { return undefined };
+    
+    // Check if the filename is just a filename (no path) and might be an uploaded file
+    if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
+      // This is likely just a filename from the database, assume it's in uploads/museum/
+      return `/uploads/museum/${filename}`;
+    }
+    
+    // For uploaded images, use as-is
+    if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
+      return filename;
+    }
+    
     if (
       typeof filename === 'string' &&
       (filename.startsWith('http://') ||

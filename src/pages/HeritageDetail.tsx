@@ -28,9 +28,27 @@ function getImageUrl(filename: string | undefined | null) {
     (filename.startsWith('http://') ||
       filename.startsWith('https://') ||
       filename.startsWith('/assets/') ||
-      filename.startsWith('/src/assets/'))
+      filename.startsWith('/src/assets/') ||
+      filename.startsWith('/uploads/'))
   ) {
+    // Convert /src/assets/ to /assets/ for proper resolution
+    if (filename.startsWith('/src/assets/')) {
+      return filename.replace('/src/assets/', '/assets/');
+    }
     return filename;
+  }
+  
+  // Check if the filename is just a filename (no path) and might be an uploaded file
+  if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
+    // This is likely just a filename from the database, assume it's in uploads/sites/
+    return `/uploads/sites/${filename}`;
+  }
+  
+  // Check if the original filename might be an uploaded file with path
+  if (filename && filename.includes('sites/')) {
+    // If it's a path that includes sites/, it's likely an uploaded heritage image
+    const justFile = filename.split('sites/')[1];
+    return `/uploads/${justFile}`;
   }
   
   // Try to resolve using Vite's import

@@ -55,8 +55,17 @@ export function assetUrl(raw?: string): string {
     return trimmed;
   }
 
-  // If it's a relative path without leading slash, add /assets/ prefix
+  // Handle uploaded files by bucket type
   if (!trimmed.startsWith('/')) {
+    // Check if it's likely an uploaded file based on context
+    // This is a heuristic - if it's just a filename, it's likely uploaded
+    if (trimmed.includes('.') && trimmed.split('.').length === 2) {
+      // This looks like a filename (e.g., "image.jpg")
+      // Try to determine bucket from context or use a default
+      // For now, we'll use a generic approach that can be overridden
+      return `/uploads/${trimmed}`;
+    }
+    // For other relative paths, use assets prefix
     return `/assets/${trimmed}`;
   }
 
