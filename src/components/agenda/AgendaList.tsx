@@ -111,13 +111,13 @@ const AgendaList = () => {
 
   const filteredEvents = displayEvents.filter(event => {
     if (activeCategory === 'semua') {
-      const matchesSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           event.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (event.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                           (event.description?.toLowerCase() || '').includes(searchTerm.toLowerCase());
       return matchesSearch;
     } else {
       const matchesSearch = event.category === activeCategory &&
-                           (event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            event.description?.toLowerCase().includes(searchTerm.toLowerCase()));
+                           ((event.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                            (event.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()));
       return matchesSearch;
     }
   });
@@ -192,33 +192,33 @@ const AgendaList = () => {
                   </div>
                 <CardHeader>
                   <CardTitle className="text-xl line-clamp-2">
-                    {stripHtml(event.name)}
+                    {stripHtml(event.name || '')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {stripHtml(event.description)}
+                    {stripHtml(event.description || '')}
                   </p>
                   
                   <div className="space-y-2 mb-[4rem]">
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar size={16} className="text-primary" />
                       {/* <span>{formatDate(event.date)}</span> */}
-                      <span>{stripHtml(event.date)}</span>
+                      <span>{stripHtml(event.date || '')}</span>
                     </div>
                     
                     {event.time && (
                       <div className="flex items-center gap-2 text-sm">
                         <Clock size={16} className="text-primary" />
                         {/* <span>{formatTime(event.time)} WIB</span> */}
-                        <span>{stripHtml(event.time)}</span>
+                        <span>{stripHtml(event.time || '')}</span>
                       </div>
                     )}
                     
                     {event.location && (
                       <div className="flex items-center gap-2 text-sm">
                         <MapPin size={16} className="text-primary" />
-                        <span>{stripHtml(event.location)}</span>
+                        <span>{stripHtml(event.location || '')}</span>
                       </div>
                     )}
                   </div>
