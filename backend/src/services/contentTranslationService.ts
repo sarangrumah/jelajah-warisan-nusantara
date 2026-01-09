@@ -17,6 +17,16 @@ class ContentTranslationService {
   }
 
   /**
+   * Strip HTML tags from text
+   */
+  private stripHtmlTags(text: string): string {
+    if (!text) return text;
+    
+    // Remove HTML tags using regex
+    return text.replace(/<[^>]*>/g, '');
+  }
+
+  /**
    * Get from cache
    */
   private async getFromCache(text: string, lang: string): Promise<string | null> {
@@ -66,22 +76,25 @@ class ContentTranslationService {
       return text;
     }
 
-    // Check cache first
-    const cached = await this.getFromCache(text, targetLang);
+    // Strip HTML tags before translation to prevent HTML from appearing in translated text
+    const cleanText = this.stripHtmlTags(text);
+    
+    // Check cache first using the clean text
+    const cached = await this.getFromCache(cleanText, targetLang);
     if (cached) {
       return cached;
     }
 
-    // Translate
+    // Translate the clean text
     try {
-      const result = await translationService.translate(text, targetLang, sourceLang);
+      const result = await translationService.translate(cleanText, targetLang, sourceLang);
       
       if (result.success) {
-        // Save to cache
-        this.saveToCache(text, targetLang, result.translatedText);
+        // Save to cache using the clean text as key
+        this.saveToCache(cleanText, targetLang, result.translatedText);
         return result.translatedText;
       } else {
-        console.warn(`Translation failed for text: "${text.substring(0, 50)}..."`, result.error);
+        console.warn(`Translation failed for text: "${cleanText.substring(0, 50)}..."`, result.error);
         return text; // Return original on failure
       }
     } catch (error) {
