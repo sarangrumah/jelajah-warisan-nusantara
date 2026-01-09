@@ -169,7 +169,7 @@ const HeritageDetail = () => {
               {/* Description */}
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold mb-4">{t('About')}</h2>
+                  <h2 className="text-2xl font-bold mb-4">{t('museumDetail.aboutHeritage')}</h2>
                   <div className="space-y-4 text-muted-foreground">
                     <span
                       dangerouslySetInnerHTML={{

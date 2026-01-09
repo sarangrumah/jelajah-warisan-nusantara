@@ -478,6 +478,7 @@ export const resources = {
       // Museum Detail
       museumDetail: {
         about: "About",
+        aboutHeritage: "About Heritage",
         facilities: "Facilities",
         galleryCollection: "Gallery Collection",
         visitInformation: "Visit Information",
@@ -1299,6 +1300,7 @@ export const resources = {
       // Museum Detail
       museumDetail: {
         about: "Tentang Museum",
+        aboutHeritage: "Tentang Cagar Budaya",
         facilities: "Fasilitas",
         galleryCollection: "Koleksi Galeri",
         visitInformation: "Informasi Kunjungan",
