@@ -13,6 +13,12 @@ import { mapSlidesWithImageUrl } from '@/components/helper';
 import SEO from '@/components/SEO';
 import { logError } from '@/utils/logger';
 
+// Utility to strip HTML tags completely
+function stripHtmlTags(html: string): string {
+  if (!html) { return html; }
+  return html.replace(/<[^>]*>/g, '');
+}
+
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -127,8 +133,8 @@ const MuseumDetail = () => {
       {filteredMuseum.map((museum) => (
         <div key={museum.id}>
         <SEO
-          title={museum.name.replace(/<[^>]*>?/gm, '')}
-          description={museum.subtitle?.replace(/<[^>]*>?/gm, '') || museum.description?.replace(/<[^>]*>?/gm, '').substring(0, 160)}
+          title={stripHtmlTags(museum.name)}
+          description={stripHtmlTags(museum.subtitle) || stripHtmlTags(museum.description).substring(0, 160)}
           image={getMuseumImageUrl(museum.img_banner)}
         />
 
@@ -144,18 +150,10 @@ const MuseumDetail = () => {
               {museum.type === 'museum' ? t('museumDetail.museum') : t('museumDetail.heritage')}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-2">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(museum.name)
-                }}
-              />
+              {stripHtmlTags(museum.name)}
             </h1>
             <p className="text-xl pe-8">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: fixBrokenHtmlTags(museum.subtitle)
-                }}
-              />
+              {stripHtmlTags(museum.subtitle)}
             </p>
           </div>
         </section>  
@@ -170,11 +168,7 @@ const MuseumDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: fixBrokenHtmlTags(museum.description)
-                      }}
-                    />
+                    {stripHtmlTags(museum.description)}
                   </p>
                 </CardContent>
               </Card>
@@ -217,7 +211,7 @@ const MuseumDetail = () => {
                     <MapPin className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.location')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.address}</p>
+                      <p className="text-sm text-muted-foreground">{stripHtmlTags(museum.address)}</p>
                     </div>
                   </div>
 
@@ -237,7 +231,7 @@ const MuseumDetail = () => {
                     <Phone className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.contact')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.phone}</p>
+                      <p className="text-sm text-muted-foreground">{stripHtmlTags(museum.phone)}</p>
                     </div>
                   </div>
 
@@ -245,7 +239,7 @@ const MuseumDetail = () => {
                     <Globe className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.website')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.website}</p>
+                      <p className="text-sm text-muted-foreground">{stripHtmlTags(museum.website)}</p>
                     </div>
                   </div>
 
@@ -253,7 +247,7 @@ const MuseumDetail = () => {
                     <Calendar className="mt-1 text-primary" size={20} />
                     <div>
                       <p className="font-semibold">{t('museumDetail.ticketPrice')}</p>
-                      <p className="text-sm text-muted-foreground">{museum.ticket_price}</p>
+                      <p className="text-sm text-muted-foreground">{stripHtmlTags(museum.ticket_price)}</p>
                     </div>
                   </div>
                   {/* <button 
