@@ -32,3 +32,13 @@ backend/.env.*
 backend/uploads/videos/*.mp4
 src/assets/hero-sections/*.mp4
 src/assets/images/collections/*
+
+# Runtime upload directories (do not commit user-uploaded content)
+backend/uploads/cover-letters/
+backend/uploads/cv-uploads/
+backend/uploads/documents/
+backend/uploads/hero-sections/
+backend/uploads/images/
+backend/uploads/publication/
+backend/uploads/sites/
+backend/uploads/transcripts/

@@ -1,4 +1,4 @@
-import { User } from '../../controllers/activityLogController';
+export {};
 
 declare global {
   namespace Express {
