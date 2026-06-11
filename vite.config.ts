@@ -108,6 +108,9 @@ export default defineConfig(({ mode }) => {
             charts: ['recharts'],
             i18n: ['react-i18next', 'i18next'],
             utils: ['axios', 'date-fns', 'clsx', 'tailwind-merge'],
+            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+            'framer-vendor': ['framer-motion'],
+            'lenis-vendor': ['lenis'],
           },
           // Optimize asset file names for caching
           assetFileNames: (assetInfo) => {

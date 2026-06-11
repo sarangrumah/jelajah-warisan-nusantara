@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import Beranda from "./pages/Beranda";
 import Agenda from "./pages/Agenda";
@@ -51,7 +51,18 @@ import OnDemandTranslationTest from "./pages/OnDemandTranslationTest";
 import UnifiedTranslationVerification from "./pages/UnifiedTranslationVerification";
 import SessionTimeoutTest from "./pages/SessionTimeoutTest";
 import DashboardPage from "./pages/Dashboard";
+import DemoMotion from "./pages/DemoMotion";
+import V2Loader from "./components/v2/V2Loader";
 import { logger } from "./utils/logger";
+
+// Route group /v2 (preview sinematik) — seluruhnya lazy agar tidak menambah
+// bobot bundle v1; chunk baru hanya diunduh saat user membuka /v2.
+const V2Layout = lazy(() => import("./components/v2/V2Layout"));
+const V2Landing = lazy(() => import("./pages/v2/V2Landing"));
+const V2Heritage = lazy(() => import("./pages/v2/V2Heritage"));
+const V2HeritageDetail = lazy(() => import("./pages/v2/V2HeritageDetail"));
+const V2Museums = lazy(() => import("./pages/v2/V2Museums"));
+const V2MuseumDetail = lazy(() => import("./pages/v2/V2MuseumDetail"));
 const queryClient = new QueryClient();
 
 // Enable global translation interceptor for API feedback
@@ -124,6 +135,21 @@ const App = () => {
                   <Route path="/verify-translation" element={<UnifiedTranslationVerification />} />
                   <Route path="/test-session-timeout" element={<SessionTimeoutTest />} />
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/demo-motion" element={<DemoMotion />} />
+                  <Route
+                    path="/v2"
+                    element={
+                      <Suspense fallback={<V2Loader />}>
+                        <V2Layout />
+                      </Suspense>
+                    }
+                  >
+                    <Route index element={<V2Landing />} />
+                    <Route path="heritage" element={<V2Heritage />} />
+                    <Route path="heritage/:id" element={<V2HeritageDetail />} />
+                    <Route path="museums" element={<V2Museums />} />
+                    <Route path="museum/:id" element={<V2MuseumDetail />} />
+                  </Route>
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

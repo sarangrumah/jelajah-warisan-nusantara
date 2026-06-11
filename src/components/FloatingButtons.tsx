@@ -5,8 +5,8 @@ import { useLocation } from 'react-router-dom';
 const FloatingButtons = () => {
   const location = useLocation();
   
-  // Hide on admin pages
-  if (location.pathname.startsWith('/admin')) {
+  // Hide on admin pages and the /v2 cinematic preview
+  if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/v2')) {
     return null;
   }
 
