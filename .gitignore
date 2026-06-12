@@ -42,3 +42,6 @@ backend/uploads/images/
 backend/uploads/publication/
 backend/uploads/sites/
 backend/uploads/transcripts/
+
+# Local database backup dumps (timestamped exports — don't commit)
+database/*_backup_*.sql
