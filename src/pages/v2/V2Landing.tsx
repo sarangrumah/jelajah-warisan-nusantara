@@ -1,7 +1,7 @@
 import { lazy, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowRight, Newspaper } from 'lucide-react';
+import { ArrowRight, Newspaper } from 'lucide-react';
 import SEO from '@/components/SEO';
 import { HeroSectionV2 } from '@/components/motion/HeroSectionV2';
 import { AnimatedStat } from '@/components/motion/AnimatedStat';
@@ -11,6 +11,7 @@ import BatikBackdrop from '@/components/v2/BatikBackdrop';
 import SectionHeading from '@/components/v2/SectionHeading';
 import SiteCard from '@/components/v2/SiteCard';
 import Deferred3D from '@/components/v2/Deferred3D';
+import V2IndonesiaSvgMap from '@/components/v2/V2IndonesiaSvgMap';
 import {
   useHeroSlides,
   useHeritageSites,
@@ -20,33 +21,27 @@ import {
   type V2Pin,
 } from '@/lib/v2/useSites';
 import { htmlToText, truncate } from '@/lib/v2/fixHtml';
-import heritageSitesImg from '@/assets/heritage-sites.jpg';
 
 const HeritageGlobe = lazy(() => import('@/components/v2/HeritageGlobe'));
 
-function GlobeFallback({ pins }: { pins: V2Pin[] }) {
+function GlobeFallback({
+  pins,
+  activePinId,
+  onPinClick,
+}: {
+  pins: V2Pin[];
+  activePinId?: string | null;
+  onPinClick?: (pin: V2Pin) => void;
+}) {
   return (
-    <div className="relative h-full min-h-[420px]">
-      <img
-        src={heritageSitesImg}
-        alt="Peta warisan Nusantara"
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 w-full h-full object-cover opacity-50"
-      />
+    <div className="relative h-full min-h-[420px] overflow-hidden">
       <div className="absolute inset-0 v2-mist" />
-      <div className="relative p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 gap-2 content-start">
-        {pins.slice(0, 10).map((pin) => (
-          <Link
-            key={pin.id}
-            to={pin.route}
-            className="flex items-center gap-2 text-sm text-foreground/80 hover:text-primary transition-colors"
-          >
-            <MapPin size={14} className="text-primary shrink-0" />
-            <span className="truncate">{pin.label}</span>
-          </Link>
-        ))}
-      </div>
+      <V2IndonesiaSvgMap
+        pins={pins}
+        activePinId={activePinId ?? null}
+        onPinClick={onPinClick}
+        className="absolute inset-0 px-3 py-6 md:px-8 md:py-10"
+      />
     </div>
   );
 }
@@ -177,7 +172,16 @@ export default function V2Landing() {
         {/* data-lenis-prevent: scroll wheel di atas peta dipakai untuk zoom,
             bukan menggulir halaman */}
         <div className="relative w-full h-[60vh] md:h-[80vh]" data-lenis-prevent>
-          <Deferred3D className="absolute inset-0" fallback={<GlobeFallback pins={pins} />}>
+          <Deferred3D
+            className="absolute inset-0"
+            fallback={
+              <GlobeFallback
+                pins={pins}
+                activePinId={activePin ? String(activePin.id) : null}
+                onPinClick={(p) => setActivePin(p)}
+              />
+            }
+          >
             <HeritageGlobe
               pins={globePins}
               onPinClick={(p) => setActivePin(pinById.get(String(p.id ?? p.label)) ?? null)}

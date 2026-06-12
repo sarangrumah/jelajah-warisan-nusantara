@@ -12,9 +12,10 @@ interface HeritageGlobeProps {
 }
 
 /**
- * Globe versi /v2: garis pantai riil (Natural Earth 50m), aksen emas sesuai
- * tema, dan kamera didekatkan agar kepulauan Indonesia tampil besar memenuhi
- * lebar layar. Di-load lazy — data koordinat ikut chunk ini, bukan bundle utama.
+ * Globe versi /v2: garis pantai riil (Natural Earth 50m), aksen teal sesuai
+ * tema heritage v1, dan kamera didekatkan agar kepulauan Indonesia tampil
+ * besar memenuhi lebar layar. Di-load lazy — data koordinat ikut chunk ini,
+ * bukan bundle utama.
  */
 export default function HeritageGlobe({ pins = [], onPinClick }: HeritageGlobeProps) {
   return (
@@ -22,8 +23,8 @@ export default function HeritageGlobe({ pins = [], onPinClick }: HeritageGlobePr
       pins={pins}
       onPinClick={onPinClick}
       outlines={OUTLINES}
-      lineColor="#C9A227"
-      glowColor="#E9C766"
+      lineColor="#0EA398"
+      glowColor="#17CFBF"
       cameraPosition={[0, 0.2, 3.3]}
       fov={36}
       height="h-full"
