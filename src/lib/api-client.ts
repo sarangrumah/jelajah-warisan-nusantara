@@ -225,6 +225,13 @@ class ApiClient {
     });
   }
 
+  async reorder<T>(endpoint: string, items: { id: string; display_order: number }[]): Promise<ApiResponse<T>> {
+    return this.request<T>(`/api/${endpoint}/reorder`, {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    });
+  }
+
   // File upload
   async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; name: string; originalName: string; size: number; type: string }>> {
     const formData = new FormData();

@@ -32,6 +32,7 @@ Object.entries(tableConfigs).forEach(([tableName, fields]) => {
   router.get(`/${tableName}/:id`, controller.getById);
 
   // Admin/Editor only routes for write operations
+  router.post(`/${tableName}/reorder`, authenticateToken, requireAdminOrEditor, controller.reorder);
   router.post(`/${tableName}/:id/approve`, authenticateToken, requireAdminOrEditor, controller.approve);
   router.post(`/${tableName}/:id/reject`, authenticateToken, requireAdminOrEditor, controller.reject);
   router.post(`/${tableName}`, authenticateToken, requireAdminOrEditor, controller.create);

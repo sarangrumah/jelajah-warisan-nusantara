@@ -57,8 +57,9 @@ const RulesAndSOP = () => {
   //   steps: [5, 4, 8, 6][index],
   //   duration: ['30-60 hari', '14-21 hari', 'Berkelanjutan', '45-90 hari'][index]
   // }));
-  const regulationsData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'peraturan');
-  const proceduresData = proceduresAndRegulations.filter(procedure => procedure.category.toLowerCase() === 'sop');
+  const normalizeCategory = (category?: string) => (category || '').trim().toLowerCase();
+  const regulationsData = proceduresAndRegulations.filter(procedure => normalizeCategory(procedure.category) === 'peraturan');
+  const proceduresData = proceduresAndRegulations.filter(procedure => normalizeCategory(procedure.category) === 'sop');
 
   const downloadFromUrl = (url) => {
     const link = document.createElement("a");

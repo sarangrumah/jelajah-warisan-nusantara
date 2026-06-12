@@ -6,11 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useTranslate } from '@/hooks/useTranslate';
 import { mediaService } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
+import { stripHtml } from '@/lib/utils';
 
 // Child component for a single news article card with translation
 function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { article: any, handleReadMoreClick: (id: string) => void, getNewsImageUrl: (filename: string) => string }) {
   const { translatedText: title } = useTranslate(article.title);
-  const { translatedText: excerpt } = useTranslate(article.excerpt);
+  const { translatedText: excerpt } = useTranslate(article.subtitle || stripHtml(article.description || ''));
   const { translatedText: readMoreLabel } = useTranslate('Baca Selengkapnya');
 
   return (
@@ -58,24 +60,21 @@ function NewsArticleCard({ article, handleReadMoreClick, getNewsImageUrl }: { ar
 const newsImages = import.meta.glob('../../assets/news/*', { eager: true });
 
 function getNewsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
+  if (!filename || typeof filename !== 'string') { return undefined; }
+
+  if (filename.startsWith('/assets/')) {
     return filename;
   }
-  const justFile = filename?.split('/').pop() || filename;
+
+  // Bundled static asset (legacy data referencing src/assets/news)
+  const justFile = filename.split('/').pop() || filename;
   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as { default: string }).default;
   }
-  // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/news/${justFile}`;
-  }
-  return undefined;
+
+  // Uploaded file (full URL, /uploads/..., or bare filename in images bucket)
+  return getUploadedImageUrl(filename, 'images');
 }
 
 const NewsListSection = () => {
@@ -134,17 +133,18 @@ const NewsListSection = () => {
     fetchArticles();
   }, []);
 
+  const matchesSearchTerm = (article: any) => {
+    const term = searchTerm.toLowerCase();
+    return article.title.toLowerCase().includes(term)
+      || article.subtitle?.toLowerCase().includes(term)
+      || article.description?.toLowerCase().includes(term);
+  };
+
   const filteredArticles = articles.filter(article => {
     if (activeCategory === 'semua') {
-      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
-    } else {
-      const matchesSearch = article.categories.toLowerCase() === activeCategory.toLocaleLowerCase() 
-          && (article.title.toLowerCase().includes(searchTerm.toLowerCase()) 
-          || article.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchesSearch;
+      return matchesSearchTerm(article);
     }
+    return article.categories.toLowerCase() === activeCategory.toLowerCase() && matchesSearchTerm(article);
   });
 
   const navigate = useNavigate();

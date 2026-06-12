@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 import { EventsService, contentService } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 import sanitizeHtml from 'sanitize-html';
@@ -171,9 +172,9 @@ const EventDetail = () => {
         {/* Hero Image */}
           <section className="relative overflow-hidden h-[60vh]">
             <img
-              src={event.image_url ? event.image_url : logo}
+              src={event.banner_img ? getUploadedImageUrl(event.banner_img, 'hero-sections') : logo}
               alt={event.name}
-              className={event.image_url ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
+              className={event.banner_img ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">

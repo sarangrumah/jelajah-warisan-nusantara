@@ -10,6 +10,7 @@ import Agenda from "./pages/Agenda";
 import CompanyProfile from "./pages/CompanyProfile";
 import TentangKami from "./pages/TentangKami";
 import MediaPublikasi from "./pages/MediaPublikasi";
+import DokumenPublikasi from "./pages/DokumenPublikasi";
 import HubungiKami from "./pages/HubungiKami";
 import Career from "./pages/Career";
 import PPID from "./pages/PPID";
@@ -102,6 +103,7 @@ const App = () => {
                   <Route path="/struktur-organisasi" element={<StrukturOrganisasi />} />
                   <Route path="/laboratorium-konservasi" element={<LayananKonservasi />} />
                   <Route path="/media-publikasi" element={<MediaPublikasi />} />
+                  <Route path="/dokumen-publikasi" element={<DokumenPublikasi />} />
                   <Route path="/hubungi-kami" element={<HubungiKami />} />
                   <Route path="/karir" element={<Career />} />
                   <Route path="/ppid" element={<PPID />} />

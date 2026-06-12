@@ -1,6 +1,6 @@
 import { Building, Landmark } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import IndonesiaMap from './IndonesiaMap';
+import IndonesiaMap, { MARKER_COLORS } from './IndonesiaMap';
 import { useTranslation } from 'react-i18next';
 import { museumService } from '@/lib/api-services';
 import { useEffect, useState } from 'react';
@@ -93,11 +93,11 @@ const DistributionSection = () => {
             <h4 className="font-bold mb-2 text-heritage-gradient">{legendTitle}</h4>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-primary"></div>
+                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: MARKER_COLORS.museum }}></div>
                 <span>{legendMuseum}</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-secondary"></div>
+                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: MARKER_COLORS.heritage }}></div>
                 <span>{legendHeritage}</span>
               </div>
             </div>

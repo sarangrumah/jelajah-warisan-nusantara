@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Edit, Save, X, Plus, Trash, HelpCircle } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, HelpCircle, ArrowUpDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
@@ -18,6 +18,8 @@ import { sanitizeHtml } from '@/lib/sanitize-html';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import QuillEditor from '@/components/ui/quill-editor';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+import { SortableList } from '@/components/admin/SortableList';
+import { useReorder } from '@/hooks/useReorder';
 interface SitesItem {
   id?: string;
   name: string;
@@ -40,6 +42,7 @@ interface SitesItem {
   ticket_price:string;
   ticket_url?: string;
   is_free?: boolean;
+  display_order?: number;
   is_approved: boolean;
   is_rejected?: boolean;
   reason_rejected?: string;
@@ -539,9 +542,22 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
+  const [reorderType, setReorderType] = useState<string>('');
+  const [siteTypes, setSiteTypes] = useState<Types[]>([]);
+  const { saveOrder, saving: savingOrder } = useReorder('tb_sites');
 
   useEffect(() => {
     fetchSites();
+    TypesAndCategoriesSites.getAllTypes().then((response) => {
+      if (!response.error) {
+        const fetchedTypes = (response.data as Types[]) || [];
+        setSiteTypes(fetchedTypes);
+        if (fetchedTypes.length > 0) {
+          setReorderType((prev) => prev || fetchedTypes[0].id);
+        }
+      }
+    });
   }, []);
 
   const fetchSites = async () => {
@@ -767,6 +783,20 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const reorderItems = museums
+    .filter((site) => site.type === reorderType)
+    .sort((a, b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER));
+
+  const handleReorder = async (newItems: SitesItem[]) => {
+    // Renumber 1..n within the selected type and persist
+    const renumbered = newItems.map((item, index) => ({ ...item, display_order: index + 1 }));
+    setSitess(prev => prev.map(site => {
+      const updated = renumbered.find(r => r.id === site.id);
+      return updated ? { ...site, display_order: updated.display_order } : site;
+    }));
+    await saveOrder(renumbered);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -782,6 +812,13 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Museum Management</h2>
           <p className="text-muted-foreground">Manage Museum and Content</p>
         </div>
+        <div className="flex items-center gap-2">
+        {userRole !== "approver" && userRole !== "viewer" ? (
+          <Button variant={reorderMode ? 'default' : 'outline'} onClick={() => setReorderMode(prev => !prev)}>
+            <ArrowUpDown className="w-4 h-4 mr-2" />
+            {reorderMode ? 'Selesai Mengurutkan' : 'Atur Urutan'}
+          </Button>
+        ) : null}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             { userRole !== "approver" && userRole !== "viewer" ?             
@@ -811,6 +848,7 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
             />
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="flex justify-between items-center">
@@ -849,7 +887,48 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         title="Reject Museum"
       />
 
-      {museums.length === 0 ? (
+      {reorderMode ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Atur Urutan Tampilan</CardTitle>
+            <CardDescription>
+              Seret kartu atau ketik nomor urutan untuk mengubah posisi. Urutan ini menentukan tampilan di halaman pengunjung.
+            </CardDescription>
+            <div className="max-w-xs pt-2">
+              <Select value={reorderType} onValueChange={setReorderType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih tipe" />
+                </SelectTrigger>
+                <SelectContent>
+                  {siteTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {reorderItems.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">Tidak ada data untuk tipe ini</p>
+            ) : (
+              <SortableList
+                items={reorderItems}
+                getId={(site) => site.id!}
+                disabled={savingOrder}
+                onOrderChange={handleReorder}
+                renderItem={(site) => (
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-medium truncate">{site.name}</span>
+                    <Badge variant={site.is_active ? 'default' : 'secondary'}>
+                      {site.is_active ? 'Published' : 'Draft'}
+                    </Badge>
+                  </div>
+                )}
+              />
+            )}
+          </CardContent>
+        </Card>
+      ) : museums.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
             <p className="text-muted-foreground mb-4">No museums created yet</p>

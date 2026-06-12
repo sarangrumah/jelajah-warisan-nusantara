@@ -6,11 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, Edit, Save, X, Plus, Trash, Eye } from 'lucide-react';
+import { Loader2, Edit, Save, X, Plus, Trash, Eye, ArrowUpDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+import { SortableList } from '@/components/admin/SortableList';
+import { useReorder } from '@/hooks/useReorder';
 
 // Banner data shape used in this module
 interface Banner {
@@ -28,6 +30,7 @@ interface Banner {
   button_label_2: string;
   button_url_1?: string;
   button_url_2?: string;
+  display_order?: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -240,6 +243,8 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
+  const { saveOrder, saving: savingOrder } = useReorder('tb_banner');
 
   useEffect(() => {
     fetchBanners();
@@ -461,6 +466,19 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
     }
   };
 
+  const sortedBanners = [...banners].sort(
+    (a, b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER)
+  );
+
+  const handleReorder = async (newItems: Banner[]) => {
+    const renumbered = newItems.map((item, index) => ({ ...item, display_order: index + 1 }));
+    setBanners(prev => prev.map(b => {
+      const updated = renumbered.find(r => r.id === b.id);
+      return updated ? { ...b, display_order: updated.display_order } : b;
+    }));
+    await saveOrder(renumbered);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -476,6 +494,13 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
           <h2 className="text-2xl font-bold">Banner Management</h2>
           <p className="text-muted-foreground">Manage banners for the homepage</p>
         </div>
+        <div className="flex items-center gap-2">
+        {userRole !== "approver" && userRole !== "viewer" ? (
+          <Button variant={reorderMode ? 'default' : 'outline'} onClick={() => setReorderMode(prev => !prev)}>
+            <ArrowUpDown className="w-4 h-4 mr-2" />
+            {reorderMode ? 'Selesai Mengurutkan' : 'Atur Urutan'}
+          </Button>
+        ) : null}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             {userRole !== "approver" && userRole !== "viewer" ?<Button onClick={() => setEditingBanner(null)}>
@@ -503,10 +528,11 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
             />
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="flex justify-between items-center">
-        {banner != null  ? 
+        {banner != null  ?
         <Dialog open={isDialogDelete} onOpenChange={setIsDialogDelete}>
           <DialogContent className="max-w-4xl">
               <DialogHeader>
@@ -542,7 +568,36 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         title="Reject Banner"
       />
 
-      {banners.length === 0 ? (
+      {reorderMode ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Atur Urutan Banner</CardTitle>
+            <CardDescription>
+              Seret kartu atau ketik nomor urutan untuk mengubah posisi. Urutan ini menentukan rotasi banner di Beranda.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {sortedBanners.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">Belum ada banner</p>
+            ) : (
+              <SortableList
+                items={sortedBanners}
+                getId={(item) => item.id!}
+                disabled={savingOrder}
+                onOrderChange={handleReorder}
+                renderItem={(item) => (
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-medium truncate">{item.title}</span>
+                    <Badge variant={item.is_active ? 'default' : 'secondary'}>
+                      {item.is_active ? 'Published' : 'Draft'}
+                    </Badge>
+                  </div>
+                )}
+              />
+            )}
+          </CardContent>
+        </Card>
+      ) : banners.length === 0 ? (
         <Card>
           <CardContent className="text-center py-8">
             <p className="text-muted-foreground mb-4">No banners created yet</p>

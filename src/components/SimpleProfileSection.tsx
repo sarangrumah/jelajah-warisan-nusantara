@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { contentService, siteSettingsService } from '@/lib/api-services';
 
 const SimpleProfileSection: React.FC = () => {
   const { t } = useTranslation();
   const [companyData, setCompanyData] = useState<any>(null);
+  const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
-        console.log('🔍 Fetching company data directly...');
-        const response = await fetch('http://localhost:3000/api/tb_company');
-        console.log('📡 Company API Response:', response);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('✅ Company data received:', data);
-        
-        if (data && data.length > 0) {
-          setCompanyData(data[0]);
+        const response = await contentService.getAll();
+        if (!response.error && response.data && response.data.length > 0) {
+          setCompanyData(response.data[0]);
         }
       } catch (error) {
-        console.error('❌ Error fetching company data:', error);
+        console.error('Error fetching company data:', error);
       } finally {
         setLoading(false);
       }
     };
 
+    const fetchSettings = async () => {
+      try {
+        const response = await siteSettingsService.getAll();
+        if (!response.error && Array.isArray(response.data)) {
+          const map: Record<string, string> = {};
+          (response.data as any[]).forEach((row) => {
+            if (row?.key) { map[row.key] = row.value; }
+          });
+          setSettings(map);
+        }
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+      }
+    };
+
     fetchCompanyData();
+    fetchSettings();
   }, []);
 
   // Fallback static data
@@ -83,13 +91,6 @@ const SimpleProfileSection: React.FC = () => {
     );
   }
 
-  console.log('🔍 SimpleProfileSection: Rendering with translations:', {
-    title: t('profile.title'),
-    description: t('profile.description'),
-    loading,
-    companyData
-  });
-
   return (
     <>
       <section className="py-20 bg-gradient-to-b from-background to-card">
@@ -98,14 +99,9 @@ const SimpleProfileSection: React.FC = () => {
             <h2 className="text-2xl md:text-4xl font-bold text-heritage-gradient pb-3">
               {t('profile.title')}
             </h2>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto p-6 leading-relaxed text-justify">
-              {t('profile.description')}
-            </p>
-            {companyData && (
-              <div className="mt-4 p-2 bg-green-100 text-green-800 rounded text-sm">
-                ✅ Using dynamic data from database
-              </div>
-            )}
+            <div className="text-xl text-muted-foreground max-w-4xl mx-auto p-6 leading-relaxed text-justify">
+              <TranslatedHtml text={profile.aboutus || t('profile.description')} />
+            </div>
           </div>
 
           <div className="grid gap-12 items-center mb-16">
@@ -152,13 +148,13 @@ const SimpleProfileSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Static stats for now */}
+          {/* Stats are CMS-editable via tb_site_settings (Settings admin) */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center scroll-reveal mt-16">
             {[
-              { value: '19', label: t('profile.stats.museums') },
-              { value: '34', label: t('profile.stats.heritage') },
-              { value: '12', label: t('profile.stats.provinces') },
-              { value: '50+', label: t('profile.stats.experience') }
+              { value: settings['homepage.stats.museums'] || '19', label: t('profile.stats.museums') },
+              { value: settings['homepage.stats.heritage'] || '34', label: t('profile.stats.heritage') },
+              { value: settings['homepage.stats.provinces'] || '12', label: t('profile.stats.provinces') },
+              { value: settings['homepage.stats.experience'] || '50+', label: t('profile.stats.experience') }
             ].map((stat, index) => (
               <div key={index}>
                 <h4 className="text-3xl md:text-4xl font-bold text-heritage-gradient">{stat.value}</h4>

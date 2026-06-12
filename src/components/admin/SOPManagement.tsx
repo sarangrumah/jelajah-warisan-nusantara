@@ -361,19 +361,19 @@ const SOPManagement = ({ userRole }: { userRole: string }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">SOP Management</h2>
+          <h2 className="text-2xl font-bold">SOP &amp; Regulation Management</h2>
           <p className="text-muted-foreground">Manage SOP and Regulations documents</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             {userRole !== "approver" && userRole !== "viewer" ?<Button onClick={() => setEditingItem(emptySOP)}>
               <Plus className="w-4 h-4 mr-2" />
-                Add SOP
+                Add SOP &amp; Regulation
             </Button> : <></> }
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingItem?.id ? 'Edit SOP' : 'Add New SOP'}</DialogTitle>
+              <DialogTitle>{editingItem?.id ? 'Edit SOP & Regulation' : 'Add New SOP & Regulation'}</DialogTitle>
               <DialogDescription>
                 {editingItem?.id ? 'Update SOP information' : 'Create new SOP/Regulation entry'}
               </DialogDescription>

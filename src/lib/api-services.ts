@@ -191,6 +191,20 @@ export const faqService = {
   reject: (id: string, reason: string) => apiClient.reject('tb_faqs', id, reason),
 };
 
+// Site Settings (key-value CMS for hardcoded values like homepage stats)
+export const siteSettingsService = {
+  getAll: () => apiClient.getAll('tb_site_settings'),
+  update: (id: string, data: any) => apiClient.update('tb_site_settings', id, data),
+};
+
+// Navigation Menu (CMS-managed header menu)
+export const menuService = {
+  getAll: () => apiClient.getAll('tb_menu'),
+  create: (data: any) => apiClient.create('tb_menu', data),
+  update: (id: string, data: any) => apiClient.update('tb_menu', id, data),
+  delete: (id: string) => apiClient.delete('tb_menu', id),
+};
+
 // Content Sections
 export const contentService = {
   getAll: () => apiClient.getAll('tb_company'),

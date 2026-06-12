@@ -3,6 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { mediaService } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
 import { useTranslation } from 'react-i18next';
 import { useContent } from '@/hooks/useContent';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -25,25 +26,21 @@ const newsFiles = import.meta.glob('../assets/berita/*', { eager: true });
 
 
 function getNewsImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/') ||
-      filename.startsWith('/uploads/'))
-  ) {
+  if (!filename || typeof filename !== 'string') { return undefined; }
+
+  if (filename.startsWith('/assets/')) {
     return filename;
   }
-  const justFile = filename?.split('/').pop() || filename;
+
+  // Bundled static asset (legacy data referencing src/assets/news)
+  const justFile = filename.split('/').pop() || filename;
   const match = Object.entries(newsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as { default: string }).default;
   }
-  // Fallback: try public/assets/news/ for production
-  if (justFile) {
-    return `/assets/news/${justFile}`;
-  }
-  return undefined;
+
+  // Uploaded file (full URL, /uploads/..., or bare filename in images bucket)
+  return getUploadedImageUrl(filename, 'images');
 }
 
 function getNewsFileUrl(filename: string) {

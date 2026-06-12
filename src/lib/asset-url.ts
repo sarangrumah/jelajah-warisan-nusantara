@@ -88,20 +88,49 @@ export function getApiBaseUrl(): string {
 }
 
 /**
- * Helper to construct full image URLs for uploaded content
+ * Backend origin that serves /uploads — mirrors api-client baseUrl logic.
+ * Frontend runs on vite (preview :4173 / dev :5173) which does not serve uploads,
+ * so upload paths must be absolute against the backend origin.
  */
-export function getUploadedImageUrl(path?: string): string {
+export function apiUrl(): string {
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3000';
+  }
+  return import.meta.env.VITE_API_URL || 'https://museumcagarbudaya.kemenbud.go.id';
+}
+
+/**
+ * Helper to construct full image URLs for uploaded content
+ * @param path stored value: full URL, "/uploads/{bucket}/{file}", or bare filename
+ * @param bucket bucket used when path is a bare filename (default "images")
+ */
+export function getUploadedImageUrl(path?: string, bucket?: string): string {
   if (!path) {
     return '/placeholder.svg';
   }
-  
+
   const trimmed = path.trim();
-  
+
   // If already a full URL, return as-is
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return trimmed;
   }
-  
-  // If it's already a proper path, use assetUrl
+
+  // Backend upload path → make absolute against backend origin
+  if (trimmed.startsWith('/uploads/')) {
+    return `${apiUrl()}${trimmed}`;
+  }
+
+  // Frontend static asset
+  if (trimmed.startsWith('/assets/') || trimmed.includes('placeholder')) {
+    return trimmed;
+  }
+
+  // Bare filename → assume uploaded file in the given bucket
+  if (!trimmed.startsWith('/') && trimmed.includes('.')) {
+    return `${apiUrl()}/uploads/${bucket || 'images'}/${trimmed.split('/').pop()}`;
+  }
+
+  // Anything else: legacy asset paths
   return assetUrl(trimmed);
 }

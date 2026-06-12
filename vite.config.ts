@@ -37,6 +37,12 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        // Uploaded files are served by the backend
+        '/uploads': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          secure: false,
+        },
         // Additional proxy for direct backend calls
         '/tb_company': {
           target: 'http://localhost:3000',

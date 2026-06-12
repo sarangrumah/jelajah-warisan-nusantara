@@ -198,7 +198,10 @@ export const createCrudController = (tableName: string, fields: string[]) => {
 
         // Determine ordering based on table type
         let orderByClause;
-        if (tableName === 'news_articles' || tableName === 'tb_publication') {
+        if (fields.includes('display_order')) {
+          // Tables with manual ordering (tb_sites, tb_banner, tb_menu) honor admin-defined order
+          orderByClause = `${tableName}.display_order ASC NULLS LAST, ${tableName}.created_at DESC NULLS LAST`;
+        } else if (tableName === 'news_articles' || tableName === 'tb_publication') {
           // For news and publications, order by published_at first, then created_at as fallback
           orderByClause = `${tableName}.published_at DESC NULLS LAST, ${tableName}.created_at DESC NULLS LAST`;
         } else {
@@ -996,6 +999,54 @@ const JSON_FIELDS: Record<string, string[]> = {
       } catch (error) {
         console.error(`Delete ${tableName} error:`, error);
         res.status(500).json({ error: 'Internal server error' });
+      }
+    },
+
+    // === REORDER ===
+    reorder: async (req: AuthRequest, res: Response) => {
+      const client = await getClient();
+      try {
+        if (!fields.includes('display_order')) {
+          return res.status(400).json({ error: `Reordering not supported for table: ${tableName}` });
+        }
+
+        const { items } = req.body || {};
+        if (!Array.isArray(items) || items.length === 0) {
+          return res.status(400).json({ error: 'items must be a non-empty array of { id, display_order }' });
+        }
+
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        for (const item of items) {
+          if (!item || !uuidRegex.test(String(item.id)) || !Number.isInteger(Number(item.display_order))) {
+            return res.status(400).json({ error: 'Each item must have a valid UUID id and integer display_order' });
+          }
+        }
+
+        const idUser = req.user?.id;
+        const hasUpdatedBy = fields.includes('updated_by');
+
+        await client.query('BEGIN');
+        for (const item of items) {
+          const setClauses = ['display_order = $2', 'updated_at = NOW()'];
+          const params: any[] = [item.id, Number(item.display_order)];
+          if (hasUpdatedBy && idUser) {
+            setClauses.push(`updated_by = $${params.length + 1}`);
+            params.push(idUser);
+          }
+          await client.query(
+            `UPDATE ${tableName} SET ${setClauses.join(', ')} WHERE id = $1`,
+            params
+          );
+        }
+        await client.query('COMMIT');
+
+        res.json({ message: 'Order updated successfully', count: items.length });
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.error(`Reorder ${tableName} error:`, error);
+        res.status(500).json({ error: 'Failed to update order' });
+      } finally {
+        client.release();
       }
     },
 

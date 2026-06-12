@@ -13,6 +13,7 @@
     "migrate:translations": "tsx src/scripts/migrate-translations.ts",
     "add:ui-translations": "tsx src/scripts/add-ui-translations.ts",
     "add:all-ui-translations": "tsx src/scripts/add-all-ui-translations.ts",
+    "seed:ui-translations": "tsx src/scripts/seed-ui-translations-from-i18n.ts",
     "test-db": "tsx src/scripts/test-db-connection.ts",
     "fix-password": "tsx src/scripts/fix-admin-password.ts"
   },

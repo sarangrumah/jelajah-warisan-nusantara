@@ -14,6 +14,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import QuillEditor from '@/components/ui/quill-editor';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { RejectReasonDialog } from '@/components/admin/RejectReasonDialog';
+import { MediaPreviewDialog } from '@/components/admin/MediaPreviewDialog';
 
 interface Media {
   id: string; 
@@ -266,6 +267,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const [previewItem, setPreviewItem] = useState<Media | null>(null);
 
   useEffect(() => {
     fetchMediaItems();
@@ -524,6 +526,20 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
         title="Reject Media Item"
       />
 
+      <MediaPreviewDialog
+        item={previewItem}
+        open={previewItem !== null}
+        onClose={() => setPreviewItem(null)}
+        onApprove={(id) => {
+          setPreviewItem(null);
+          toggleApproved(id);
+        }}
+        onReject={(id) => {
+          setPreviewItem(null);
+          openRejectDialog(id);
+        }}
+      />
+
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Media & Publication Management</h2>
@@ -628,7 +644,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="success"
                           size="sm"
-                          onClick={() => toggleApproved(item.id)}
+                          onClick={() => setPreviewItem(item)}
                         >
                           Approve
                         </Button>
@@ -666,7 +682,7 @@ const MediaManagement = ({ userRole }: { userRole: string }) => {
                         <Button
                           variant="success"
                           className="w-full"
-                          onClick={() => toggleApproved(item.id)}
+                          onClick={() => setPreviewItem(item)}
                         >
                           Approve
                         </Button>

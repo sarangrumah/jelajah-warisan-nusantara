@@ -13,49 +13,54 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 import { logInfo } from '@/utils/logger';
+import { useMenu, MenuNode } from '@/hooks/useMenu';
+
+// Fallback navigation when the CMS menu (tb_menu) is unavailable — nav must never disappear
+const fallbackNavigationItems: MenuNode[] = [
+  { name: 'Beranda', href: '/beranda' },
+  {
+    name: 'Destinasi',
+    href: '/museum',
+    subItems: [
+      { name: 'Museum', href: '/museums' },
+      { name: 'Warisan Budaya', href: '/heritage' },
+    ],
+  },
+  {
+    name: 'Koleksi',
+    href: '/collection',
+    subItems: [
+      { name: 'Koleksi', href: '/collection' },
+      { name: 'Memory Of the World', href: '/mow' },
+    ],
+  },
+  { name: 'Agenda', href: '/agenda' },
+  {
+    name: 'Tentang Kami',
+    href: '/tentang-kami',
+    subItems: [
+      { name: 'Tentang Kami', href: '/tentang-kami' },
+      { name: 'Struktur Organisasi', href: '/struktur-organisasi' },
+      { name: 'Layanan Konservasi', href: '/laboratorium-konservasi' },
+      { name: 'Berita & Publikasi', href: '/media-publikasi' },
+      { name: 'Dokumen Publikasi', href: '/dokumen-publikasi' },
+      { name: 'Pemanfaatan Aset', href: '/pemanfaatan-aset' },
+      { name: 'Merchandise', href: '/merchandise' },
+      { name: 'Hubungi Kami', href: '/hubungi-kami' },
+      { name: 'Karir', href: '/karir' },
+    ]
+  },
+  { name: 'PPID', href: '/ppid' },
+];
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { language } = useLanguage();
+  const cmsMenu = useMenu();
 
-  // Navigation items with original Indonesian text
-  const navigationItems = [
-    { name: 'Beranda', href: '/beranda' },
-    {
-      name: 'Destinasi',
-      href: '/museum',
-      subItems: [
-        { name: 'Museum', href: '/museums' },
-        { name: 'Warisan Budaya', href: '/heritage' },
-      ],
-    },
-    {
-      name: 'Koleksi',
-      href: '/collection',
-      subItems: [
-        { name: 'Koleksi', href: '/collection' },
-        { name: 'Memory Of the World', href: '/mow' },
-      ],
-    },
-    { name: 'Agenda', href: '/agenda' },
-    {
-      name: 'Tentang Kami',
-      href: '/tentang-kami',
-      subItems: [
-        { name: 'Tentang Kami', href: '/tentang-kami' },
-        { name: 'Struktur Organisasi', href: '/struktur-organisasi' },
-        { name: 'Layanan Konservasi', href: '/laboratorium-konservasi' },
-        { name: 'Media & Publikasi', href: '/media-publikasi' },
-        { name: 'Pemanfaatan Aset', href: '/pemanfaatan-aset' },
-        { name: 'Merchandise', href: '/merchandise' },
-        { name: 'Hubungi Kami', href: '/hubungi-kami' },
-        { name: 'Karir', href: '/karir' },
-      ]
-    },
-    { name: 'PPID', href: '/ppid' },
-  ];
+  const navigationItems = cmsMenu || fallbackNavigationItems;
 
   // Collect all texts that need translation
   const allTexts = useMemo(() => {
@@ -71,6 +76,8 @@ const Header = () => {
       'Struktur Organisasi': 'nav.strukturOrganisasi',
       'Layanan Konservasi': 'nav.layananKonservasi',
       'Media & Publikasi': 'nav.mediaPublikasi',
+      'Berita & Publikasi': 'nav.beritaPublikasi',
+      'Dokumen Publikasi': 'nav.dokumenPublikasi',
       'Pemanfaatan Aset': 'nav.pemanfaatanAset',
       'Merchandise': 'nav.merchandise',
       'Hubungi Kami': 'nav.hubungiKami',
@@ -85,17 +92,33 @@ const Header = () => {
   // Use standard translation hook
   const { t } = useTranslation();
 
+  // Resolve a menu item label: i18n key when known, CMS label_en for English, else raw label
+  const resolveName = (item: MenuNode): string => {
+    const i18nKey = allTexts[item.name];
+    if (i18nKey) {
+      const translated = t(i18nKey);
+      if (translated && translated !== i18nKey) {
+        return translated;
+      }
+    }
+    if (language === 'en' && item.nameEn) {
+      return item.nameEn;
+    }
+    return item.name;
+  };
+
   // Create translated navigation items
   const translatedNavigationItems = useMemo(() => {
     return navigationItems.map(item => ({
       ...item,
-      name: t(allTexts[item.name] || `nav.${item.name.toLowerCase().replace(/\s+/g, '')}`) || item.name,
+      name: resolveName(item),
       subItems: item.subItems ? item.subItems.map(subItem => ({
         ...subItem,
-        name: t(allTexts[subItem.name] || `nav.${subItem.name.toLowerCase().replace(/\s+/g, '')}`) || subItem.name
+        name: resolveName(subItem)
       })) : undefined
     }));
-  }, [navigationItems, t, allTexts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigationItems, t, allTexts, language]);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -6,6 +6,7 @@ import { useContent } from '@/hooks/useContent';
 import { Link } from 'react-router-dom';
 import { stripHtml } from '@/lib/utils';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
 import logo from '@/assets/MCB-Logo.png';
 
 import {
@@ -15,32 +16,6 @@ import {
   CarouselPrevious,
   CarouselNext
 } from '@/components/ui/carousel';
-
-const eventImages = import.meta.glob('../assets/events/*', { eager: true });
-
-function getEventImageUrl(filename: string) {
-  const VITE_API_URL = import.meta.env.VITE_API_URL;
-  if (typeof filename !== 'string' || !filename) {
-    return undefined;
-  }
-  if (filename.startsWith('http://') || filename.startsWith('https://')) {
-    return filename;
-  }
-  if (filename.startsWith('/uploads/')) {
-    return filename;
-  }
-  if (filename.startsWith('/assets/')) {
-    return filename;
-  }
-  
-  const justFile = filename.split('/').pop();
-  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as any).default;
-  }
-  
-  return `/assets/events/${justFile}`;
-}
 
 const AgendaCard = ({ event }) => {
   const { t } = useUnifiedTranslation();
@@ -73,7 +48,7 @@ const AgendaCard = ({ event }) => {
         <img
           src={
             event.banner_img
-              ? getEventImageUrl(event.banner_img) || logo
+              ? getUploadedImageUrl(event.banner_img, 'hero-sections') || logo
               : logo
           }
           alt={event.title}

@@ -6,42 +6,32 @@ import { useTranslate } from '@/hooks/useTranslate.tsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { museumService, heritageService, TypesAndCategoriesSites } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
 import { mapSlidesWithImageUrl } from './helper';
 
 const museumsImages = import.meta.glob('../assets/museums/*', { eager: true });
 
+export const MARKER_COLORS = {
+  museum: '#3b82f6',
+  heritage: '#10b981',
+};
+
 function getMuseumsImageUrl(filename: string) {
-  if (!filename) { return undefined };
-  
-  // Check if the filename is just a filename (no path) and might be an uploaded file
-  if (typeof filename === 'string' && !filename.includes('/') && !filename.includes('\\')) {
-    // This is likely just a filename from the database, assume it's in uploads/museum/
-    return `/uploads/museum/${filename}`;
-  }
-  
-  // For uploaded images, use as-is
-  if (typeof filename === 'string' && filename.startsWith('/uploads/')) {
+  if (!filename || typeof filename !== 'string') { return undefined; }
+
+  if (filename.startsWith('/assets/')) {
     return filename;
   }
-  
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
+
+  // Bundled static asset (legacy data referencing src/assets/museums)
+  const justFile = filename.split('/').pop() || filename;
   const match = Object.entries(museumsImages).find(([path]) => path.endsWith(justFile));
   if (match) {
     return (match[1] as any).default;
   }
-  // Fallback: try public/assets/museums/ for production
-  if (justFile) {
-    return `/assets/museums/${justFile}`;
-  }
-  return undefined;
+
+  // Uploaded file (full URL, /uploads/..., or bare filename in museum bucket)
+  return getUploadedImageUrl(filename, 'museum');
 }
 
 const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types: any[] }) => {
@@ -61,7 +51,7 @@ const MapMarker = ({ location, map, types }: { location: any, map: L.Map, types:
         const coords: [number, number] = [parseFloat(location.latitude), parseFloat(location.longitude)];
 
         const typeName = types.find((type) => type.id === location.type)?.name;
-        const color = typeName === 'museum' ? '#3b82f6' : '#10b981';
+        const color = typeName?.toLowerCase().trim() === 'museum' ? MARKER_COLORS.museum : MARKER_COLORS.heritage;
         const icon = '🏛️';
 
         const customIcon = L.divIcon({
