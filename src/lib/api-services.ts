@@ -190,6 +190,16 @@ export const dashboardService = {
   getStats: () => apiClient.getDashboardStats<any>(),
 };
 
+// Admin-curated content translation overrides
+export const contentTranslationOverrideService = {
+  list: (table?: string, lang?: string) => apiClient.getContentOverrides<any[]>(table, lang),
+  upsert: (data: { table_name: string; row_id: string; field: string; lang: string; source_text?: string; translation: string }) =>
+    apiClient.upsertContentOverride<any>(data),
+  remove: (id: string) => apiClient.deleteContentOverride<any>(id),
+  // Fetch content rows for a table in a given language (overrides already applied by backend)
+  getRows: (table: string, lang: string) => apiClient.getAll<any>(table, { lang }),
+};
+
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('tb_faqs'),

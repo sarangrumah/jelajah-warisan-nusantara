@@ -242,6 +242,28 @@ class ApiClient {
     return this.request<T>('/api/dashboard/stats');
   }
 
+  // Content translation overrides (admin curation)
+  async getContentOverrides<T>(table?: string, lang?: string): Promise<ApiResponse<T>> {
+    const qs = new URLSearchParams();
+    if (table) { qs.set('table', table); }
+    if (lang) { qs.set('lang', lang); }
+    return this.request<T>(`/api/content-translations?${qs.toString()}`);
+  }
+
+  async upsertContentOverride<T>(data: {
+    table_name: string; row_id: string; field: string; lang: string;
+    source_text?: string; translation: string;
+  }): Promise<ApiResponse<T>> {
+    return this.request<T>('/api/content-translations', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteContentOverride<T>(id: string): Promise<ApiResponse<T>> {
+    return this.request<T>(`/api/content-translations/${id}`, { method: 'DELETE' });
+  }
+
   // Fire-and-forget page-view beacon (no auth, never throws)
   track(path: string, referrer?: string): void {
     try {

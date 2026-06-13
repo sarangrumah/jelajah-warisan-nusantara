@@ -85,6 +85,7 @@ const menuGroups: MenuGroup[] = [
       { id: 'menu', label: 'Menu Navigasi', icon: Settings },
       { id: 'site-settings', label: 'Site Settings', icon: Settings },
       { id: 'translations', label: 'Translations', icon: Languages },
+      { id: 'content-translations', label: 'Terjemahan Konten', icon: Languages },
       { id: 'activity-log', label: 'Activity Log', icon: FileText },
       { id: 'users', label: 'Users', icon: Shield },
     ],
