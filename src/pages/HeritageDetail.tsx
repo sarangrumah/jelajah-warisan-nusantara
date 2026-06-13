@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { defaultHeritages } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { heritageService } from '@/lib/api-services';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -138,10 +139,15 @@ const HeritageDetail = () => {
       {filteredHeritage.map((heritage) => (
       <div key={heritage.id}>
         <section className="relative h-96 overflow-hidden">
-          <img
-            src={getImageUrl(heritage.image_url || heritage.img_banner || heritage.banner_image)}
+          <ResponsiveImage
+            landscape={heritage.image_landscape || heritage.image_url || heritage.img_banner || heritage.banner_image}
+            portrait={heritage.image_portrait}
+            fallback={heritage.image_url || heritage.img_banner || heritage.banner_image}
             alt={heritage.title || heritage.name || t('Heritage site')}
-            className="w-full h-full object-cover"
+            bucket="sites"
+            ratio="auto"
+            eager
+            className="absolute inset-0 w-full h-full"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute bottom-8 left-8 text-white">

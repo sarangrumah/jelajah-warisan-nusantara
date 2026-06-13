@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { museumService } from '@/lib/api-services';
 import { mapSlidesWithImageUrl } from '@/components/helper';
 import SEO from '@/components/SEO';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import { logError } from '@/utils/logger';
 
 // Utility to strip HTML tags completely
@@ -139,10 +140,15 @@ const MuseumDetail = () => {
         />
 
         <section className="relative h-96 overflow-hidden">
-          <img
-            src={getMuseumImageUrl(museum.img_banner)}
+          <ResponsiveImage
+            landscape={museum.image_landscape || museum.img_banner}
+            portrait={museum.image_portrait}
+            fallback={museum.img_banner}
             alt={museum.name}
-            className="w-full h-full object-cover"
+            bucket="sites"
+            ratio="auto"
+            eager
+            className="absolute inset-0 w-full h-full"
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute bottom-8 left-8 text-white">
