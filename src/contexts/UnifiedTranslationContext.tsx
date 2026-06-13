@@ -88,6 +88,32 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
   const translateContent = useCallback(async <T,>(content: T): Promise<T> => {
     if (!content || language === 'id') return content;
 
+    // Never send non-text fields (images, files, urls, ids, geo) to the translator —
+    // doing so corrupts paths (e.g. blank thumbnails from translated banner_img).
+    const shouldSkipKey = (rawKey: string): boolean => {
+      const key = rawKey.toLowerCase();
+      if (
+        ['id', 'type', 'category', 'slug', 'url', 'href', 'src', 'img', 'image', 'date',
+         'created_at', 'updated_at', 'email', 'phone', 'is_active', 'is_approved',
+         'is_published', 'location_map', 'latitude', 'longitude', 'video',
+         'banner_img', 'banner_image', 'display_order'].includes(key)
+      ) {
+        return true;
+      }
+      return (
+        key.endsWith('_id') ||
+        key.endsWith('_url') ||
+        key.startsWith('img_') ||
+        key.includes('image') ||
+        key.includes('img') ||
+        key.includes('thumbnail') ||
+        key.includes('photo') ||
+        key.includes('gallery') ||
+        key.includes('upload') ||
+        key.includes('file')
+      );
+    };
+
     // Helper to extract strings from object/array
     const extractStrings = (obj: any, depth = 0): string[] => {
       if (depth > 10) return []; // Prevent infinite recursion
@@ -95,13 +121,7 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
       if (Array.isArray(obj)) return obj.flatMap(item => extractStrings(item, depth + 1));
       if (typeof obj === 'object' && obj !== null) {
         return Object.entries(obj).flatMap(([key, value]) => {
-          // Skip fields that shouldn't be translated
-          if (
-            ['id', 'type', 'category', 'slug', 'url', 'href', 'src', 'img', 'image', 'date', 'created_at', 'updated_at', 'email', 'phone', 'is_active', 'is_approved', 'is_published', 'location_map'].includes(key.toLowerCase()) ||
-            key.endsWith('_id') ||
-            key.endsWith('_url') ||
-            key.startsWith('img_')
-          ) {
+          if (shouldSkipKey(key)) {
             return [];
           }
           return extractStrings(value, depth + 1);
@@ -118,13 +138,7 @@ export const UnifiedTranslationProvider: React.FC<{ children: React.ReactNode }>
       if (typeof obj === 'object' && obj !== null) {
         const newObj: any = {};
         for (const key in obj) {
-          // Skip fields that shouldn't be translated
-          if (
-            ['id', 'type', 'category', 'slug', 'url', 'href', 'src', 'img', 'image', 'date', 'created_at', 'updated_at', 'email', 'phone', 'is_active', 'is_approved', 'is_published', 'location_map'].includes(key.toLowerCase()) ||
-            key.endsWith('_id') ||
-            key.endsWith('_url') ||
-            key.startsWith('img_')
-          ) {
+          if (shouldSkipKey(key)) {
             newObj[key] = obj[key];
           } else {
             newObj[key] = applyTranslations(obj[key], translations, depth + 1);

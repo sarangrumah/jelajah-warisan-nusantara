@@ -173,8 +173,94 @@ class ContentTranslationService {
   }
 
   /**
-   * Clear translation cache
+   * Batch-fetch admin-curated overrides for a set of rows.
+   * Returns Map keyed by `${rowId}::${field}` -> translation.
    */
+  private async getOverrides(
+    tableName: string,
+    rowIds: string[],
+    lang: string
+  ): Promise<Map<string, string>> {
+    const map = new Map<string, string>();
+    const ids = rowIds.filter(Boolean);
+    if (ids.length === 0) return map;
+    try {
+      const result = await query(
+        `SELECT row_id, field, translation
+         FROM content_translation_overrides
+         WHERE table_name = $1 AND lang = $2 AND row_id = ANY($3)`,
+        [tableName, lang, ids]
+      );
+      for (const r of result.rows) {
+        map.set(`${r.row_id}::${r.field}`, r.translation);
+      }
+    } catch (error) {
+      // Table may not exist yet (pre-migration) — degrade gracefully to auto-translation.
+      console.error('Error fetching content translation overrides:', error);
+    }
+    return map;
+  }
+
+  /**
+   * Translate one content object, preferring admin overrides over auto-translation.
+   */
+  async translateContentWithOverrides(
+    content: any,
+    tableName: string,
+    fieldsToTranslate: string[],
+    targetLang: string,
+    sourceLang: string = 'id'
+  ): Promise<any> {
+    if (targetLang === sourceLang || !content) return content;
+    const overrides = await this.getOverrides(tableName, [content.id], targetLang);
+    return this.applyWithOverrides(content, fieldsToTranslate, targetLang, sourceLang, overrides);
+  }
+
+  /**
+   * Translate an array of content objects, preferring admin overrides.
+   * Overrides are batch-fetched once for the whole array (no N+1).
+   */
+  async translateContentArrayWithOverrides(
+    items: any[],
+    tableName: string,
+    fieldsToTranslate: string[],
+    targetLang: string,
+    sourceLang: string = 'id'
+  ): Promise<any[]> {
+    if (targetLang === sourceLang || !items || items.length === 0) {
+      return items;
+    }
+    const overrides = await this.getOverrides(
+      tableName,
+      items.map((i) => i?.id),
+      targetLang
+    );
+    const out = [];
+    for (const item of items) {
+      out.push(await this.applyWithOverrides(item, fieldsToTranslate, targetLang, sourceLang, overrides));
+    }
+    return out;
+  }
+
+  private async applyWithOverrides(
+    content: any,
+    fieldsToTranslate: string[],
+    targetLang: string,
+    sourceLang: string,
+    overrides: Map<string, string>
+  ): Promise<any> {
+    if (!content) return content;
+    const result = { ...content };
+    for (const field of fieldsToTranslate) {
+      const override = overrides.get(`${content.id}::${field}`);
+      if (override !== undefined && override !== null && override !== '') {
+        result[field] = override;
+      } else if (content[field]) {
+        result[field] = await this.translateField(content[field], targetLang, sourceLang);
+      }
+    }
+    return result;
+  }
 }
 
 // Export singleton instance

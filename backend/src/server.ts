@@ -16,6 +16,7 @@ import activityLogRoutes from './routes/activityLog';
 import translationCacheRoutes from './routes/translationCache';
 import translateOptimizedRoutes from './routes/translateOptimized';
 import organizationalStructureRoutes from './routes/organizationalStructure';
+import contentTranslationRoutes from './routes/contentTranslations';
 
 // Import translation utilities
 import { warmUpCache, getCacheStats, clearTranslationCache } from './middleware/translateResponse';
@@ -140,6 +141,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/activity-log', activityLogRoutes);
 app.use('/api/translation-cache', translationCacheRoutes);
 app.use('/api/organizational-structure', organizationalStructureRoutes);
+app.use('/api/content-translations', contentTranslationRoutes);
 app.use('/api', apiRoutes);
 
 // Error handling middleware
