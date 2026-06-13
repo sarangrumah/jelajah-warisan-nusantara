@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { defaultCollections } from '@/../database/default-data';
 import { masterCollectionService } from '@/lib/api-services';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import logo from '@/assets/MCB-Logo.png';
 
 const collectionImages = import.meta.glob(
@@ -73,12 +74,14 @@ export default function V2GalleryCollection({ museumName }: V2GalleryCollectionP
     };
   }, []);
 
-  const galleries = collections.filter((c) => c.museum_name === museumName);
-  const images = galleries
-    .map((g) => g.image_url)
-    .filter((u): u is string => typeof u === 'string' && u.length > 0);
+  const galleries = collections
+    .filter((c) => c.museum_name === museumName)
+    .filter((g) => {
+      const v = g.image_landscape || g.image_url || g.image_portrait;
+      return typeof v === 'string' && v.length > 0;
+    });
 
-  if (images.length === 0) {
+  if (galleries.length === 0) {
     return (
       <div className="rounded-2xl bg-card/60 border border-border/60 px-6 py-10 backdrop-blur-sm text-center">
         <img src={logo} alt="MCB" className="mx-auto h-14 w-14 opacity-60 mb-3" />
@@ -90,22 +93,29 @@ export default function V2GalleryCollection({ museumName }: V2GalleryCollectionP
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {images.map((img, i) => {
-          const url = getCollectionImageUrl(img);
+        {galleries.map((g, i) => {
+          const landscape = g.image_landscape || g.image_url;
+          const portrait = g.image_portrait;
+          // Lightbox shows the largest available variant.
+          const lightboxUrl = getCollectionImageUrl(landscape || portrait);
           return (
             <motion.button
-              key={`${url}-${i}`}
+              key={`${g.id || lightboxUrl}-${i}`}
               {...reveal}
               transition={{ ...reveal.transition, delay: i * 0.04 }}
               type="button"
-              onClick={() => setSelected(url)}
+              onClick={() => setSelected(lightboxUrl)}
               className="group relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-card/60 backdrop-blur-sm"
             >
-              <img
-                src={url}
-                alt={`Koleksi ${i + 1}`}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              <ResponsiveImage
+                landscape={landscape}
+                portrait={portrait}
+                fallback={g.image_url}
+                alt={g.title ? String(g.title) : `Koleksi ${i + 1}`}
+                bucket="collection"
+                ratio="auto"
+                className="absolute inset-0 h-full w-full"
+                imgClassName="transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </motion.button>
