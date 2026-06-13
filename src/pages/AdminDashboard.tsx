@@ -35,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
 import TranslationManagement from '@/components/admin/TranslationManagement';
+import ContentTranslationManagement from '@/components/admin/ContentTranslationManagement';
 import MenuManagement from '@/components/admin/MenuManagement';
 import SettingsManagement from '@/components/admin/SettingsManagement';
 import ConservationManagement from '@/components/admin/ConservationManagement';
@@ -154,6 +155,7 @@ const AdminDashboard = () => {
           {activeTab === 'menu' && <MenuManagement userRole={userRole} />}
           {activeTab === 'site-settings' && <SettingsManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
+          {activeTab === 'content-translations' && <ContentTranslationManagement />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {activeTab === 'merchandise' && <MerchandiseManagement userRole={userRole} />}
           {activeTab === 'publication' && <PublicationManagement userRole={userRole} />}
