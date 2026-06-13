@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCompanyData } from '@/hooks/useCompanyData';
 import { useSitesData } from '@/hooks/useSitesData';
-import { contentService, newsService, agendaService } from '@/lib/api-services';
-import { logError } from '@/utils/logger';
+import { newsService, agendaService, dashboardService } from '@/lib/api-services';
+import { logError, logInfo } from '@/utils/logger';
 
 interface DashboardStats {
   totalSites: number;
@@ -26,19 +26,9 @@ interface DashboardStats {
   heritageCount: number;
   recentActivity: any[];
   sitesByType: { name: string; value: number; color: string }[];
-  monthlyData: { month: string; sites: number; news: number; events: number }[];
+  monthlyData: { month: string; visitors: number; users: number; content: number }[];
+  kpis: { totalContent: number; totalUsers: number; visitorsThisMonth: number; activeAgenda: number };
 }
-
-// Generate sample monthly data for demonstration
-const generateMonthlyData = () => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return months.map((month, index) => ({
-    month,
-    sites: Math.floor(Math.random() * 10) + 5,
-    news: Math.floor(Math.random() * 20) + 10,
-    events: Math.floor(Math.random() * 8) + 2,
-  }));
-};
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -53,7 +43,8 @@ const Dashboard: React.FC = () => {
     heritageCount: 0,
     recentActivity: [],
     sitesByType: [],
-    monthlyData: generateMonthlyData(),
+    monthlyData: [],
+    kpis: { totalContent: 0, totalUsers: 0, visitorsThisMonth: 0, activeAgenda: 0 },
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -67,14 +58,37 @@ const Dashboard: React.FC = () => {
         setLoading(true);
         logInfo('Dashboard: Starting to fetch data');
         
-        // Fetch various data
-        const [newsResponse, eventsResponse] = await Promise.all([
+        // Fetch various data (real dashboard stats + counts)
+        const [newsResponse, eventsResponse, statsRes] = await Promise.all([
           newsService.getAll(),
           agendaService.getAll(),
+          dashboardService.getStats().catch(() => ({ data: null } as any)),
         ]);
 
         const totalNews = newsResponse.data?.length || 0;
         const totalEvents = eventsResponse.data?.length || 0;
+        const sd: any = statsRes?.data || {};
+        const monthlyData = (Array.isArray(sd.monthlySeries) ? sd.monthlySeries : []).map((m: any) => ({
+          month: m.month,
+          visitors: Number(m.visitors || 0),
+          users: Number(m.users || 0),
+          content: Number(m.content || 0),
+        }));
+        const recentActivity = (Array.isArray(sd.recentActivity) ? sd.recentActivity : []).map(
+          (r: any, i: number) => ({
+            id: i,
+            type: 'site',
+            title: r.activity_type,
+            date: r.created_at ? new Date(r.created_at).toLocaleString() : '',
+            status: r.user_type || 'system',
+          })
+        );
+        const kpis = {
+          totalContent: sd.totalContent || 0,
+          totalUsers: sd.totalUsers || 0,
+          visitorsThisMonth: sd.visitorsThisMonth || 0,
+          activeAgenda: sd.activeAgenda || 0,
+        };
 
         // Calculate sites by type
         const sitesByType = [
@@ -90,14 +104,10 @@ const Dashboard: React.FC = () => {
           totalCompanyProfiles: companyData ? 1 : 0,
           museumsCount,
           heritageCount,
-          recentActivity: [
-            { id: 1, type: 'news', title: 'Latest Museum News', date: '2024-12-18', status: 'published' },
-            { id: 2, type: 'event', title: 'Heritage Exhibition', date: '2024-12-17', status: 'upcoming' },
-            { id: 3, type: 'site', title: 'New Museum Added', date: '2024-12-16', status: 'approved' },
-            { id: 4, type: 'collection', title: 'Collection Updated', date: '2024-12-15', status: 'published' },
-          ],
+          recentActivity,
           sitesByType,
-          monthlyData: generateMonthlyData(),
+          monthlyData,
+          kpis,
         });
         
         logInfo('Dashboard: Data fetched successfully', {
@@ -272,9 +282,9 @@ const Dashboard: React.FC = () => {
                       <XAxis dataKey="month" />
                       <YAxis />
                       <Tooltip />
-                      <Area type="monotone" dataKey="sites" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                      <Area type="monotone" dataKey="news" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-                      <Area type="monotone" dataKey="events" stackId="1" stroke="#ffc658" fill="#ffc658" />
+                      <Area type="monotone" name="Visitors" dataKey="visitors" stackId="1" stroke="#8884d8" fill="#8884d8" />
+                      <Area type="monotone" name="New Users" dataKey="users" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
+                      <Area type="monotone" name="New Content" dataKey="content" stackId="1" stroke="#ffc658" fill="#ffc658" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -371,9 +381,9 @@ const Dashboard: React.FC = () => {
                         <XAxis dataKey="month" />
                         <YAxis />
                         <Tooltip />
-                        <Bar dataKey="sites" fill="#8884d8" />
-                        <Bar dataKey="news" fill="#82ca9d" />
-                        <Bar dataKey="events" fill="#ffc658" />
+                        <Bar name="Visitors" dataKey="visitors" fill="#8884d8" />
+                        <Bar name="New Users" dataKey="users" fill="#82ca9d" />
+                        <Bar name="New Content" dataKey="content" fill="#ffc658" />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -390,20 +400,20 @@ const Dashboard: React.FC = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t('dashboard.siteApprovalRate', 'Site Approval Rate')}</span>
-                        <span className="text-sm font-bold">85%</span>
+                        <span className="text-sm font-medium">{t('dashboard.totalContent', 'Total Konten')}</span>
+                        <span className="text-sm font-bold">{stats.kpis.totalContent.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t('dashboard.contentPublishedRate', 'Content Published Rate')}</span>
-                        <span className="text-sm font-bold">92%</span>
+                        <span className="text-sm font-medium">{t('dashboard.activeAgenda', 'Agenda Aktif')}</span>
+                        <span className="text-sm font-bold">{stats.kpis.activeAgenda.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t('dashboard.averageResponseTime', 'Average Response Time')}</span>
-                        <span className="text-sm font-bold">2.3 days</span>
+                        <span className="text-sm font-medium">{t('dashboard.totalUsers', 'Total Pengguna')}</span>
+                        <span className="text-sm font-bold">{stats.kpis.totalUsers.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{t('dashboard.activeUsers', 'Active Users')}</span>
-                        <span className="text-sm font-bold">1,247</span>
+                        <span className="text-sm font-medium">{t('dashboard.visitorsThisMonth', 'Pengunjung Bulan Ini')}</span>
+                        <span className="text-sm font-bold">{stats.kpis.visitorsThisMonth.toLocaleString()}</span>
                       </div>
                     </div>
                   </CardContent>

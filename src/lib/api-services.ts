@@ -181,6 +181,15 @@ export const collectionCategoryService = {
   getAll: () => apiClient.getAll('tb_categories_collections'),
 };
 
+// Visitor tracking + real dashboard statistics
+export const trackService = {
+  track: (path: string, referrer?: string) => apiClient.track(path, referrer),
+};
+
+export const dashboardService = {
+  getStats: () => apiClient.getDashboardStats<any>(),
+};
+
 // FAQs
 export const faqService = {
   getAll: () => apiClient.getAll('tb_faqs'),

@@ -46,6 +46,10 @@ export async function logActivity(options: {
 
 // General hook for logging any request (for global logging, attach to app.use)
 export async function globalActivityLogger(req: Request, res: Response, next: NextFunction) {
+  // High-frequency page-view beacon has its own table; don't double-log it here.
+  if (req.path === '/api/track' || req.originalUrl.startsWith('/api/track')) {
+    return next();
+  }
   // Example: log all GET/POST/PUT/DELETE requests for visitors/admins
   try {
     const user_type = req.user?.role || 'visitor';

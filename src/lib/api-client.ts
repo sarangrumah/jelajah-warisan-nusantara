@@ -238,6 +238,30 @@ class ApiClient {
     });
   }
 
+  async getDashboardStats<T>(): Promise<ApiResponse<T>> {
+    return this.request<T>('/api/dashboard/stats');
+  }
+
+  // Fire-and-forget page-view beacon (no auth, never throws)
+  track(path: string, referrer?: string): void {
+    try {
+      const url = `${this.baseUrl}/api/track`;
+      const body = JSON.stringify({ path, referrer: referrer || '' });
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
+      } else {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {
+      /* ignore tracking errors */
+    }
+  }
+
   // File upload
   async uploadFile(file: File, bucket: string): Promise<ApiResponse<{ url: string; name: string; originalName: string; size: number; type: string }>> {
     const formData = new FormData();
