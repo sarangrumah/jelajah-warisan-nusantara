@@ -519,7 +519,7 @@ const JSON_FIELDS: Record<string, string[]> = {
         });
 
         const placeholders = validFields
-          .map((f, i) => (jsonFieldsForTable.includes(f) ? `${i + 1}::jsonb` : `${i + 1}`))
+          .map((f, i) => (jsonFieldsForTable.includes(f) ? `$${i + 1}::jsonb` : `$${i + 1}`))
           .join(', ');
 
         // Store for error logging
