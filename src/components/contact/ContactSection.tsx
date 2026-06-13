@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
 import { faqService } from '@/lib/api-services';
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+import { useSiteContact } from '@/hooks/useSiteContact';
 import { stripHtml } from '@/lib/utils';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -23,6 +24,7 @@ const ContactSection = () => {
   const { t } = useUnifiedTranslation();
   const { toast } = useToast();
   const { pathname } = useLocation();
+  const contact = useSiteContact();
   const [faqs, setFaqs] = useState([]);
   
   const { translatedContent: translatedFaqs } = useTranslationSystem(faqs, 'faqs-list');
@@ -147,14 +149,14 @@ const ContactSection = () => {
       icon: Phone,
       title: 'contact.whatsapp',
       details: [
-        '+6281295953929'
+        contact.whatsapp
       ]
     },
     {
       icon: Mail,
       title: 'contact.email',
       details: [
-        'museumcb@kemenbud.go.id'
+        contact.email
       ]
     },
     {
@@ -169,8 +171,8 @@ const ContactSection = () => {
   ];
 
   const socialMedia = [
-    { name: 'Instagram', handle: '@indonesianheritageagency', url: 'https://www.instagram.com/indonesianheritageagency/' },
-    { name: 'YouTube', handle: 'Indonesian Heritage Agency', url: 'https://www.youtube.com/@IndonesianHeritageAgency' },
+    { name: 'Instagram', handle: '@indonesianheritageagency', url: contact.instagram },
+    { name: 'YouTube', handle: 'Indonesian Heritage Agency', url: contact.youtube },
   ];
 
   return (

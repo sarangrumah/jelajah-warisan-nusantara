@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import logo from '@/assets/images/logo/MCB Logo_Putih_notext.png';
 import { getFooterCompanyData, type FooterCompanyData } from '@/lib/company-profile-service';
+import { useSiteContact } from '@/hooks/useSiteContact';
 
 const Footer = () => {
   const { language } = useLanguage();
   const { t } = useTranslation();
+  const contact = useSiteContact();
   const [companyData, setCompanyData] = useState<FooterCompanyData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,8 +52,8 @@ const Footer = () => {
   console.log('📍 Footer address:', addressText);
 
   const socialLinks = [
-    { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram' },
-    { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube' },
+    { icon: Instagram, href: contact.instagram, label: 'Instagram' },
+    { icon: Youtube, href: contact.youtube, label: 'YouTube' },
   ];
 
   // Show loading state while fetching company data

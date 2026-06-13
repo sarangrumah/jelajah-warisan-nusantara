@@ -1,18 +1,20 @@
 import { MessageCircle, Instagram, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'react-router-dom';
+import { useSiteContact } from '@/hooks/useSiteContact';
 
 const FloatingButtons = () => {
   const location = useLocation();
-  
+  const contact = useSiteContact();
+
   // Hide on admin pages and the /v2 cinematic preview
   if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/v2')) {
     return null;
   }
 
   const socialMedia = [
-    { icon: Instagram, href: 'https://www.instagram.com/indonesianheritageagency/', label: 'Instagram', color: '#E4405F' },
-    { icon: Youtube, href: 'https://www.youtube.com/@IndonesianHeritageAgency', label: 'YouTube', color: '#FF0000' },
+    { icon: Instagram, href: contact.instagram, label: 'Instagram', color: '#E4405F' },
+    { icon: Youtube, href: contact.youtube, label: 'YouTube', color: '#FF0000' },
   ];
 
   return (
@@ -38,7 +40,7 @@ const FloatingButtons = () => {
         <Button
           // size="lg"
           className="rounded-full w-12 h-12 bg-[rgba(13,148,136,0.75)] hover:bg-[rgba(0, 82, 75, 0.75)] heritage-glow shadow-lg float-animation"
-          onClick={() => window.open('https://wa.me/6281295953929', '_blank')}
+          onClick={() => window.open(contact.whatsappLink, '_blank')}
         >
           <MessageCircle size={24} className="text-white" />
         </Button>

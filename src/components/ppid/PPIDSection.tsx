@@ -8,6 +8,7 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
+import { useSiteContact } from '@/hooks/useSiteContact';
 
 const rawRequestProcedure = [
   {
@@ -65,6 +66,7 @@ const rawRequestCriteria = [
 
 const PPIDSection = () => {
   const { t } = useUnifiedTranslation();
+  const contact = useSiteContact();
 
   const { translatedContent: requestProcedure } = useTranslationSystem(rawRequestProcedure, 'ppid-procedure');
   const { translatedContent: requestCriteria } = useTranslationSystem(rawRequestCriteria, 'ppid-criteria');
@@ -277,11 +279,11 @@ const PPIDSection = () => {
             </p> */}
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">+62 812 9595 3929</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{contact.phone}</div>
                 <div className="text-muted-foreground">{t('ppid.contact.phone')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <div className="font-bold text-heritage-gradient text-2xl mb-2">museumcb@kemenbud.go.id</div>
+                <div className="font-bold text-heritage-gradient text-2xl mb-2">{contact.email}</div>
                 <div className="text-muted-foreground">{t('ppid.contact.email')}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
