@@ -54,8 +54,9 @@ const HighlightCard = ({ item }: { item: { icon: string; title: string; descript
 
 const CompanyProfile = () => {
   const [company, setCompany] = useState<any>(null);
-  const [aboutImage, setAboutImage] = useState<string>('');
+  const [settings, setSettings] = useState<Record<string, string>>({});
   const museumStats = useMuseumStats();
+  const aboutImage = settings['about.company_image'] || '';
 
   const { translatedText: name } = useTranslate(company?.name || '');
   const { translatedText: aboutus } = useTranslate(company?.aboutus || '');
@@ -79,21 +80,22 @@ const CompanyProfile = () => {
     setCompany(response.data[0]);
   };
   
-  const fetchAboutImage = async () => {
+  const fetchSettings = async () => {
     try {
       const response = await siteSettingsService.getAll();
       if (!response.error && Array.isArray(response.data)) {
-        const row = (response.data as any[]).find((s) => s?.key === 'about.company_image');
-        if (row?.value) { setAboutImage(row.value); }
+        const map: Record<string, string> = {};
+        (response.data as any[]).forEach((s) => { if (s?.key) { map[s.key] = s.value; } });
+        setSettings(map);
       }
     } catch (error) {
-      console.error('Error fetching about image setting:', error);
+      console.error('Error fetching site settings:', error);
     }
   };
 
   useEffect(() => {
     fetchCompanies();
-    fetchAboutImage();
+    fetchSettings();
   }, []);
 
   const highlights = [
@@ -119,12 +121,12 @@ const CompanyProfile = () => {
     }
   ];
 
-  // Live counts (museum / cagar budaya) + CMS-managed values (visitors / provinces).
+  // Live counts (museum / cagar budaya) + page-specific CMS values (about.stats.*).
   const companyStats = [
     { icon: Building, label: 'Museum Terkelola', value: String(museumStats.museums), color: 'text-blue-600' },
     { icon: Award, label: 'Cagar Budaya', value: String(museumStats.sites), color: 'text-green-600' },
-    { icon: Users, label: 'Pengunjung per Tahun', value: String(museumStats.visitors), color: 'text-purple-600' },
-    { icon: MapPin, label: 'Provinsi', value: String(museumStats.provinces), color: 'text-orange-600' },
+    { icon: Users, label: 'Pengunjung per Tahun', value: settings['about.stats.visitors'] || String(museumStats.visitors), color: 'text-purple-600' },
+    { icon: MapPin, label: 'Provinsi', value: settings['about.stats.provinces'] || String(museumStats.provinces), color: 'text-orange-600' },
   ];
 
   return (
