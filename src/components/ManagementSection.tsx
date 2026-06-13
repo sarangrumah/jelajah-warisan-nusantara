@@ -4,12 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useMuseumStats } from '@/hooks/useMuseumStats';
-import { useSitesData } from '@/hooks/useSitesData';
+import { useProfileStats } from '@/hooks/useProfileStats';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
   const museumStats = useMuseumStats();
-  const { sitesData, museumsCount, heritageCount, loading: sitesLoading } = useSitesData();
+  // Published museum / cagar budaya counts — same source as ProfileSection so
+  // both homepage sections always show identical (live, published) totals.
+  const profileStats = useProfileStats();
+  const museumsCount = profileStats.museums;
+  const heritageCount = profileStats.heritages;
   
   // Define cards inside useMemo to make them reactive to language changes
   const managementCards = useMemo(() => [
@@ -52,22 +56,6 @@ const ManagementSection = () => {
       link: '/heritage'
     }
   ], [t, museumStats, museumsCount, heritageCount]);
-
-  // Show loading state
-  if (sitesLoading) {
-    return (
-      <section className="py-20 from-card to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 scroll-reveal">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300 rounded w-1/2 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="py-20 from-card to-background">
