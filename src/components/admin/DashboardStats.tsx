@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Calendar, Users, BarChart3, Loader2 } from 'lucide-react';
-import { newsService, agendaService, userService } from '@/lib/api-services';
+import { dashboardService } from '@/lib/api-services';
 
 interface StatsData {
   totalContent: number;
   activeAgenda: number;
   totalUsers: number;
   monthlyVisitors: number;
+  visitorDelta: number | null;
 }
 
 const DashboardStats = () => {
@@ -16,30 +17,29 @@ const DashboardStats = () => {
     activeAgenda: 0,
     totalUsers: 0,
     monthlyVisitors: 0,
+    visitorDelta: null,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [newsRes, agendaRes, usersRes] = await Promise.all([
-          newsService.getAll(),
-          agendaService.getAll(),
-          userService.getProfiles(),
-        ]);
-
-        const totalNews = newsRes.data?.length || 0;
-        const totalEvents = agendaRes.data?.length || 0;
-        const totalUsers = (usersRes.data as unknown as any[])?.length || 0;
-
-        // Mock visitor data for now as there is no tracking service
-        const mockVisitors = 1234 + Math.floor(Math.random() * 100);
-
+        const res = await dashboardService.getStats();
+        const d: any = res.data || {};
+        // Month-over-month visitor delta from the series (last vs previous month)
+        const series: any[] = Array.isArray(d.monthlySeries) ? d.monthlySeries : [];
+        let visitorDelta: number | null = null;
+        if (series.length >= 2) {
+          const cur = Number(series[series.length - 1]?.visitors || 0);
+          const prev = Number(series[series.length - 2]?.visitors || 0);
+          visitorDelta = prev > 0 ? Math.round(((cur - prev) / prev) * 100) : null;
+        }
         setStats({
-          totalContent: totalNews + totalEvents,
-          activeAgenda: totalEvents,
-          totalUsers: totalUsers,
-          monthlyVisitors: mockVisitors,
+          totalContent: d.totalContent || 0,
+          activeAgenda: d.activeAgenda || 0,
+          totalUsers: d.totalUsers || 0,
+          monthlyVisitors: d.visitorsThisMonth || 0,
+          visitorDelta,
         });
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -77,7 +77,7 @@ const DashboardStats = () => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalContent}</div>
-          <p className="text-xs text-muted-foreground">News & Events</p>
+          <p className="text-xs text-muted-foreground">Media, Publikasi & Agenda</p>
         </CardContent>
       </Card>
 
@@ -110,7 +110,11 @@ const DashboardStats = () => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.monthlyVisitors.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+12% from last month</p>
+          <p className="text-xs text-muted-foreground">
+            {stats.visitorDelta === null
+              ? 'Pengunjung unik bulan ini'
+              : `${stats.visitorDelta >= 0 ? '+' : ''}${stats.visitorDelta}% dari bulan lalu`}
+          </p>
         </CardContent>
       </Card>
     </div>

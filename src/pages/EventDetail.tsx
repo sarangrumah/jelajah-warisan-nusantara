@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { EventsService, contentService } from '@/lib/api-services';
 import { getUploadedImageUrl } from '@/lib/asset-url';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import { useEffect, useState } from 'react';
 import logo from '@/assets/MCB-Logo.png';
 import sanitizeHtml from 'sanitize-html';
@@ -171,11 +172,24 @@ const EventDetail = () => {
       <div key={event.id} className="pt-20">
         {/* Hero Image */}
           <section className="relative overflow-hidden h-[60vh]">
-            <img
-              src={event.banner_img ? getUploadedImageUrl(event.banner_img, 'hero-sections') : logo}
-              alt={event.name}
-              className={event.banner_img ? "w-full h-full object-cover object-center" : "absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"}
-            />
+            {(event.image_landscape || event.image_portrait || event.banner_img) ? (
+              <ResponsiveImage
+                landscape={event.image_landscape}
+                portrait={event.image_portrait}
+                fallback={event.banner_img}
+                alt={event.name}
+                bucket="hero-sections"
+                ratio="auto"
+                className="absolute inset-0 w-full h-full"
+                imgClassName="object-center"
+              />
+            ) : (
+              <img
+                src={logo}
+                alt={event.name}
+                className="absolute right-[42.5%] top-3 h-[70%] max-md:right-[37.5%] object-contain object-center"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 right-8">
               <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white bg-primary/90 ${getStatusColor(event.status)}`}>

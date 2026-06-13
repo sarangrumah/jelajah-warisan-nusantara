@@ -8,6 +8,8 @@ interface UseIdleTimeoutOptions {
   warningMinutes?: number;
   onTimeout?: () => void;
   onWarning?: () => void;
+  /** Fired when user activity resets the timer after a warning was shown. */
+  onActive?: () => void;
 }
 
 const DEFAULT_TIMEOUT_MINUTES = 5;
@@ -18,6 +20,7 @@ export const useIdleTimeout = ({
   warningMinutes = DEFAULT_WARNING_MINUTES,
   onTimeout,
   onWarning,
+  onActive,
 }: UseIdleTimeoutOptions = {}) => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -40,9 +43,16 @@ export const useIdleTimeout = ({
   }, []);
 
   const resetTimer = useCallback(() => {
+    const wasWarning = isWarningShown.current;
     clearTimers();
     lastActivityRef.current = Date.now();
     isWarningShown.current = false;
+
+    // If the user became active while a warning was on screen, tell the UI to
+    // dismiss the countdown so it doesn't keep draining for an active session.
+    if (wasWarning) {
+      onActive?.();
+    }
 
     const timeoutMs = timeoutMinutes * 60 * 1000;
     const warningMs = (timeoutMinutes - warningMinutes) * 60 * 1000;
@@ -66,7 +76,7 @@ export const useIdleTimeout = ({
     timeoutRef.current = setTimeout(async () => {
       await handleTimeout();
     }, timeoutMs);
-  }, [timeoutMinutes, warningMinutes, clearTimers, onWarning, toast]);
+  }, [timeoutMinutes, warningMinutes, clearTimers, onWarning, onActive, toast]);
 
   const handleTimeout = useCallback(async () => {
     clearTimers();

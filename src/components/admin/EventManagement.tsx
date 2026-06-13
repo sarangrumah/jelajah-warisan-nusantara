@@ -33,6 +33,8 @@ interface EventItem {
   contact?: string;
   website?: string;
   banner_img?: string;
+  image_landscape?: string;
+  image_portrait?: string;
   ticket_price?: string;
   ticket_url?: string;
   is_free?: boolean;
@@ -520,12 +522,22 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
-      <ImageUpload
-        label="Event Image"
-        value={formData.banner_img}
-        onChange={handleImageUpload}
-        bucket="hero-sections"
-      /> 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Gambar Landscape (desktop)"
+          hint="Rekomendasi 1600×900 px (16:9). Tampil sebagai thumbnail & header detail."
+          value={formData.image_landscape || formData.banner_img}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_landscape: url, banner_img: url }))}
+          bucket="hero-sections"
+        />
+        <ImageUpload
+          label="Gambar Portrait (mobile)"
+          hint="Rekomendasi 1080×1350 px (4:5). Jika kosong pakai landscape."
+          value={formData.image_portrait}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_portrait: url }))}
+          bucket="hero-sections"
+        />
+      </div>
 
       <div className="flex items-center space-x-2">
         <Switch
@@ -599,6 +611,8 @@ const EventForm = ({ museum, onSave, onCancel, saving }: {
   contact: '',
   website: '',
   banner_img: '',
+  image_landscape: '',
+  image_portrait: '',
   ticket_price: '',
   ticket_url: '',
   is_free: false,

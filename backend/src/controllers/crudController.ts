@@ -21,20 +21,36 @@ interface JoinConfig {
  * Returns array of field names that should be translated
  */
 function getTranslatableFields(tableName: string): string[] {
+  // IMPORTANT: human-text fields ONLY. Never include image/url/id/date/numeric
+  // fields here — they would be sent to the translator and corrupted (this was
+  // the cause of broken event thumbnails when translation ran on banner_img).
   const translatableFieldsMap: Record<string, string[]> = {
     'tb_sites': ['name', 'subtitle', 'description', 'address'],
-    'tb_media': ['title', 'content', 'excerpt'],
-    'tb_events': ['title', 'description', 'location'],
-    'tb_master_collection': ['name', 'description'],
+    'tb_media': ['title', 'subtitle', 'description'],
+    'tb_events': ['name', 'subtitle', 'description', 'location', 'address'],
+    'tb_master_collection': ['title', 'subtitle', 'description', 'museum_name', 'condition', 'material', 'origin'],
     'tb_faqs': ['question', 'answer'],
-    'tb_banner': ['title', 'subtitle', 'description'],
-    'tb_memoryoftheworld': ['title', 'subtitle', 'description', 'thumbnails'],
-    'tb_company': ['name', 'description', 'vision', 'mission'],
+    'tb_banner': ['title', 'subtitle'],
+    'tb_memoryoftheworld': ['title', 'subtitle', 'description'],
+    'tb_company': ['name', 'aboutus', 'vision', 'mission'],
     'tb_pemanfaatanasset': ['title', 'description', 'location'],
+    'tb_sop': ['title', 'subtitle', 'description'],
+    'tb_publication': ['title', 'description'],
+    'tb_career_management': ['title', 'subtitle', 'description', 'requirement', 'responsibility'],
     'tb_laboratorium_konservasi': ['title', 'description', 'banner_title', 'banner_subtitle'],
   };
 
   return translatableFieldsMap[tableName] || [];
+}
+
+// Resolve target language from explicit ?lang= or the Accept-Language header
+// (api-client sends Accept-Language on every request). Restricted to the app's
+// two supported languages so detail pages (which omit ?lang=) also localize.
+function resolveTargetLang(req: AuthRequest): string {
+  const q = ((req.query.lang as string) || '').toLowerCase();
+  const header = ((req.headers['accept-language'] as string) || '').toLowerCase();
+  const raw = (q || header || 'id').slice(0, 2);
+  return raw === 'en' ? 'en' : 'id';
 }
 
 // Generic CRUD controller factory
@@ -98,7 +114,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         const finalLimit = limit || (req.user ? 10000 : 50); // Admin gets all, others get 50
         
         console.log(`[getAll] User:`, req.user?.email, 'Limit:', finalLimit, 'Offset:', offset);
-        const targetLang = (lang as string) || 'id';
+        const targetLang = resolveTargetLang(req);
 
         // Start with base fields
         let selectFields = `${tableName}.*`;
@@ -231,8 +247,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
           // Define translatable fields per table
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
-            rows = await contentTranslationService.translateContentArray(
+            rows = await contentTranslationService.translateContentArrayWithOverrides(
               rows,
+              tableName,
               translatableFields,
               targetLang,
               'id'
@@ -257,8 +274,7 @@ export const createCrudController = (tableName: string, fields: string[]) => {
     getById: async (req: AuthRequest, res: Response) => {
       try {
         const { id } = req.params;
-        const { lang } = req.query;
-        const targetLang = (lang as string) || 'id';
+        const targetLang = resolveTargetLang(req);
 
         console.log(`[getById] Fetching ${tableName} with ID: ${id}`);
 
@@ -360,8 +376,9 @@ export const createCrudController = (tableName: string, fields: string[]) => {
         if (targetLang !== 'id') {
           const translatableFields = getTranslatableFields(tableName);
           if (translatableFields.length > 0) {
-            record = await contentTranslationService.translateContent(
+            record = await contentTranslationService.translateContentWithOverrides(
               record,
+              tableName,
               translatableFields,
               targetLang,
               'id'
@@ -1047,6 +1064,31 @@ const JSON_FIELDS: Record<string, string[]> = {
         res.status(500).json({ error: 'Failed to update order' });
       } finally {
         client.release();
+      }
+    },
+
+    // === INCREMENT DOWNLOAD COUNT (public) ===
+    incrementDownload: async (req: AuthRequest, res: Response) => {
+      try {
+        if (!fields.includes('download_count')) {
+          return res.status(400).json({ error: `Download count not supported for table: ${tableName}` });
+        }
+        const { id } = req.params;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(String(id))) {
+          return res.status(400).json({ error: 'Invalid id' });
+        }
+        const result = await query(
+          `UPDATE ${tableName} SET download_count = COALESCE(download_count, 0) + 1 WHERE id = $1 RETURNING download_count`,
+          [id]
+        );
+        if (result.rowCount === 0) {
+          return res.status(404).json({ error: 'Record not found' });
+        }
+        res.json({ download_count: result.rows[0].download_count });
+      } catch (error) {
+        console.error(`Increment download ${tableName} error:`, error);
+        res.status(500).json({ error: 'Failed to increment download count' });
       }
     },
 

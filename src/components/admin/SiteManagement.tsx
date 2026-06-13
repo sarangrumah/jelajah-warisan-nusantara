@@ -39,6 +39,8 @@ interface SitesItem {
   facilities:string;
   collection: string;
   img_banner: string;
+  image_landscape?: string;
+  image_portrait?: string;
   ticket_price:string;
   ticket_url?: string;
   is_free?: boolean;
@@ -311,12 +313,49 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
-      <ImageUpload
-        label="Main Image"
-        value={formData.img_banner}
-        onChange={handleImageUpload}
-        bucket="sites"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="latitude">Latitude</Label>
+          <Input
+            id="latitude"
+            type="number"
+            step="0.000001"
+            value={formData.latitude || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
+            placeholder="-6.208800"
+          />
+          <p className="text-xs text-muted-foreground">Untuk pin di Peta Interaktif. Contoh: -6.208800</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="longitude">Longitude</Label>
+          <Input
+            id="longitude"
+            type="number"
+            step="0.000001"
+            value={formData.longitude || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
+            placeholder="106.845600"
+          />
+          <p className="text-xs text-muted-foreground">Contoh: 106.845600</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Gambar Landscape (desktop)"
+          hint="Rekomendasi 1600×900 px (16:9). Tampil di kartu & detail layar besar."
+          value={formData.image_landscape || formData.img_banner}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_landscape: url, img_banner: url }))}
+          bucket="sites"
+        />
+        <ImageUpload
+          label="Gambar Portrait (mobile)"
+          hint="Rekomendasi 1080×1350 px (4:5). Dipakai di HP; jika kosong pakai landscape."
+          value={formData.image_portrait}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_portrait: url }))}
+          bucket="sites"
+        />
+      </div>
 
       <GalleryUpload
         label="Gallery images"
@@ -520,6 +559,8 @@ const emptySites: SitesItem = {
   facilities: '',
   collection: '',
   img_banner: '',
+  image_landscape: '',
+  image_portrait: '',
   ticket_price: '',
   ticket_url: '',
   is_free: false,
@@ -886,6 +927,16 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         onClose={closeRejectDialog}
         title="Reject Museum"
       />
+
+      {!reorderMode && userRole !== "approver" && userRole !== "viewer" && (
+        <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/40 px-4 py-2.5 text-sm text-muted-foreground">
+          <ArrowUpDown className="w-4 h-4 shrink-0" />
+          <span>
+            Ingin menyusun urutan tampilan Museum / Cagar Budaya? Klik tombol{' '}
+            <span className="font-medium text-foreground">"Atur Urutan"</span> di kanan atas, lalu pilih tipe dan seret kartunya.
+          </span>
+        </div>
+      )}
 
       {reorderMode ? (
         <Card>

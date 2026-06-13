@@ -20,6 +20,8 @@ interface Banner {
   title: string;
   subtitle: string;
   image: string;
+  image_landscape?: string;
+  image_portrait?: string;
   start_publish_date?: string;
   end_publish_date?: string;
   is_active: boolean;
@@ -45,6 +47,8 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
     title: '',
     subtitle: '',
     image: '',
+    image_landscape: '',
+    image_portrait: '',
     start_publish_date: '',
     end_publish_date: '',
     is_active: true,
@@ -153,12 +157,22 @@ const BannerForm = ({ banner, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      <ImageUpload
-        label="Banner Image"
-        value={formData.image}
-        onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
-        bucket="hero-sections"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Banner Landscape (desktop)"
+          hint="Rekomendasi 1920×1080 px (16:9). Tampil di layar besar."
+          value={formData.image_landscape || formData.image}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_landscape: url, image: url }))}
+          bucket="hero-sections"
+        />
+        <ImageUpload
+          label="Banner Portrait (mobile)"
+          hint="Rekomendasi 1080×1350 px (4:5). Dipakai di HP; jika kosong pakai landscape."
+          value={formData.image_portrait}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_portrait: url }))}
+          bucket="hero-sections"
+        />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -567,6 +581,16 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         onClose={closeRejectDialog}
         title="Reject Banner"
       />
+
+      {!reorderMode && userRole !== "approver" && userRole !== "viewer" && (
+        <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/40 px-4 py-2.5 text-sm text-muted-foreground">
+          <ArrowUpDown className="w-4 h-4 shrink-0" />
+          <span>
+            Ingin mengatur urutan banner di Beranda? Klik tombol{' '}
+            <span className="font-medium text-foreground">"Atur Urutan"</span> di kanan atas, lalu seret kartunya.
+          </span>
+        </div>
+      )}
 
       {reorderMode ? (
         <Card>

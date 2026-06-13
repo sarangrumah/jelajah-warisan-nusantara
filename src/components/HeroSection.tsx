@@ -6,6 +6,7 @@ import { bannerService } from '@/lib/api-services';
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { defaultSlides } from '@/../database/default-data';
 import { assetUrl } from '@/lib/asset-url';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
@@ -31,6 +32,9 @@ const mapSlidesWithImageUrl = (slidesArr: any[]) =>
       ...slide,
       asset: slide.image?.split('/').pop() || slide.image,
       image: transformedPath,
+      // Raw dual-image values (resolved at render by ResponsiveImage)
+      image_landscape: slide.image_landscape || slide.image_url || slide.image,
+      image_portrait: slide.image_portrait || '',
     };
   });
 
@@ -240,15 +244,28 @@ const HeroSection = ({ onScrollToNextSection }: HeroSectionProps) => {
               }`}
             >
               {isImage(slide.asset) ? (
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="w-full h-full object-cover parallax"
-                  onError={(e) => {
-                    console.error('[HeroSection] Image failed to load:', slide.image);
-                    (e.target as HTMLImageElement).src = '/placeholder.svg';
-                  }}
-                />
+                slide.image_portrait ? (
+                  <ResponsiveImage
+                    landscape={slide.image_landscape || slide.image}
+                    portrait={slide.image_portrait}
+                    fallback={slide.image}
+                    alt={slide.title}
+                    bucket="hero-sections"
+                    ratio="auto"
+                    eager={index === 0}
+                    className="absolute inset-0 w-full h-full parallax"
+                  />
+                ) : (
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="w-full h-full object-cover parallax"
+                    onError={(e) => {
+                      console.error('[HeroSection] Image failed to load:', slide.image);
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
+                  />
+                )
               ) : isVideo(slide.asset) ? (
                 <video
                   src={slide.image}

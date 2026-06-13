@@ -31,6 +31,9 @@ Object.entries(tableConfigs).forEach(([tableName, fields]) => {
   router.get(`/${tableName}`, controller.getAll);
   router.get(`/${tableName}/:id`, controller.getById);
 
+  // Public action: increment download counter (only effective for tables with a download_count column)
+  router.post(`/${tableName}/:id/increment-download`, controller.incrementDownload);
+
   // Admin/Editor only routes for write operations
   router.post(`/${tableName}/reorder`, authenticateToken, requireAdminOrEditor, controller.reorder);
   router.post(`/${tableName}/:id/approve`, authenticateToken, requireAdminOrEditor, controller.approve);
