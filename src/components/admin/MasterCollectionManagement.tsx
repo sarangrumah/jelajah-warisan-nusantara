@@ -26,6 +26,8 @@ interface MasterCollection {
   dimensions: string;
   origin: string;
   image_url: string;
+  image_landscape?: string;
+  image_portrait?: string;
   is_active: boolean;
   show_basic_information?: boolean;
   created_at?: string;
@@ -53,6 +55,8 @@ const emptyCollection: MasterCollection = {
   dimensions: '',
   origin: '',
   image_url: '',
+  image_landscape: '',
+  image_portrait: '',
   is_active: true,
   show_basic_information: true,
   is_rejected: false,
@@ -211,12 +215,22 @@ const CollectionForm = ({
         </div>
       </div>
 
-      <ImageUpload
-        label="Image Upload"
-        value={formData.image_url}
-        onChange={(url) => setFormData((p) => ({ ...p, image_url: url }))}
-        bucket="hero-sections"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Gambar Landscape (desktop)"
+          hint="Rekomendasi 1200×900 px (4:3)."
+          value={formData.image_landscape || formData.image_url}
+          onChange={(url) => setFormData((p) => ({ ...p, image_landscape: url, image_url: url }))}
+          bucket="hero-sections"
+        />
+        <ImageUpload
+          label="Gambar Portrait (mobile)"
+          hint="Rekomendasi 1080×1350 px (4:5). Jika kosong pakai landscape."
+          value={formData.image_portrait}
+          onChange={(url) => setFormData((p) => ({ ...p, image_portrait: url }))}
+          bucket="hero-sections"
+        />
+      </div>
 
       <div className="flex items-center space-x-2">
         <Switch

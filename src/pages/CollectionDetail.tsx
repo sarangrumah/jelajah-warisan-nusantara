@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 // import { defaultCollections } from '@/../database/default-data';
 import { useEffect, useState } from 'react';
 import { masterCollectionService } from '@/lib/api-services';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 // Utility to fix broken HTML tags like < p > to <p>
 function fixBrokenHtmlTags(html: string): string {
   if (!html) { return html; }
@@ -83,13 +84,21 @@ const CollectionDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image */}
               <div className="space-y-4">
-                <div className="aspect-square overflow-hidden rounded-lg border">
-                  <img
-                    src={collection.image_url ? collection.image_url : logo}
+                {(collection.image_landscape || collection.image_portrait || collection.image_url) ? (
+                  <ResponsiveImage
+                    landscape={collection.image_landscape}
+                    portrait={collection.image_portrait}
+                    fallback={collection.image_url}
                     alt={collection.title}
-                    className={collection.image_url ? "w-full h-full object-cover" : "w-full h-full object-contain"}
+                    bucket="hero-sections"
+                    ratio="square"
+                    className="rounded-lg border"
                   />
-                </div>
+                ) : (
+                  <div className="aspect-square overflow-hidden rounded-lg border flex items-center justify-center">
+                    <img src={logo} alt={collection.title} className="w-2/3 h-2/3 object-contain opacity-80" />
+                  </div>
+                )}
               </div>
 
               {/* Details */}

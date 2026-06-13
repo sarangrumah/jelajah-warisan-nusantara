@@ -39,6 +39,8 @@ interface SitesItem {
   facilities:string;
   collection: string;
   img_banner: string;
+  image_landscape?: string;
+  image_portrait?: string;
   ticket_price:string;
   ticket_url?: string;
   is_free?: boolean;
@@ -338,12 +340,22 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         </div>
       </div>
 
-      <ImageUpload
-        label="Main Image"
-        value={formData.img_banner}
-        onChange={handleImageUpload}
-        bucket="sites"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ImageUpload
+          label="Gambar Landscape (desktop)"
+          hint="Rekomendasi 1600×900 px (16:9). Tampil di kartu & detail layar besar."
+          value={formData.image_landscape || formData.img_banner}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_landscape: url, img_banner: url }))}
+          bucket="sites"
+        />
+        <ImageUpload
+          label="Gambar Portrait (mobile)"
+          hint="Rekomendasi 1080×1350 px (4:5). Dipakai di HP; jika kosong pakai landscape."
+          value={formData.image_portrait}
+          onChange={(url) => setFormData(prev => ({ ...prev, image_portrait: url }))}
+          bucket="sites"
+        />
+      </div>
 
       <GalleryUpload
         label="Gallery images"
@@ -547,6 +559,8 @@ const emptySites: SitesItem = {
   facilities: '',
   collection: '',
   img_banner: '',
+  image_landscape: '',
+  image_portrait: '',
   ticket_price: '',
   ticket_url: '',
   is_free: false,

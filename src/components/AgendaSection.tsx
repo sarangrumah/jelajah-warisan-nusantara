@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { stripHtml } from '@/lib/utils';
 import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import { getUploadedImageUrl } from '@/lib/asset-url';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import logo from '@/assets/MCB-Logo.png';
 
 import {
@@ -40,20 +41,25 @@ const AgendaCard = ({ event }) => {
 
   return (
     <div className="relative bg-card border border-border rounded-2xl overflow-hidden heritage-glow hover:scale-105 transition-bounce group h-full flex flex-col">
-      <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+      <div className="relative overflow-hidden">
+        {(event.image_landscape || event.image_portrait || event.banner_img) ? (
+          <ResponsiveImage
+            landscape={event.image_landscape}
+            portrait={event.image_portrait}
+            fallback={event.banner_img}
+            alt={stripHtml(event.title || event.name || '')}
+            bucket="hero-sections"
+            ratio="card"
+          />
+        ) : (
+          <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary-glow/20">
+            <img src={logo} alt="MCB" className="h-20 w-auto object-contain opacity-80" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent pointer-events-none" />
         <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
           {getStatusLabel(event.status)}
         </div>
-        <img
-          src={
-            event.banner_img
-              ? getUploadedImageUrl(event.banner_img, 'hero-sections') || logo
-              : logo
-          }
-          alt={event.title}
-          className="w-full h-full object-contain object-center"
-        />
       </div>
       <div className="p-6 mb-9 flex-1 flex flex-col">
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">

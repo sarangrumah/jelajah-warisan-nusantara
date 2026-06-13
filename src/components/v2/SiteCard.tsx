@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar } from 'lucide-react';
 import { TiltCard } from '@/components/motion/TiltCard';
-import { getSiteImage } from '@/lib/v2/site-images';
+import { getSiteImagePair } from '@/lib/v2/site-images';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import { htmlToText, truncate } from '@/lib/v2/fixHtml';
 
 interface SiteCardProps {
@@ -29,15 +30,13 @@ export function SiteCard({ item, to, index = 0 }: SiteCardProps) {
     >
       <Link to={to} className="block h-full group">
         <TiltCard className="h-full rounded-2xl overflow-hidden bg-card border border-border/60 hover:border-primary/50 transition-colors">
-          <div className="aspect-[4/3] overflow-hidden">
-            <img
-              src={getSiteImage(item)}
-              alt={title}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          </div>
+          <ResponsiveImage
+            {...getSiteImagePair(item)}
+            alt={title}
+            bucket="sites"
+            ratio="card"
+            imgClassName="transition-transform duration-700 group-hover:scale-105"
+          />
           <div className="p-6">
             <h3 className="text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
               {title}

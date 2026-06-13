@@ -65,7 +65,15 @@ function resolveBundled(justFile: string): string | null {
 
 /** Memilih kandidat gambar dari record tb_sites + fallback logo MCB. */
 export function getSiteImage(item: Record<string, any>): string {
-  const candidate = item?.image_url || item?.img_banner || item?.banner_image || '';
+  const candidate =
+    item?.image_landscape || item?.image_url || item?.img_banner || item?.banner_image || item?.image_portrait || '';
   const resolved = getSiteImageUrl(candidate);
   return resolved && resolved !== '/placeholder.svg' ? resolved : mcbLogo;
+}
+
+/** Pasangan landscape/portrait dari record tb_sites untuk <ResponsiveImage>. */
+export function getSiteImagePair(item: Record<string, any>): { landscape?: string; portrait?: string } {
+  const landscape = item?.image_landscape || item?.img_banner || item?.image_url || item?.banner_image || undefined;
+  const portrait = item?.image_portrait || undefined;
+  return { landscape, portrait };
 }

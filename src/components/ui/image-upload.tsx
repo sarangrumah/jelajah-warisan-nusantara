@@ -18,6 +18,8 @@ interface ImageUploadProps {
   maxSize?: number; // in MB
   className?: string;
   preview?: boolean;
+  /** Optional helper text shown under the label (e.g. recommended pixel size). */
+  hint?: string;
 }
 
 export const ImageUpload = ({
@@ -28,7 +30,8 @@ export const ImageUpload = ({
   accept = 'image/*',
   maxSize = 10,
   className = '',
-  preview = true
+  preview = true,
+  hint,
 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -161,7 +164,8 @@ export const ImageUpload = ({
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
-      
+      {hint && <p className="text-xs text-muted-foreground -mt-1">{hint}</p>}
+
       <Card
         className={`border-2 border-dashed cursor-pointer transition-colors ${
           dragOver 
