@@ -26,15 +26,16 @@ export const TranslationPerformanceDashboard: React.FC = () => {
     setIsRefreshing(true);
     try {
       const cacheStats = optimizedTranslationService.getCacheStats();
-      
-      // Simulate some performance metrics
-      // In a real implementation, you'd track these metrics
+
+      // Only real metrics from the cache are reported. apiCalls /
+      // averageResponseTime are not tracked yet, so they stay 0 rather than
+      // showing fabricated numbers.
       setStats({
         cacheSize: cacheStats.size,
         cacheHitRate: cacheStats.hitRate,
-        apiCalls: Math.floor(Math.random() * 100), // Mock data
-        totalTranslations: cacheStats.size + Math.floor(Math.random() * 50),
-        averageResponseTime: Math.random() * 100 + 50 // Mock data in ms
+        apiCalls: 0,
+        totalTranslations: cacheStats.size,
+        averageResponseTime: 0,
       });
     } catch (error) {
       console.error('Error refreshing stats:', error);

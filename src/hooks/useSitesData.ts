@@ -72,13 +72,15 @@ export const useSitesData = (): UseSitesDataReturn => {
     }
   };
 
-  // Calculate statistics
-  const museumsCount = sitesData.filter(site => 
-    site.type === 'museum' || site.name.toLowerCase().includes('museum')
-  ).length;
-  
-  const heritageCount = sitesData.filter(site => 
-    site.type === 'heritage' || site.name.toLowerCase().includes('heritage')
+  // Calculate statistics. NOTE: tb_sites.type holds the type UUID (not the
+  // string 'museum'/'heritage'), so we match on the known type IDs used across
+  // the app (see api-services museumService/heritageService.getPublished).
+  const MUSEUM_TYPE_ID = '12bc00a9-ba1a-4562-940d-4e33bb26acdc';
+  const HERITAGE_TYPE_ID = 'cb368bd8-22cb-40f9-ae73-0990cad6e4d0';
+  const museumsCount = sitesData.filter(site => site.type === MUSEUM_TYPE_ID).length;
+  // Cagar Budaya = explicit heritage type (fallback: any non-museum type).
+  const heritageCount = sitesData.filter(
+    site => site.type === HERITAGE_TYPE_ID || (!!site.type && site.type !== MUSEUM_TYPE_ID)
   ).length;
 
   useEffect(() => {
