@@ -1,4 +1,4 @@
-import { Info, FileText, Clock, Download, Phone, Mail } from 'lucide-react';
+import { FileText, Clock, Download, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 // Utility to fix broken HTML tags like < p > to <p>
@@ -8,27 +8,6 @@ function fixBrokenHtmlTags(html: string): string {
              .replace(/<\s*\/\s*([a-zA-Z0-9]+)\s*>/g, '</$1>');
 }
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
-
-const rawInformationTypes = [
-  {
-    title: 'Informasi Berkala',
-    description: 'Informasi yang wajib disediakan dan diumumkan secara berkala',
-    examples: ['Laporan keuangan tahunan', 'Laporan kinerja', 'Profil institusi', 'Struktur organisasi'],
-    timeline: 'Dipublikasi setiap 6 bulan'
-  },
-  {
-    title: 'Informasi Serta Merta',
-    description: 'Informasi yang dapat mengancam hajat hidup orang banyak dan ketertiban umum',
-    examples: ['Informasi darurat', 'Kebijakan mendadak', 'Pengumuman penting', 'Status layanan'],
-    timeline: 'Dipublikasi segera'
-  },
-  {
-    title: 'Informasi Setiap Saat',
-    description: 'Informasi yang wajib disediakan dan diumumkan setiap saat',
-    examples: ['Daftar informasi publik', 'Hasil keputusan', 'Kebijakan dan regulasi', 'SOP layanan'],
-    timeline: 'Tersedia setiap saat'
-  }
-];
 
 const rawRequestProcedure = [
   {
@@ -87,7 +66,6 @@ const rawRequestCriteria = [
 const PPIDSection = () => {
   const { t } = useUnifiedTranslation();
 
-  const { translatedContent: informationTypes } = useTranslationSystem(rawInformationTypes, 'ppid-info');
   const { translatedContent: requestProcedure } = useTranslationSystem(rawRequestProcedure, 'ppid-procedure');
   const { translatedContent: requestCriteria } = useTranslationSystem(rawRequestCriteria, 'ppid-criteria');
 
@@ -123,53 +101,6 @@ const PPIDSection = () => {
               Dasar hukum keberadaan PPID Kementerian Kebudayaan diatur dalam Keputusan Menteri Kebudayaan Republik Indonesia Nomor 161/P/2025 tentang Pejabat Pengelola Informasi dan Dokumentasi Kementerian Kebudayaan, yang juga menjadi acuan bagi PPID Museum dan Cagar Budaya dalam melaksanakan tugas dan fungsinya.
             </p>
           </div>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
-          {(informationTypes || rawInformationTypes).map((type, index) => (
-            <Card key={index} className="scroll-reveal heritage-glow hover:scale-105 transition-bounce">
-              <CardHeader>
-                <Info size={32} className="text-primary mb-2" />
-                <CardTitle className="text-xl">
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: fixBrokenHtmlTags(type.title)
-                    }}
-                  />
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: fixBrokenHtmlTags(type.description)
-                    }}
-                  />
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-sm mb-2">{t('ppid.exampleInfo')}</h4>
-                    <ul className="space-y-1">
-                      {type.examples.map((example, exampleIndex) => (
-                        <li key={exampleIndex} className="text-sm text-muted-foreground flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: fixBrokenHtmlTags(example)
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock size={16} className="text-primary" />
-                    <span className="font-medium">{type.timeline}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 mb-16">

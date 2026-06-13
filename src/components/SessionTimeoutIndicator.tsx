@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
@@ -17,16 +17,30 @@ export const SessionTimeoutIndicator = ({
   const [timeRemaining, setTimeRemaining] = useState(timeoutMinutes * 60); // in seconds
   const [isWarning, setIsWarning] = useState(false);
 
+  // Stable callbacks so they don't churn the idle-timeout's resetTimer identity
+  // on every render (which previously rescheduled timers and broke activity reset).
+  const handleWarning = useCallback(() => {
+    setIsWarning(true);
+    setTimeRemaining(warningMinutes * 60);
+  }, [warningMinutes]);
+
+  const handleActive = useCallback(() => {
+    // User is active again — dismiss the warning and restore the full window.
+    setIsWarning(false);
+    setTimeRemaining(timeoutMinutes * 60);
+  }, [timeoutMinutes]);
+
+  const handleTimeout = useCallback(() => {
+    setIsWarning(false);
+    setTimeRemaining(0);
+  }, []);
+
   useIdleTimeout({
     timeoutMinutes,
     warningMinutes,
-    onWarning: () => {
-      setIsWarning(true);
-    },
-    onTimeout: () => {
-      setIsWarning(false);
-      setTimeRemaining(0);
-    }
+    onWarning: handleWarning,
+    onActive: handleActive,
+    onTimeout: handleTimeout,
   });
 
   useEffect(() => {

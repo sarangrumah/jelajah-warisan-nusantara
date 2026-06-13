@@ -347,13 +347,29 @@ const IndonesiaMap = () => {
         </h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-blue-500/20 text-blue-600 border-blue-500/30">
+            <Badge
+              variant="outline"
+              className="border"
+              style={{
+                backgroundColor: `${MARKER_COLORS.museum}33`,
+                color: MARKER_COLORS.museum,
+                borderColor: `${MARKER_COLORS.museum}4D`,
+              }}
+            >
               🏛️ {museumLabel}: {(() => {
                 const museumTypeId = types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
                 return locations.filter(l => l.type === museumTypeId).length;
               })()}
             </Badge>
-            <Badge variant="outline" className="bg-green-500/20 text-green-600 border-green-500/30">
+            <Badge
+              variant="outline"
+              className="border"
+              style={{
+                backgroundColor: `${MARKER_COLORS.heritage}33`,
+                color: MARKER_COLORS.heritage,
+                borderColor: `${MARKER_COLORS.heritage}4D`,
+              }}
+            >
               🏛️ {heritageLabel}: {(() => {
                 const museumTypeId = types.find((t) => t.name?.toLowerCase() === 'museum')?.id;
                 return locations.filter(l => l.type !== museumTypeId).length;
@@ -383,13 +399,19 @@ const IndonesiaMap = () => {
         <div className="text-xs font-semibold text-foreground mb-2">{legendTitle}</div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+            <div
+              className="w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+              style={{ backgroundColor: MARKER_COLORS.museum }}
+            >
               <span className="text-white text-[8px]">🏛️</span>
             </div>
             <span className="text-xs text-foreground">{museumLegendText}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+            <div
+              className="w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+              style={{ backgroundColor: MARKER_COLORS.heritage }}
+            >
               <span className="text-white text-[8px]">🏛️</span>
             </div>
             <span className="text-xs text-foreground">{heritageLegendText}</span>

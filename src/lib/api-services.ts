@@ -148,6 +148,7 @@ export const publicationService = {
   delete: (id: string) => apiClient.delete('tb_publication', id),
   approve: (id: string) => apiClient.approve('tb_publication', id),
   reject: (id: string, reason: string) => apiClient.reject('tb_publication', id, reason),
+  incrementDownload: (id: string) => apiClient.incrementDownload('tb_publication', id),
 };
 
 // Memory of The World

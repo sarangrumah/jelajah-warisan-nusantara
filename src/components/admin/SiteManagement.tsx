@@ -311,6 +311,33 @@ const SitesForm = ({ museum, onSave, onCancel, saving }: {
         />
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="latitude">Latitude</Label>
+          <Input
+            id="latitude"
+            type="number"
+            step="0.000001"
+            value={formData.latitude || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
+            placeholder="-6.208800"
+          />
+          <p className="text-xs text-muted-foreground">Untuk pin di Peta Interaktif. Contoh: -6.208800</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="longitude">Longitude</Label>
+          <Input
+            id="longitude"
+            type="number"
+            step="0.000001"
+            value={formData.longitude || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
+            placeholder="106.845600"
+          />
+          <p className="text-xs text-muted-foreground">Contoh: 106.845600</p>
+        </div>
+      </div>
+
       <ImageUpload
         label="Main Image"
         value={formData.img_banner}
@@ -886,6 +913,16 @@ const SitesManagement = ({ userRole }: { userRole: string }) => {
         onClose={closeRejectDialog}
         title="Reject Museum"
       />
+
+      {!reorderMode && userRole !== "approver" && userRole !== "viewer" && (
+        <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/40 px-4 py-2.5 text-sm text-muted-foreground">
+          <ArrowUpDown className="w-4 h-4 shrink-0" />
+          <span>
+            Ingin menyusun urutan tampilan Museum / Cagar Budaya? Klik tombol{' '}
+            <span className="font-medium text-foreground">"Atur Urutan"</span> di kanan atas, lalu pilih tipe dan seret kartunya.
+          </span>
+        </div>
+      )}
 
       {reorderMode ? (
         <Card>

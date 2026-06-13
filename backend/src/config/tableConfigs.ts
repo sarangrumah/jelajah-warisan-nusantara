@@ -102,6 +102,7 @@ export const tableConfigs = {
     'origin',
     'image_url',
     'is_active',
+    'show_basic_information',
     'is_approved',
     'is_rejected',
     'reason_rejected',
@@ -112,7 +113,7 @@ export const tableConfigs = {
     'updated_by',
     'updated_at'
   ],
-  
+
   tb_memoryoftheworld: [
     'id',
     'title',

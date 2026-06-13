@@ -27,6 +27,7 @@ interface MasterCollection {
   origin: string;
   image_url: string;
   is_active: boolean;
+  show_basic_information?: boolean;
   created_at?: string;
   updated_at?: string;
   is_approved?: boolean;
@@ -53,6 +54,7 @@ const emptyCollection: MasterCollection = {
   origin: '',
   image_url: '',
   is_active: true,
+  show_basic_information: true,
   is_rejected: false,
   reason_rejected: '',
   categories_id: '',
@@ -223,6 +225,15 @@ const CollectionForm = ({
           onCheckedChange={(checked) => setFormData((p) => ({ ...p, is_active: checked }))}
         />
         <Label htmlFor="is_active">Publish</Label>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="show_basic_information"
+          checked={formData.show_basic_information !== false}
+          onCheckedChange={(checked) => setFormData((p) => ({ ...p, show_basic_information: checked }))}
+        />
+        <Label htmlFor="show_basic_information">Tampilkan Basic Information di halaman publik</Label>
       </div>
 
       <div className="flex justify-end space-x-2">

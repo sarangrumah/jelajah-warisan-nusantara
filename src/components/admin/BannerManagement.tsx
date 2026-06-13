@@ -568,6 +568,16 @@ const BannerManagement =  ({ userRole }: { userRole: string }) => {
         title="Reject Banner"
       />
 
+      {!reorderMode && userRole !== "approver" && userRole !== "viewer" && (
+        <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/40 px-4 py-2.5 text-sm text-muted-foreground">
+          <ArrowUpDown className="w-4 h-4 shrink-0" />
+          <span>
+            Ingin mengatur urutan banner di Beranda? Klik tombol{' '}
+            <span className="font-medium text-foreground">"Atur Urutan"</span> di kanan atas, lalu seret kartunya.
+          </span>
+        </div>
+      )}
+
       {reorderMode ? (
         <Card>
           <CardHeader>

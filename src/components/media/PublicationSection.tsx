@@ -35,8 +35,18 @@ const PublicationSection = () => {
     fetchPublications();
   }, []);
 
-  const downloadFromUrl = (url: string) => {
+  const downloadFromUrl = (url: string, id?: string) => {
     if (!url) return;
+
+    // Record the download (fire-and-forget) and optimistically bump the displayed count.
+    if (id) {
+      publicationService.incrementDownload(id).catch(() => {});
+      setPublications((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, download_count: (Number(p.download_count) || 0) + 1 } : p
+        )
+      );
+    }
 
     let publicUrl = url;
 
@@ -141,12 +151,12 @@ const PublicationSection = () => {
                             <div className="text-muted-foreground">{t('publication.size')}</div>
                           </div>
                           <div className="text-center">
-                            <div className="font-semibold text-heritage-gradient">{pub.downloadCount}</div>
+                            <div className="font-semibold text-heritage-gradient">{pub.download_count ?? pub.downloadCount ?? 0}</div>
                             <div className="text-muted-foreground">{t('publication.downloadCount')}</div>
                           </div>
                         </div>
                         <div className='p-6 absolute left-0 bottom-0 right-0'>
-                          <Button className="w-full" onClick={() => downloadFromUrl(pub.url)}>
+                          <Button className="w-full" onClick={() => downloadFromUrl(pub.url, pub.id)}>
                             <Download size={16} className="mr-2" />
                             {t('publication.downloadButton')}
                           </Button>

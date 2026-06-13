@@ -124,6 +124,7 @@ const CollectionDetail = () => {
                   </CardContent>
                 </Card>
 
+                {collection.show_basic_information !== false && (
                 <Card>
                   <CardHeader>
                     <CardTitle>{t('Basic Information')}</CardTitle>
@@ -178,6 +179,7 @@ const CollectionDetail = () => {
                     </div>
                   </CardContent>
                 </Card>
+                )}
               </div>
             </div>
           </section>

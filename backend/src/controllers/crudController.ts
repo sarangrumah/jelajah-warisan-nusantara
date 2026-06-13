@@ -1050,6 +1050,31 @@ const JSON_FIELDS: Record<string, string[]> = {
       }
     },
 
+    // === INCREMENT DOWNLOAD COUNT (public) ===
+    incrementDownload: async (req: AuthRequest, res: Response) => {
+      try {
+        if (!fields.includes('download_count')) {
+          return res.status(400).json({ error: `Download count not supported for table: ${tableName}` });
+        }
+        const { id } = req.params;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(String(id))) {
+          return res.status(400).json({ error: 'Invalid id' });
+        }
+        const result = await query(
+          `UPDATE ${tableName} SET download_count = COALESCE(download_count, 0) + 1 WHERE id = $1 RETURNING download_count`,
+          [id]
+        );
+        if (result.rowCount === 0) {
+          return res.status(404).json({ error: 'Record not found' });
+        }
+        res.json({ download_count: result.rows[0].download_count });
+      } catch (error) {
+        console.error(`Increment download ${tableName} error:`, error);
+        res.status(500).json({ error: 'Failed to increment download count' });
+      }
+    },
+
     // === APPROVE ===
     approve: async (req: AuthRequest, res: Response) => {
       try {
