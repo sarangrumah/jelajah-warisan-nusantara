@@ -36,6 +36,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import ActivityLogManagement from '@/components/admin/ActivityLogManagement';
 import TranslationManagement from '@/components/admin/TranslationManagement';
 import ContentTranslationManagement from '@/components/admin/ContentTranslationManagement';
+import PPIDDocumentManagement from '@/components/admin/PPIDDocumentManagement';
 import MenuManagement from '@/components/admin/MenuManagement';
 import SettingsManagement from '@/components/admin/SettingsManagement';
 import ConservationManagement from '@/components/admin/ConservationManagement';
@@ -156,6 +157,7 @@ const AdminDashboard = () => {
           {activeTab === 'site-settings' && <SettingsManagement userRole={userRole} />}
           {activeTab === 'translations' && <TranslationManagement />}
           {activeTab === 'content-translations' && <ContentTranslationManagement />}
+          {activeTab === 'ppid-documents' && <PPIDDocumentManagement userRole={userRole} />}
           {activeTab === 'activity-log' && <ActivityLogManagement userRole={userRole} />}
           {activeTab === 'merchandise' && <MerchandiseManagement userRole={userRole} />}
           {activeTab === 'publication' && <PublicationManagement userRole={userRole} />}

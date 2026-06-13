@@ -9,6 +9,9 @@ function fixBrokenHtmlTags(html: string): string {
 }
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { useSiteContact } from '@/hooks/useSiteContact';
+import { ppidDocumentService } from '@/lib/api-services';
+import { getUploadedImageUrl } from '@/lib/asset-url';
+import { useEffect, useState } from 'react';
 
 const rawRequestProcedure = [
   {
@@ -67,16 +70,18 @@ const rawRequestCriteria = [
 const PPIDSection = () => {
   const { t } = useUnifiedTranslation();
   const contact = useSiteContact();
+  const [documents, setDocuments] = useState<any[]>([]);
 
   const { translatedContent: requestProcedure } = useTranslationSystem(rawRequestProcedure, 'ppid-procedure');
   const { translatedContent: requestCriteria } = useTranslationSystem(rawRequestCriteria, 'ppid-criteria');
 
-  const documents = [
-    { title: 'Formulir Permohonan Informasi', type: 'PDF', size: '245 KB' },
-    { title: 'Standar Layanan PPID', type: 'PDF', size: '1.2 MB' },
-    { title: 'Daftar Informasi yang Dikecualikan', type: 'PDF', size: '780 KB' },
-    { title: 'Maklumat Pelayanan PPID', type: 'PDF', size: '540 KB' },
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    ppidDocumentService.getPublished()
+      .then((res) => { if (!cancelled && !res.error && Array.isArray(res.data)) { setDocuments(res.data); } })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <section className="py-20 bg-background">
@@ -202,7 +207,8 @@ const PPIDSection = () => {
           </div>
 
           <div className="scroll-reveal">
-            {/* <Card className="heritage-glow mb-6">
+            {documents.length > 0 && (
+            <Card className="heritage-glow mb-6">
               <CardHeader>
                 <CardTitle className="text-2xl">Dokumen & Formulir</CardTitle>
                 <p className="text-muted-foreground">
@@ -211,28 +217,33 @@ const PPIDSection = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {documents.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText size={20} className="text-primary" />
-                        <div>
-                          <h4 className="font-medium text-sm">{doc.title}</h4>
-                          <p className="text-xs text-muted-foreground">{doc.type} • {doc.size}</p>
+                  {documents.map((doc) => {
+                    const href = doc.file_url ? getUploadedImageUrl(doc.file_url, 'documents') : null;
+                    return (
+                      <div key={doc.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <FileText size={20} className="text-primary" />
+                          <div>
+                            <h4 className="font-medium text-sm">{doc.title}</h4>
+                            <p className="text-xs text-muted-foreground">
+                              {(doc.file_type || 'PDF')}{doc.file_size ? ` • ${doc.file_size}` : ''}
+                            </p>
+                          </div>
                         </div>
+                        {href ? (
+                          <a href={href} target="_blank" rel="noreferrer" aria-label={`Unduh ${doc.title}`}>
+                            <Button size="sm" variant="outline"><Download size={14} /></Button>
+                          </a>
+                        ) : (
+                          <Button size="sm" variant="outline" disabled><Download size={14} /></Button>
+                        )}
                       </div>
-                      <Button size="sm" variant="outline">
-                        <Download size={14} />
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-                
-                <Button className="w-full mt-4">
-                  <FileText size={16} className="mr-2" />
-                  Ajukan Permohonan Informasi
-                </Button>
               </CardContent>
-            </Card> */}
+            </Card>
+            )}
 
             {/* <Card className="heritage-glow">
               <CardHeader>

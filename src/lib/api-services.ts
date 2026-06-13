@@ -190,6 +190,16 @@ export const dashboardService = {
   getStats: () => apiClient.getDashboardStats<any>(),
 };
 
+// PPID downloadable documents (CMS-managed)
+export const ppidDocumentService = {
+  getAll: () => apiClient.getAll('tb_ppid_documents'),
+  getPublished: () => apiClient.getAll('tb_ppid_documents', { is_active: 'true' }),
+  getById: (id: string) => apiClient.getById('tb_ppid_documents', id),
+  create: (data: any) => apiClient.create('tb_ppid_documents', data),
+  update: (id: string, data: any) => apiClient.update('tb_ppid_documents', id, data),
+  delete: (id: string) => apiClient.delete('tb_ppid_documents', id),
+};
+
 // Admin-curated content translation overrides
 export const contentTranslationOverrideService = {
   list: (table?: string, lang?: string) => apiClient.getContentOverrides<any[]>(table, lang),

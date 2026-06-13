@@ -65,6 +65,7 @@ const menuGroups: MenuGroup[] = [
     items: [
       { id: 'company', label: 'Company Profile', icon: Settings },
       { id: 'sop', label: 'SOP & Regulation', icon: FileText },
+      { id: 'ppid-documents', label: 'Dokumen PPID', icon: FileText },
       { id: 'organizational-structure', label: 'Org. Structure', icon: Users },
       { id: 'faq', label: 'FAQ', icon: Settings },
     ],
