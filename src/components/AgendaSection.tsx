@@ -63,7 +63,7 @@ const AgendaCard = ({ event }) => {
       </div>
       <div className="p-6 mb-9 flex-1 flex flex-col">
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-heritage">
-          {stripHtml(event.title || '')}
+          {stripHtml(event.title || event.name || '')}
         </h3>
         
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
