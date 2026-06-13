@@ -2,10 +2,64 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import sharp from 'sharp';
 import { authenticateToken } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
+
+// --- Image compression -----------------------------------------------------
+// Downscale oversized uploads and re-encode them so stored images stay light
+// (mirrors the one-off optimization done to the bundled src/assets). Runs in
+// place after multer has written the file. Only touches still raster formats
+// sharp handles safely; GIF/SVG/TIFF/video/PDF are passed through untouched.
+const IMAGE_MAX_DIM = 2400; // longest side, in px
+const JPEG_QUALITY = 80;
+const PNG_QUALITY = 80;
+const WEBP_QUALITY = 80;
+const COMPRESSIBLE_MIME = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
+
+const compressImageInPlace = async (filePath: string, mimetype: string): Promise<number | null> => {
+  if (!COMPRESSIBLE_MIME.has(mimetype)) { return null; }
+  try {
+    const originalSize = fs.statSync(filePath).size;
+    let pipeline = sharp(filePath, { failOn: 'none' }).rotate(); // honor EXIF orientation
+    const meta = await pipeline.metadata();
+
+    // Skip animated images (multi-frame webp/png) to avoid flattening them.
+    if (meta.pages && meta.pages > 1) { return null; }
+
+    const width = meta.width || 0;
+    const height = meta.height || 0;
+    if (Math.max(width, height) > IMAGE_MAX_DIM) {
+      pipeline = pipeline.resize({
+        width: width >= height ? IMAGE_MAX_DIM : undefined,
+        height: height > width ? IMAGE_MAX_DIM : undefined,
+        withoutEnlargement: true,
+      });
+    }
+
+    if (mimetype === 'image/png') {
+      pipeline = pipeline.png({ compressionLevel: 9, quality: PNG_QUALITY, palette: true, effort: 8 });
+    } else if (mimetype === 'image/webp') {
+      pipeline = pipeline.webp({ quality: WEBP_QUALITY });
+    } else {
+      pipeline = pipeline.jpeg({ quality: JPEG_QUALITY, mozjpeg: true });
+    }
+
+    const buf = await pipeline.toBuffer();
+    if (buf.length >= originalSize) { return null; } // never grow a file
+
+    // Write to a temp file then atomically swap to avoid a torn file on crash.
+    const tmp = `${filePath}.tmp`;
+    fs.writeFileSync(tmp, buf);
+    fs.renameSync(tmp, filePath);
+    return buf.length;
+  } catch (err) {
+    console.error('[UPLOAD] image compression skipped:', (err as Error).message);
+    return null;
+  }
+};
 
 // --- Helpers: filename sanitization + uniqueness ---
 const sanitizeFilename = (originalName: string) => {
@@ -198,7 +252,7 @@ const uploadMulter = multer({
 });
 
 // Generic upload endpoint
-router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
+router.post('/', authenticateToken, uploadMulter.single('file'), async (req, res) => {
   // LOGGING: Print incoming upload details
   console.log('---[UPLOAD DEBUG]---');
   console.log('req.body.bucket:', req.body.bucket);
@@ -219,10 +273,19 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
   }
   
   const bucket = resolveBucket(req.body.bucket);
+
+  // Compress raster images in place (downscale + re-encode). No-op for PDFs,
+  // videos, and vector/animated formats; falls back to the original on error.
+  const compressedSize = await compressImageInPlace(req.file.path, req.file.mimetype);
+  if (compressedSize != null) {
+    console.log(`[UPLOAD] compressed ${req.file.filename}: ${req.file.size} -> ${compressedSize} bytes`);
+  }
+  const finalSize = compressedSize ?? req.file.size;
+
   // Return correct URL path that matches where backend serves files from
   // Always return /uploads/{bucket}/{filename}
   const fileUrl = `/uploads/${bucket}/${req.file.filename}`;
-  
+
   res.json({
     message: 'File uploaded successfully',
     file: {
@@ -230,7 +293,7 @@ router.post('/', authenticateToken, uploadMulter.single('file'), (req, res) => {
       relative_url: fileUrl,
       name: req.file.filename,
       originalName: req.file.originalname,
-      size: req.file.size,
+      size: finalSize,
       type: req.file.mimetype
     }
   });
