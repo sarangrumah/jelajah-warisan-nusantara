@@ -8,32 +8,10 @@ import { EventsService, TypesAndCategoriesEvent } from '@/lib/api-services';
 import { useUnifiedTranslation, useTranslationSystem } from '@/contexts/UnifiedTranslationContext';
 import { defaultEvents } from '@/../database/default-data';
 import { Link } from 'react-router-dom';
+import { ResponsiveImage } from '@/components/ui/responsive-image';
 import logo from '@/assets/MCB-Logo.png';
 import { stripHtml } from '@/lib/utils';
 import sanitizeHtml from 'sanitize-html';
-
-const eventImages = import.meta.glob('../../assets/events/*', { eager: true });
-
-function getEventImageUrl(filename: string) {
-  if (
-    typeof filename === 'string' &&
-    (filename.startsWith('http://') ||
-      filename.startsWith('https://') ||
-      filename.startsWith('/assets/'))
-  ) {
-    return filename;
-  }
-  const justFile = filename?.split('/').pop() || filename;
-  const match = Object.entries(eventImages).find(([path]) => path.endsWith(justFile));
-  if (match) {
-    return (match[1] as any).default;
-  }
-  // Fallback: try public/assets/events/ for production
-  if (justFile) {
-    return `/assets/events/${justFile}`;
-  }
-  return undefined;
-}
 
 const AgendaList = () => {
   const { t } = useUnifiedTranslation();
@@ -177,17 +155,24 @@ const AgendaList = () => {
           {filteredEvents.map((event) => (
             <Link to={`/event/${event.id}`} key={`event-link-${event.id}`} className="block a-exclude">
               <Card key={`event-${event.id}`} className="relative overflow-hidden heritage-glow h-full transition-transform transform hover:scale-105">
-                  <div className="aspect-video relative overflow-hidden">
-                    <div className="relative h-48 bg-gradient-to-br from-primary/20 to-primary-glow/20 overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-                      <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
-                        {getStatusLabel(event.status)}
-                      </div>
-                      <img
-                        src={event.image_url ? getEventImageUrl(event.image_url) || logo : logo}
-                        alt={event.name}
-                        className="w-full h-full object-contain object-center"
+                  <div className="relative overflow-hidden">
+                    {(event.image_landscape || event.image_portrait || event.banner_img) ? (
+                      <ResponsiveImage
+                        landscape={event.image_landscape}
+                        portrait={event.image_portrait}
+                        fallback={event.banner_img}
+                        alt={stripHtml(event.name || '')}
+                        bucket="hero-sections"
+                        ratio="card"
                       />
+                    ) : (
+                      <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary-glow/20">
+                        <img src={logo} alt="MCB" className="h-20 w-auto object-contain opacity-80" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent pointer-events-none" />
+                    <div className={`absolute bg-primary/90 top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(event.status)}`}>
+                      {getStatusLabel(event.status)}
                     </div>
                   </div>
                 <CardHeader>
