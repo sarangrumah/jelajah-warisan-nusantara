@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { museumStat } from '../../database/get-data';
-import { museumService, heritageService, siteSettingsService } from '@/lib/api-services';
+import { museumService, heritageService, siteSettingsService, EventsService } from '@/lib/api-services';
 
 // Represents the structure of museum statistics
 interface MuseumStats {
@@ -15,8 +15,9 @@ interface MuseumStats {
 /**
  * Homepage "management" statistics, sourced from real data:
  *  - museums / sites: live counts of published museums / cagar budaya (tb_sites)
- *  - visitors / programs / provinces / projects: CMS-managed values from
- *    tb_site_settings (homepage.stats.*), editable in admin Site Settings
+ *  - programs: live count of published events (tb_events, active + approved)
+ *  - visitors / provinces / projects: CMS-managed values from tb_site_settings
+ *    (homepage.stats.*), editable in admin Site Settings
  * The bundled museumStat values are only a last-resort fallback when the API is
  * unavailable, so the section never renders blank.
  */
@@ -35,9 +36,10 @@ export const useMuseumStats = (): MuseumStats => {
 
     const load = async () => {
       try {
-        const [museumsRes, heritageRes, settingsRes] = await Promise.all([
+        const [museumsRes, heritageRes, eventsRes, settingsRes] = await Promise.all([
           museumService.getPublished(),
           heritageService.getPublished(),
+          EventsService.getPublished(),
           siteSettingsService.getAll(),
         ]);
 
@@ -52,13 +54,21 @@ export const useMuseumStats = (): MuseumStats => {
           !museumsRes.error && Array.isArray(museumsRes.data) ? museumsRes.data.length : null;
         const liveHeritage =
           !heritageRes.error && Array.isArray(heritageRes.data) ? heritageRes.data.length : null;
+        // EventsService.getPublished() returns all events; count only published
+        // ones (active + approved) for the "programs" figure.
+        const livePrograms =
+          !eventsRes.error && Array.isArray(eventsRes.data)
+            ? (eventsRes.data as any[]).filter(
+                (e) => e?.is_active !== false && e?.is_approved !== false
+              ).length
+            : null;
 
         if (cancelled) { return; }
         setStats({
           museums: liveMuseums ?? settings['homepage.stats.museums'] ?? museumStat.museums,
           sites: liveHeritage ?? settings['homepage.stats.heritage'] ?? museumStat.sites,
           visitors: settings['homepage.stats.visitors'] ?? museumStat.visitors,
-          programs: settings['homepage.stats.programs'] ?? museumStat.programs,
+          programs: livePrograms ?? settings['homepage.stats.programs'] ?? museumStat.programs,
           provinces: settings['homepage.stats.provinces'] ?? museumStat.provinces,
           projects: settings['homepage.stats.projects'] ?? museumStat.projects,
         });
