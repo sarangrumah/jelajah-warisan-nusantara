@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { siteSettingsService } from '@/lib/api-services';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +13,9 @@ interface SiteSetting {
   value: string;
   label?: string;
 }
+
+// Settings whose key looks like an image get an image uploader instead of a text box.
+const isImageSetting = (key: string) => /image|img|gambar|photo|foto|logo/i.test(key);
 
 /**
  * CMS for simple key-value site content (e.g. homepage statistics) stored in tb_site_settings.
@@ -50,8 +54,8 @@ const SettingsManagement = ({ userRole }: { userRole: string }) => {
     fetchSettings();
   }, [toast]);
 
-  const saveSetting = async (setting: SiteSetting) => {
-    const newValue = drafts[setting.id] ?? '';
+  const saveSetting = async (setting: SiteSetting, valueOverride?: string) => {
+    const newValue = valueOverride ?? drafts[setting.id] ?? '';
     setSavingId(setting.id);
     try {
       const response = await siteSettingsService.update(setting.id, { value: newValue });
@@ -94,26 +98,43 @@ const SettingsManagement = ({ userRole }: { userRole: string }) => {
           {settings.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">Belum ada pengaturan. Jalankan migrasi 011 untuk seed awal.</p>
           ) : settings.map((setting) => (
-            <div key={setting.id} className="flex items-center gap-3 border border-border rounded-lg p-3">
+            <div key={setting.id} className="flex items-start gap-3 border border-border rounded-lg p-3">
               <div className="flex-1 min-w-0">
                 <p className="font-medium truncate">{setting.label || setting.key}</p>
                 <p className="text-xs text-muted-foreground truncate">{setting.key}</p>
               </div>
-              <Input
-                value={drafts[setting.id] ?? ''}
-                onChange={(e) => setDrafts(prev => ({ ...prev, [setting.id]: e.target.value }))}
-                disabled={!canEdit || savingId === setting.id}
-                className="w-40"
-              />
-              {canEdit ? (
-                <Button
-                  size="sm"
-                  onClick={() => saveSetting(setting)}
-                  disabled={savingId === setting.id || (drafts[setting.id] ?? '') === (setting.value ?? '')}
-                >
-                  {savingId === setting.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                </Button>
-              ) : null}
+              {isImageSetting(setting.key) ? (
+                <div className="w-64">
+                  <ImageUpload
+                    label=""
+                    value={drafts[setting.id] || setting.value}
+                    bucket="images"
+                    onChange={(url) => {
+                      setDrafts(prev => ({ ...prev, [setting.id]: url }));
+                      // Persist immediately after upload/clear.
+                      saveSetting(setting, url);
+                    }}
+                  />
+                </div>
+              ) : (
+                <>
+                  <Input
+                    value={drafts[setting.id] ?? ''}
+                    onChange={(e) => setDrafts(prev => ({ ...prev, [setting.id]: e.target.value }))}
+                    disabled={!canEdit || savingId === setting.id}
+                    className="w-40"
+                  />
+                  {canEdit ? (
+                    <Button
+                      size="sm"
+                      onClick={() => saveSetting(setting)}
+                      disabled={savingId === setting.id || (drafts[setting.id] ?? '') === (setting.value ?? '')}
+                    >
+                      {savingId === setting.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    </Button>
+                  ) : null}
+                </>
+              )}
             </div>
           ))}
         </CardContent>

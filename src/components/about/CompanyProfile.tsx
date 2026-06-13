@@ -3,7 +3,9 @@ import { MapPin, Users, Building, Award, Target, Eye } from 'lucide-react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { DynamicComponent } from '../dynamic-components';
 import compProfile from '@/assets/museum-interior.jpg'
-import { contentService } from '@/lib/api-services';
+import { contentService, siteSettingsService } from '@/lib/api-services';
+import { useMuseumStats } from '@/hooks/useMuseumStats';
+import { getUploadedImageUrl } from '@/lib/asset-url';
 import { useEffect, useState } from 'react';
 
 // Utility to fix broken HTML tags like < p > to <p>
@@ -52,7 +54,9 @@ const HighlightCard = ({ item }: { item: { icon: string; title: string; descript
 
 const CompanyProfile = () => {
   const [company, setCompany] = useState<any>(null);
-  
+  const [aboutImage, setAboutImage] = useState<string>('');
+  const museumStats = useMuseumStats();
+
   const { translatedText: name } = useTranslate(company?.name || '');
   const { translatedText: aboutus } = useTranslate(company?.aboutus || '');
   const { translatedText: vision } = useTranslate(company?.vision || '');
@@ -75,8 +79,21 @@ const CompanyProfile = () => {
     setCompany(response.data[0]);
   };
   
+  const fetchAboutImage = async () => {
+    try {
+      const response = await siteSettingsService.getAll();
+      if (!response.error && Array.isArray(response.data)) {
+        const row = (response.data as any[]).find((s) => s?.key === 'about.company_image');
+        if (row?.value) { setAboutImage(row.value); }
+      }
+    } catch (error) {
+      console.error('Error fetching about image setting:', error);
+    }
+  };
+
   useEffect(() => {
     fetchCompanies();
+    fetchAboutImage();
   }, []);
 
   const highlights = [
@@ -102,11 +119,12 @@ const CompanyProfile = () => {
     }
   ];
 
+  // Live counts (museum / cagar budaya) + CMS-managed values (visitors / provinces).
   const companyStats = [
-    { icon: Building, label: 'Museum Terkelola', value: '19', color: 'text-blue-600' },
-    { icon: Award, label: 'Cagar Budaya', value: '34', color: 'text-green-600' },
-    { icon: Users, label: 'Pengunjung per Tahun', value: '5.2 Juta', color: 'text-purple-600' },
-    { icon: MapPin, label: 'Provinsi', value: '34', color: 'text-orange-600' },
+    { icon: Building, label: 'Museum Terkelola', value: String(museumStats.museums), color: 'text-blue-600' },
+    { icon: Award, label: 'Cagar Budaya', value: String(museumStats.sites), color: 'text-green-600' },
+    { icon: Users, label: 'Pengunjung per Tahun', value: String(museumStats.visitors), color: 'text-purple-600' },
+    { icon: MapPin, label: 'Provinsi', value: String(museumStats.provinces), color: 'text-orange-600' },
   ];
 
   return (
@@ -129,9 +147,10 @@ const CompanyProfile = () => {
         
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
           <div className="scroll-reveal">
-            <img 
-              src={compProfile}
+            <img
+              src={aboutImage ? getUploadedImageUrl(aboutImage, 'images') : compProfile}
               alt="Museum Interior"
+              loading="lazy"
               className="w-full rounded-lg shadow-lg"
             />
           </div>
