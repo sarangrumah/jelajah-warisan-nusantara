@@ -4,16 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useMuseumStats } from '@/hooks/useMuseumStats';
-import { useProfileStats } from '@/hooks/useProfileStats';
 
 const ManagementSection = () => {
   const { t } = useTranslation();
+  // All stats come from real data: museums/sites are live published counts,
+  // the rest are CMS-managed site settings (same published source as ProfileSection).
   const museumStats = useMuseumStats();
-  // Published museum / cagar budaya counts — same source as ProfileSection so
-  // both homepage sections always show identical (live, published) totals.
-  const profileStats = useProfileStats();
-  const museumsCount = profileStats.museums;
-  const heritageCount = profileStats.heritages;
   
   // Define cards inside useMemo to make them reactive to language changes
   const managementCards = useMemo(() => [
@@ -29,7 +25,7 @@ const ManagementSection = () => {
         t('management.museum.feature4')
       ],
       stats: {
-        museums: museumsCount || museumStats.museums,
+        museums: museumStats.museums,
         visitors: museumStats.visitors,
         programs: museumStats.programs
       },
@@ -48,14 +44,14 @@ const ManagementSection = () => {
         t('management.heritage.feature4')
       ],
       stats: {
-        sites: heritageCount || museumStats.sites,
+        sites: museumStats.sites,
         provinces: museumStats.provinces,
         projects: museumStats.projects
       },
       gradient: 'from-accent to-secondary',
       link: '/heritage'
     }
-  ], [t, museumStats, museumsCount, heritageCount]);
+  ], [t, museumStats]);
 
   return (
     <section className="py-20 from-card to-background">
