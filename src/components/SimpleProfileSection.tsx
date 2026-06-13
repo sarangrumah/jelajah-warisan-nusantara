@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { contentService, siteSettingsService } from '@/lib/api-services';
+import { contentService, siteSettingsService, museumService, heritageService } from '@/lib/api-services';
 
 const SimpleProfileSection: React.FC = () => {
   const { t } = useTranslation();
   const [companyData, setCompanyData] = useState<any>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [counts, setCounts] = useState<{ museums: number | null; heritage: number | null }>({ museums: null, heritage: null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,8 +38,27 @@ const SimpleProfileSection: React.FC = () => {
       }
     };
 
+    // Dynamic counts straight from the database so the homepage stats always
+    // match the actual published museum / cagar budaya lists (the CMS site
+    // setting is kept only as a fallback when the fetch fails).
+    const fetchCounts = async () => {
+      try {
+        const [museumsRes, heritageRes] = await Promise.all([
+          museumService.getPublished(),
+          heritageService.getPublished(),
+        ]);
+        setCounts({
+          museums: !museumsRes.error && Array.isArray(museumsRes.data) ? museumsRes.data.length : null,
+          heritage: !heritageRes.error && Array.isArray(heritageRes.data) ? heritageRes.data.length : null,
+        });
+      } catch (error) {
+        console.error('Error fetching site counts:', error);
+      }
+    };
+
     fetchCompanyData();
     fetchSettings();
+    fetchCounts();
   }, []);
 
   // Fallback static data
@@ -148,11 +168,13 @@ const SimpleProfileSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Stats are CMS-editable via tb_site_settings (Settings admin) */}
+          {/* Museum & heritage totals are computed live from the database
+              (published records), falling back to the CMS site setting then a
+              static default. Provinces & experience remain CMS-editable. */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center scroll-reveal mt-16">
             {[
-              { value: settings['homepage.stats.museums'] || '19', label: t('profile.stats.museums') },
-              { value: settings['homepage.stats.heritage'] || '34', label: t('profile.stats.heritage') },
+              { value: counts.museums != null ? String(counts.museums) : (settings['homepage.stats.museums'] || '19'), label: t('profile.stats.museums') },
+              { value: counts.heritage != null ? String(counts.heritage) : (settings['homepage.stats.heritage'] || '34'), label: t('profile.stats.heritage') },
               { value: settings['homepage.stats.provinces'] || '12', label: t('profile.stats.provinces') },
               { value: settings['homepage.stats.experience'] || '50+', label: t('profile.stats.experience') }
             ].map((stat, index) => (
